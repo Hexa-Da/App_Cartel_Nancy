@@ -1,33 +1,23 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import App from './App';
+import Home from './pages/Home';
+import Info from './pages/Info';
+import Layout from './components/Layout';
+import './index.css';
 
-const rootElement = document.getElementById('root')
-
-if (!rootElement) {
-  throw new Error('Failed to find the root element')
-}
-
-const root = createRoot(rootElement)
-
-try {
-  root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>
-  )
-} catch (error) {
-  console.error('Error rendering app:', error)
-  root.render(
-    <div style={{ 
-      padding: '20px', 
-      textAlign: 'center',
-      color: '#333',
-      backgroundColor: '#fff'
-    }}>
-      <h1>Une erreur est survenue</h1>
-      <p>Veuillez rafraîchir la page ou réessayer plus tard.</p>
-    </div>
-  )
-}
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <Router>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/map" element={<App />} />
+          <Route path="/info" element={<Info />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </Router>
+  </React.StrictMode>
+);

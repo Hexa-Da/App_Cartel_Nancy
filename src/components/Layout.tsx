@@ -1,0 +1,864 @@
+import React, { useState, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import BottomNav from './BottomNav';
+import './Layout.css';
+import { ref, onValue, set, push, remove } from 'firebase/database';
+import { database, auth, provider } from '../firebase';
+import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { v4 as uuidv4 } from 'uuid';
+
+const sportEmojis = {
+  'Football': '⚽',
+  'Basketball': '🏀',
+  'Handball': '🤾',
+  'Rugby': '🏉',
+  'Ultimate': '🥏',
+  'Natation': '🏊',
+  'Badminton': '🏸',
+  'Tennis': '🎾',
+  'Cross': '🏃',
+  'Volleyball': '🏐',
+  'Ping-pong': '🏓',
+  'Boxe': '🥊',
+  'Athlétisme': '🏃‍♂️',
+  'Pétanque': '🍹',
+  'Escalade': '🧗‍♂️',
+  'Jeux de société': '🎲'
+} as const;
+
+interface Message {
+  id?: string;
+  content: string;
+  sender: string;
+  timestamp: number;
+  isAdmin: boolean;
+}
+
+interface Match {
+  id: string;
+  name: string;
+  description: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  position: [number, number];
+  date: string;
+  type: 'match';
+  teams: string;
+  sport: string;
+  time: string;
+  endTime?: string;
+  result?: string;
+  venueId: string;
+  emoji: string;
+}
+
+interface Venue {
+  id?: string;
+  name: string;
+  description: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  position: [number, number];
+  date: string;
+  emoji: string;
+  sport: string;
+  matches?: Match[];
+}
+
+const Layout: React.FC = () => {
+  const [showChat, setShowChat] = useState(false);
+  const [showEmergency, setShowEmergency] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAddingPlace, setIsAddingPlace] = useState(false);
+  const [newVenueName, setNewVenueName] = useState('');
+  const [newVenueDescription, setNewVenueDescription] = useState('');
+  const [newVenueAddress, setNewVenueAddress] = useState('');
+  const [selectedSport, setSelectedSport] = useState('Football');
+  const [selectedEmoji, setSelectedEmoji] = useState('⚽');
+  const [tempMarker, setTempMarker] = useState<[number, number] | null>(null);
+  const [isPlacingMarker, setIsPlacingMarker] = useState(false);
+  const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: Venue | null }>({ id: null, venue: null });
+  const [editingMatch, setEditingMatch] = useState<{ venueId: string | null, match: Match | null }>({ venueId: null, match: null });
+  const [newMatch, setNewMatch] = useState<{ date: string, teams: string, description: string, endTime?: string, result?: string }>({
+    date: '',
+    teams: '',
+    description: '',
+    endTime: '',
+    result: ''
+  });
+  const location = useLocation();
+
+  // Gestion de l'authentification
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        
+        // Vérifier si l'utilisateur est admin
+        const adminsRef = ref(database, 'admins');
+        onValue(adminsRef, (snapshot) => {
+          const admins = snapshot.val();
+          setIsAdmin(admins && admins[user.uid]);
+        });
+      } else {
+        setUser(null);
+        setIsAdmin(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Lecture en temps réel des messages depuis Firebase
+  useEffect(() => {
+    const messagesRef = ref(database, 'chatMessages');
+    const unsubscribe = onValue(messagesRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
+      setMessages(messagesArray);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleAdminClick = () => {
+    if (!user) {
+      signInWithPopup(auth, provider);
+    } else {
+      signOut(auth);
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(!isEditing);
+    if (!isEditing) {
+      setIsAddingPlace(false);
+      setEditingVenue({ id: null, venue: null });
+      setTempMarker(null);
+      setIsPlacingMarker(false);
+    }
+  };
+
+  const handleAddVenue = async () => {
+    if (!isAdmin) return;
+
+    if (!newVenueName || !newVenueDescription || (!newVenueAddress && !tempMarker)) {
+      alert('Veuillez remplir tous les champs requis ou placer un marqueur sur la carte.');
+      return;
+    }
+
+    let coordinates: [number, number] | null = null;
+    
+    if (tempMarker) {
+      coordinates = tempMarker;
+    } else if (newVenueAddress) {
+      // Géocodage de l'adresse
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(newVenueAddress)}`
+        );
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          coordinates = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        }
+      } catch (error) {
+        console.error('Erreur de géocodage:', error);
+      }
+    }
+
+    if (!coordinates) {
+      alert('Une erreur est survenue lors de la récupération des coordonnées.');
+      return;
+    }
+
+    const venuesRef = ref(database, 'venues');
+    const newVenueRef = push(venuesRef);
+    const newVenue: Omit<Venue, 'id'> = {
+      name: newVenueName,
+      position: coordinates,
+      description: newVenueDescription,
+      address: newVenueAddress || `${coordinates[0]}, ${coordinates[1]}`,
+      matches: [],
+      sport: selectedSport,
+      date: '',
+      latitude: coordinates[0],
+      longitude: coordinates[1],
+      emoji: selectedEmoji
+    };
+
+    try {
+      await set(newVenueRef, newVenue);
+      
+      setNewVenueName('');
+      setNewVenueDescription('');
+      setNewVenueAddress('');
+      setSelectedSport('Football');
+      setTempMarker(null);
+      setIsPlacingMarker(false);
+      setIsAddingPlace(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du lieu:', error);
+      alert('Une erreur est survenue lors de l\'ajout du lieu.');
+    }
+  };
+
+  const handleUpdateVenue = async () => {
+    if (!isAdmin || !editingVenue.id) return;
+
+    if (!newVenueName || !newVenueDescription) {
+      alert('Veuillez remplir tous les champs requis.');
+      return;
+    }
+
+    const coordinates: [number, number] = tempMarker || [editingVenue.venue?.latitude || 0, editingVenue.venue?.longitude || 0];
+    
+    const venueRef = ref(database, `venues/${editingVenue.id}`);
+    const updatedVenue = {
+      ...editingVenue.venue,
+      name: newVenueName,
+      description: newVenueDescription,
+      address: newVenueAddress || `${coordinates[0].toFixed(6)}, ${coordinates[1].toFixed(6)}`,
+      sport: selectedSport,
+      latitude: coordinates[0],
+      longitude: coordinates[1],
+      position: coordinates,
+      emoji: selectedEmoji
+    };
+
+    try {
+      await set(venueRef, updatedVenue);
+      
+      setNewVenueName('');
+      setNewVenueDescription('');
+      setNewVenueAddress('');
+      setSelectedSport('Football');
+      setTempMarker(null);
+      setEditingVenue({ id: null, venue: null });
+      setIsAddingPlace(false);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du lieu:', error);
+      alert('Une erreur est survenue lors de la mise à jour du lieu.');
+    }
+  };
+
+  const deleteVenue = async (id: string) => {
+    if (!isAdmin) return;
+
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce lieu ? Cette action est irréversible.')) {
+      return;
+    }
+
+    const venueRef = ref(database, `venues/${id}`);
+    await set(venueRef, null);
+  };
+
+  // Fonction pour ajouter un nouveau match
+  const handleAddMatch = async (venueId: string) => {
+    if (!isAdmin) return;
+
+    const venueRef = ref(database, `venues/${venueId}`);
+    onValue(venueRef, (snapshot) => {
+      const venue = snapshot.val();
+      if (!venue) return;
+
+      if (!newMatch.date || !newMatch.teams || !newMatch.description) {
+        alert('Veuillez remplir tous les champs requis (date de début, équipes et description)');
+        return;
+      }
+
+      const matchId = uuidv4();
+      const match: Match = {
+        id: matchId,
+        name: `${venue.name} - Match`,
+        description: newMatch.description,
+        address: venue.address,
+        latitude: venue.latitude,
+        longitude: venue.longitude,
+        position: [venue.latitude, venue.longitude],
+        date: newMatch.date,
+        type: 'match',
+        teams: newMatch.teams,
+        sport: venue.sport,
+        time: new Date(newMatch.date).toTimeString().split(' ')[0],
+        endTime: newMatch.endTime || '',
+        result: newMatch.result || '',
+        venueId: venue.id,
+        emoji: venue.emoji
+      };
+
+      const updatedMatches = [...(venue.matches || []), match];
+      
+      set(venueRef, {
+        ...venue,
+        matches: updatedMatches
+      });
+
+      // Réinitialiser le formulaire
+      setNewMatch({
+        date: '',
+        teams: '',
+        description: '',
+        endTime: '',
+        result: ''
+      });
+      setEditingMatch({ venueId: null, match: null });
+    });
+  };
+
+  // Fonction pour mettre à jour un match
+  const handleUpdateMatch = async (venueId: string, matchId: string, updatedData: Partial<Match>) => {
+    if (!isAdmin) return;
+    
+    const venueRef = ref(database, `venues/${venueId}`);
+    onValue(venueRef, (snapshot) => {
+      const venue = snapshot.val();
+      if (!venue) return;
+
+      const updatedMatches = venue.matches.map((match: Match) =>
+        match.id === matchId ? { ...match, ...updatedData } : match
+      );
+      
+      set(venueRef, {
+        ...venue,
+        matches: updatedMatches
+      });
+      
+      setEditingMatch({ venueId: null, match: null });
+    });
+  };
+
+  // Fonction pour supprimer un match
+  const deleteMatch = async (venueId: string, matchId: string) => {
+    if (!isAdmin) return;
+
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce match ? Cette action est irréversible.')) {
+      return;
+    }
+    
+    const venueRef = ref(database, `venues/${venueId}`);
+    onValue(venueRef, (snapshot) => {
+      const venue = snapshot.val();
+      if (!venue) return;
+
+      const updatedMatches = venue.matches.filter((match: Match) => match.id !== matchId);
+      
+      set(venueRef, {
+        ...venue,
+        matches: updatedMatches
+      });
+    });
+  };
+
+  // Fonction pour commencer l'édition d'un match
+  const startEditingMatch = (venueId: string, match: Match | null) => {
+    if (!isAdmin) return;
+
+    setEditingMatch({ venueId, match });
+    
+    if (match) {
+      setNewMatch({
+        date: match.date,
+        teams: match.teams,
+        description: match.description,
+        endTime: match.endTime,
+        result: match.result
+      });
+    } else {
+      setNewMatch({ date: '', teams: '', description: '', endTime: '', result: '' });
+    }
+  };
+
+  // Fonction pour terminer l'édition d'un match
+  const finishEditingMatch = () => {
+    setEditingMatch({ venueId: null, match: null });
+  };
+
+  return (
+    <div className="layout">
+      <div className="app-header">
+        <div style={{ flex: 1 }}></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {location.pathname === '/map' && isAdmin && (
+            <>
+              <button
+                className={`edit-button ${isEditing ? 'active' : ''}`}
+                onClick={handleEditClick}
+                title={isEditing ? "Quitter le mode édition" : "Mode édition"}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: isEditing ? '#e74c3c' : '#3498db',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                }}
+              >
+                {isEditing ? "Terminer" : 'Éditer'}
+              </button>
+              {isEditing && (
+                <button
+                  className="add-place-button"
+                  onClick={() => {
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#2ecc71',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  Ajouter
+                </button>
+              )}
+            </>
+          )}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <button
+              className="chat-button"
+              onClick={() => setShowChat(true)}
+              title="Messages de l'orga"
+              style={{
+                padding: '0px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                position: 'relative'
+              }}
+            >
+              💬
+            </button>
+          </div>
+          <button
+            className="emergency-button"
+            onClick={() => setShowEmergency(true)}
+            title="Contacts d'urgence"
+            style={{
+              padding: '0px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              color: '#e74c3c'
+            }}
+          >
+            🚨
+          </button>
+          <button 
+            className="admin-button"
+            onClick={handleAdminClick}
+            title={user ? "Se déconnecter" : "Se connecter"}
+            style={{
+              padding: '0px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px'
+            }}
+          >
+            {!user ? "🔒" : (isAdmin ? "🔓" : "🔒")}
+          </button>
+        </div>
+      </div>
+      <main className="app-main">
+        <Outlet context={{ 
+          isEditing, 
+          setIsEditing, 
+          isAddingPlace, 
+          setIsAddingPlace,
+          newVenueName,
+          setNewVenueName,
+          newVenueDescription,
+          setNewVenueDescription,
+          newVenueAddress,
+          setNewVenueAddress,
+          selectedSport,
+          setSelectedSport,
+          selectedEmoji,
+          setSelectedEmoji,
+          tempMarker,
+          setTempMarker,
+          isPlacingMarker,
+          setIsPlacingMarker,
+          editingVenue,
+          setEditingVenue,
+          handleAddVenue,
+          handleUpdateVenue,
+          deleteVenue,
+          editingMatch,
+          setEditingMatch,
+          newMatch,
+          setNewMatch,
+          handleAddMatch,
+          handleUpdateMatch,
+          deleteMatch,
+          startEditingMatch,
+          finishEditingMatch
+        }} />
+      </main>
+      <BottomNav />
+
+      {/* Fenêtre modale pour le chat */}
+      {showChat && (
+        <div className="chat-panel">
+          <div className="chat-panel-header">
+            <h3>Messages de l'orga</h3>
+            <button 
+              className="close-chat-button"
+              onClick={() => setShowChat(false)}
+              title="Fermer le panneau"
+            >
+              Fermer
+            </button>
+          </div>
+          <div className="chat-container">
+            {messages.map((message, index) => (
+              <div key={message.id || index} className={`chat-message ${message.isAdmin ? 'admin' : ''}`}>
+                <div className="chat-message-header">
+                  <span>{message.sender || 'Organisation'}</span>
+                  <span>{new Date(message.timestamp).toLocaleString()}</span>
+                </div>
+                <div className="chat-message-content">
+                  {message.content}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Fenêtre modale pour les contacts d'urgence */}
+      {showEmergency && (
+        <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
+          <div className="emergency-popup-content" onClick={e => e.stopPropagation()}>
+            <h3>Contacts d'urgence</h3>
+            <ul style={{ textAlign: 'left', margin: '1rem 0' }}>
+              <li><strong>SAMU :</strong> 15</li>
+              <li><strong>Police :</strong> 17</li>
+              <li><strong>Pompier :</strong> 18</li>
+              <li><strong>Numéro européen :</strong> 112</li>
+              <li><strong>Urgence sourds/malentendants :</strong> 114 (SMS)</li>
+            </ul>
+            <button className="close-emergency-button" onClick={() => setShowEmergency(false)}>Fermer</button>
+          </div>
+        </div>
+      )}
+
+      {/* Fenêtre modale pour l'administration */}
+      {showAdmin && (
+        <div className="chat-panel">
+          <div className="chat-panel-header">
+            <h3>Administration</h3>
+            <button 
+              className="close-chat-button"
+              onClick={() => setShowAdmin(false)}
+              title="Fermer le panneau"
+            >
+              Fermer
+            </button>
+          </div>
+          <div className="chat-container">
+            {user ? (
+              isAdmin ? (
+                <div>
+                  <p>Bienvenue, administrateur !</p>
+                  <button onClick={() => signOut(auth)}>Se déconnecter</button>
+                </div>
+              ) : (
+                <p>Vous n'avez pas les droits d'administrateur.</p>
+              )
+            ) : (
+              <p>Veuillez vous connecter pour accéder à l'administration.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout/modification de match */}
+      {editingMatch.venueId && (
+        <div className="form-overlay">
+          <div className="edit-form match-edit-form">
+            <div className="edit-form-header">
+              <h3>{editingMatch.match ? 'Modifier le match' : 'Ajouter un match'}</h3>
+            </div>
+            <div className="edit-form-content">
+              <div className="form-group">
+                <label htmlFor="match-date">Date et heure de début</label>
+                <input
+                  id="match-date"
+                  type="datetime-local"
+                  value={editingMatch.match ? editingMatch.match.date : newMatch.date}
+                  onChange={(e) => {
+                    if (editingMatch.match) {
+                      const updatedMatch = { ...editingMatch.match, date: e.target.value };
+                      setEditingMatch({ ...editingMatch, match: updatedMatch });
+                    } else {
+                      setNewMatch({ ...newMatch, date: e.target.value });
+                    }
+                  }}
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="match-end-time">Heure de fin</label>
+                <input
+                  id="match-end-time"
+                  type="datetime-local"
+                  value={editingMatch.match ? editingMatch.match.endTime : (newMatch.endTime || '')}
+                  min={editingMatch.match ? editingMatch.match.date : newMatch.date}
+                  onChange={(e) => {
+                    if (editingMatch.match) {
+                      const updatedMatch = { ...editingMatch.match, endTime: e.target.value };
+                      setEditingMatch({ ...editingMatch, match: updatedMatch });
+                    } else {
+                      setNewMatch({ ...newMatch, endTime: e.target.value });
+                    }
+                  }}
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="match-teams">Équipes</label>
+                <input
+                  id="match-teams"
+                  type="text"
+                  value={editingMatch.match ? editingMatch.match.teams : newMatch.teams}
+                  onChange={(e) => {
+                    if (editingMatch.match) {
+                      const updatedMatch = { ...editingMatch.match, teams: e.target.value };
+                      setEditingMatch({ ...editingMatch, match: updatedMatch });
+                    } else {
+                      setNewMatch({ ...newMatch, teams: e.target.value });
+                    }
+                  }}
+                  placeholder="Ex: Nancy vs Alès"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="match-description">Description</label>
+                <input
+                  id="match-description"
+                  type="text"
+                  value={editingMatch.match ? editingMatch.match.description : newMatch.description}
+                  onChange={(e) => {
+                    if (editingMatch.match) {
+                      const updatedMatch = { ...editingMatch.match, description: e.target.value };
+                      setEditingMatch({ ...editingMatch, match: updatedMatch });
+                    } else {
+                      setNewMatch({ ...newMatch, description: e.target.value });
+                    }
+                  }}
+                  placeholder="Ex: Phase de poules M"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="match-result">Résultat</label>
+                <input
+                  id="match-result"
+                  type="text"
+                  value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')}
+                  onChange={(e) => {
+                    if (editingMatch.match) {
+                      const updatedMatch = { ...editingMatch.match, result: e.target.value };
+                      setEditingMatch({ ...editingMatch, match: updatedMatch });
+                    } else {
+                      setNewMatch({ ...newMatch, result: e.target.value });
+                    }
+                  }}
+                  placeholder="Ex: 2-1"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-actions">
+                <button 
+                  className="add-button"
+                  onClick={() => {
+                    if (editingMatch.match) {
+                      handleUpdateMatch(
+                        editingMatch.venueId!, 
+                        editingMatch.match.id, 
+                        {
+                          date: editingMatch.match.date,
+                          endTime: editingMatch.match.endTime || '',
+                          teams: editingMatch.match.teams,
+                          description: editingMatch.match.description,
+                          result: editingMatch.match.result
+                        }
+                      );
+                      finishEditingMatch();
+                    } else {
+                      handleAddMatch(editingMatch.venueId!);
+                    }
+                  }}
+                  disabled={
+                    editingMatch.match 
+                      ? !editingMatch.match.date || !editingMatch.match.teams || !editingMatch.match.description
+                      : !newMatch.date || !newMatch.teams || !newMatch.description
+                  }
+                >
+                  {editingMatch.match ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button 
+                  className="cancel-button"
+                  onClick={finishEditingMatch}
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'édition de lieu */}
+      {isAddingPlace && (
+        <div className="form-overlay">
+          <div className="edit-form venue-edit-form">
+            <div className="edit-form-header">
+              <h3>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un lieu'}</h3>
+            </div>
+            <div className="edit-form-content">
+              <div className="form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input
+                  id="venue-name"
+                  type="text"
+                  value={newVenueName}
+                  onChange={(e) => setNewVenueName(e.target.value)}
+                  placeholder="Ex: Gymnase Raymond Poincaré"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input
+                  id="venue-description"
+                  type="text"
+                  value={newVenueDescription}
+                  onChange={(e) => setNewVenueDescription(e.target.value)}
+                  placeholder="Ex: Pour rentrer il faut..."
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input
+                  id="venue-address"
+                  type="text"
+                  value={newVenueAddress}
+                  onChange={(e) => setNewVenueAddress(e.target.value)}
+                  placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy"
+                  className="form-input"
+                />
+                <button
+                  className="place-marker-button"
+                  onClick={() => {
+                    setIsPlacingMarker(true);
+                    setIsAddingPlace(false);
+                  }}
+                >
+                  Placer sur la carte
+                </button>
+              </div>
+              <div className="form-group">
+                <label htmlFor="venue-sport">Sport</label>
+                <select
+                  id="venue-sport"
+                  value={selectedSport}
+                  onChange={(e) => {
+                    setSelectedSport(e.target.value);
+                    setSelectedEmoji(sportEmojis[e.target.value as keyof typeof sportEmojis] || '⚽');
+                  }}
+                  className="form-input"
+                >
+                  <option value="Football">Football ⚽</option>
+                  <option value="Basketball">Basketball 🏀</option>
+                  <option value="Handball">Handball 🤾</option>
+                  <option value="Rugby">Rugby 🏉</option>
+                  <option value="Ultimate">Ultimate 🥏</option>
+                  <option value="Natation">Natation 🏊</option>
+                  <option value="Badminton">Badminton 🏸</option>
+                  <option value="Tennis">Tennis 🎾</option>
+                  <option value="Cross">Cross 🏃</option>
+                  <option value="Volleyball">Volleyball 🏐</option>
+                  <option value="Ping-pong">Ping-pong 🏓</option>
+                  <option value="Boxe">Boxe 🥊</option>
+                  <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
+                  <option value="Pétanque">Pétanque 🍹</option>
+                  <option value="Escalade">Escalade 🧗‍♂️</option>
+                  <option value="Jeux de société">Jeux de société 🎲</option>
+                </select>
+              </div>
+              <div className="form-actions">
+                <button
+                  className="add-button"
+                  onClick={() => {
+                    if (editingVenue.id) {
+                      handleUpdateVenue();
+                    } else {
+                      handleAddVenue();
+                    }
+                  }}
+                  disabled={!newVenueName || !newVenueDescription || (!newVenueAddress && !tempMarker)}
+                >
+                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button
+                  className="cancel-button"
+                  onClick={() => {
+                    setIsAddingPlace(false);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                  }}
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Layout; 

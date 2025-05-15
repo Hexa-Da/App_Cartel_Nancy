@@ -2192,7 +2192,59 @@ function App() {
   return (
     <div className="app">
       <div className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+        <button 
+            className={`fullscreen-button ${isFullscreen ? 'active' : ''}`}
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Quitter le mode plein écran" : "Mode plein écran"}
+            style={{
+              padding: '2px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {isFullscreen ? (
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+              </svg>
+            )}
+          </button>
+          {!isEditing && (
+            <select 
+              className="map-style-selector"
+              value={mapStyle}
+              style={{
+                padding: '2px',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              onChange={(e) => {
+                ReactGA.event({
+                  category: 'map',
+                  action: 'change_map_style',
+                  label: e.target.value
+                });
+                handleMapStyleChange(e.target.value);
+              }}
+            >
+              <option value="osm">OpenStreetMap</option>
+              <option value="cyclosm">CyclOSM</option>
+              <option value="humanitarian">Humanitarian</option>
+              <option value="osmfr">OSM France</option>
+            </select>
+          )}
+        </div>
         <div className="controls">
           {isAdmin && (
             <>
