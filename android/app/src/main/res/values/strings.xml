@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cartel Nancy</string>
+    <string name="title_activity_main">Cartel Nancy</string>
+    <string name="package_name">com.cartelnancy.app</string>
+    <string name="custom_url_scheme">com.cartelnancy.app</string>
+</resources>
