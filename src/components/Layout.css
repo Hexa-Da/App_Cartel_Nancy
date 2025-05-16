@@ -1,5 +1,5 @@
 .layout {
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -10,7 +10,7 @@
   left: 0;
   right: 0;
   height: 60px;
-  background-color: white;
+  background-color: var(--bg-secondary);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,7 +21,7 @@
 
 .app-main {
   flex: 1;
-  margin-top: 60px; /* Hauteur du header */
+  margin-top: 30px; /* Hauteur du header */
   padding-bottom: 60px; /* Hauteur de la barre de navigation */
   overflow-y: auto;
 }
@@ -60,7 +60,6 @@
 }
 
 .modal-content {
-  background-color: white;
   border-radius: 8px;
   width: 90%;
   max-width: 500px;

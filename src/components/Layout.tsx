@@ -382,7 +382,7 @@ const Layout: React.FC = () => {
     <div className="layout">
       <div className="app-header">
         <div style={{ flex: 1 }}></div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ paddingTop: '1.5rem', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '16px' }}>
           {location.pathname === '/map' && isAdmin && (
             <>
               <button

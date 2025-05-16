@@ -100,6 +100,8 @@
 .filter-row {
   display: flex;
   gap: 0.5rem;
+  margin-top: 20px;
+  margin-bottom: 0px;
 }
 
 .filter-select {

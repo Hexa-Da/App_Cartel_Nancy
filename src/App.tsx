@@ -2191,9 +2191,9 @@ function App() {
 
   return (
     <div className="app">
-      <div className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}></div>
-        <div className="controls">
+      <div className="app-header" style={{ paddingTop: '1.5rem', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ flex: 2 }}></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {isAdmin && (
             <>
               <button
@@ -2204,7 +2204,6 @@ function App() {
                     action: 'toggle_edit_mode',
                     label: isEditing ? 'off' : 'on'
                   });
-                  
                   setIsEditing(!isEditing);
                   if (isEditing) {
                     setIsAddingPlace(false);
@@ -2218,19 +2217,14 @@ function App() {
                 {isEditing ? "Terminer" : 'Éditer'}
               </button>
               {isEditing && (
-                <button 
+                <button
                   className="add-place-button"
                   onClick={() => {
-                    if (editingMatch.venueId) {
-                      finishEditingMatch();
-                    }
-                    
                     setIsAddingPlace(true);
                     setEditingVenue({ id: null, venue: null });
-                    setNewVenueName('');
-                    setNewVenueDescription('');
-                    setNewVenueAddress('');
-                    setSelectedSport('Football');
+                    setTempMarker(null);
+                    setIsPlacingMarker(false);
+                    triggerMarkerUpdate();
                   }}
                 >
                   Ajouter
@@ -2238,8 +2232,6 @@ function App() {
               )}
             </>
           )}
-        </div>
-        <div style={{ position: 'relative', display: 'inline-block' }}>
           <button
             className="chat-button"
             onClick={() => {
@@ -2260,7 +2252,8 @@ function App() {
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '20px',
-              position: 'relative'
+              position: 'relative',
+              marginLeft: '0'
             }}
           >
             💬
@@ -2345,7 +2338,7 @@ function App() {
         {locationLoading ? (
           <div className="loading">Chargement de la carte...</div>
         ) : (
-          <div className="map-container">
+          <div className="map-container" style={{ marginTop: 0, paddingTop: 0 }}>
         <MapContainer
           center={[48.686881, 6.1880492]}
           zoom={12}

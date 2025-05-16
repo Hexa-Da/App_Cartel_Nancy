@@ -1,7 +1,7 @@
 #root {
   height: 100%; 
   width: 100%;
-  margin-top: 2rem;
+  margin-top: 0rem;
   text-align: center;
   overflow: hidden;
   position: fixed;
@@ -159,10 +159,9 @@ html, body, #root {
 .app-header {
   background-color: var(--bg-secondary);
   color: var(--text-color);
-  padding: 0.5rem;
+  padding: 0.3rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
   box-shadow: 0 2px 4px var(--shadow-color);
@@ -170,15 +169,14 @@ html, body, #root {
 }
 
 .app-header img {
-  height: 100px;
-  width: 100px;
+  margin-top: 10px;
   object-fit: contain;
   margin-right: 10px;
   padding: 2px;
 }
 
 .app-header h1 {
-  margin: 0;
+  margin-top: 1rem;
   font-size: 24px;
   color: var(--text-color);
 }
@@ -213,7 +211,6 @@ html, body, #root {
 
 .controls {
   display: flex;
-  gap: 1rem;
   flex-wrap: wrap;
   margin-left: auto;
   align-items: center;
@@ -458,17 +455,20 @@ html, body, #root {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  margin-bottom: -1rem;
 }
 
 .map-container {
-  position: relative;
+  position: absolute;
   height: 100%;
   width: 100%;
+  margin-bottom: -1rem;
 }
 
 .leaflet-container {
   height: 100%;
   width: 100%;
+  margin-bottom: -1rem;
 }
 
 /* Style pour l'icône de localisation de l'utilisateur */
@@ -1362,7 +1362,7 @@ html, body, #root {
 /* Repositionner le panneau d'événements à gauche */
 .events-panel {
   position: fixed;
-  top: 0;
+  top: 2rem;
   left: 0;
   width: 100%;
   height: 100%;
@@ -2219,7 +2219,7 @@ html, body, #root {
 
 .planning-panel {
   position: fixed;
-  top: 0;
+  top: 2rem;
   left: 0;
   width: 100%;
   height: 100%;
@@ -2231,7 +2231,7 @@ html, body, #root {
 }
 
 .planning-panel-header {
-  padding: 0.7rem;
+  padding: 0.5rem;
   background-color: var(--bg-color);
   position: sticky;
   z-index: 2;
@@ -2251,7 +2251,7 @@ html, body, #root {
 
 .close-planning-button {
   position: absolute;
-  bottom: 10px;
+  top: 42px;
   right: 10px;
   padding: 8px 16px;
   background-color: var(--danger-color);
@@ -2481,4 +2481,64 @@ html, body, #root {
   border-color: #80bdff;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.calendar-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.calendar-popup {
+  position: fixed;
+  top: 4rem;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-color);
+  z-index: 999;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-popup-header {
+  padding: 0.7rem;
+  background-color: var(--bg-color);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.calendar-grid {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+/* Ajuster la position du bouton de fermeture */
+.close-button {
+  position: absolute;
+  top: 0.7rem;
+  right: 1rem;
+  padding: 8px 16px;
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
 }
