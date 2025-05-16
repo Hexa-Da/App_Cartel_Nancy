@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useOutletContext } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import './Layout.css';
-import { ref, onValue, set, push, remove } from 'firebase/database';
+import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { database, auth, provider } from '../firebase';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
@@ -92,7 +92,12 @@ const Layout: React.FC = () => {
     endTime: '',
     result: ''
   });
+  const [showAddMessage, setShowAddMessage] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [newMessageSender, setNewMessageSender] = useState('Organisation');
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const location = useLocation();
+  const { closeAllPanels } = (useOutletContext() || {}) as { closeAllPanels?: () => void };
 
   // Gestion de l'authentification
   useEffect(() => {
@@ -378,6 +383,51 @@ const Layout: React.FC = () => {
     setEditingMatch({ venueId: null, match: null });
   };
 
+  // Ajout d'un message dans Firebase
+  const handleAddMessage = (msg: string, sender: string) => {
+    const newMsgRef = push(ref(database, 'chatMessages'));
+    set(newMsgRef, {
+      content: msg,
+      sender: sender || 'Organisation',
+      timestamp: Date.now(),
+      isAdmin: true
+    });
+
+    // Notification locale (web)
+    if (window.Notification && Notification.permission === 'granted') {
+      new Notification('Nouveau message de l\'organisation', {
+        body: msg,
+        icon: '/favicon.png'
+      });
+    } else if (window.Notification && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          new Notification('Nouveau message de l\'organisation', {
+            body: msg,
+            icon: '/favicon.png'
+          });
+        }
+      });
+    }
+  };
+
+  // Modification d'un message dans Firebase
+  const handleEditMessage = (id: string, newContent: string, newSender: string) => {
+    update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender || 'Organisation' });
+  };
+
+  // Suppression d'un message dans Firebase
+  const handleDeleteMessage = (id: string) => {
+    remove(ref(database, `chatMessages/${id}`));
+  };
+
+  // Fonction pour fermer les panneaux locaux (chat, urgence, admin)
+  const closeLayoutPanels = () => {
+    setShowChat(false);
+    setShowEmergency(false);
+    setShowAdmin(false);
+  };
+
   return (
     <div className="layout">
       <div className="app-header">
@@ -440,7 +490,7 @@ const Layout: React.FC = () => {
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <button
               className="chat-button"
-              onClick={() => setShowChat(true)}
+              onClick={() => setShowChat(!showChat)}
               title="Messages de l'orga"
               style={{
                 padding: '0px',
@@ -530,31 +580,113 @@ const Layout: React.FC = () => {
           finishEditingMatch
         }} />
       </main>
-      <BottomNav />
+      <BottomNav closeLayoutPanels={closeLayoutPanels} />
 
       {/* Fenêtre modale pour le chat */}
       {showChat && (
-        <div className="chat-panel">
+        <div className={`chat-panel ${location.pathname === '/' || location.pathname === '/info' ? 'home-info-chat' : ''}`}>
           <div className="chat-panel-header">
             <h3>Messages de l'orga</h3>
-            <button 
-              className="close-chat-button"
-              onClick={() => setShowChat(false)}
-              title="Fermer le panneau"
-            >
-              Fermer
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center'}}>
+              {isAdmin && (
+                <button
+                  className="add-message-button"
+                  onClick={() => setShowAddMessage((v) => !v)}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70, marginRight: '5rem', marginTop: '3.8rem' }}
+                >
+                  {showAddMessage ? 'Annuler' : 'Ajouter'}
+                </button>
+              )}
+              <button 
+                className="close-chat-button"
+                onClick={() => setShowChat(false)}
+                title="Fermer le panneau"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70 }}
+              >
+                Fermer
+              </button>
+            </div>
           </div>
+          {showAddMessage && (
+            <form
+              className="add-message-form"
+              style={{ display: 'flex', gap: '8px', padding: '1rem', alignItems: 'center', background: 'var(--bg-secondary)' }}
+              onSubmit={e => {
+                e.preventDefault();
+                if (newMessage.trim()) {
+                  if (editingMessageId) {
+                    handleEditMessage(editingMessageId, newMessage, newMessageSender || 'Organisation');
+                  } else {
+                    handleAddMessage(newMessage, newMessageSender || 'Organisation');
+                  }
+                  setNewMessage('');
+                  setNewMessageSender('Organisation');
+                  setShowAddMessage(false);
+                  setEditingMessageId(null);
+                }
+              }}
+            >
+              {isAdmin && (
+                <input
+                  type="text"
+                  value={newMessageSender}
+                  onChange={e => setNewMessageSender(e.target.value)}
+                  placeholder="Nom (ex: Organisation, Prénom...)"
+                  style={{ width: 100, height: 25, padding: '8px', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                />
+              )}
+              <input
+                type="text"
+                value={newMessage}
+                onChange={e => setNewMessage(e.target.value)}
+                placeholder="Votre message..."
+                style={{ flex: 1, height: 25, padding: '8px', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                autoFocus
+              />
+              <button type="submit" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                ➡️
+              </button>
+            </form>
+          )}
           <div className="chat-container">
             {messages.map((message, index) => (
-              <div key={message.id || index} className={`chat-message ${message.isAdmin ? 'admin' : ''}`}>
-                <div className="chat-message-header">
+              <div key={message.id || index} className={`chat-message ${message.isAdmin ? 'admin' : ''}`} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                <div className="chat-message-header" style={{ justifyContent: 'space-between' }}>
                   <span>{message.sender || 'Organisation'}</span>
                   <span>{new Date(message.timestamp).toLocaleString()}</span>
                 </div>
-                <div className="chat-message-content">
+                <div className="chat-message-content" style={{ paddingBottom: isAdmin ? 28 : 0, textAlign: 'left' }}>
                   {message.content}
                 </div>
+                {isAdmin && (
+                  <div style={{ position: 'absolute', right: 0, bottom: 6, display: 'flex', gap: 0 }}>
+                    <button
+                      className="edit-message-button"
+                      title="Modifier"
+                      onClick={() => {
+                        setShowAddMessage(true);
+                        setNewMessage(message.content);
+                        setNewMessageSender(message.sender || 'Organisation');
+                        setEditingMessageId(message.id || null);
+                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="delete-message-button"
+                      title="Supprimer"
+                      onClick={() => {
+                        if (window.confirm('Supprimer ce message ?') && message.id) {
+                          handleDeleteMessage(message.id);
+                        }
+                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: 16 }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

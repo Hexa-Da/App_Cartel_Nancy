@@ -12,6 +12,9 @@ import { onAuthStateChanged, signInWithPopup} from 'firebase/auth';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import PlanningFiles from './components/PlanningFiles';
+import { Outlet } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useAppPanels } from './AppPanelsContext';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -234,6 +237,10 @@ interface Message {
 }
 
 function App() {
+  const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels } = useAppPanels();
+
+  const [newMessage, setNewMessage] = useState('');
+  const [newMessageSender, setNewMessageSender] = useState('Organisation'); 
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -241,14 +248,18 @@ function App() {
   const [isEditing, setIsEditing] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
-  const [messages, setMessages] = useState<Message[]>([]); // messages du chat, lus depuis Firebase
-  const [showAddMessage, setShowAddMessage] = useState(false);
-  const [newMessage, setNewMessage] = useState('');
-  const [newMessageSender, setNewMessageSender] = useState('Organisation'); // nom personnalisé pour l'envoi
-  const [showEmergency, setShowEmergency] = useState(false);
-  const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null); // index du message en cours d'édition
-  const [editingMessageValue, setEditingMessageValue] = useState(''); // valeur temporaire pour l'édition
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null); // id du message en cours d'édition
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null);
+  const [editingMessageValue, setEditingMessageValue] = useState('');
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar'>('map');
+  const location = useLocation();
+  
+  useEffect(() => {
+    if (location.pathname === '/map') {
+      setActiveTab('map');
+    }
+  }, [location.pathname]);
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -476,7 +487,6 @@ function App() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [mapStyle, setMapStyle] = useState('osm');
-  const [activeTab, setActiveTab] = useState<'map' | 'events' | 'chat' | 'planning'>('map');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: Venue | null }>({ id: null, venue: null });
   const [selectedEmoji, setSelectedEmoji] = useState('⚽');
@@ -2009,7 +2019,7 @@ function App() {
   };
 
   // Fonction pour gérer le changement d'onglet
-  const handleTabChange = (tab: 'map' | 'events') => {
+  const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'planning' | 'calendar') => {
     setActiveTab(tab);
     if (tab === 'events') {
       // Attendre que le DOM soit mis à jour
@@ -2023,11 +2033,12 @@ function App() {
   };
 
   const handleCalendarClick = () => {
-    setIsCalendarOpen(true);
+    setPreviousTab(activeTab);
+    setActiveTab('calendar');
   };
 
   const handleCalendarClose = () => {
-    setIsCalendarOpen(false);
+    setActiveTab(previousTab);
   };
 
   const handleViewOnMap = (venue: Venue) => {
@@ -2180,14 +2191,22 @@ function App() {
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
 
-  // Quand on ouvre le chat, on marque tous les messages comme lus
   const handleOpenChat = () => {
-    setActiveTab(activeTab === 'map' ? 'chat' : 'map');
-    if (activeTab !== 'chat' && messages.length > 0) {
-      const lastMsg = messages[messages.length - 1];
-      localStorage.setItem('lastSeenChatTimestamp', String(lastMsg.timestamp));
+    // Si on est déjà sur le chat, on retourne à l'onglet précédent
+    if (activeTab === 'chat') {
+      setActiveTab(previousTab);
+    } else {
+      // Sinon on mémorise l'onglet actuel et on ouvre le chat
+      setPreviousTab(activeTab);
+      setActiveTab('chat');
+      if (messages.length > 0) {
+        const lastMsg = messages[messages.length - 1];
+        localStorage.setItem('lastSeenChatTimestamp', String(lastMsg.timestamp));
+      }
     }
   };
+
+  
 
   return (
     <div className="app">
@@ -2628,19 +2647,19 @@ function App() {
               <div className="chat-panel">
                 <div className="chat-panel-header">
                   <h3>Messages de l'orga</h3>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
                     {isAdmin && (
                       <button
                         className="add-message-button"
                         onClick={() => setShowAddMessage((v) => !v)}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70 }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70, marginRight: '5rem', marginTop: '3.8rem' }}
                       >
                         {showAddMessage ? 'Annuler' : 'Ajouter'}
                       </button>
                     )}
                     <button 
                       className="close-chat-button"
-                      onClick={() => setActiveTab('map')}
+                      onClick={handleOpenChat}
                       title="Fermer le panneau"
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70 }}
                     >
@@ -3013,7 +3032,7 @@ function App() {
       )}
       
       <CalendarPopup 
-        isOpen={isCalendarOpen} 
+        isOpen={activeTab === 'calendar'} 
         onClose={handleCalendarClose}
         venues={venues}
         eventFilter={eventFilter}
@@ -3047,6 +3066,7 @@ function App() {
           </div>
         </div>
       )}
+      <Outlet context={{ closeAllPanels }} />
     </div>
   );
 }
