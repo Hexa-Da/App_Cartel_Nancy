@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar';
+export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar';
 
 interface AppPanelsContextType {
   activeTab: TabType;
@@ -10,6 +10,8 @@ interface AppPanelsContextType {
   showEmergency: boolean;
   setShowEmergency: React.Dispatch<React.SetStateAction<boolean>>;
   closeAllPanels: () => void;
+  isEditing: boolean;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppPanelsContext = createContext<AppPanelsContextType | undefined>(undefined);
@@ -18,6 +20,7 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
   const [activeTab, setActiveTab] = useState<TabType>('map');
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const closeAllPanels = () => {
     setActiveTab('map');
@@ -30,7 +33,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
       activeTab, setActiveTab,
       showAddMessage, setShowAddMessage,
       showEmergency, setShowEmergency,
-      closeAllPanels
+      closeAllPanels,
+      isEditing, setIsEditing
     }}>
       {children}
     </AppPanelsContext.Provider>

@@ -12,9 +12,6 @@ import { onAuthStateChanged, signInWithPopup} from 'firebase/auth';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import PlanningFiles from './components/PlanningFiles';
-import { Outlet, useLocation, useOutletContext } from 'react-router-dom';
-import { useAppPanels, TabType } from './AppPanelsContext';
-import Header from './components/Header';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -236,65 +233,22 @@ interface Message {
   isAdmin: boolean;
 }
 
-// Interface pour le contexte Outlet
-interface OutletContext {
-  isEditing: boolean;
-  setIsEditing: (isEditing: boolean) => void;
-  isAddingPlace: boolean;
-  setIsAddingPlace: (isAddingPlace: boolean) => void;
-  newVenueName: string;
-  setNewVenueName: (name: string) => void;
-  newVenueDescription: string;
-  setNewVenueDescription: (description: string) => void;
-  newVenueAddress: string;
-  setNewVenueAddress: (address: string) => void;
-  selectedSport: string;
-  setSelectedSport: (sport: string) => void;
-  selectedEmoji: string;
-  setSelectedEmoji: (emoji: string) => void;
-  tempMarker: [number, number] | null;
-  setTempMarker: (marker: [number, number] | null) => void;
-  isPlacingMarker: boolean;
-  setIsPlacingMarker: (isPlacing: boolean) => void;
-  editingVenue: { id: string | null, venue: Venue | null };
-  setEditingVenue: (editing: { id: string | null, venue: Venue | null }) => void;
-  handleAddVenue: () => Promise<void>;
-  handleUpdateVenue: () => Promise<void>;
-  deleteVenue: (id: string) => Promise<void>;
-  editingMatch: { venueId: string | null, match: Match | null };
-  setEditingMatch: (editing: { venueId: string | null, match: Match | null }) => void;
-  newMatch: { date: string, teams: string, description: string, endTime?: string, result?: string };
-  setNewMatch: (match: { date: string, teams: string, description: string, endTime?: string, result?: string }) => void;
-  handleAddMatch: (venueId: string) => Promise<void>;
-  handleUpdateMatch: (venueId: string, matchId: string, updatedData: Partial<Match>) => Promise<void>;
-  deleteMatch: (venueId: string, matchId: string) => Promise<void>;
-  startEditingMatch: (venueId: string, match: Match | null) => void;
-  finishEditingMatch: () => void;
-}
-
 function App() {
-  const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
-
-  const [newMessage, setNewMessage] = useState('');
-  const [newMessageSender, setNewMessageSender] = useState('Organisation'); 
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null);
-  const [editingMessageValue, setEditingMessageValue] = useState('');
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar'>('map');
-  const location = useLocation();
-  
-  useEffect(() => {
-    if (location.pathname === '/map') {
-      setActiveTab('map');
-    }
-  }, [location.pathname]);
+  const [messages, setMessages] = useState<Message[]>([]); // messages du chat, lus depuis Firebase
+  const [showAddMessage, setShowAddMessage] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [newMessageSender, setNewMessageSender] = useState('Organisation'); // nom personnalisé pour l'envoi
+  const [showEmergency, setShowEmergency] = useState(false);
+  const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null); // index du message en cours d'édition
+  const [editingMessageValue, setEditingMessageValue] = useState(''); // valeur temporaire pour l'édition
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null); // id du message en cours d'édition
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -522,6 +476,7 @@ function App() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [mapStyle, setMapStyle] = useState('osm');
+  const [activeTab, setActiveTab] = useState<'map' | 'events' | 'chat' | 'planning'>('map');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: Venue | null }>({ id: null, venue: null });
   const [selectedEmoji, setSelectedEmoji] = useState('⚽');
@@ -533,8 +488,7 @@ function App() {
   const [showMixed, setShowMixed] = useState<boolean>(true);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [appAction, setAppAction] = useState<number>(0);
-  const [fromEvents, setFromEvents] = useState(false);
-
+  
   // État pour l'historique des actions et l'index actuel
   const [history, setHistory] = useState<HistoryAction[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -2039,22 +1993,6 @@ function App() {
     }
   };
 
-  const handleAdminClick = async () => {
-    if (user) {
-      // Si l'utilisateur est connecté, on le déconnecte
-      try {
-        await auth.signOut();
-        setUser(null);
-        setIsAdmin(false);
-      } catch (error) {
-        console.error('Erreur lors de la déconnexion:', error);
-      }
-    } else {
-      // Sinon on tente de se connecter
-      signInWithGoogle();
-    }
-  };
-
   if (isLoading) {
     return <div>Chargement...</div>;
   }
@@ -2064,16 +2002,17 @@ function App() {
     setAppAction(prev => prev + 1);
   };
 
+  // Fonction pour gérer le changement de style de carte
+  const handleMapStyleChange = (style: string) => {
+    setMapStyle(style);
+    triggerMarkerUpdate();
+  };
+
   // Fonction pour gérer le changement d'onglet
-  const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'planning' | 'calendar') => {
-    setPreviousTab(activeTab);
+  const handleTabChange = (tab: 'map' | 'events') => {
     setActiveTab(tab);
-    if (tab === 'planning' || tab === 'calendar') {
-      setFromEvents(activeTab === 'events');
-    } else {
-      setFromEvents(false);
-    }
     if (tab === 'events') {
+      // Attendre que le DOM soit mis à jour
       setTimeout(() => {
         const firstNonPassedEvent = document.querySelector('.event-item:not(.passed)');
         if (firstNonPassedEvent) {
@@ -2083,27 +2022,12 @@ function App() {
     }
   };
 
-  const handleBack = () => {
-    switch (activeTab as TabType) {
-      case 'planning':
-        setActiveTab('events');
-        break;
-      case 'events':
-        setActiveTab('map');
-        break;
-      case 'calendar':
-        setActiveTab('events');
-        break;
-      case 'chat':
-        setActiveTab('map');
-        break;
-      default:
-        setActiveTab('map');
-    }
+  const handleCalendarClick = () => {
+    setIsCalendarOpen(true);
   };
 
   const handleCalendarClose = () => {
-    setActiveTab(previousTab);
+    setIsCalendarOpen(false);
   };
 
   const handleViewOnMap = (venue: Venue) => {
@@ -2256,45 +2180,206 @@ function App() {
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
 
+  // Quand on ouvre le chat, on marque tous les messages comme lus
   const handleOpenChat = () => {
-    // Si on est déjà sur le chat, on retourne à l'onglet précédent
-    if (activeTab === 'chat') {
-      setActiveTab(previousTab);
-    } else {
-      // Sinon on mémorise l'onglet actuel et on ouvre le chat
-      setPreviousTab(activeTab);
-      setActiveTab('chat');
-      if (messages.length > 0) {
-        const lastMsg = messages[messages.length - 1];
-        localStorage.setItem('lastSeenChatTimestamp', String(lastMsg.timestamp));
-      }
+    setActiveTab(activeTab === 'map' ? 'chat' : 'map');
+    if (activeTab !== 'chat' && messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
+      localStorage.setItem('lastSeenChatTimestamp', String(lastMsg.timestamp));
     }
   };
 
-  // Ajoute le header en haut du return
   return (
     <div className="app">
-      <Header
-        onChat={handleOpenChat}
-        onEmergency={() => setShowEmergency(true)}
-        onAdmin={handleAdminClick}
-        isAdmin={isAdmin}
-        user={user}
-        showChat={activeTab === 'chat'}
-        unreadCount={messages.filter(m => !m.isAdmin).length}
-        onBack={handleBack}
-        onEditModeToggle={() => {
-          setIsEditing(!isEditing);
-          if (isEditing) {
-            // Si on désactive le mode édition, on réinitialise les états liés à l'édition
-            setIsAddingPlace(false);
-            setEditingVenue({ id: null, venue: null });
-            setTempMarker(null);
-            setIsPlacingMarker(false);
-          }
-        }}
-        isEditing={isEditing}
-      />
+      <div className="app-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+        <button 
+            className={`fullscreen-button ${isFullscreen ? 'active' : ''}`}
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Quitter le mode plein écran" : "Mode plein écran"}
+            style={{
+              padding: '2px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {isFullscreen ? (
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+              </svg>
+            )}
+          </button>
+          {!isEditing && (
+            <select 
+              className="map-style-selector"
+              value={mapStyle}
+              style={{
+                padding: '2px',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              onChange={(e) => {
+                ReactGA.event({
+                  category: 'map',
+                  action: 'change_map_style',
+                  label: e.target.value
+                });
+                handleMapStyleChange(e.target.value);
+              }}
+            >
+              <option value="osm">OpenStreetMap</option>
+              <option value="cyclosm">CyclOSM</option>
+              <option value="humanitarian">Humanitarian</option>
+              <option value="osmfr">OSM France</option>
+            </select>
+          )}
+        </div>
+        <div className="controls">
+          {isAdmin && (
+            <>
+              <button
+                className={`edit-button ${isEditing ? 'active' : ''}`}
+                onClick={() => {
+                  ReactGA.event({
+                    category: 'app',
+                    action: 'toggle_edit_mode',
+                    label: isEditing ? 'off' : 'on'
+                  });
+                  
+                  setIsEditing(!isEditing);
+                  if (isEditing) {
+                    setIsAddingPlace(false);
+                    setEditingVenue({ id: null, venue: null });
+                    setTempMarker(null);
+                    setIsPlacingMarker(false);
+                  }
+                  triggerMarkerUpdate();
+                }}
+              >
+                {isEditing ? "Terminer" : 'Éditer'}
+              </button>
+              {isEditing && (
+                <button 
+                  className="add-place-button"
+                  onClick={() => {
+                    if (editingMatch.venueId) {
+                      finishEditingMatch();
+                    }
+                    
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                  }}
+                >
+                  Ajouter
+                </button>
+              )}
+            </>
+          )}
+        </div>
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <button
+            className="chat-button"
+            onClick={() => {
+              ReactGA.event({
+                category: 'navigation',
+                action: 'change_tab',
+                label: activeTab === 'map' ? 'chat' : 'map'
+              });
+              handleOpenChat();
+            }}
+            title="Messages de l'orga"
+            style={{
+              padding: '0px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              position: 'relative'
+            }}
+          >
+            💬
+            {unreadCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: -4,
+                right: -4,
+                background: 'red',
+                color: 'white',
+                borderRadius: '50%',
+                minWidth: 18,
+                height: 18,
+                fontSize: 12,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 5px',
+                zIndex: 10,
+                fontWeight: 700,
+                boxShadow: '0 1px 4px rgba(0,0,0,0.2)'
+              }}>{unreadCount}</span>
+            )}
+          </button>
+        </div>
+        <button
+          className="emergency-button"
+          onClick={() => setShowEmergency(true)}
+          title="Contacts d'urgence"
+          style={{
+            padding: '0px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '20px',
+            color: '#e74c3c'
+          }}
+        >
+          🚨
+        </button>
+        <button 
+          className="admin-button"
+          onClick={() => {
+            if (!user) {
+              signInWithGoogle();
+            } else {
+              auth.signOut();
+            }
+          }}
+          title={user ? "Se déconnecter" : "Se connecter"}
+          style={{
+            padding: '0px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '20px'
+          }}
+        >
+          {!user ? "🔒" : (isAdmin ? "🔓" : "🔒")}
+        </button>
+      </div>
       <main className="app-main">
         {locationError && showLocationPrompt && (
           <div className="location-error">
@@ -2312,7 +2397,7 @@ function App() {
         {locationLoading ? (
           <div className="loading">Chargement de la carte...</div>
         ) : (
-          <div className="map-container" style={{ marginTop: 0, paddingTop: 0 }}>
+          <div className="map-container">
         <MapContainer
           center={[48.686881, 6.1880492]}
           zoom={12}
@@ -2346,23 +2431,6 @@ function App() {
                       mapRef.current?.zoomOut();
                     }}>−</a>
                   </div>
-                  {isEditing && isAdmin && (
-                    <button 
-                      className="add-venue-button"
-                      onClick={() => {
-                        setIsAddingPlace(true);
-                        setEditingVenue({ id: null, venue: null });
-                        setNewVenueName('');
-                        setNewVenueDescription('');
-                        setNewVenueAddress('');
-                        setSelectedSport('Football');
-                        setTempMarker(null);
-                      }}
-                      title="Ajouter un lieu"
-                    >
-                      +
-                    </button>
-                  )}
                 </div>
               </div>
             </MapContainer>
@@ -2388,7 +2456,7 @@ function App() {
                 <div className="events-panel-header">
                   <button 
                     className="calendar-button"
-                    onClick={() => handleTabChange('calendar')}
+                    onClick={handleCalendarClick}
                     title="Voir le calendrier"
                     style={{ width: 100 }}
                   >
@@ -2398,10 +2466,17 @@ function App() {
                   <button
                     className="planning-button"
                     style={{ left: 120, width: 100 }}
-                    onClick={() => handleTabChange('planning')}
+                    onClick={() => setActiveTab('planning')}
                     title="Voir les plannings (bus, tournois, etc.)"
                   >
                     <i className="fas fa-table"></i>Planning
+                  </button>
+                  <button 
+                    className="close-events-button"
+                    onClick={() => setActiveTab('map')}
+                    title="Fermer le panneau"
+                  >
+                    Fermer
                   </button>
                 </div>
                 <div className="event-filters">
@@ -2595,6 +2670,13 @@ function App() {
               <div className="planning-panel">
                 <div className="planning-panel-header">
                   <h3>Plannings</h3>
+                  <button 
+                    className="close-planning-button"
+                    onClick={() => setActiveTab('events')}
+                    title="Retour aux événements"
+                  >
+                    Retour
+                  </button>
                 </div>
                 <div style={{ padding: '2rem', textAlign: 'left', maxWidth: 800, margin: '0 auto' }}>
                   <PlanningFiles />
@@ -2605,16 +2687,24 @@ function App() {
               <div className="chat-panel">
                 <div className="chat-panel-header">
                   <h3>Messages de l'orga</h3>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     {isAdmin && (
                       <button
                         className="add-message-button"
                         onClick={() => setShowAddMessage((v) => !v)}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70, marginTop: '3.8rem' }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70 }}
                       >
                         {showAddMessage ? 'Annuler' : 'Ajouter'}
                       </button>
                     )}
+                    <button 
+                      className="close-chat-button"
+                      onClick={() => setActiveTab('map')}
+                      title="Fermer le panneau"
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70 }}
+                    >
+                      Fermer
+                    </button>
                   </div>
                 </div>
                 {showAddMessage && (
@@ -2982,7 +3072,7 @@ function App() {
       )}
       
       <CalendarPopup 
-        isOpen={activeTab === 'calendar'} 
+        isOpen={isCalendarOpen} 
         onClose={handleCalendarClose}
         venues={venues}
         eventFilter={eventFilter}
@@ -3016,7 +3106,6 @@ function App() {
           </div>
         </div>
       )}
-      <Outlet context={{ closeAllPanels }} />
     </div>
   );
 }

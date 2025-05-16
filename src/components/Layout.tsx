@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation, useOutletContext } from 'react-router-dom';
+import { Outlet, useLocation, useOutletContext, useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import './Layout.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { database, auth, provider } from '../firebase';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
+import Header from './Header';
+import { useAppPanels } from '../AppPanelsContext';
 
 const sportEmojis = {
   'Football': '⚽',
@@ -74,7 +76,7 @@ const Layout: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const { isEditing, setIsEditing, activeTab, setActiveTab } = useAppPanels();
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [newVenueName, setNewVenueName] = useState('');
   const [newVenueDescription, setNewVenueDescription] = useState('');
@@ -98,6 +100,7 @@ const Layout: React.FC = () => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const location = useLocation();
   const { closeAllPanels } = (useOutletContext() || {}) as { closeAllPanels?: () => void };
+  const navigate = useNavigate();
 
   // Gestion de l'authentification
   useEffect(() => {
@@ -132,19 +135,34 @@ const Layout: React.FC = () => {
 
   const handleAdminClick = () => {
     if (!user) {
-      signInWithPopup(auth, provider);
+      signInWithPopup(auth, provider).catch((error) => {
+        console.error("Erreur de connexion:", error);
+        alert("Erreur lors de la connexion. Veuillez réessayer.");
+      });
     } else {
-      signOut(auth);
+      signOut(auth).catch((error) => {
+        console.error("Erreur de déconnexion:", error);
+        alert("Erreur lors de la déconnexion. Veuillez réessayer.");
+      });
     }
   };
 
   const handleEditClick = () => {
     setIsEditing(!isEditing);
-    if (!isEditing) {
+    if (isEditing) {
+      // Si on désactive le mode édition, on réinitialise tous les états liés à l'édition
       setIsAddingPlace(false);
       setEditingVenue({ id: null, venue: null });
       setTempMarker(null);
       setIsPlacingMarker(false);
+      setEditingMatch({ venueId: null, match: null });
+      setNewMatch({
+        date: '',
+        teams: '',
+        description: '',
+        endTime: '',
+        result: ''
+      });
     }
   };
 
@@ -428,127 +446,37 @@ const Layout: React.FC = () => {
     setShowAdmin(false);
   };
 
+  const handleBack = () => {
+    if (showChat) {
+      setShowChat(false);
+      return;
+    }
+    if (activeTab !== 'map') {
+      setActiveTab('map');
+    } else {
+      navigate(-1);
+    }
+  };
+
   return (
     <div className="layout">
-      <div className="app-header">
-        <div style={{ flex: 1 }}></div>
-        <div style={{ paddingTop: '1.5rem', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          {location.pathname === '/map' && isAdmin && (
-            <>
-              <button
-                className={`edit-button ${isEditing ? 'active' : ''}`}
-                onClick={handleEditClick}
-                title={isEditing ? "Quitter le mode édition" : "Mode édition"}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: isEditing ? '#e74c3c' : '#3498db',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '14px',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                }}
-              >
-                {isEditing ? "Terminer" : 'Éditer'}
-              </button>
-              {isEditing && (
-                <button
-                  className="add-place-button"
-                  onClick={() => {
-                    setIsAddingPlace(true);
-                    setEditingVenue({ id: null, venue: null });
-                    setNewVenueName('');
-                    setNewVenueDescription('');
-                    setNewVenueAddress('');
-                    setSelectedSport('Football');
-                  }}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: '#2ecc71',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '14px',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                  }}
-                >
-                  Ajouter
-                </button>
-              )}
-            </>
-          )}
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <button
-              className="chat-button"
-              onClick={() => setShowChat(!showChat)}
-              title="Messages de l'orga"
-              style={{
-                padding: '0px',
-                backgroundColor: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '20px',
-                position: 'relative'
-              }}
-            >
-              💬
-            </button>
-          </div>
-          <button
-            className="emergency-button"
-            onClick={() => setShowEmergency(true)}
-            title="Contacts d'urgence"
-            style={{
-              padding: '0px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '20px',
-              color: '#e74c3c'
-            }}
-          >
-            🚨
-          </button>
-          <button 
-            className="admin-button"
-            onClick={handleAdminClick}
-            title={user ? "Se déconnecter" : "Se connecter"}
-            style={{
-              padding: '0px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '20px'
-            }}
-          >
-            {!user ? "🔒" : (isAdmin ? "🔓" : "🔒")}
-          </button>
-        </div>
-      </div>
+      <Header
+        onChat={() => setShowChat(!showChat)}
+        onEmergency={() => setShowEmergency(true)}
+        onAdmin={handleAdminClick}
+        isAdmin={isAdmin}
+        user={user}
+        showChat={showChat}
+        unreadCount={messages.filter(m => !m.isAdmin).length}
+        onBack={handleBack}
+        onEditModeToggle={handleEditClick}
+        isEditing={isEditing}
+      />
       <main className="app-main">
-        <Outlet context={{ 
-          isEditing, 
-          setIsEditing, 
-          isAddingPlace, 
+        <Outlet context={{
+          isEditing,
+          setIsEditing,
+          isAddingPlace,
           setIsAddingPlace,
           newVenueName,
           setNewVenueName,
@@ -592,19 +520,11 @@ const Layout: React.FC = () => {
                 <button
                   className="add-message-button"
                   onClick={() => setShowAddMessage((v) => !v)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70, marginRight: '5rem', marginTop: '3.8rem' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70, marginTop: '3.8rem' }}
                 >
                   {showAddMessage ? 'Annuler' : 'Ajouter'}
                 </button>
               )}
-              <button 
-                className="close-chat-button"
-                onClick={() => setShowChat(false)}
-                title="Fermer le panneau"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70 }}
-              >
-                Fermer
-              </button>
             </div>
           </div>
           {showAddMessage && (
@@ -705,7 +625,6 @@ const Layout: React.FC = () => {
               <li><strong>Numéro européen :</strong> 112</li>
               <li><strong>Urgence sourds/malentendants :</strong> 114 (SMS)</li>
             </ul>
-            <button className="close-emergency-button" onClick={() => setShowEmergency(false)}>Fermer</button>
           </div>
         </div>
       )}
@@ -715,13 +634,6 @@ const Layout: React.FC = () => {
         <div className="chat-panel">
           <div className="chat-panel-header">
             <h3>Administration</h3>
-            <button 
-              className="close-chat-button"
-              onClick={() => setShowAdmin(false)}
-              title="Fermer le panneau"
-            >
-              Fermer
-            </button>
           </div>
           <div className="chat-container">
             {user ? (

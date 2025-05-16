@@ -17,12 +17,6 @@
   justify-content: center;
   margin: 0 auto;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
 
 @keyframes logo-spin {
   from {
@@ -118,17 +112,9 @@
     border-bottom: 1px solid var(--border-color) !important;
   }
 
-  .leaflet-control-zoom a:hover {
-    background-color: var(--bg-color) !important;
-  }
-
   .retry-button {
     background-color: var(--primary-color);
     color: white;
-  }
-
-  .retry-button:hover {
-    background-color: var(--primary-hover);
   }
 
   .location-error {
@@ -202,10 +188,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.tab-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .tab-button.active {
   background: rgba(255, 255, 255, 0.2);
   font-weight: 500;
@@ -229,11 +211,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.edit-button:hover {
-  background-color: var(--warning-hover);
-  transform: translateY(-1px);
-}
-
 .edit-button.active {
   background-color: var(--danger-color);
 }
@@ -247,11 +224,6 @@ html, body, #root {
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-}
-
-.add-place-button:hover {
-  background-color: var(--success-hover);
-  transform: translateY(-1px);
 }
 
 .edit-form {
@@ -349,11 +321,6 @@ html, body, #root {
   border: none;
 }
 
-.add-button:hover {
-  background-color: #45a049;
-  transform: translateY(-1px);
-}
-
 .add-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
@@ -364,11 +331,6 @@ html, body, #root {
   background-color: transparent;
   color: var(--text-color);
   border: 1px solid var(--border-color);
-}
-
-.cancel-button:hover {
-  background-color: var(--bg-color);
-  border-color: var(--text-color);
 }
 
 /* Ajout de styles pour le bouton "Placer sur la carte" */
@@ -383,11 +345,6 @@ html, body, #root {
   font-size: 1rem;
   transition: all 0.3s ease;
   margin-top: 1rem;
-}
-
-.place-on-map-button:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
 }
 
 .place-on-map-button:active {
@@ -457,20 +414,20 @@ html, body, #root {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  margin-bottom: -1rem;
+  margin-bottom: -2rem;
 }
 
 .map-container {
   position: absolute;
   height: 100%;
   width: 100%;
-  margin-bottom: -1rem;
+  margin-bottom: -2rem;
 }
 
 .leaflet-container {
   height: 100%;
   width: 100%;
-  margin-bottom: -1rem;
+  margin-bottom: -2rem;
 }
 
 /* Style pour l'icône de localisation de l'utilisateur */
@@ -564,16 +521,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.maps-button:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
-}
-
-.maps-button:active {
-  transform: translateY(0);
-  background-color: var(--primary-hover);
-}
-
 /* Styles pour la liste de matchs */
 .matches-list {
   margin-top: 1rem;
@@ -596,10 +543,6 @@ html, body, #root {
 .matches-list::-webkit-scrollbar-thumb {
   background: transparent;
   border-radius: 2px;
-}
-
-.matches-list::-webkit-scrollbar-thumb:hover {
-  background: transparent;
 }
 
 /* Style pour Firefox */
@@ -662,19 +605,9 @@ html, body, #root {
   color: white;
 }
 
-.edit-match-button:hover {
-  background-color: #1976D2;
-  transform: translateY(-1px);
-}
-
 .delete-match-button {
   background-color: #f44336;
   color: white;
-}
-
-.delete-match-button:hover {
-  background-color: #d32f2f;
-  transform: translateY(-1px);
 }
 
 .add-match-button {
@@ -690,11 +623,6 @@ html, body, #root {
   margin-bottom: 0.5rem;
 }
 
-.add-match-button:hover {
-  background-color: var(--success-hover);
-  transform: translateY(-1px);
-}
-
 .add-match-button:active {
   transform: translateY(0);
   background-color: var(--success-color);
@@ -707,10 +635,6 @@ html, body, #root {
 
   .add-match-button {
     background-color: #4CAF50;
-  }
-
-  .add-match-button:hover {
-    background-color: #388E3C;
   }
   
   .add-match-button:active {
@@ -782,19 +706,9 @@ html, body, #root {
   color: white;
 }
 
-.save-button:hover {
-  background-color: var(--success-hover);
-  transform: translateY(-1px);
-}
-
 .cancel-button {
   background-color: var(--danger-color);
   color: white;
-}
-
-.cancel-button:hover {
-  background-color: var(--danger-hover);
-  transform: translateY(-1px);
 }
 
 .error-message {
@@ -836,11 +750,6 @@ html, body, #root {
   box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-.retry-button:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
-}
-
 .location-error {
   position: fixed;
   bottom: 20px;
@@ -875,11 +784,6 @@ html, body, #root {
   transition: background 0.2s, color 0.2s;
 }
 
-.retry-button:hover {
-  background: var(--danger-color);
-  color: white;
-}
-
 .retry-icon {
   width: 24px;
   height: 24px;
@@ -888,10 +792,6 @@ html, body, #root {
   background-repeat: no-repeat;
   cursor: pointer;
   transition: transform 0.3s ease;
-}
-
-.retry-icon:hover {
-  transform: rotate(180deg);
 }
 
 .retry-container {
@@ -908,11 +808,6 @@ html, body, #root {
   font-size: 0.9rem;
   margin-top: 0.5rem;
   box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-.retry-container:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
 }
 
 .match-actions {
@@ -932,19 +827,10 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.delete-match-button:hover {
-  background-color: var(--danger-hover);
-  transform: translateY(-1px);
-}
-
 @media (prefers-color-scheme: dark) {
   .delete-match-button {
     background-color: var(--danger-color);
     color: white;
-  }
-
-  .delete-match-button:hover {
-    background-color: var(--danger-hover);
   }
 }
 
@@ -958,10 +844,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.map-style-selector:hover {
-  border-color: var(--primary-color);
-}
-
 .map-style-selector:focus {
   outline: none;
   border-color: var(--primary-color);
@@ -973,10 +855,6 @@ html, body, #root {
     background-color: var(--bg-secondary);
     color: var(--text-color);
     border-color: var(--border-color);
-  }
-
-  .map-style-selector:hover {
-    border-color: var(--primary-color);
   }
 }
 
@@ -1005,11 +883,6 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.emoji-button:hover {
-  background: var(--bg-secondary);
-  transform: scale(1.1);
 }
 
 .emoji-button.selected {
@@ -1082,11 +955,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.copy-button:hover {
-  background-color: #5E35B1;
-  transform: translateY(-1px);
-}
-
 .copy-button:active {
   transform: translateY(0);
   background-color: #512DA8;
@@ -1097,10 +965,6 @@ html, body, #root {
     background-color: #9575CD;
   }
 
-  .copy-button:hover {
-    background-color: #7E57C2;
-  }
-  
   .copy-button:active {
     background-color: #673AB7;
   }
@@ -1118,11 +982,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.popup-buttons .edit-button:hover {
-  background-color: #F57C00; /* Orange foncé */
-  transform: translateY(-1px);
-}
-
 .popup-buttons .edit-button:active {
   transform: translateY(0);
   background-color: #EF6C00;
@@ -1131,10 +990,6 @@ html, body, #root {
 @media (prefers-color-scheme: dark) {
   .popup-buttons .edit-button {
     background-color: #FFB74D; /* Orange clair */
-  }
-
-  .popup-buttons .edit-button:hover {
-    background-color: #FFA726;
   }
   
   .popup-buttons .edit-button:active {
@@ -1154,10 +1009,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.popup-buttons .delete-button:hover {
-  background-color: #C62828;
-  transform: translateY(-1px);
-}
 
 .popup-buttons .delete-button:active {
   transform: translateY(0);
@@ -1167,10 +1018,6 @@ html, body, #root {
 @media (prefers-color-scheme: dark) {
   .popup-buttons .delete-button {
     background-color: #EF5350;
-  }
-
-  .popup-buttons .delete-button:hover {
-    background-color: #E53935;
   }
   
   .popup-buttons .delete-button:active {
@@ -1232,11 +1079,6 @@ html, body, #root {
   transition: all 0.3s ease;
   cursor: pointer;
   margin-bottom: 0.5rem;
-}
-
-.event-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--shadow-color);
 }
 
 .event-item.passed {
@@ -1350,11 +1192,6 @@ html, body, #root {
   gap: 0.5rem;
 }
 
-.events-toggle-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px var(--shadow-color);
-}
-
 .events-toggle-button.active {
   background-color: var(--danger-color);
   color: white;
@@ -1428,19 +1265,9 @@ html, body, #root {
   color: white;
 }
 
-.filter-toggle-button:hover {
-  background-color: var(--warning-hover);
-  transform: translateY(-1px);
-}
-
 .filter-reset-button {
   background-color: var(--primary-color);
   color: white;
-}
-
-.filter-reset-button:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
 }
 
 .filter-toggle-button:active,
@@ -1453,16 +1280,8 @@ html, body, #root {
     background-color: var(--warning-color);
   }
   
-  .filter-toggle-button:hover {
-    background-color: var(--warning-hover);
-  }
-
   .filter-reset-button {
     background-color: var(--primary-color);
-  }
-  
-  .filter-reset-button:hover {
-    background-color: var(--primary-hover);
   }
 }
 
@@ -1488,10 +1307,6 @@ html, body, #root {
   border-color: var(--primary-color);
 }
 
-.gender-filter-button:hover {
-  border-color: var(--primary-color);
-}
-
 @media (prefers-color-scheme: dark) {
   .gender-filter-button {
     background-color: var(--bg-secondary);
@@ -1502,10 +1317,6 @@ html, body, #root {
   .gender-filter-button.active {
     background-color: var(--primary-color);
     color: white;
-    border-color: var(--primary-color);
-  }
-  
-  .gender-filter-button:hover {
     border-color: var(--primary-color);
   }
 }
@@ -1532,11 +1343,6 @@ html, body, #root {
   z-index: 995;
 }
 
-.close-events-button:hover {
-  background-color: var(--bg-secondary);
-  color: var(--primary-color);
-}
-
 .close-events-button svg {
   display: none;
 }
@@ -1560,10 +1366,6 @@ html, body, #root {
   background-size: 12px;
 }
 
-.filter-select:hover {
-  border-color: var(--primary-color);
-}
-
 .filter-select:focus {
   outline: none;
   border-color: var(--primary-color);
@@ -1577,11 +1379,7 @@ html, body, #root {
     color: var(--text-color);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   }
-  
-  .filter-select:hover {
-    border-color: var(--primary-color);
-  }
-  
+
   .filter-select:focus {
     border-color: var(--primary-color);
   }
@@ -1637,11 +1435,6 @@ html, body, #root {
   box-shadow: 0 2px 6px var(--shadow-color);
   transition: all 0.3s ease;
   cursor: pointer;
-}
-
-.event-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--shadow-color);
 }
 
 .event-item.passed {
@@ -1737,13 +1530,6 @@ html, body, #root {
   font-weight: 500 !important;
 }
 
-.leaflet-control-zoom a:hover {
-  background-color: var(--primary-color) !important;
-  color: white !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 2px 4px var(--shadow-color) !important;
-}
-
 .leaflet-control-zoom-in {
   margin-bottom: 6px !important;
 }
@@ -1828,21 +1614,6 @@ html, body, #root {
 
 /* Suppression des styles pour les boutons de lien qui ne sont plus utilisés */
 
-.fullscreen-button {
-  padding: 8px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.3s ease;
-}
-
-.fullscreen-button:hover {
-  opacity: 0.8;
-}
-
 .admin-button {
   padding: 8px;
   background-color: transparent;
@@ -1853,10 +1624,6 @@ html, body, #root {
   justify-content: center;
   font-size: 20px;
   transition: opacity 0.3s ease;
-}
-
-.admin-button:hover {
-  opacity: 0.8;
 }
 
 .login-button {
@@ -1870,11 +1637,6 @@ html, body, #root {
   transition: all 0.3s ease;
 }
 
-.login-button:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
-}
-
 .logout-button {
   padding: 8px 16px;
   background-color: var(--danger-color);
@@ -1885,11 +1647,6 @@ html, body, #root {
   font-size: 14px;
   margin-left: 8px;
   transition: all 0.3s ease;
-}
-
-.logout-button:hover {
-  background-color: var(--danger-hover);
-  transform: translateY(-1px);
 }
 
 .user-info {
@@ -1957,17 +1714,9 @@ html, body, #root {
   z-index: 995;
 }
 
-.calendar-button:hover {
-  background-color: var(--success-hover);
-}
-
 @media (prefers-color-scheme: dark) {
   .calendar-button {
     background-color: var(--success-color);
-  }
-  
-  .calendar-button:hover {
-    background-color: var(--success-hover);
   }
 }
 
@@ -1992,17 +1741,9 @@ html, body, #root {
   z-index: 995;
 }
 
-.planning-button:hover {
-  background-color: var(--primary-hover);
-}
-
 @media (prefers-color-scheme: dark) {
   .planning-button {
     background-color: var(--primary-color);
-  }
-  
-  .planning-button:hover {
-    background-color: var(--primary-hover);
   }
 }
 
@@ -2159,11 +1900,6 @@ html, body, #root {
   align-items: center;
 }
 
-.add-message-button:hover {
-  background-color: var(--primary-hover);
-  color: white;
-}
-
 .emergency-button {
   background: transparent;
   border: none;
@@ -2173,10 +1909,6 @@ html, body, #root {
   display: flex;
   align-items: center;
   transition: color 0.2s;
-}
-
-.emergency-button:hover {
-  color: #ff5252;
 }
 
 .emergency-popup {
@@ -2214,10 +1946,6 @@ html, body, #root {
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
-}
-
-.close-emergency-button:hover {
-  background: var(--danger-hover);
 }
 
 .planning-panel {
@@ -2272,11 +2000,6 @@ html, body, #root {
   box-shadow: 0 2px 4px var(--shadow-color);
   font-size: 14px;
   z-index: 995;
-}
-
-.close-planning-button:hover {
-  background-color: var(--bg-secondary);
-  color: var(--primary-color);
 }
 
 .close-planning-button svg {
@@ -2357,19 +2080,10 @@ html, body, #root {
   color: #4CAF50;
 }
 
-.download-button:hover {
-  background-color: rgba(76, 175, 80, 0.1);
-  transform: translateY(-2px);
-}
-
 .delete-button {
   color: #f44336;
 }
 
-.delete-button:hover {
-  background-color: rgba(244, 67, 54, 0.1);
-  transform: translateY(-2px);
-}
 
 /* Styles pour le formulaire d'ajout de fichiers */
 .admin-controls {
@@ -2389,10 +2103,6 @@ html, body, #root {
   cursor: pointer;
   font-size: 0.9em;
   transition: background-color 0.2s;
-}
-
-.add-file-button:hover {
-  background-color: var(--success-hover);
 }
 
 .add-file-form {
@@ -2443,10 +2153,6 @@ html, body, #root {
   transition: background-color 0.2s;
 }
 
-.submit-button:hover {
-  background-color: var(--primary-color-dark);
-}
-
 .filters {
   margin: 20px 0;
   padding: 15px;
@@ -2474,10 +2180,6 @@ html, body, #root {
   color: #495057;
   cursor: pointer;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.filter-select:hover {
-  border-color: #80bdff;
 }
 
 .filter-select:focus {
@@ -2573,4 +2275,45 @@ html, body, #root {
 .home-page .chat-panel-header h3,
 .info-page .chat-panel-header h3 {
   margin-top: 0;
+}
+
+.leaflet-control-add-venue {
+  margin-top: 10px;
+}
+
+.leaflet-control-add-venue a {
+  background-color: var(--primary-color);
+  color: white;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-bottom: 1px solid #ccc;
+}
+
+.leaflet-control-add-venue a i {
+  font-size: 10px;
+}
+
+.add-venue-button {
+  position: fixed;
+  bottom: 60px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 2000;
+  transition: all 0.3s ease;
+  pointer-events: auto;
 }

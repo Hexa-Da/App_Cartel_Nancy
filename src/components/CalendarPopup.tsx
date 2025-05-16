@@ -426,13 +426,6 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
       <div className="calendar-popup" onClick={e => e.stopPropagation()}>
         <div className="calendar-popup-header">
           <h3>Calendrier</h3>
-          <button 
-            className="close-button"
-            onClick={onClose}
-            title="Retour aux événements"
-          >
-            Retour
-          </button>
         </div>
         <div className="calendar-filter-buttons-row" style={{ display: 'flex', gap: '0.5rem', margin: '0.5rem 0.5rem 0rem 0.5rem' }}>
           <button 
