@@ -9,7 +9,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: 70px;
   background-color: var(--bg-secondary);
   display: flex;
   justify-content: space-between;
@@ -96,25 +96,68 @@
   padding: 0;
   margin: 0;
 }
-
-.emergency-list li {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+.emergency-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.emergency-list li:last-child {
-  border-bottom: none;
+.emergency-popup-content {
+  background-color: var(--bg-color);
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 90%;
+  width: 400px;
+  position: relative;
 }
 
-.emergency-list strong {
-  color: #e74c3c;
-  margin-right: 8px;
+.emergency-popup-header {
+  position: relative;
+  margin-bottom: 1rem;
+  padding-right: 2rem;
+}
+
+.emergency-popup-header h3 {
+  margin-top: 0.5rem;
+  color: var(--text-color);
+}
+
+.emergency-popup .close-button {
+  transition: color 0.2s ease;
+}
+
+.emergency-popup .close-button:hover {
+  color: var(--accent-color);
+}
+
+.emergency-popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.emergency-popup li {
+  margin: 0.75rem 0;
+  color: var(--text-color);
+}
+
+.emergency-popup li strong {
+  color: var(--accent-color);
+  margin-right: 0.5rem;
 }
 
 /* Styles pour le chat sur les pages Home et Info */
 .home-info-chat {
   position: fixed;
-  top: 4rem;
+  top: 4.5rem;
   right: 1rem;
   height: calc(100% - 4rem - 60px); /* 4rem pour le header, 60px pour la nav */
   background-color: var(--bg-color);

@@ -323,6 +323,14 @@ function App() {
       const data = snapshot.val() || {};
       // Transforme l'objet en tableau [{id, ...}]
       const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
+      
+      // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
+      if (!localStorage.getItem('lastSeenChatTimestamp')) {
+        const now = Date.now();
+        localStorage.setItem('lastSeenChatTimestamp', String(now));
+      }
+      
+      console.log('App - Setting messages:', messagesArray);
       setMessages(messagesArray);
     });
     return () => unsubscribe();
@@ -2255,6 +2263,13 @@ function App() {
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
+  
+  console.log('App - Debug unreadCount:', {
+    messages,
+    lastSeenChatTimestamp,
+    unreadCount,
+    messagesWithTimestamps: messages.map(m => ({ id: m.id, timestamp: m.timestamp }))
+  });
 
   const handleOpenChat = () => {
     // Si on est déjà sur le chat, on retourne à l'onglet précédent
@@ -2266,7 +2281,9 @@ function App() {
       setActiveTab('chat');
       if (messages.length > 0) {
         const lastMsg = messages[messages.length - 1];
-        localStorage.setItem('lastSeenChatTimestamp', String(lastMsg.timestamp));
+        const newTimestamp = lastMsg.timestamp;
+        localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
+        console.log('App - Updated lastSeenChatTimestamp:', newTimestamp);
       }
     }
   };
@@ -2281,7 +2298,7 @@ function App() {
         isAdmin={isAdmin}
         user={user}
         showChat={activeTab === 'chat'}
-        unreadCount={messages.filter(m => !m.isAdmin).length}
+        unreadCount={unreadCount}
         onBack={handleBack}
         onEditModeToggle={() => {
           setIsEditing(!isEditing);
@@ -3004,16 +3021,32 @@ function App() {
       {showEmergency && (
         <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
           <div className="emergency-popup-content" onClick={e => e.stopPropagation()}>
-            <h3>Contacts d'urgence</h3>
-            <ul style={{ textAlign: 'left', margin: '1rem 0' }}>
+            <div className="emergency-popup-header">
+              <h3>Contacts d'urgence</h3>
+            </div>
+            <ul style={{ textAlign: 'left', margin: '1.5rem 1rem' }}>
               <li><strong>SAMU :</strong> 15</li>
               <li><strong>Police :</strong> 17</li>
               <li><strong>Pompier :</strong> 18</li>
               <li><strong>Numéro européen :</strong> 112</li>
               <li><strong>Urgence sourds/malentendants :</strong> 114 (SMS)</li>
             </ul>
-            <button className="close-emergency-button" onClick={() => setShowEmergency(false)}>Fermer</button>
-          </div>
+            <button 
+                className="close-button" 
+                onClick={() => setShowEmergency(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  position: 'absolute',
+                  right: '0rem',
+                  top: '1rem',
+                  color: 'var(--text-color)'
+                }}
+              >
+                ×
+              </button>          </div>
         </div>
       )}
       <Outlet context={{ closeAllPanels }} />

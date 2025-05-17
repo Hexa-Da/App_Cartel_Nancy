@@ -1090,7 +1090,6 @@ html, body, #root {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0.5rem;
 }
 
 .event-type-badge {
@@ -1159,7 +1158,7 @@ html, body, #root {
   }
 
   .events-toggle-button {
-    top: 10px;
+    top: 20px;
   }
   
   .event-actions {
@@ -1173,10 +1172,10 @@ html, body, #root {
 
 /* Style pour le bouton flottant d'événements */
 .events-toggle-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 995;
+  position: fixed !important;
+  top: 80px !important;
+  left: 10px !important;
+  z-index: 1000;
   padding: 0.5rem 1rem;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -1214,7 +1213,7 @@ html, body, #root {
 
 .events-panel-header {
   padding: 1.4rem;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   background-color: var(--bg-color);
   position: sticky;
   z-index: 2;
@@ -1505,6 +1504,10 @@ html, body, #root {
 
 /* Styles personnalisés pour les contrôles de zoom */
 .leaflet-control-zoom {
+  position: fixed !important;
+  top: 65px !important;
+  right: 0px !important;
+  z-index: 1000;
   border: none !important;
   box-shadow: 0 2px 8px var(--shadow-color) !important;
   margin: 15px !important;
@@ -1851,6 +1854,7 @@ html, body, #root {
   padding: 0.7rem;
   background-color: var(--bg-color);
   position: sticky;
+  margin-top: 10px;
   z-index: 2;
   display: flex;
   align-items: center;
@@ -1865,26 +1869,6 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   position: flex;
-}
-
-.close-chat-button {
-  position: absolute;
-  right: 10px;
-  bottom: 14px;
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 80px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px var(--shadow-color);
-  font-size: 14px;
-  z-index: 1000;
 }
 
 .add-message-button {
@@ -1915,37 +1899,58 @@ html, body, #root {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.4);
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
+  align-items: center;
+  z-index: 1000;
 }
 
 .emergency-popup-content {
-  background: var(--bg-color);
-  color: var(--text-color);
-  border-radius: 10px;
-  box-shadow: 0 4px 16px var(--shadow-color);
-  padding: 2rem 2.5rem;
-  min-width: 280px;
-  max-width: 90vw;
-  text-align: center;
+  background-color: var(--bg-color);
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 90%;
+  width: 400px;
   position: relative;
 }
 
-.close-emergency-button {
-  margin-top: 1rem;
-  background: var(--danger-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
+.emergency-popup-header {
+  position: relative;
+  margin-bottom: 1rem;
+  padding-right: 2rem;
+}
+
+.emergency-popup-header h3 {
+  margin-top: 0.5rem;
+  color: var(--text-color);
+}
+
+.emergency-popup .close-button {
+  transition: color 0.2s ease;
+}
+
+.emergency-popup .close-button:hover {
+  color: var(--accent-color);
+}
+
+.emergency-popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.emergency-popup li {
+  margin: 0.75rem 0;
+  color: var(--text-color);
+}
+
+.emergency-popup li strong {
+  color: var(--accent-color);
+  margin-right: 0.5rem;
 }
 
 .planning-panel {
@@ -1963,6 +1968,7 @@ html, body, #root {
 
 .planning-panel-header {
   padding: 0.5rem;
+  margin-top: 0.5rem;
   background-color: var(--bg-color);
   position: sticky;
   z-index: 2;

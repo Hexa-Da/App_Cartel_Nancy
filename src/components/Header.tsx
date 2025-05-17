@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { signInWithGoogle } from '../firebase';
 
 interface HeaderProps {
   onChat?: () => void;
@@ -12,6 +13,7 @@ interface HeaderProps {
   onBack?: () => void;
   onEditModeToggle?: () => void;
   isEditing?: boolean;
+  backIcon?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -23,24 +25,34 @@ const Header: React.FC<HeaderProps> = ({
   unreadCount,
   onBack,
   onEditModeToggle,
-  isEditing
+  isEditing,
+  backIcon = "←"
 }) => {
   const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Erreur de connexion:', error);
+    }
+  };
+
   return (
     <div className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1rem'}}>
       {/* Bouton retour complètement à gauche */}
       <button
         className="header-back-button"
         onClick={onBack || (() => navigate(-1))}
-        style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', marginRight: 0, marginLeft: -30, marginTop: 10 }}
+        style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', marginRight: 0, marginLeft: -30, marginTop: 25 }}
         title="Retour"
       >
-        ←
+        {backIcon}
       </button>
       {/* Espace central (titre ou vide) */}
       <div style={{ flex: 1 }}></div>
       {/* Boutons à droite : admin (collé à droite), puis paramètres, chat, urgence (ordre demandé, gap 10px) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 15, marginTop: 10 }}>
         {isAdmin && onEditModeToggle && (
           <button
             className={`edit-button${isEditing ? ' active' : ''}`}

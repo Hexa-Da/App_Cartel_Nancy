@@ -127,11 +127,31 @@ const Layout: React.FC = () => {
     const messagesRef = ref(database, 'chatMessages');
     const unsubscribe = onValue(messagesRef, (snapshot) => {
       const data = snapshot.val() || {};
+      // Transforme l'objet en tableau [{id, ...}]
       const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
+      
+      // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
+      if (!localStorage.getItem('lastSeenChatTimestamp')) {
+        const now = Date.now();
+        localStorage.setItem('lastSeenChatTimestamp', String(now));
+      }
+      
+      console.log('Layout - Setting messages:', messagesArray);
       setMessages(messagesArray);
     });
     return () => unsubscribe();
   }, []);
+
+  // Calcul du nombre de messages non lus
+  const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
+  const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
+  
+  console.log('Layout - Debug unreadCount:', {
+    messages,
+    lastSeenChatTimestamp,
+    unreadCount,
+    messagesWithTimestamps: messages.map(m => ({ id: m.id, timestamp: m.timestamp }))
+  });
 
   const handleAdminClick = () => {
     if (!user) {
@@ -451,6 +471,14 @@ const Layout: React.FC = () => {
       setShowChat(false);
       return;
     }
+    if (showEmergency) {
+      setShowEmergency(false);
+      return;
+    }
+    if (showAdmin) {
+      setShowAdmin(false);
+      return;
+    }
     if (activeTab !== 'map') {
       setActiveTab('map');
     } else {
@@ -458,19 +486,43 @@ const Layout: React.FC = () => {
     }
   };
 
+  // Mise à jour du timestamp de dernière lecture lors de l'ouverture du chat
+  const handleChatToggle = () => {
+    setShowChat(!showChat);
+    if (!showChat && messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
+      const newTimestamp = lastMsg.timestamp;
+      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
+      console.log('Layout - Updated lastSeenChatTimestamp:', newTimestamp);
+    }
+  };
+
+  // Ajout d'un écouteur pour le bouton retour du téléphone
+  useEffect(() => {
+    const handlePopState = () => {
+      handleBack();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showChat, showEmergency, showAdmin, activeTab]);
+
   return (
     <div className="layout">
       <Header
-        onChat={() => setShowChat(!showChat)}
+        onChat={handleChatToggle}
         onEmergency={() => setShowEmergency(true)}
         onAdmin={handleAdminClick}
         isAdmin={isAdmin}
         user={user}
         showChat={showChat}
-        unreadCount={messages.filter(m => !m.isAdmin).length}
+        unreadCount={unreadCount}
         onBack={handleBack}
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
+        backIcon="←"
       />
       <main className="app-main">
         <Outlet context={{
@@ -617,8 +669,27 @@ const Layout: React.FC = () => {
       {showEmergency && (
         <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
           <div className="emergency-popup-content" onClick={e => e.stopPropagation()}>
-            <h3>Contacts d'urgence</h3>
-            <ul style={{ textAlign: 'left', margin: '1rem 0' }}>
+            <div className="emergency-popup-header">
+              <h3>Contacts d'urgence</h3>
+              <button 
+                className="close-button" 
+                onClick={() => setShowEmergency(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  padding: '0.5rem',
+                  position: 'absolute',
+                  right: '-0.5rem',
+                  top: '0rem',
+                  color: 'var(--text-color)'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <ul style={{ textAlign: 'left', margin: '1.5rem 1rem' }}>
               <li><strong>SAMU :</strong> 15</li>
               <li><strong>Police :</strong> 17</li>
               <li><strong>Pompier :</strong> 18</li>

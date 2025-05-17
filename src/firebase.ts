@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
@@ -13,6 +13,34 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const provider = new GoogleAuthProvider();
-export const database = getDatabase(app);
+const auth = getAuth(app);
+const database = getDatabase(app);
+const provider = new GoogleAuthProvider();
+
+// Configuration du provider pour l'authentification mobile
+provider.setCustomParameters({
+  prompt: 'select_account',
+  // Autoriser l'authentification sur mobile
+  authType: 'signInWithRedirect'
+});
+
+// Fonction pour gérer l'authentification de manière adaptative
+export const signInWithGoogle = async () => {
+  try {
+    // Détecter si l'appareil est mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Utiliser signInWithRedirect pour les appareils mobiles
+      await signInWithRedirect(auth, provider);
+    } else {
+      // Utiliser signInWithPopup pour les ordinateurs de bureau
+      await signInWithPopup(auth, provider);
+    }
+  } catch (error) {
+    console.error('Erreur d\'authentification:', error);
+    throw error;
+  }
+};
+
+export { auth, database, provider };
