@@ -4,11 +4,11 @@ import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { auth, database, provider } from './firebase';
+import { auth, database, provider, loginWithGoogle, handleGoogleRedirect } from './firebase';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
-import { onAuthStateChanged, signInWithPopup} from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, getRedirectResult } from 'firebase/auth';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import PlanningFiles from './components/PlanningFiles';
@@ -103,6 +103,18 @@ function LocationMarker() {
   const lastErrorTime = useRef<number>(0);
 
   useEffect(() => {
+    const handleGoogleRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          console.log('Résultat de la redirection:', result);
+          // Traitement du résultat si nécessaire
+        }
+      } catch (error) {
+        console.error('Erreur lors de la redirection Google:', error);
+      }
+    };
+    handleGoogleRedirect();
     if (map) {
       if (!navigator.geolocation) {
         setError("La géolocalisation n'est pas supportée par votre navigateur");
@@ -272,6 +284,13 @@ interface OutletContext {
   finishEditingMatch: () => void;
 }
 
+// Déclaration du type pour window.handleGoogleRedirect
+declare global {
+  interface Window {
+    handleGoogleRedirect?: () => void;
+  }
+}
+
 function App() {
   const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
 
@@ -296,19 +315,35 @@ function App() {
     }
   }, [location.pathname]);
   
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Gestion de la redirection Google au chargement
+  useEffect(() => {
+    console.log('useEffect handleGoogleRedirect appelé');
+    handleGoogleRedirect().then(user => {
+      if (user) {
+        console.log('Redirection Google, user:', user);
+        setUser(user);
+      }
+    }).catch(error => {
+      console.error('Erreur lors de la redirection Google:', error);
+    });
+  }, []);
+
+  // Listener d'authentification Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      console.log('onAuthStateChanged, user:', user);
       if (user) {
-        setUser(user);
-        
-        // Vérifier si l'utilisateur est admin
         const adminsRef = ref(database, 'admins');
         onValue(adminsRef, (snapshot) => {
           const admins = snapshot.val();
+          console.log('admins:', admins, 'user.uid:', user.uid);
           setIsAdmin(admins && admins[user.uid]);
         });
       } else {
-        setUser(null);
         setIsAdmin(false);
       }
       setIsLoading(false);
@@ -2010,43 +2045,6 @@ function App() {
     triggerMarkerUpdate();
   };
 
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    console.log('Démarrage de l\'écouteur d\'authentification...');
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        
-        // Vérifier si l'utilisateur est admin
-        const adminsRef = ref(database, 'admins');
-        onValue(adminsRef, (snapshot) => {
-          const admins = snapshot.val();
-          setIsAdmin(admins && admins[user.uid]);
-        });
-      } else {
-        setUser(null);
-        setIsAdmin(false);
-      }
-      setIsLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const signInWithGoogle = async () => {
-    try {
-      console.log('Tentative de connexion...');
-      console.log('Provider configuré:', provider);
-      const result = await signInWithPopup(auth, provider);
-      console.log('Résultat de la connexion:', result);
-      console.log('UID de l\'utilisateur:', result.user.uid);
-      console.log('Email de l\'utilisateur:', result.user.email);
-    } catch (error) {
-      console.error('Erreur détaillée de connexion:', error);
-    }
-  };
-
   const handleAdminClick = async () => {
     if (user) {
       // Si l'utilisateur est connecté, on le déconnecte
@@ -2059,7 +2057,11 @@ function App() {
       }
     } else {
       // Sinon on tente de se connecter
-      signInWithGoogle();
+      try {
+        await loginWithGoogle();
+      } catch (error) {
+        console.error('Erreur lors de la connexion:', error);
+      }
     }
   };
 

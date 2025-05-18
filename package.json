@@ -12,7 +12,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
-    "deploy-android": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk"
+    "deploy-android": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk",
+    "android-full-deploy": "npm run build && npx cap sync android && cd android && ./gradlew clean && ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk && cd .."
   },
   "dependencies": {
     "@capacitor/android": "^7.2.0",
@@ -23,6 +24,7 @@
     "@capacitor/ios": "^7.2.0",
     "@capacitor/splash-screen": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1",
+    "@codetrix-studio/capacitor-google-auth": "^3.4.0-rc.4",
     "@expo/vector-icons": "^14.1.0",
     "@firebase/auth": "^1.10.0",
     "@react-native-async-storage/async-storage": "^2.1.2",

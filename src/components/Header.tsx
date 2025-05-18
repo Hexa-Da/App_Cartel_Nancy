@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithGoogle } from '../firebase';
+import { loginWithGoogle } from '../firebase';
 
 interface HeaderProps {
   onChat?: () => void;
@@ -13,7 +13,6 @@ interface HeaderProps {
   onBack?: () => void;
   onEditModeToggle?: () => void;
   isEditing?: boolean;
-  backIcon?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -25,14 +24,13 @@ const Header: React.FC<HeaderProps> = ({
   unreadCount,
   onBack,
   onEditModeToggle,
-  isEditing,
-  backIcon = "←"
+  isEditing
 }) => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      await signInWithGoogle();
+      await loginWithGoogle();
     } catch (error) {
       console.error('Erreur de connexion:', error);
     }
@@ -44,10 +42,10 @@ const Header: React.FC<HeaderProps> = ({
       <button
         className="header-back-button"
         onClick={onBack || (() => navigate(-1))}
-        style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', marginRight: 0, marginLeft: -30, marginTop: 25 }}
+        style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', marginRight: 0, marginLeft: -30, marginTop: 20 }}
         title="Retour"
       >
-        {backIcon}
+        ⬅️
       </button>
       {/* Espace central (titre ou vide) */}
       <div style={{ flex: 1 }}></div>

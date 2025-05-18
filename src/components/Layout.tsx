@@ -3,8 +3,8 @@ import { Outlet, useLocation, useOutletContext, useNavigate } from 'react-router
 import BottomNav from './BottomNav';
 import './Layout.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { database, auth, provider } from '../firebase';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { database, auth, provider, loginWithGoogle } from '../firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import { useAppPanels } from '../AppPanelsContext';
@@ -153,17 +153,21 @@ const Layout: React.FC = () => {
     messagesWithTimestamps: messages.map(m => ({ id: m.id, timestamp: m.timestamp }))
   });
 
-  const handleAdminClick = () => {
+  const handleAdminClick = async () => {
     if (!user) {
-      signInWithPopup(auth, provider).catch((error) => {
+      try {
+        await loginWithGoogle();
+      } catch (error) {
         console.error("Erreur de connexion:", error);
         alert("Erreur lors de la connexion. Veuillez réessayer.");
-      });
+      }
     } else {
-      signOut(auth).catch((error) => {
+      try {
+        await signOut(auth);
+      } catch (error) {
         console.error("Erreur de déconnexion:", error);
         alert("Erreur lors de la déconnexion. Veuillez réessayer.");
-      });
+      }
     }
   };
 
@@ -471,14 +475,6 @@ const Layout: React.FC = () => {
       setShowChat(false);
       return;
     }
-    if (showEmergency) {
-      setShowEmergency(false);
-      return;
-    }
-    if (showAdmin) {
-      setShowAdmin(false);
-      return;
-    }
     if (activeTab !== 'map') {
       setActiveTab('map');
     } else {
@@ -497,18 +493,6 @@ const Layout: React.FC = () => {
     }
   };
 
-  // Ajout d'un écouteur pour le bouton retour du téléphone
-  useEffect(() => {
-    const handlePopState = () => {
-      handleBack();
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [showChat, showEmergency, showAdmin, activeTab]);
-
   return (
     <div className="layout">
       <Header
@@ -522,7 +506,6 @@ const Layout: React.FC = () => {
         onBack={handleBack}
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
-        backIcon="←"
       />
       <main className="app-main">
         <Outlet context={{

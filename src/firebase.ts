@@ -1,6 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInWithPopup, signInWithCredential } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { Capacitor } from '@capacitor/core';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBFB_-a5O4KD1V0MSa4HYpsEMekpBTL044",
@@ -17,30 +19,45 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-// Configuration du provider pour l'authentification mobile
 provider.setCustomParameters({
-  prompt: 'select_account',
-  // Autoriser l'authentification sur mobile
-  authType: 'signInWithRedirect'
+  prompt: 'select_account'
 });
 
-// Fonction pour gérer l'authentification de manière adaptative
-export const signInWithGoogle = async () => {
-  try {
-    // Détecter si l'appareil est mobile
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // Utiliser signInWithRedirect pour les appareils mobiles
-      await signInWithRedirect(auth, provider);
-    } else {
-      // Utiliser signInWithPopup pour les ordinateurs de bureau
-      await signInWithPopup(auth, provider);
+export async function loginWithGoogle() {
+  if (Capacitor.isNativePlatform()) {
+    // Authentification native (Android/iOS)
+    try {
+      const googleUser = await GoogleAuth.signIn();
+      const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+      return signInWithCredential(auth, credential);
+    } catch (error) {
+      console.error('Erreur Google Auth native:', error);
+      throw error;
     }
+  } else {
+    // Authentification web (popup)
+    try {
+      const result = await signInWithPopup(auth, provider);
+      return result;
+    } catch (error) {
+      console.error('Erreur Google Auth web:', error);
+      throw error;
+    }
+  }
+}
+
+export async function handleGoogleRedirect() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      console.log('Connecté !', result.user);
+      return result.user;
+    }
+    return null;
   } catch (error) {
-    console.error('Erreur d\'authentification:', error);
+    console.error('Erreur Google OAuth:', error);
     throw error;
   }
-};
+}
 
 export { auth, database, provider };
