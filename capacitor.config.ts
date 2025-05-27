@@ -13,12 +13,15 @@ const config: CapacitorConfig = {
   plugins: {
     GoogleAuth: {
       scopes: ['profile', 'email'],
-      serverClientId: '402641775282-hfa9vsp2j0u5c9e60ngal3b3g9imd7g6.apps.googleusercontent.com',
-      androidClientId: '402641775282-hfa9vsp2j0u5c9e60ngal3b3g9imd7g6.apps.googleusercontent.com',
+      serverClientId: '402641775282-4gscsht88aek9v7jsfvga58293mi5at1.apps.googleusercontent.com',
+      androidClientId: '402641775282-4gscsht88aek9v7jsfvga58293mi5at1.apps.googleusercontent.com',
       webClientId: '402641775282-flmj306kcpqct1hmrific149uhthiqcq.apps.googleusercontent.com'
     },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert']
+    },
+    Auth: {
+      // Configuration spécifique au plugin d'authentification si nécessaire
     }
   }
 };

@@ -136,7 +136,6 @@ const Layout: React.FC = () => {
         localStorage.setItem('lastSeenChatTimestamp', String(now));
       }
       
-      console.log('Layout - Setting messages:', messagesArray);
       setMessages(messagesArray);
     });
     return () => unsubscribe();
@@ -145,13 +144,6 @@ const Layout: React.FC = () => {
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
-  
-  console.log('Layout - Debug unreadCount:', {
-    messages,
-    lastSeenChatTimestamp,
-    unreadCount,
-    messagesWithTimestamps: messages.map(m => ({ id: m.id, timestamp: m.timestamp }))
-  });
 
   const handleAdminClick = async () => {
     if (!user) {
@@ -508,10 +500,10 @@ const Layout: React.FC = () => {
         isEditing={isEditing}
       />
       <main className="app-main">
-        <Outlet context={{
-          isEditing,
-          setIsEditing,
-          isAddingPlace,
+        <Outlet context={{ 
+          isEditing, 
+          setIsEditing, 
+          isAddingPlace, 
           setIsAddingPlace,
           newVenueName,
           setNewVenueName,
@@ -653,7 +645,7 @@ const Layout: React.FC = () => {
         <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
           <div className="emergency-popup-content" onClick={e => e.stopPropagation()}>
             <div className="emergency-popup-header">
-              <h3>Contacts d'urgence</h3>
+            <h3>Contacts d'urgence</h3>
               <button 
                 className="close-button" 
                 onClick={() => setShowEmergency(false)}

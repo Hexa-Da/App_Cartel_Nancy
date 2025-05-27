@@ -365,7 +365,6 @@ function App() {
         localStorage.setItem('lastSeenChatTimestamp', String(now));
       }
       
-      console.log('App - Setting messages:', messagesArray);
       setMessages(messagesArray);
     });
     return () => unsubscribe();
@@ -2096,7 +2095,7 @@ function App() {
   const handleBack = () => {
     switch (activeTab as TabType) {
       case 'planning':
-        setActiveTab('events');
+      setActiveTab('events');
         break;
       case 'events':
         setActiveTab('map');
@@ -2265,13 +2264,6 @@ function App() {
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
-  
-  console.log('App - Debug unreadCount:', {
-    messages,
-    lastSeenChatTimestamp,
-    unreadCount,
-    messagesWithTimestamps: messages.map(m => ({ id: m.id, timestamp: m.timestamp }))
-  });
 
   const handleOpenChat = () => {
     // Si on est déjà sur le chat, on retourne à l'onglet précédent
@@ -2409,48 +2401,45 @@ function App() {
                     className="calendar-button"
                     onClick={() => handleTabChange('calendar')}
                     title="Voir le calendrier"
-                    style={{ width: 100 }}
+                    style={{ width: 80 }}
                   >
                     <i className="fas fa-calendar"></i>Calendrier
                   </button>
-                  {/* AJOUTER bouton Planning */}
                   <button
                     className="planning-button"
-                    style={{ left: 120, width: 100 }}
+                    style={{ left: 100, width: 80 }}
                     onClick={() => handleTabChange('planning')}
                     title="Voir les plannings (bus, tournois, etc.)"
                   >
                     <i className="fas fa-table"></i>Planning
                   </button>
+                  <button 
+                    className="filter-toggle-button"
+                    onClick={() => setShowFilters(!showFilters)}
+                  >
+                    {showFilters ? 'Masquer' : 'Filtrer'}
+                  </button>
                 </div>
-                <div className="event-filters">
-                  <div className="filter-buttons-row">
-                    <button 
-                      className="filter-toggle-button"
-                      onClick={() => setShowFilters(!showFilters)}
-                    >
-                      {showFilters ? 'Masquer les filtres' : 'Filtrer'}
-                    </button>
-                    {showFilters && (
-                      <button 
-                        className="filter-reset-button"
-                        onClick={() => {
-                          setEventFilter('all');
-                          setDelegationFilter('all');
-                          setVenueFilter('Tous');
-                          setShowFemale(true);
-                          setShowMale(true);
-                          setShowMixed(true);
-                          triggerMarkerUpdate();
-                          setTimeout(scrollToFirstNonPassedEvent, 100);
-                        }}
-                      >
-                        Réinitialiser
-                      </button>
-                    )}
-                  </div>
+                <div className={`event-filters ${showFilters ? 'show' : ''}`}>
                   {showFilters && (
                     <>
+                      <div className="filter-buttons-row">
+                        <button 
+                          className="filter-reset-button"
+                          onClick={() => {
+                            setEventFilter('all');
+                            setDelegationFilter('all');
+                            setVenueFilter('Tous');
+                            setShowFemale(true);
+                            setShowMale(true);
+                            setShowMixed(true);
+                            triggerMarkerUpdate();
+                            setTimeout(scrollToFirstNonPassedEvent, 100);
+                          }}
+                        >
+                          🔄
+                        </button>
+                      </div>
                       <select 
                         className="filter-select"
                         value={eventFilter}
@@ -3024,7 +3013,7 @@ function App() {
         <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
           <div className="emergency-popup-content" onClick={e => e.stopPropagation()}>
             <div className="emergency-popup-header">
-              <h3>Contacts d'urgence</h3>
+            <h3>Contacts d'urgence</h3>
             </div>
             <ul style={{ textAlign: 'left', margin: '1.5rem 1rem' }}>
               <li><strong>SAMU :</strong> 15</li>

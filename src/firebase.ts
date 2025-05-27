@@ -3,6 +3,17 @@ import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, sig
 import { getDatabase } from 'firebase/database';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { Capacitor } from '@capacitor/core';
+import { registerPlugin } from '@capacitor/core';
+
+// Interface pour le plugin d'authentification
+interface AuthPlugin {
+  signIn(): Promise<{ success: boolean; error?: string }>;
+  signOut(): Promise<void>;
+  getCurrentUser(): Promise<{ isSignedIn: boolean; email?: string; displayName?: string; photoUrl?: string }>;
+}
+
+// Déclaration du plugin d'authentification
+const Auth = registerPlugin<AuthPlugin>('Auth');
 
 const firebaseConfig = {
   apiKey: "AIzaSyBFB_-a5O4KD1V0MSa4HYpsEMekpBTL044",
@@ -25,13 +36,18 @@ provider.setCustomParameters({
 
 export async function loginWithGoogle() {
   if (Capacitor.isNativePlatform()) {
-    // Authentification native (Android/iOS)
     try {
-      const googleUser = await GoogleAuth.signIn();
-      const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-      return signInWithCredential(auth, credential);
+      // Always initialize before signIn
+      await GoogleAuth.initialize();
+      const result = await Auth.signIn();
+      if (result.success) {
+        // L'authentification a réussi côté natif
+        return auth.currentUser;
+      } else {
+        throw new Error(result.error || 'Échec de l\'authentification');
+      }
     } catch (error) {
-      console.error('Erreur Google Auth native:', error);
+      console.error('Erreur d\'authentification native:', error);
       throw error;
     }
   } else {
@@ -57,6 +73,24 @@ export async function handleGoogleRedirect() {
   } catch (error) {
     console.error('Erreur Google OAuth:', error);
     throw error;
+  }
+}
+
+export async function signOut() {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      await Auth.signOut();
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion native:', error);
+      throw error;
+    }
+  } else {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion web:', error);
+      throw error;
+    }
   }
 }
 
