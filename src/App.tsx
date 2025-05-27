@@ -4,15 +4,15 @@ import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { auth, database, provider, loginWithGoogle, handleGoogleRedirect } from './firebase';
+import { auth, database, loginWithGoogle, handleGoogleRedirect } from './firebase';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
-import { onAuthStateChanged, signInWithPopup, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import PlanningFiles from './components/PlanningFiles';
-import { Outlet, useLocation, useOutletContext } from 'react-router-dom';
+import { Outlet, useLocation} from 'react-router-dom';
 import { useAppPanels, TabType } from './AppPanelsContext';
 import Header from './components/Header';
 
@@ -2029,19 +2029,6 @@ function App() {
         }
       }
     }
-  };
-
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-    triggerMarkerUpdate();
   };
 
   const handleAdminClick = async () => {
