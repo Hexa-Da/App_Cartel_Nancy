@@ -331,6 +331,12 @@ function App() {
     // Vérifier uniquement au montage
     if (location.pathname === '/map' && activeTab === 'map') {
       setActiveTab('map');
+      // Forcer la mise à jour des marqueurs
+      setAppAction(prev => prev + 1);
+      // Forcer la mise à jour de la carte
+      if (mapRef.current) {
+        mapRef.current.invalidateSize();
+      }
     }
   }, [location.pathname]);
 
@@ -633,18 +639,37 @@ function App() {
   const [history, setHistory] = useState<HistoryAction[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  // Déplacer la définition de triggerMarkerUpdate ici, avant son utilisation
+  const triggerMarkerUpdate = () => {
+    setAppAction(prev => prev + 1);
+  };
+
   // Écouter les changements de préférences
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'location' && e.newValue) {
-        // Gérer les changements de localisation si nécessaire
+      if (e.key === 'preferredSport' && e.newValue) {
+        setEventFilter(e.newValue);
+        triggerMarkerUpdate();
+      }
+      if (e.key === 'preferredDelegation' && e.newValue) {
+        setDelegationFilter(e.newValue);
+        triggerMarkerUpdate();
+      }
+    };
+
+    const handlePreferenceChange = (e: CustomEvent) => {
+      if (e.detail.key === 'preferredSport') {
+        setEventFilter(e.detail.value);
+        triggerMarkerUpdate();
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
-
+    window.addEventListener('preferenceChange', handlePreferenceChange as EventListener);
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('preferenceChange', handlePreferenceChange as EventListener);
     };
   }, []);
 
@@ -1391,16 +1416,13 @@ function App() {
           (event.type === 'match' && event.sport === eventFilter));
 
       // Filtre par délégation
-      // Les soirées et défilés sont toujours affichés, quelle que soit la délégation
-      const delegationMatch = event.type === 'party' || 
-        delegationFilter === 'all' || 
+      const delegationMatch = delegationFilter === 'all' || 
         (event.teams && event.teams.toLowerCase().includes(delegationFilter.toLowerCase()));
 
       // Filtre par lieu
       let venueMatch = true;
       if (venueFilter !== 'Tous') {
         if (event.type === 'party') {
-          // Pour les soirées et défilés, utiliser les identifiants spécifiques
           let partyId = '';
           switch (event.name) {
             case 'Place Stanislas':
@@ -1420,7 +1442,6 @@ function App() {
           }
           venueMatch = partyId === venueFilter;
         } else {
-          // Pour les matchs, utiliser l'ID du lieu
           venueMatch = event.venueId === venueFilter;
         }
       }
@@ -1429,11 +1450,10 @@ function App() {
       const isFemale = event.description?.toLowerCase().includes('féminin');
       const isMale = event.description?.toLowerCase().includes('masculin');
       const isMixed = event.description?.toLowerCase().includes('mixte');
-      
       const genderMatch = (!isFemale && !isMale && !isMixed) || 
-        (isFemale && showFemale) || 
-        (isMale && showMale) ||
-        (isMixed && showMixed);
+                         (isFemale && showFemale) || 
+                         (isMale && showMale) || 
+                         (isMixed && showMixed);
 
       return typeMatch && delegationMatch && venueMatch && genderMatch;
     });
@@ -2121,11 +2141,6 @@ function App() {
   if (isLoading) {
     return <div>Chargement...</div>;
   }
-
-  // Fonction pour déclencher une mise à jour des marqueurs
-  const triggerMarkerUpdate = () => {
-    setAppAction(prev => prev + 1);
-  };
 
   // Fonction pour gérer le changement d'onglet
   const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'planning' | 'calendar') => {

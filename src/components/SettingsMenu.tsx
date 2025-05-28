@@ -17,8 +17,6 @@ const getInitial = (key: string, fallback: any) => {
 
 const sportOptions = [
   { value: 'none', label: 'Aucun' },
-  { value: 'all', label: 'Tous les événements' },
-  { value: 'party', label: 'Soirée et Défilé ⭐' },
   { value: 'Football', label: 'Football ⚽' },
   { value: 'Basketball', label: 'Basketball 🏀' },
   { value: 'Handball', label: 'Handball 🤾' },
@@ -51,16 +49,34 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   // Délégation préférée
   const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
 
-  // Écouter les changements de délégation préférée dans le localStorage
+  // Écouter les changements de préférences dans le localStorage
   React.useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'preferredDelegation' && e.newValue !== null) {
         setPreferredDelegation(e.newValue);
       }
+      if (e.key === 'preferredSport' && e.newValue !== null) {
+        setPreferredSport(e.newValue);
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Écouter les changements de préférences dans le même onglet
+  React.useEffect(() => {
+    const handlePreferenceChange = (e: CustomEvent) => {
+      if (e.detail.key === 'preferredSport') {
+        setPreferredSport(e.detail.value);
+      }
+      if (e.detail.key === 'preferredDelegation') {
+        setPreferredDelegation(e.detail.value);
+      }
+    };
+
+    window.addEventListener('preferenceChange', handlePreferenceChange as EventListener);
+    return () => window.removeEventListener('preferenceChange', handlePreferenceChange as EventListener);
   }, []);
 
   // Appliquer le thème à chaque changement
@@ -98,23 +114,36 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     // Ici, on pourrait déclencher un changement de langue global si l'app est i18n
   }, [language]);
 
-  // Sport préféré
-  React.useEffect(() => {
-    localStorage.setItem('preferredSport', preferredSport);
-  }, [preferredSport]);
-
-  // Délégation préférée
-  React.useEffect(() => {
-    localStorage.setItem('preferredDelegation', preferredDelegation);
-    // Déclencher un événement de stockage pour notifier les autres composants
-    const event = new StorageEvent('storage', {
-      key: 'preferredDelegation',
-      newValue: preferredDelegation,
-      oldValue: localStorage.getItem('preferredDelegation'),
+  const handlePreferenceChange = (key: string, value: string) => {
+    localStorage.setItem(key, value);
+    // Déclencher un événement de stockage pour synchroniser les autres onglets
+    const storageEvent = new StorageEvent('storage', {
+      key,
+      newValue: value,
+      oldValue: localStorage.getItem(key),
       storageArea: localStorage
     });
-    window.dispatchEvent(event);
-  }, [preferredDelegation]);
+    window.dispatchEvent(storageEvent);
+
+    // Déclencher un événement personnalisé pour la synchronisation dans le même onglet
+    const customEvent = new CustomEvent('preferenceChange', {
+      detail: {
+        key,
+        value
+      }
+    });
+    window.dispatchEvent(customEvent);
+  };
+
+  const handleSportChange = (sport: string) => {
+    setPreferredSport(sport);
+    handlePreferenceChange('preferredSport', sport);
+  };
+
+  const handleDelegationChange = (delegation: string) => {
+    setPreferredDelegation(delegation);
+    handlePreferenceChange('preferredDelegation', delegation);
+  };
 
   if (!isOpen) return null;
 
@@ -192,7 +221,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
               id="preferred-sport" 
               className="settings-select" 
               value={preferredSport} 
-              onChange={e => setPreferredSport(e.target.value)}
+              onChange={e => handleSportChange(e.target.value)}
             >
               {sportOptions.map(option => (
                 <option key={option.value} value={option.value}>
@@ -207,7 +236,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
               id="preferred-delegation" 
               className="settings-select" 
               value={preferredDelegation} 
-              onChange={e => setPreferredDelegation(e.target.value)}
+              onChange={e => handleDelegationChange(e.target.value)}
             >
               <option value="all">Toutes les délégations</option>
               {getAllDelegations().map(delegation => (
