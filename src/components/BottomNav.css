@@ -5,11 +5,11 @@
   left: 0;
   right: 0;
   height: 56px;
-  background: linear-gradient(90deg, rgba(35, 37, 38, 0.95) 0%, rgba(65, 67, 69, 0.95) 100%);
+  background: var(--bg-secondary);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 24px var(--shadow-color);
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
   z-index: 1000;
@@ -33,7 +33,7 @@
   background: none;
   cursor: pointer;
   padding: 6px 0 3px 0;
-  color: #e0e0e0;
+  color: var(--text-color);
   border-radius: 14px;
   margin: 0 6px;
   font-weight: 500;
@@ -43,23 +43,23 @@
 }
 
 .nav-button:hover {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+  background: var(--bg-color);
+  color: var(--text-color);
   transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 2px 8px rgba(30,144,255,0.10);
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .nav-button.active {
-  color: #fff;
-  background: linear-gradient(90deg, #1976D2 0%, #21CBF3 100%);
-  box-shadow: 0 4px 16px rgba(33,203,243,0.18);
+  color: var(--text-color);
+  background: var(--primary-color);
+  box-shadow: 0 4px 16px var(--shadow-color);
   transform: translateY(-4px) scale(1.08);
 }
 
 .nav-icon {
   font-size: 24px;
   margin-bottom: 2px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+  filter: drop-shadow(0 2px 4px var(--shadow-color));
   transition: filter 0.2s;
 }
 
@@ -69,7 +69,7 @@
   letter-spacing: 0.02em;
   color: inherit;
   margin-bottom: 6px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.10);
+  text-shadow: 0 1px 2px var(--shadow-color);
 }
 
 /* Ajuster le contenu principal pour éviter le chevauchement avec la barre de navigation */

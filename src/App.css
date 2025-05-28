@@ -752,7 +752,7 @@ html, body, #root {
 
 .location-error {
   position: fixed;
-  bottom: 20px;
+  bottom: 60px;
   left: 20px;
   background-color: var(--danger-color);
   color: white;
