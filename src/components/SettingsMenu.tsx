@@ -51,6 +51,18 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   // Délégation préférée
   const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
 
+  // Écouter les changements de délégation préférée dans le localStorage
+  React.useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'preferredDelegation' && e.newValue !== null) {
+        setPreferredDelegation(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   // Appliquer le thème à chaque changement
   React.useEffect(() => {
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
@@ -94,6 +106,14 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   // Délégation préférée
   React.useEffect(() => {
     localStorage.setItem('preferredDelegation', preferredDelegation);
+    // Déclencher un événement de stockage pour notifier les autres composants
+    const event = new StorageEvent('storage', {
+      key: 'preferredDelegation',
+      newValue: preferredDelegation,
+      oldValue: localStorage.getItem('preferredDelegation'),
+      storageArea: localStorage
+    });
+    window.dispatchEvent(event);
   }, [preferredDelegation]);
 
   if (!isOpen) return null;

@@ -77,6 +77,7 @@ const Layout: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [venues, setVenues] = useState<Venue[]>([]);
   const { isEditing, setIsEditing, activeTab, setActiveTab } = useAppPanels();
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [newVenueName, setNewVenueName] = useState('');
@@ -138,6 +139,17 @@ const Layout: React.FC = () => {
       }
       
       setMessages(messagesArray);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Lecture en temps réel des venues depuis Firebase
+  useEffect(() => {
+    const venuesRef = ref(database, 'venues');
+    const unsubscribe = onValue(venuesRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const venuesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
+      setVenues(venuesArray);
     });
     return () => unsubscribe();
   }, []);
@@ -486,6 +498,23 @@ const Layout: React.FC = () => {
     }
   };
 
+  // Fonction pour obtenir toutes les délégations uniques
+  const getAllDelegations = () => {
+    const delegations = new Set<string>();
+    venues.forEach(venue => {
+      if (venue.matches) {
+        venue.matches.forEach(match => {
+          const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map(team => team.trim());
+          teams.forEach(team => {
+            // Exclure les "..." et les chaînes vides
+            if (team && team !== "..." && team !== "…") delegations.add(team);
+          });
+        });
+      }
+    });
+    return Array.from(delegations).sort();
+  };
+
   return (
     <div className="layout">
       <Header
@@ -499,6 +528,7 @@ const Layout: React.FC = () => {
         onBack={handleBack}
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
+        getAllDelegations={getAllDelegations}
       />
       <main className="app-main">
         <Outlet context={{ 

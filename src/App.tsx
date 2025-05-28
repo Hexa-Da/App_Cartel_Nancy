@@ -3122,7 +3122,7 @@ function App() {
               </button>          </div>
         </div>
       )}
-      <Outlet context={{ closeAllPanels }} />
+      <Outlet context={{ closeAllPanels, getAllDelegations }} />
     </div>
   );
 }
