@@ -3,7 +3,7 @@ import { Outlet, useLocation, useOutletContext, useNavigate } from 'react-router
 import BottomNav from './BottomNav';
 import './Layout.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { database, auth, provider, loginWithGoogle } from '../firebase';
+import { database, auth, loginWithGoogle } from '../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
@@ -73,6 +73,7 @@ const Layout: React.FC = () => {
   const [showChat, setShowChat] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);

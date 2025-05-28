@@ -4,6 +4,7 @@ import './SettingsMenu.css';
 interface SettingsMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onLocationChange?: (enabled: boolean) => void;
 }
 
 const getInitial = (key: string, fallback: any) => {
@@ -13,11 +14,13 @@ const getInitial = (key: string, fallback: any) => {
   return stored;
 };
 
-const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
+const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => getInitial('theme', window.matchMedia('(prefers-color-scheme: dark)').matches));
   // Notifications
   const [notifications, setNotifications] = React.useState(() => getInitial('notifications', true));
+  // Localisation
+  const [shareLocation, setShareLocation] = React.useState(() => getInitial('location', true));
   // Langue
   const [language, setLanguage] = React.useState(() => getInitial('language', 'fr'));
 
@@ -33,6 +36,22 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
     // Ici, on pourrait demander la permission de notification si notifications passe à true
     // if (notifications && 'Notification' in window) Notification.requestPermission();
   }, [notifications]);
+
+  // Localisation
+  React.useEffect(() => {
+    localStorage.setItem('location', shareLocation ? 'true' : 'false');
+    if (onLocationChange) {
+      onLocationChange(shareLocation);
+    }
+    // Déclencher un événement de stockage pour notifier les autres composants
+    const event = new StorageEvent('storage', {
+      key: 'location',
+      newValue: shareLocation ? 'true' : 'false',
+      oldValue: shareLocation ? 'false' : 'true',
+      storageArea: localStorage
+    });
+    window.dispatchEvent(event);
+  }, [shareLocation, onLocationChange]);
 
   // Langue
   React.useEffect(() => {
@@ -87,6 +106,18 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
                 id="notifications"
                 checked={notifications}
                 onChange={() => setNotifications((v: boolean) => !v)}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+          <div className="settings-item">
+            <label htmlFor="location">Localisation</label>
+            <label className="switch">
+              <input
+                type="checkbox"
+                id="location"
+                checked={shareLocation}
+                onChange={() => setShareLocation((v: boolean) => !v)}
               />
               <span className="slider round"></span>
             </label>

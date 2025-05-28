@@ -99,22 +99,38 @@ console.log('[GA] Google Analytics initialisé en mode test');
 function LocationMarker() {
   const [position, setPosition] = useState<LatLng | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const map = useMap();
   const lastErrorTime = useRef<number>(0);
+  const [isLocationEnabled, setIsLocationEnabled] = useState(() => {
+    const stored = localStorage.getItem('location');
+    return stored === null ? true : stored === 'true';
+  });
 
+  // Écouter les changements de l'état de localisation
   useEffect(() => {
-    const handleGoogleRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          console.log('Résultat de la redirection:', result);
-          // Traitement du résultat si nécessaire
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'location') {
+        const newValue = e.newValue === 'true';
+        setIsLocationEnabled(newValue);
+        if (!newValue) {
+          setPosition(null);
+          setError(null);
         }
-      } catch (error) {
-        console.error('Erreur lors de la redirection Google:', error);
       }
     };
-    handleGoogleRedirect();
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  useEffect(() => {
+    if (!isLocationEnabled) {
+      setPosition(null);
+      setError(null);
+      return;
+    }
+
     if (map) {
       if (!navigator.geolocation) {
         setError("La géolocalisation n'est pas supportée par votre navigateur");
@@ -125,6 +141,8 @@ function LocationMarker() {
         timeout: 10000,
         maximumAge: 0
       };
+
+      setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
@@ -132,8 +150,10 @@ function LocationMarker() {
           setPosition(newPosition);
           map.flyTo(newPosition, 16);
           setError(null);
+          setIsLoading(false);
         },
         (err) => {
+          setIsLoading(false);
           if (err.code === err.PERMISSION_DENIED) {
             // Ne pas afficher d'erreur si refus explicite
             return;
@@ -173,7 +193,15 @@ function LocationMarker() {
         navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [map]);
+  }, [map, isLocationEnabled]);
+
+  if (isLoading) {
+    return (
+      <div className="location-loading">
+        <div className="location-loading-spinner"></div>
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -182,6 +210,7 @@ function LocationMarker() {
         <div className="location-error-buttons">
           <button className="retry-button" onClick={() => {
             setError(null);
+            setIsLoading(true);
             if (map) {
               const options = {
                 enableHighAccuracy: true,
@@ -194,8 +223,10 @@ function LocationMarker() {
                   const newPosition = new LatLng(latitude, longitude);
                   setPosition(newPosition);
                   map.flyTo(newPosition, 16);
+                  setIsLoading(false);
                 },
                 (err) => {
+                  setIsLoading(false);
                   console.error('Erreur de géolocalisation:', err);
                   let errorMessage = "Erreur de géolocalisation";
                   switch (err.code) {
@@ -293,6 +324,27 @@ declare global {
 
 function App() {
   const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
+  const location = useLocation();
+
+  // Effet pour gérer le changement de route
+  useEffect(() => {
+    // Vérifier uniquement au montage
+    if (location.pathname === '/map' && activeTab === 'map') {
+      setActiveTab('map');
+    }
+  }, [location.pathname]);
+
+  // Effet pour gérer les changements de localisation
+  useEffect(() => {
+    const handleLocationChange = (e: StorageEvent) => {
+      if (e.key === 'location' && location.pathname === '/map') {
+        setActiveTab('map');
+      }
+    };
+
+    window.addEventListener('storage', handleLocationChange);
+    return () => window.removeEventListener('storage', handleLocationChange);
+  }, [location.pathname]);
 
   const [newMessage, setNewMessage] = useState('');
   const [newMessageSender, setNewMessageSender] = useState('Organisation'); 
@@ -307,7 +359,6 @@ function App() {
   const [editingMessageValue, setEditingMessageValue] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar'>('map');
-  const location = useLocation();
   
   useEffect(() => {
     if (location.pathname === '/map') {
@@ -2095,8 +2146,8 @@ function App() {
         break;
       default:
         setActiveTab('map');
-    }
-  };
+      }
+    };
 
   const handleCalendarClose = () => {
     setActiveTab(previousTab);
