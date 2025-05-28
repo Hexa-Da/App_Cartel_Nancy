@@ -14,6 +14,7 @@ interface HeaderProps {
   onBack?: () => void;
   onEditModeToggle?: () => void;
   isEditing?: boolean;
+  getAllDelegations: () => string[];
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -25,7 +26,8 @@ const Header: React.FC<HeaderProps> = ({
   unreadCount,
   onBack,
   onEditModeToggle,
-  isEditing
+  isEditing,
+  getAllDelegations
 }) => {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
@@ -125,7 +127,11 @@ const Header: React.FC<HeaderProps> = ({
           )}
         </div>
       </div>
-      <SettingsMenu isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <SettingsMenu 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+        getAllDelegations={getAllDelegations}
+      />
     </>
   );
 };

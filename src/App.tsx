@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { auth, database, loginWithGoogle, handleGoogleRedirect } from './firebase';
@@ -627,10 +627,26 @@ function App() {
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [appAction, setAppAction] = useState<number>(0);
   const [fromEvents, setFromEvents] = useState(false);
+  const [isStarFilterActive, setIsStarFilterActive] = useState(false);
 
   // État pour l'historique des actions et l'index actuel
   const [history, setHistory] = useState<HistoryAction[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+
+  // Écouter les changements de préférences
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'location' && e.newValue) {
+        // Gérer les changements de localisation si nécessaire
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const mapStyles = {
     osm: {
@@ -2146,8 +2162,8 @@ function App() {
         break;
       default:
         setActiveTab('map');
-      }
-    };
+    }
+  };
 
   const handleCalendarClose = () => {
     setActiveTab(previousTab);
@@ -2225,7 +2241,26 @@ function App() {
     });
     setDelegationFilter(e.target.value);
     triggerMarkerUpdate();
-    setTimeout(scrollToFirstNonPassedEvent, 100); // Small delay to ensure the list is updated
+    setTimeout(scrollToFirstNonPassedEvent, 100);
+  };
+
+  // Ajouter la fonction pour gérer le clic sur le bouton ⭐
+  const handleStarFilterClick = () => {
+    const preferredSport = localStorage.getItem('preferredSport') || 'all';
+    const preferredDelegation = localStorage.getItem('preferredDelegation') || 'all';
+    
+    setIsStarFilterActive(!isStarFilterActive);
+    
+    if (!isStarFilterActive) {
+      setEventFilter(preferredSport);
+      setDelegationFilter(preferredDelegation);
+    } else {
+      setEventFilter('all');
+      setDelegationFilter('all');
+    }
+    
+    triggerMarkerUpdate();
+    setTimeout(scrollToFirstNonPassedEvent, 100);
   };
 
   const getVenueOptions = () => {
@@ -2343,6 +2378,7 @@ function App() {
           }
         }}
         isEditing={isEditing}
+        getAllDelegations={getAllDelegations}
       />
       <main className="app-main">
         {locationError && showLocationPrompt && (
@@ -2451,33 +2487,41 @@ function App() {
                   >
                     <i className="fas fa-table"></i>Planning
                   </button>
-                  <button 
-                    className="filter-toggle-button"
-                    onClick={() => setShowFilters(!showFilters)}
-                  >
+                    <button 
+                      className="filter-toggle-button"
+                      onClick={() => setShowFilters(!showFilters)}
+                    >
                     {showFilters ? 'Masquer' : 'Filtrer'}
-                  </button>
+                    </button>
                 </div>
                 <div className={`event-filters ${showFilters ? 'show' : ''}`}>
-                  {showFilters && (
+                    {showFilters && (
                     <>
-                      <div className="filter-buttons-row">
-                        <button 
-                          className="filter-reset-button"
-                          onClick={() => {
-                            setEventFilter('all');
-                            setDelegationFilter('all');
-                            setVenueFilter('Tous');
-                            setShowFemale(true);
-                            setShowMale(true);
-                            setShowMixed(true);
-                            triggerMarkerUpdate();
-                            setTimeout(scrollToFirstNonPassedEvent, 100);
-                          }}
-                        >
-                          🔄
-                        </button>
-                      </div>
+                      <button
+                        className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
+                        style={{ right: '124px', top: '47px', position: 'absolute' }}
+                        onClick={handleStarFilterClick}
+                        title="Appliquer vos préférences"
+                      >
+                        ⭐
+                      </button>
+                      <button
+                        className="filter-reset-button"
+                        onClick={() => {
+                          setEventFilter('all');
+                          setDelegationFilter('all');
+                          setVenueFilter('Tous');
+                          setShowFemale(true);
+                          setShowMale(true);
+                          setShowMixed(true);
+                          setIsStarFilterActive(false);
+                          triggerMarkerUpdate();
+                          setTimeout(scrollToFirstNonPassedEvent, 100);
+                        }}
+                      >
+                        🔄
+                      </button>
+                      <div className="filter-buttons-row"></div>
                       <select 
                         className="filter-select"
                         value={eventFilter}

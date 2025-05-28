@@ -1286,7 +1286,7 @@ html, body, #root {
 .filter-reset-button {
   position: absolute;
   top: 47px;
-  right: 92px;
+  right: 90px;
   padding: 0;
   border: none;
   font-size: 24px;
@@ -1294,8 +1294,8 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   background: none;
-  height: 20px;
-  width: 20px;
+  height: 24px;
+  width: 24px;
   z-index: 995;
 }
 
@@ -2423,3 +2423,19 @@ html, body, #root {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.star-filter-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+}
+
+.filter-reset-button:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+

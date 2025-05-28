@@ -5,6 +5,7 @@ interface SettingsMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onLocationChange?: (enabled: boolean) => void;
+  getAllDelegations: () => string[];
 }
 
 const getInitial = (key: string, fallback: any) => {
@@ -14,7 +15,29 @@ const getInitial = (key: string, fallback: any) => {
   return stored;
 };
 
-const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
+const sportOptions = [
+  { value: 'none', label: 'Aucun' },
+  { value: 'all', label: 'Tous les événements' },
+  { value: 'party', label: 'Soirée et Défilé ⭐' },
+  { value: 'Football', label: 'Football ⚽' },
+  { value: 'Basketball', label: 'Basketball 🏀' },
+  { value: 'Handball', label: 'Handball 🤾' },
+  { value: 'Rugby', label: 'Rugby 🏉' },
+  { value: 'Volleyball', label: 'Volleyball 🏐' },
+  { value: 'Tennis', label: 'Tennis 🎾' },
+  { value: 'Badminton', label: 'Badminton 🏸' },
+  { value: 'Ping-pong', label: 'Ping-pong 🏓' },
+  { value: 'Ultimate', label: 'Ultimate 🥏' },
+  { value: 'Natation', label: 'Natation 🏊' },
+  { value: 'Cross', label: 'Cross 🏃' },
+  { value: 'Boxe', label: 'Boxe 🥊' },
+  { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
+  { value: 'Pétanque', label: 'Pétanque 🍹' },
+  { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
+  { value: 'Jeux de société', label: 'Jeux de société 🎲' },
+];
+
+const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange, getAllDelegations }) => {
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => getInitial('theme', window.matchMedia('(prefers-color-scheme: dark)').matches));
   // Notifications
@@ -23,6 +46,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   const [shareLocation, setShareLocation] = React.useState(() => getInitial('location', true));
   // Langue
   const [language, setLanguage] = React.useState(() => getInitial('language', 'fr'));
+  // Sport préféré
+  const [preferredSport, setPreferredSport] = React.useState(() => getInitial('preferredSport', 'all'));
+  // Délégation préférée
+  const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
 
   // Appliquer le thème à chaque changement
   React.useEffect(() => {
@@ -58,6 +85,16 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     localStorage.setItem('language', language);
     // Ici, on pourrait déclencher un changement de langue global si l'app est i18n
   }, [language]);
+
+  // Sport préféré
+  React.useEffect(() => {
+    localStorage.setItem('preferredSport', preferredSport);
+  }, [preferredSport]);
+
+  // Délégation préférée
+  React.useEffect(() => {
+    localStorage.setItem('preferredDelegation', preferredDelegation);
+  }, [preferredDelegation]);
 
   if (!isOpen) return null;
 
@@ -127,6 +164,37 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
             <select id="language" className="settings-select" value={language} onChange={e => setLanguage(e.target.value)}>
               <option value="fr">Français</option>
               <option value="en">English</option>
+            </select>
+          </div>
+          <div className="settings-item">
+            <label htmlFor="preferred-sport">Votre Sport</label>
+            <select 
+              id="preferred-sport" 
+              className="settings-select" 
+              value={preferredSport} 
+              onChange={e => setPreferredSport(e.target.value)}
+            >
+              {sportOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="settings-item">
+            <label htmlFor="preferred-delegation">Votre Délégation</label>
+            <select 
+              id="preferred-delegation" 
+              className="settings-select" 
+              value={preferredDelegation} 
+              onChange={e => setPreferredDelegation(e.target.value)}
+            >
+              <option value="all">Toutes les délégations</option>
+              {getAllDelegations().map(delegation => (
+                <option key={delegation} value={delegation}>
+                  {delegation}
+                </option>
+              ))}
             </select>
           </div>
         </div>
