@@ -328,7 +328,6 @@ function App() {
 
   // Effet pour gérer le changement de route
   useEffect(() => {
-    // Vérifier uniquement au montage
     if (location.pathname === '/map' && activeTab === 'map') {
       setActiveTab('map');
       // Forcer la mise à jour des marqueurs
@@ -338,13 +337,15 @@ function App() {
         mapRef.current.invalidateSize();
       }
     }
-  }, [location.pathname]);
+  }, [location.pathname, activeTab]);
 
   // Effet pour gérer les changements de localisation
   useEffect(() => {
     const handleLocationChange = (e: StorageEvent) => {
       if (e.key === 'location' && location.pathname === '/map') {
         setActiveTab('map');
+        // Forcer la mise à jour des marqueurs
+        setAppAction(prev => prev + 1);
       }
     };
 
@@ -642,6 +643,16 @@ function App() {
   // Déplacer la définition de triggerMarkerUpdate ici, avant son utilisation
   const triggerMarkerUpdate = () => {
     setAppAction(prev => prev + 1);
+    if (mapRef.current) {
+      // Nettoyer les marqueurs existants
+      markersRef.current.forEach(marker => {
+        marker.remove();
+      });
+      markersRef.current = [];
+
+      // Recréer tous les marqueurs
+      updateMapMarkers();
+    }
   };
 
   // Écouter les changements de préférences
@@ -1991,82 +2002,241 @@ function App() {
   const updateMapMarkers = () => {
     if (!mapRef.current) return;
 
-    // Récupérer tous les marqueurs existants
-    const allMarkers = markersRef.current;
+    // Nettoyer les marqueurs existants
+    markersRef.current.forEach(marker => {
+      marker.remove();
+    });
+    markersRef.current = [];
 
-    // Mettre à jour la visibilité de chaque marqueur
-    allMarkers.forEach(marker => {
-      const markerElement = marker.getElement();
-      if (markerElement) {
-        // Trouver le lieu correspondant au marqueur
-        const venue = venues.find(v => {
-          const markerLatLng = marker.getLatLng();
-          return v.latitude === markerLatLng.lat && v.longitude === markerLatLng.lng;
-        });
+    // Ajouter les marqueurs pour les lieux
+    venues.forEach(venue => {
+      const markerColor = getMarkerColor(venue.date);
+      const marker = L.marker([venue.latitude, venue.longitude], {
+        icon: L.divIcon({
+          className: 'custom-marker',
+          html: `<div class="marker-content" style="background-color: ${markerColor.color}; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                   <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${getSportIcon(venue.sport)}</span>
+                 </div>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
+          popupAnchor: [0, -15]
+        })
+      });
 
-        // Trouver la soirée correspondante au marqueur
-        const party = parties.find(p => {
-          const markerLatLng = marker.getLatLng();
-          return p.latitude === markerLatLng.lat && p.longitude === markerLatLng.lng;
-        });
+      // Créer le contenu du popup
+      const popupContent = document.createElement('div');
+      popupContent.className = 'venue-popup';
+      
+      // Contenu de base du lieu
+      popupContent.innerHTML = `
+        <h3>${venue.name}</h3>
+        <p>${venue.description}</p>
+        <p><strong>Sport:</strong> ${venue.sport}</p>
+        <p class="venue-address">${venue.address || `${venue.latitude}, ${venue.longitude}`}</p>
+      `;
 
-        // Trouver l'hôtel correspondant au marqueur
-        const hotel = hotels.find(h => {
-          const markerLatLng = marker.getLatLng();
-          return h.latitude === markerLatLng.lat && h.longitude === markerLatLng.lng;
-        });
+      // Boutons d'actions
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'popup-buttons';
+      
+      // Bouton Google Maps
+      const mapsButton = document.createElement('button');
+      mapsButton.className = 'maps-button';
+      mapsButton.textContent = 'Ouvrir dans Google Maps';
+      mapsButton.addEventListener('click', () => {
+        openInGoogleMaps(venue);
+      });
+      buttonsContainer.appendChild(mapsButton);
+      
+      // Bouton Copier l'adresse
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-button';
+      copyButton.textContent = 'Copier l\'adresse';
+      copyButton.addEventListener('click', () => {
+        copyToClipboard(venue.address || `${venue.latitude},${venue.longitude}`);
+      });
+      buttonsContainer.appendChild(copyButton);
+      
+      popupContent.appendChild(buttonsContainer);
 
-        // Trouver le restaurant correspondant au marqueur
-        const restaurant = restaurants.find(r => {
-          const markerLatLng = marker.getLatLng();
-          return r.latitude === markerLatLng.lat && r.longitude === markerLatLng.lng;
-        });
+      marker.bindPopup(popupContent);
+      
+      // Ajouter le marqueur à la carte
+      if (mapRef.current) {
+        marker.addTo(mapRef.current);
+        markersRef.current.push(marker);
+      }
+    });
 
-        if (venue) {
-          // Afficher le marqueur si :
-          // 1. Le filtre est sur "all" ou correspond au sport
-          // 2. Le filtre de lieu est sur "Tous" ou correspond au lieu
-          const shouldShow = 
-            (eventFilter === 'all' || eventFilter === venue.sport) &&
-            (venueFilter === 'Tous' || venue.id === venueFilter);
+    // Ajouter les marqueurs pour les hôtels
+    hotels.forEach(hotel => {
+      const marker = L.marker([hotel.latitude, hotel.longitude], {
+        icon: L.divIcon({
+          className: 'custom-marker hotel-marker',
+          html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                   <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🏢</span>
+                 </div>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
+          popupAnchor: [0, -15]
+        })
+      });
 
-          markerElement.style.display = shouldShow ? 'block' : 'none';
-          markerElement.style.opacity = shouldShow ? '1' : '0';
-        } else if (party) {
-          // Afficher le marqueur de soirée si :
-          // 1. Le filtre est sur "all" ou "party"
-          // 2. Le filtre de lieu correspond
-          let partyId = '';
-          switch (party.name) {
-            case 'Place Stanislas':
-              partyId = 'place-stanislas';
-              break;
-            case 'Centre Prouvé':
-              partyId = 'centre-prouve';
-              break;
-            case 'Parc des Expositions':
-              partyId = 'parc-expo';
-              break;
-            case 'Zénith':
-              partyId = 'zenith';
-              break;
-            default:
-              partyId = party.name.toLowerCase().replace(/\s+/g, '-');
-          }
+      // Créer le contenu du popup
+      const popupContent = document.createElement('div');
+      popupContent.className = 'venue-popup';
+      
+      // Contenu de base de l'hôtel
+      popupContent.innerHTML = `
+        <h3>${hotel.name}</h3>
+        <p>${hotel.description}</p>
+        <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
+      `;
+      
+      // Boutons d'actions
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'popup-buttons';
+      
+      // Bouton Google Maps
+      const mapsButton = document.createElement('button');
+      mapsButton.className = 'maps-button';
+      mapsButton.textContent = 'Ouvrir dans Google Maps';
+      mapsButton.addEventListener('click', () => {
+        openInGoogleMaps(hotel);
+      });
+      buttonsContainer.appendChild(mapsButton);
+      
+      // Bouton Copier l'adresse
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-button';
+      copyButton.textContent = 'Copier l\'adresse';
+      copyButton.addEventListener('click', () => {
+        copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
+      });
+      buttonsContainer.appendChild(copyButton);
+      
+      popupContent.appendChild(buttonsContainer);
 
-          const shouldShow = 
-            (eventFilter === 'all' || eventFilter === 'party') &&
-            (venueFilter === 'Tous' || partyId === venueFilter);
+      marker.bindPopup(popupContent);
+      
+      if (mapRef.current) {
+        marker.addTo(mapRef.current);
+        markersRef.current.push(marker);
+      }
+    });
 
-          markerElement.style.display = shouldShow ? 'block' : 'none';
-          markerElement.style.opacity = shouldShow ? '1' : '0';
-        } else if (hotel || restaurant) {
-          // Afficher les hôtels et restaurants uniquement si le filtre est sur "all"
-          const shouldShow = eventFilter === 'all';
+    // Ajouter les marqueurs pour les restaurants
+    restaurants.forEach(restaurant => {
+      const marker = L.marker([restaurant.latitude, restaurant.longitude], {
+        icon: L.divIcon({
+          className: 'custom-marker restaurant-marker',
+          html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                   <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🍽️</span>
+                 </div>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
+          popupAnchor: [0, -15]
+        })
+      });
 
-          markerElement.style.display = shouldShow ? 'block' : 'none';
-          markerElement.style.opacity = shouldShow ? '1' : '0';
-        }
+      // Créer le contenu du popup pour le restaurant
+      const popupContent = document.createElement('div');
+      popupContent.className = 'venue-popup';
+      
+      // Contenu de base du restaurant
+      popupContent.innerHTML = `
+        <h3>${restaurant.name}</h3>
+        <p>${restaurant.description}</p>
+        <p class="venue-address">${restaurant.address}</p>
+      `;
+      
+      // Boutons d'actions
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'popup-buttons';
+      
+      // Bouton Google Maps
+      const mapsButton = document.createElement('button');
+      mapsButton.className = 'maps-button';
+      mapsButton.textContent = 'Ouvrir dans Google Maps';
+      mapsButton.addEventListener('click', () => {
+        openInGoogleMaps(restaurant);
+      });
+      buttonsContainer.appendChild(mapsButton);
+      
+      // Bouton Copier l'adresse
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-button';
+      copyButton.textContent = 'Copier l\'adresse';
+      copyButton.addEventListener('click', () => {
+        copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
+      });
+      buttonsContainer.appendChild(copyButton);
+      
+      popupContent.appendChild(buttonsContainer);
+
+      marker.bindPopup(popupContent);
+      
+      if (mapRef.current) {
+        marker.addTo(mapRef.current);
+        markersRef.current.push(marker);
+      }
+    });
+
+    // Ajouter les marqueurs pour les soirées
+    parties.forEach(party => {
+      const marker = L.marker([party.latitude, party.longitude], {
+        icon: L.divIcon({
+          className: 'custom-marker party-marker',
+          html: `<div style="background-color: #9C27B0; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                   <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${party.sport === 'Pompom' ? '🎀' : party.sport === 'Defile' ? '🎺' : '🎉'}</span>
+                 </div>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
+          popupAnchor: [0, -15]
+        })
+      });
+
+      // Créer le contenu du popup pour la soirée
+      const popupContent = document.createElement('div');
+      popupContent.className = 'venue-popup';
+      
+      // Contenu de base de la soirée
+      popupContent.innerHTML = `
+        <h3>${party.name}</h3>
+        <p>${party.description}</p>
+        <p class="venue-address">${party.address}</p>
+        ${party.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
+      `;
+      
+      // Boutons d'actions
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'popup-buttons';
+      
+      // Bouton Google Maps
+      const mapsButton = document.createElement('button');
+      mapsButton.className = 'maps-button';
+      mapsButton.textContent = 'Ouvrir dans Google Maps';
+      mapsButton.addEventListener('click', () => {
+        openInGoogleMaps(party);
+      });
+      buttonsContainer.appendChild(mapsButton);
+      
+      // Bouton Copier l'adresse
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-button';
+      copyButton.textContent = 'Copier l\'adresse';
+      copyButton.addEventListener('click', () => {
+        copyToClipboard(party.address || `${party.latitude},${party.longitude}`);
+      });
+      buttonsContainer.appendChild(copyButton);
+      
+      popupContent.appendChild(buttonsContainer);
+
+      marker.bindPopup(popupContent);
+      
+      if (mapRef.current) {
+        marker.addTo(mapRef.current);
+        markersRef.current.push(marker);
       }
     });
   };
