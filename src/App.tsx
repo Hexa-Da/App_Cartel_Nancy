@@ -335,7 +335,7 @@ function App() {
       // Forcer la mise à jour de la carte
       if (mapRef.current) {
         mapRef.current.invalidateSize();
-      }
+    }
     }
   }, [location.pathname, activeTab]);
 
@@ -677,7 +677,7 @@ function App() {
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('preferenceChange', handlePreferenceChange as EventListener);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('preferenceChange', handlePreferenceChange as EventListener);
@@ -1462,9 +1462,9 @@ function App() {
       const isMale = event.description?.toLowerCase().includes('masculin');
       const isMixed = event.description?.toLowerCase().includes('mixte');
       const genderMatch = (!isFemale && !isMale && !isMixed) || 
-                         (isFemale && showFemale) || 
-                         (isMale && showMale) || 
-                         (isMixed && showMixed);
+        (isFemale && showFemale) || 
+        (isMale && showMale) ||
+        (isMixed && showMixed);
 
       return typeMatch && delegationMatch && venueMatch && genderMatch;
     });
