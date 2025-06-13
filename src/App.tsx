@@ -3545,7 +3545,7 @@ function App() {
             <div className="emergency-popup-header">
             <h3>Contacts d'urgence</h3>
             </div>
-            <ul style={{ textAlign: 'left', margin: '1.5rem 1rem' }}>
+            <ul style={{ textAlign: 'left', margin: '1.5rem 1rem'}}>
               <li><strong>SAMU :</strong> 15</li>
               <li><strong>Police :</strong> 17</li>
               <li><strong>Pompier :</strong> 18</li>

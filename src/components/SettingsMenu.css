@@ -5,6 +5,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -115,7 +116,7 @@ input:checked + .slider:before {
 
 /* Style pour le select */
 .settings-select {
-  width: 200px;
+  width: 150px;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;

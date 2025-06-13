@@ -1,8 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ref, onValue, push, remove, set } from 'firebase/database';
-import { database } from '../firebase';
+import { database, storage } from '../firebase';
 import { PlanningFile } from '../types';
 import { auth } from '../firebase';
+import { ref as storageRef, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
+
+// Fonction pour compresser l'image
+const compressImage = async (file: File): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculer les nouvelles dimensions tout en gardant le ratio
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1080;
+        
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Convertir en Blob avec une qualité de 0.8
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Erreur lors de la compression de l\'image'));
+            }
+          },
+          'image/jpeg',
+          0.8
+        );
+      };
+      img.onerror = () => reject(new Error('Erreur lors du chargement de l\'image'));
+    };
+    reader.onerror = () => reject(new Error('Erreur lors de la lecture du fichier'));
+  });
+};
 
 export default function PlanningFiles() {
   const [files, setFiles] = useState<PlanningFile[]>([]);
@@ -12,10 +67,15 @@ export default function PlanningFiles() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newFile, setNewFile] = useState({
     name: '',
-    type: 'pdf' as 'pdf' | 'excel',
+    type: 'image' as const,
     url: '',
-    description: ''
+    description: '',
+    eventType: ''
   });
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Liste des types d'événements disponibles
   const eventTypes = [
@@ -42,48 +102,6 @@ export default function PlanningFiles() {
     { value: 'Hotel', label: 'Hôtel 🏢' },
     { value: 'Restaurant', label: 'Restaurant 🍽️' }
   ];
-
-  // Fonction pour convertir l'URL en mode lecture seule
-  const getReadOnlyUrl = (url: string) => {
-    try {
-      const urlObj = new URL(url);
-      // Si c'est une URL Google Drive
-      if (urlObj.hostname.includes('drive.google.com')) {
-        // Si c'est un lien de partage direct
-        if (urlObj.pathname.includes('/d/')) {
-          const fileId = urlObj.pathname.split('/d/')[1].split('/')[0];
-          return `https://drive.google.com/file/d/${fileId}/preview?rm=minimal`;
-        }
-        // Si c'est un lien de partage avec des paramètres
-        else if (urlObj.searchParams.has('id')) {
-          const fileId = urlObj.searchParams.get('id');
-          return `https://drive.google.com/file/d/${fileId}/preview?rm=minimal`;
-        }
-      }
-      // Pour les autres types d'URLs, retourner l'URL originale
-      return url;
-    } catch (error) {
-      console.error('Erreur lors de la conversion de l\'URL:', error);
-      return url;
-    }
-  };
-
-  // Fonction pour vérifier si l'URL est sécurisée
-  const isSecureUrl = (url: string) => {
-    try {
-      const urlObj = new URL(url);
-      if (urlObj.hostname.includes('drive.google.com')) {
-        // Vérifier si l'URL contient des paramètres de partage
-        const hasSharingParams = urlObj.searchParams.has('usp') || 
-                               urlObj.searchParams.has('export') ||
-                               urlObj.searchParams.has('edit');
-        return !hasSharingParams;
-      }
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
 
   useEffect(() => {
     // Vérifier si l'utilisateur est admin
@@ -127,7 +145,7 @@ export default function PlanningFiles() {
     // Filtre par type d'événement
     if (eventTypeFilter !== 'all') {
       filtered = filtered.filter(file => 
-        file.name.toLowerCase().includes(eventTypeFilter.toLowerCase())
+        file.eventType === eventTypeFilter
       );
     }
 
@@ -137,13 +155,24 @@ export default function PlanningFiles() {
   const handleDeleteFile = async (fileId: string) => {
     if (!isAdmin) return;
     
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')) {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
       try {
         await remove(ref(database, `planningFiles/${fileId}`));
       } catch (error) {
-        console.error('Erreur lors de la suppression du fichier:', error);
-        alert('Une erreur est survenue lors de la suppression du fichier.');
+        console.error('Erreur lors de la suppression de l\'image:', error);
+        alert('Une erreur est survenue lors de la suppression de l\'image.');
       }
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Veuillez sélectionner une image valide.');
+        return;
+      }
+      setNewFile(prev => ({ ...prev, name: file.name }));
     }
   };
 
@@ -151,43 +180,117 @@ export default function PlanningFiles() {
     e.preventDefault();
     if (!isAdmin) return;
 
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        alert('Vous devez être connecté pour ajouter un fichier.');
-        return;
-      }
-
-      // Vérifier si l'URL est sécurisée
-      if (!isSecureUrl(newFile.url)) {
-        alert('L\'URL fournie n\'est pas sécurisée. Veuillez utiliser un lien de partage en lecture seule.');
-        return;
-      }
-
-      const newFileRef = push(ref(database, 'planningFiles'));
-      await set(newFileRef, {
-        ...newFile,
-        uploadDate: Date.now(),
-        uploadedBy: user.uid
-      });
-
-      // Réinitialiser le formulaire
-      setNewFile({
-        name: '',
-        type: 'pdf',
-        url: '',
-        description: ''
-      });
-      setShowAddForm(false);
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout du fichier:', error);
-      alert('Une erreur est survenue lors de l\'ajout du fichier.');
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      alert('Veuillez sélectionner une image.');
+      return;
     }
+
+    try {
+      setUploading(true);
+      setUploadProgress(0);
+
+      // Vérifier la taille du fichier (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error('Le fichier est trop volumineux. Taille maximum : 10MB');
+      }
+
+      // Vérifier le type de fichier
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Le fichier doit être une image');
+      }
+
+      // Compresser l'image
+      const compressedBlob = await compressImage(file);
+      const compressedFile = new File([compressedBlob], file.name, {
+        type: 'image/jpeg',
+        lastModified: Date.now(),
+      });
+
+      // Générer un nom de fichier unique
+      const timestamp = Date.now();
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const storagePath = `planningFiles/${timestamp}_${sanitizedFileName}`;
+
+      // Upload image to Firebase Storage with progress tracking
+      const storageReference = storageRef(storage, storagePath);
+      const uploadTask = uploadBytesResumable(storageReference, compressedFile);
+
+      // Gérer le suivi de la progression
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(progress);
+        },
+        (error) => {
+          console.error('Erreur lors de l\'upload:', error);
+          throw error;
+        },
+        async () => {
+          try {
+            // Upload réussi, obtenir l'URL
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+            // Save file info to database
+            const newFileRef = push(ref(database, 'planningFiles'));
+            await set(newFileRef, {
+              ...newFile,
+              url: downloadURL,
+              uploadDate: Date.now(),
+              uploadedBy: auth.currentUser?.uid || 'unknown'
+            });
+
+            setNewFile({
+              name: '',
+              type: 'image',
+              url: '',
+              description: '',
+              eventType: ''
+            });
+            setShowAddForm(false);
+
+            // Reset file input
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+          } catch (error) {
+            console.error('Erreur lors de la sauvegarde des informations:', error);
+            throw error;
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de l\'image:', error);
+      let errorMessage = 'Une erreur est survenue lors de l\'ajout de l\'image.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('CORS')) {
+          errorMessage = 'Erreur CORS : Veuillez vérifier la configuration de Firebase Storage.';
+        } else if (error.message.includes('trop volumineux')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('doit être une image')) {
+          errorMessage = error.message;
+        }
+      }
+      
+      alert(errorMessage);
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handleImageClick = (url: string) => {
+    setSelectedImage(url);
+  };
+
+  const closeImageModal = () => {
+    setSelectedImage(null);
   };
 
   return (
     <div className="planning-files">
-      <h2>Fichiers de planning</h2>
+      <h2>Plannings</h2>
       
       <div className="filters">
         <div className="filter-group">
@@ -212,7 +315,7 @@ export default function PlanningFiles() {
             className="add-file-button"
             onClick={() => setShowAddForm(!showAddForm)}
           >
-            {showAddForm ? 'Annuler' : 'Ajouter un fichier'}
+            {showAddForm ? 'Annuler' : 'Ajouter un planning'}
           </button>
         </div>
       )}
@@ -220,7 +323,7 @@ export default function PlanningFiles() {
       {showAddForm && isAdmin && (
         <form onSubmit={handleAddFile} className="add-file-form">
           <div className="form-group">
-            <label htmlFor="fileName">Nom du fichier</label>
+            <label htmlFor="fileName">Nom du planning</label>
             <input
               type="text"
               id="fileName"
@@ -232,28 +335,34 @@ export default function PlanningFiles() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="fileType">Type de fichier</label>
+            <label htmlFor="eventType">Type d'événement</label>
             <select
-              id="fileType"
-              value={newFile.type}
-              onChange={(e) => setNewFile({ ...newFile, type: e.target.value as 'pdf' | 'excel' })}
+              id="eventType"
+              value={newFile.eventType}
+              onChange={(e) => setNewFile({ ...newFile, eventType: e.target.value })}
               required
             >
-              <option value="pdf">PDF</option>
-              <option value="excel">Excel</option>
+              <option value="">Sélectionnez un type</option>
+              {eventTypes.filter(type => type.value !== 'all').map(type => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="fileUrl">URL du fichier</label>
+            <label htmlFor="fileInput">Image du planning</label>
             <input
-              type="url"
-              id="fileUrl"
-              value={newFile.url}
-              onChange={(e) => setNewFile({ ...newFile, url: e.target.value })}
+              type="file"
+              id="fileInput"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*"
               required
-              placeholder="https://drive.google.com/..."
+              className="file-input"
             />
+            <p className="file-input-help">Formats acceptés : JPG, PNG, GIF</p>
           </div>
 
           <div className="form-group">
@@ -262,46 +371,67 @@ export default function PlanningFiles() {
               id="fileDescription"
               value={newFile.description}
               onChange={(e) => setNewFile({ ...newFile, description: e.target.value })}
-              placeholder="Description du fichier..."
+              placeholder="Description du planning..."
             />
           </div>
 
-          <button type="submit" className="submit-button">
-            Ajouter le fichier
+          {uploading && (
+            <div className="upload-progress">
+              <div className="progress-bar">
+                <div 
+                  className="progress-bar-fill"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+              <p>Upload en cours... {uploadProgress}%</p>
+            </div>
+          )}
+
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={uploading}
+          >
+            {uploading ? 'Upload en cours...' : 'Ajouter le planning'}
           </button>
         </form>
       )}
 
       {filteredFiles.length === 0 ? (
-        <p>Aucun fichier disponible</p>
+        <p>Aucun planning disponible</p>
       ) : (
         <div className="files-list">
           {filteredFiles.map((file) => (
             <div key={file.id} className="file-item">
               <div className="file-info">
                 <h3>{file.name}</h3>
-                <p>Type: {file.type.toUpperCase()}</p>
                 {file.description && <p>{file.description}</p>}
                 <p>Ajouté le: {new Date(file.uploadDate).toLocaleDateString()}</p>
               </div>
+              <div className="file-preview">
+                <img 
+                  src={file.url} 
+                  alt={file.name}
+                  className="planning-image"
+                  onClick={() => handleImageClick(file.url)}
+                />
+              </div>
               <div className="file-actions">
-                <a 
-                  href={isAdmin ? file.url : getReadOnlyUrl(file.url)} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="icon-button download-button"
-                  title={isAdmin ? "Voir le fichier" : "Voir le fichier (lecture seule)"}
+                <button
+                  onClick={() => handleImageClick(file.url)}
+                  className="icon-button view-button"
+                  title="Voir l'image en plein écran"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                     <circle cx="12" cy="12" r="3"/>
                   </svg>
-                </a>
+                </button>
                 {isAdmin && (
                   <button
                     onClick={() => handleDeleteFile(file.id)}
                     className="icon-button delete-button"
-                    title="Supprimer le fichier"
+                    title="Supprimer l'image"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="3 6 5 6 21 6"/>
@@ -314,6 +444,15 @@ export default function PlanningFiles() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {selectedImage && (
+        <div className="image-modal" onClick={closeImageModal}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="close-button" onClick={closeImageModal}>×</button>
+            <img src={selectedImage} alt="Planning en plein écran" />
+          </div>
         </div>
       )}
     </div>

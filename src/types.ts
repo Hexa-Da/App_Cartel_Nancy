@@ -35,9 +35,10 @@ export interface Match {
 export interface PlanningFile {
   id: string;
   name: string;
-  type: 'pdf' | 'excel';
+  type: 'image';
   url: string;
-  uploadDate: number;
   description?: string;
+  uploadDate: number;
   uploadedBy: string;
+  eventType: string;
 } 

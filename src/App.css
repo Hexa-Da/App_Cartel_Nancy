@@ -1912,6 +1912,7 @@ html, body, #root {
 
 .emergency-popup {
   position: fixed;
+  backdrop-filter: blur(10px);
   top: 0;
   left: 0;
   right: 0;
@@ -2437,5 +2438,30 @@ html, body, #root {
   outline: none;
   box-shadow: none;
   border: none;
+}
+
+.file-preview {
+  margin: 10px 0;
+  width: 100%;
+  max-width: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.planning-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.planning-image:hover {
+  transform: scale(1.02);
+}
+
+.view-button {
+  color: #2196F3;
 }
 
