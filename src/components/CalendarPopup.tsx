@@ -55,6 +55,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     { value: 'none', label: 'Aucun' },
     { value: 'all', label: 'Tous les événements' },
     { value: 'party', label: 'Soirée et Défilé ⭐' },
+    { value: 'none', label: 'Tous les sports' },
     { value: 'Football', label: 'Football ⚽' },
     { value: 'Basketball', label: 'Basketball 🏀' },
     { value: 'Handball', label: 'Handball 🤾' },
@@ -135,7 +136,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     
     if (eventFilter !== 'none') {
       // Pour les matchs sportifs
-      if (eventFilter === 'all' || eventFilter !== 'party') {
+      if (eventFilter === 'all' || eventFilter === 'match' || eventFilter !== 'party') {
         venues.forEach(venue => {
           if (venue.matches) {
             venue.matches.forEach(match => {
@@ -143,7 +144,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
               
               if (matchDate === date) {
                 // Vérifier si le match correspond au filtre de sport
-                const sportMatch = eventFilter === 'all' || venue.sport === eventFilter;
+                const sportMatch = eventFilter === 'all' || eventFilter === 'match' || venue.sport === eventFilter;
                 // Vérifier si le match correspond au filtre de lieu
                 const venueMatch = venueFilter === 'Tous' || venue.id === venueFilter;
                 

@@ -16,23 +16,35 @@ const getInitial = (key: string, fallback: any) => {
 };
 
 const sportOptions = [
-  { value: 'none', label: 'Aucun' },
-  { value: 'Football', label: 'Football ⚽' },
-  { value: 'Basketball', label: 'Basketball 🏀' },
-  { value: 'Handball', label: 'Handball 🤾' },
-  { value: 'Rugby', label: 'Rugby 🏉' },
-  { value: 'Volleyball', label: 'Volleyball 🏐' },
-  { value: 'Tennis', label: 'Tennis 🎾' },
-  { value: 'Badminton', label: 'Badminton 🏸' },
-  { value: 'Ping-pong', label: 'Ping-pong 🏓' },
-  { value: 'Ultimate', label: 'Ultimate 🥏' },
-  { value: 'Natation', label: 'Natation 🏊' },
-  { value: 'Cross', label: 'Cross 🏃' },
-  { value: 'Boxe', label: 'Boxe 🥊' },
-  { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
-  { value: 'Pétanque', label: 'Pétanque 🍹' },
-  { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-  { value: 'Jeux de société', label: 'Jeux de société 🎲' },
+  { value: 'none', label: 'Tous les sports' },
+  { value: 'Football', label: '⚽ Football' },
+  { value: 'Basketball', label: '🏀 Basketball' },
+  { value: 'Handball', label: '🤾 Handball' },
+  { value: 'Rugby', label: '🏉 Rugby' },
+  { value: 'Ultimate', label: '🥏 Ultimate' },
+  { value: 'Natation', label: '🏊 Natation' },
+  { value: 'Badminton', label: '🏸 Badminton' },
+  { value: 'Tennis', label: '🎾 Tennis' },
+  { value: 'Cross', label: '🏃 Cross' },
+  { value: 'Volleyball', label: '🏐 Volleyball' },
+  { value: 'Ping-pong', label: '🏓 Ping-pong' },
+  { value: 'Boxe', label: '🥊 Boxe' },
+  { value: 'Athlétisme', label: '🏃‍♂️ Athlétisme' },
+  { value: 'Pétanque', label: '🍹 Pétanque' },
+  { value: 'Escalade', label: '🧗‍♂️ Escalade' },
+  { value: 'Jeux de société', label: '🎲 Jeux de société' }
+];
+
+const hotelOptions = [
+  { value: 'none', label: 'Tous les hôtels' },
+  { value: '1', label: 'ibis budget Nancy Porte Sud' },
+  { value: '2', label: 'KYRIAD DIRECT NANCY SUD - Vandoeuvre' }
+];
+
+const restaurantOptions = [
+  { value: 'none', label: 'Tous les restaurants' },
+  { value: '1', label: 'Crous ARTEM' },
+  { value: '2', label: 'Parc Saint-Marie' }
 ];
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange, getAllDelegations }) => {
@@ -48,6 +60,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   const [preferredSport, setPreferredSport] = React.useState(() => getInitial('preferredSport', 'all'));
   // Délégation préférée
   const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
+  // Hôtel préféré
+  const [preferredHotel, setPreferredHotel] = React.useState(() => getInitial('preferredHotel', 'none'));
+  // Restaurant préféré
+  const [preferredRestaurant, setPreferredRestaurant] = React.useState(() => getInitial('preferredRestaurant', 'none'));
 
   // Écouter les changements de préférences dans le localStorage
   React.useEffect(() => {
@@ -57,6 +73,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       }
       if (e.key === 'preferredSport' && e.newValue !== null) {
         setPreferredSport(e.newValue);
+      }
+      if (e.key === 'preferredHotel' && e.newValue !== null) {
+        setPreferredHotel(e.newValue);
+      }
+      if (e.key === 'preferredRestaurant' && e.newValue !== null) {
+        setPreferredRestaurant(e.newValue);
       }
     };
 
@@ -72,6 +94,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       }
       if (e.detail.key === 'preferredDelegation') {
         setPreferredDelegation(e.detail.value);
+      }
+      if (e.detail.key === 'preferredHotel') {
+        setPreferredHotel(e.detail.value);
+      }
+      if (e.detail.key === 'preferredRestaurant') {
+        setPreferredRestaurant(e.detail.value);
       }
     };
 
@@ -143,6 +171,16 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   const handleDelegationChange = (delegation: string) => {
     setPreferredDelegation(delegation);
     handlePreferenceChange('preferredDelegation', delegation);
+  };
+
+  const handleHotelChange = (hotel: string) => {
+    setPreferredHotel(hotel);
+    handlePreferenceChange('preferredHotel', hotel);
+  };
+
+  const handleRestaurantChange = (restaurant: string) => {
+    setPreferredRestaurant(restaurant);
+    handlePreferenceChange('preferredRestaurant', restaurant);
   };
 
   if (!isOpen) return null;
@@ -242,6 +280,36 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
               {getAllDelegations().map(delegation => (
                 <option key={delegation} value={delegation}>
                   {delegation}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="settings-item">
+            <label htmlFor="preferred-hotel">Votre Hôtel</label>
+            <select 
+              id="preferred-hotel" 
+              className="settings-select" 
+              value={preferredHotel} 
+              onChange={e => handleHotelChange(e.target.value)}
+            >
+              {hotelOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="settings-item">
+            <label htmlFor="preferred-restaurant">Votre Restaurant</label>
+            <select 
+              id="preferred-restaurant" 
+              className="settings-select" 
+              value={preferredRestaurant} 
+              onChange={e => handleRestaurantChange(e.target.value)}
+            >
+              {restaurantOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>

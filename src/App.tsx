@@ -51,11 +51,13 @@ interface BaseItem {
 
 interface Hotel extends BaseItem {
   type: 'hotel';
+  matches: Match[];
 }
 
 interface Restaurant extends BaseItem {
   type: 'restaurant';
   mealType: string; // 'midi' ou 'soir'
+  matches: Match[];
 }
 
 interface Party extends BaseItem {
@@ -479,17 +481,32 @@ function App() {
   const [hotels] = useState<Hotel[]>([
     {
       id: '1',
-      name: "Ibis Budget",
+      name: "ibis budget Nancy Porte Sud",
       position: [48.638751, 6.183532],
-      description: "Hôtel Ibis Budget Houdemont",
+      description: "+33 892 68 31 25",
       address: "Za Frocourt, 6 All. de la Genelière, 54180 Houdemont",
       type: 'hotel',
       date: '',
       latitude: 48.638751,
       longitude: 6.183532,
       emoji: '🏢',
-      sport: 'Hotel'
-    }
+      sport: 'Hotel',
+      matches: []
+    },
+    {
+      id: '2',
+      name: "KYRIAD DIRECT NANCY SUD - Vandoeuvre",
+      position: [48.650667, 6.146258],
+      description: "+33 3 83 44 66 00",
+      address: "1 Av. de la Forêt de Haye, 54500 Vandœuvre-lès-Nancy",
+      type: 'hotel',
+      date: '',
+      latitude: 48.650667,
+      longitude: 6.146258,
+      emoji: '🏢',
+      sport: 'Hotel',
+      matches: []
+    },
   ]);
 
   const [restaurants] = useState<Restaurant[]>([
@@ -505,7 +522,8 @@ function App() {
       longitude: 6.169268,
       emoji: '🍽️',
       sport: 'Restaurant',
-      mealType: 'soir'
+      mealType: 'soir',
+      matches: []
     },
     {
       id: '2',
@@ -519,7 +537,8 @@ function App() {
       longitude: 6.170722,
       emoji: '🍽️',
       sport: 'Restaurant',
-      mealType: 'midi'
+      mealType: 'midi',
+      matches: []
     }
   ]);
 
@@ -646,14 +665,16 @@ function App() {
   });
 
   // Fonction pour gérer les favoris
-  const toggleFavorite = (venueId: string) => {
-    setFavorites(prev => {
-      const newFavorites = prev.includes(venueId)
-        ? prev.filter(id => id !== venueId)
-        : [...prev, venueId];
-      localStorage.setItem('favorites', JSON.stringify(newFavorites));
-      return newFavorites;
-    });
+  const toggleFavorite = (placeId: string) => {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const index = favorites.indexOf(placeId);
+    if (index === -1) {
+      favorites.push(placeId);
+    } else {
+      favorites.splice(index, 1);
+    }
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    triggerMarkerUpdate();
   };
 
   // Déplacer la définition de triggerMarkerUpdate ici, avant son utilisation
@@ -684,6 +705,9 @@ function App() {
         // setDelegationFilter(e.newValue);
         // triggerMarkerUpdate();
       }
+      if (e.key === 'preferredHotel' || e.key === 'preferredRestaurant') {
+        triggerMarkerUpdate();
+      }
     };
 
     const handlePreferenceChange = (e: CustomEvent) => {
@@ -691,6 +715,9 @@ function App() {
         // Ne plus modifier directement le filtre
         // setEventFilter(e.detail.value);
         // triggerMarkerUpdate();
+      }
+      if (e.detail.key === 'preferredHotel' || e.detail.key === 'preferredRestaurant') {
+        triggerMarkerUpdate();
       }
     };
 
@@ -1307,26 +1334,17 @@ function App() {
   };
 
   // Fonction pour commencer l'édition d'un lieu
-  const startEditingVenue = (venue: Venue) => {
-    if (!checkAdminRights()) return;
-
-    // Fermer le formulaire d'édition de match s'il est ouvert
-    if (editingMatch.venueId) {
-      finishEditingMatch();
-    }
-    
-    setEditingVenue({ id: venue.id || '', venue });
+  const startEditingVenue = (venue: Place) => {
+    setEditingVenue({ id: venue.id, venue: venue as unknown as Venue });
     setIsEditing(true);
-    setIsAddingPlace(true);
-    // Pré-remplir les champs du formulaire avec les données du lieu
+    setIsAddingPlace(false);
     setNewVenueName(venue.name);
     setNewVenueDescription(venue.description);
-    setNewVenueAddress(venue.address || '');
+    setNewVenueAddress(venue.address);
     setSelectedSport(venue.sport);
-    setSelectedEmoji(sportEmojis[venue.sport as keyof typeof sportEmojis] || '⚽');
-    // Initialiser le marqueur temporaire avec la position actuelle du lieu
+    setSelectedEmoji(venue.emoji);
     setTempMarker([venue.latitude, venue.longitude]);
-    triggerMarkerUpdate();
+    setIsPlacingMarker(false);
   };
 
   // Fonction pour annuler l'édition
@@ -1443,7 +1461,8 @@ function App() {
       const typeMatch = eventFilter === 'all' || 
         (eventFilter === 'none' ? false :
           (eventFilter === 'party' && event.type === 'party') ||
-          (event.type === 'match' && event.sport === eventFilter));
+          (eventFilter === 'match' && event.type === 'match') ||
+          (event.type === 'match' && event.sport === eventFilter && eventFilter !== 'match'));
 
       // Filtre par délégation
       const delegationMatch = delegationFilter === 'all' || 
@@ -1509,15 +1528,8 @@ function App() {
 
   // Fonction pour ouvrir dans Google Maps
   const openInGoogleMaps = (place: Place) => {
-    // Tracker l'ouverture dans Google Maps
-    ReactGA.event({
-      category: 'navigation',
-      action: 'open_google_maps',
-      label: place.name
-    });
-
-    const query = encodeURIComponent(place.address || `${place.latitude},${place.longitude}`);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+    const url = `https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}`;
+    window.open(url, '_blank');
   };
 
   // Fonction pour gérer l'ouverture des popups
@@ -1593,13 +1605,12 @@ function App() {
 
   // Fonction pour copier au presse-papier
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        alert('Adresse copiée !');
-      })
-      .catch(err => {
-        console.error('Erreur lors de la copie : ', err);
-      });
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Adresse copiée dans le presse-papier !');
+    }).catch(err => {
+      console.error('Erreur lors de la copie :', err);
+      alert('Erreur lors de la copie de l\'adresse');
+    });
   };
 
   // Générer les marqueurs pour la carte
@@ -1687,137 +1698,138 @@ function App() {
 
       // Ajouter les marqueurs pour les hôtels
       hotels.forEach(hotel => {
-        const marker = L.marker([hotel.latitude, hotel.longitude], {
-          icon: L.divIcon({
-            className: 'custom-marker hotel-marker',
-            html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+        // Vérifier si l'hôtel doit être affiché selon les préférences
+        const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
+        const shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
+
+        if (shouldShow) {
+          const marker = L.marker([hotel.latitude, hotel.longitude], {
+            icon: L.divIcon({
+              className: 'custom-marker hotel-marker',
+              html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
                      <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🏢</span>
                    </div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -15]
-          })
-        });
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+              popupAnchor: [0, -15]
+            })
+          });
 
-        // Créer le contenu du popup
-        const popupContent = document.createElement('div');
-        popupContent.className = 'venue-popup';
-        
-        // Contenu de base de l'hôtel
-        popupContent.innerHTML = `
-          <h3>${hotel.name}</h3>
-          <p>${hotel.description}</p>
-          <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
-        `;
-        
-        // Boutons d'actions
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'popup-buttons';
-        
-        // Bouton Favoris
-        const favoriteButton = document.createElement('button');
-        favoriteButton.className = `favorite-button ${favorites.includes(hotel.id) ? 'active' : ''}`;
-        favoriteButton.innerHTML = favorites.includes(hotel.id) ? '★' : '☆';
-        favoriteButton.addEventListener('click', () => {
-          toggleFavorite(hotel.id);
-          favoriteButton.className = `favorite-button ${favorites.includes(hotel.id) ? 'active' : ''}`;
-          favoriteButton.innerHTML = favorites.includes(hotel.id) ? '★' : '☆';
-        });
-        buttonsContainer.appendChild(favoriteButton);
-        
-        // Bouton Google Maps
-        const mapsButton = document.createElement('button');
-        mapsButton.className = 'maps-button';
-        mapsButton.textContent = 'Ouvrir dans Google Maps';
-        mapsButton.addEventListener('click', () => {
-          openInGoogleMaps(hotel);
-        });
-        buttonsContainer.appendChild(mapsButton);
-        
-        // Bouton Copier l'adresse
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.textContent = 'Copier l\'adresse';
-        copyButton.addEventListener('click', () => {
-          copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
-        });
-        buttonsContainer.appendChild(copyButton);
-        
-        popupContent.appendChild(buttonsContainer);
+          // Créer le contenu du popup
+          const popupContent = document.createElement('div');
+          popupContent.className = 'venue-popup';
+          
+          // Contenu de base de l'hôtel
+          popupContent.innerHTML = `
+            <h3>${hotel.name}</h3>
+            <p>${hotel.description}</p>
+            <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
+          `;
+          
+          // Boutons d'actions
+          const buttonsContainer = document.createElement('div');
+          buttonsContainer.className = 'popup-buttons';
+          
+          // Bouton Google Maps
+          const mapsButton = document.createElement('button');
+          mapsButton.className = 'maps-button';
+          mapsButton.textContent = 'Ouvrir dans Google Maps';
+          mapsButton.addEventListener('click', () => {
+            openInGoogleMaps(hotel);
+          });
+          buttonsContainer.appendChild(mapsButton);
+          
+          // Bouton Copier l'adresse
+          const copyButton = document.createElement('button');
+          copyButton.className = 'copy-button';
+          copyButton.textContent = 'Copier l\'adresse';
+          copyButton.addEventListener('click', () => {
+            copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
+          });
+          buttonsContainer.appendChild(copyButton);
+          
+          popupContent.appendChild(buttonsContainer);
 
-        marker.bindPopup(popupContent);
-        
-        if (mapRef.current) {
-          marker.addTo(mapRef.current);
-          markersRef.current.push(marker);
+          marker.bindPopup(popupContent);
+          
+          if (mapRef.current) {
+            marker.addTo(mapRef.current);
+            markersRef.current.push(marker);
+          }
         }
       });
 
       // Ajouter les marqueurs pour les restaurants
       restaurants.forEach(restaurant => {
-        const marker = L.marker([restaurant.latitude, restaurant.longitude], {
-          icon: L.divIcon({
-            className: 'custom-marker restaurant-marker',
-            html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+        // Vérifier si le restaurant doit être affiché selon les préférences
+        const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
+        const shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
+
+        if (shouldShow) {
+          const marker = L.marker([restaurant.latitude, restaurant.longitude], {
+            icon: L.divIcon({
+              className: 'custom-marker restaurant-marker',
+              html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
                      <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🍽️</span>
                    </div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -15]
-          })
-        });
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+              popupAnchor: [0, -15]
+            })
+          });
 
-        // Créer le contenu du popup pour le restaurant
-        const popupContent = document.createElement('div');
-        popupContent.className = 'venue-popup';
-        
-        // Contenu de base du restaurant
-        popupContent.innerHTML = `
-          <h3>${restaurant.name}</h3>
-          <p>${restaurant.description}</p>
-          <p class="venue-address">${restaurant.address}</p>
-        `;
-        
-        // Boutons d'actions
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'popup-buttons';
-        
-        // Bouton Favoris
-        const favoriteButton = document.createElement('button');
-        favoriteButton.className = `favorite-button ${favorites.includes(restaurant.id) ? 'active' : ''}`;
-        favoriteButton.innerHTML = favorites.includes(restaurant.id) ? '★' : '☆';
-        favoriteButton.addEventListener('click', () => {
-          toggleFavorite(restaurant.id);
+          // Créer le contenu du popup pour le restaurant
+          const popupContent = document.createElement('div');
+          popupContent.className = 'venue-popup';
+          
+          // Contenu de base du restaurant
+          popupContent.innerHTML = `
+            <h3>${restaurant.name}</h3>
+            <p>${restaurant.description}</p>
+            <p class="venue-address">${restaurant.address}</p>
+          `;
+          
+          // Boutons d'actions
+          const buttonsContainer = document.createElement('div');
+          buttonsContainer.className = 'popup-buttons';
+          
+          // Bouton Favoris
+          const favoriteButton = document.createElement('button');
           favoriteButton.className = `favorite-button ${favorites.includes(restaurant.id) ? 'active' : ''}`;
           favoriteButton.innerHTML = favorites.includes(restaurant.id) ? '★' : '☆';
-        });
-        buttonsContainer.appendChild(favoriteButton);
-        
-        // Bouton Google Maps
-        const mapsButton = document.createElement('button');
-        mapsButton.className = 'maps-button';
-        mapsButton.textContent = 'Ouvrir dans Google Maps';
-        mapsButton.addEventListener('click', () => {
-          openInGoogleMaps(restaurant);
-        });
-        buttonsContainer.appendChild(mapsButton);
-        
-        // Bouton Copier l'adresse
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.textContent = 'Copier l\'adresse';
-        copyButton.addEventListener('click', () => {
-          copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
-        });
-        buttonsContainer.appendChild(copyButton);
-        
-        popupContent.appendChild(buttonsContainer);
+          favoriteButton.addEventListener('click', () => {
+            toggleFavorite(restaurant.id);
+            favoriteButton.className = `favorite-button ${favorites.includes(restaurant.id) ? 'active' : ''}`;
+            favoriteButton.innerHTML = favorites.includes(restaurant.id) ? '★' : '☆';
+          });
+          buttonsContainer.appendChild(favoriteButton);
+          
+          // Bouton Google Maps
+          const mapsButton = document.createElement('button');
+          mapsButton.className = 'maps-button';
+          mapsButton.textContent = 'Ouvrir dans Google Maps';
+          mapsButton.addEventListener('click', () => {
+            openInGoogleMaps(restaurant);
+          });
+          buttonsContainer.appendChild(mapsButton);
+          
+          // Bouton Copier l'adresse
+          const copyButton = document.createElement('button');
+          copyButton.className = 'copy-button';
+          copyButton.textContent = 'Copier l\'adresse';
+          copyButton.addEventListener('click', () => {
+            copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
+          });
+          buttonsContainer.appendChild(copyButton);
+          
+          popupContent.appendChild(buttonsContainer);
 
-        marker.bindPopup(popupContent);
-        
-        if (mapRef.current) {
-          marker.addTo(mapRef.current);
-          markersRef.current.push(marker);
+          marker.bindPopup(popupContent);
+          
+          if (mapRef.current) {
+            marker.addTo(mapRef.current);
+            markersRef.current.push(marker);
+          }
         }
       });
 
@@ -1977,7 +1989,7 @@ function App() {
         ));
 
       const shouldShow = 
-        (eventFilter === 'all' || eventFilter === venue.sport) &&
+        (eventFilter === 'all' || eventFilter === 'match' || eventFilter === venue.sport) &&
         (venueFilter === 'Tous' || venue.id === venueFilter) &&
         hasMatchingDelegation;
 
@@ -2180,79 +2192,85 @@ function App() {
     // Ajouter les marqueurs pour les hôtels
     if (eventFilter === 'all') {
       hotels.forEach(hotel => {
-        const marker = L.marker([hotel.latitude, hotel.longitude], {
-          icon: L.divIcon({
-            className: 'custom-marker hotel-marker',
-            html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🏢</span>
-                   </div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -15]
-          })
-        });
+        // Vérifier si l'hôtel doit être affiché selon les préférences
+        const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
+        const shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
 
-        // Créer le contenu du popup
-        const popupContent = document.createElement('div');
-        popupContent.className = 'venue-popup';
-        
-        // Contenu de base de l'hôtel
-        popupContent.innerHTML = `
-          <h3>${hotel.name}</h3>
-          <p>${hotel.description}</p>
-          <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
-        `;
-        
-        // Boutons d'actions
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'popup-buttons';
-        
-        // Bouton Google Maps
-        const mapsButton = document.createElement('button');
-        mapsButton.className = 'maps-button';
-        mapsButton.textContent = 'Ouvrir dans Google Maps';
-        mapsButton.addEventListener('click', () => {
-          openInGoogleMaps(hotel);
-        });
-        buttonsContainer.appendChild(mapsButton);
-        
-        // Bouton Copier l'adresse
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.textContent = 'Copier l\'adresse';
-        copyButton.addEventListener('click', () => {
-          copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
-        });
-        buttonsContainer.appendChild(copyButton);
-
-        // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
-        if (isAdmin && isEditing) {
-          const editButton = document.createElement('button');
-          editButton.className = 'edit-button';
-          editButton.textContent = 'Modifier';
-          editButton.addEventListener('click', () => {
-            startEditingVenue(hotel as Venue);
+        if (shouldShow) {
+          const marker = L.marker([hotel.latitude, hotel.longitude], {
+            icon: L.divIcon({
+              className: 'custom-marker hotel-marker',
+              html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                       <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🏢</span>
+                     </div>`,
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+              popupAnchor: [0, -15]
+            })
           });
-          buttonsContainer.appendChild(editButton);
 
-          const deleteButton = document.createElement('button');
-          deleteButton.className = 'delete-button';
-          deleteButton.textContent = 'Supprimer';
-          deleteButton.addEventListener('click', () => {
-            if (window.confirm('Êtes-vous sûr de vouloir supprimer cet hôtel ?')) {
-              deleteVenue(hotel.id);
-            }
+          // Créer le contenu du popup
+          const popupContent = document.createElement('div');
+          popupContent.className = 'venue-popup';
+          
+          // Contenu de base de l'hôtel
+          popupContent.innerHTML = `
+            <h3>${hotel.name}</h3>
+            <p>${hotel.description}</p>
+            <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
+          `;
+          
+          // Boutons d'actions
+          const buttonsContainer = document.createElement('div');
+          buttonsContainer.className = 'popup-buttons';
+          
+          // Bouton Google Maps
+          const mapsButton = document.createElement('button');
+          mapsButton.className = 'maps-button';
+          mapsButton.textContent = 'Ouvrir dans Google Maps';
+          mapsButton.addEventListener('click', () => {
+            openInGoogleMaps(hotel);
           });
-          buttonsContainer.appendChild(deleteButton);
-        }
-        
-        popupContent.appendChild(buttonsContainer);
+          buttonsContainer.appendChild(mapsButton);
+          
+          // Bouton Copier l'adresse
+          const copyButton = document.createElement('button');
+          copyButton.className = 'copy-button';
+          copyButton.textContent = 'Copier l\'adresse';
+          copyButton.addEventListener('click', () => {
+            copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
+          });
+          buttonsContainer.appendChild(copyButton);
 
-        marker.bindPopup(popupContent);
-        
-        if (mapRef.current) {
-          marker.addTo(mapRef.current);
-          markersRef.current.push(marker);
+          // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
+          if (isAdmin && isEditing) {
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-button';
+            editButton.textContent = 'Modifier';
+            editButton.addEventListener('click', () => {
+              startEditingVenue(hotel as Venue);
+            });
+            buttonsContainer.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-button';
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.addEventListener('click', () => {
+              if (window.confirm('Êtes-vous sûr de vouloir supprimer cet hôtel ?')) {
+                deleteVenue(hotel.id);
+              }
+            });
+            buttonsContainer.appendChild(deleteButton);
+          }
+          
+          popupContent.appendChild(buttonsContainer);
+
+          marker.bindPopup(popupContent);
+          
+          if (mapRef.current) {
+            marker.addTo(mapRef.current);
+            markersRef.current.push(marker);
+          }
         }
       });
     }
@@ -2260,79 +2278,85 @@ function App() {
     // Ajouter les marqueurs pour les restaurants
     if (eventFilter === 'all') {
       restaurants.forEach(restaurant => {
-        const marker = L.marker([restaurant.latitude, restaurant.longitude], {
-          icon: L.divIcon({
-            className: 'custom-marker restaurant-marker',
-            html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🍽️</span>
-                   </div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -15]
-          })
-        });
+        // Vérifier si le restaurant doit être affiché selon les préférences
+        const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
+        const shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
 
-        // Créer le contenu du popup pour le restaurant
-        const popupContent = document.createElement('div');
-        popupContent.className = 'venue-popup';
-        
-        // Contenu de base du restaurant
-        popupContent.innerHTML = `
-          <h3>${restaurant.name}</h3>
-          <p>${restaurant.description}</p>
-          <p class="venue-address">${restaurant.address}</p>
-        `;
-        
-        // Boutons d'actions
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'popup-buttons';
-        
-        // Bouton Google Maps
-        const mapsButton = document.createElement('button');
-        mapsButton.className = 'maps-button';
-        mapsButton.textContent = 'Ouvrir dans Google Maps';
-        mapsButton.addEventListener('click', () => {
-          openInGoogleMaps(restaurant);
-        });
-        buttonsContainer.appendChild(mapsButton);
-        
-        // Bouton Copier l'adresse
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.textContent = 'Copier l\'adresse';
-        copyButton.addEventListener('click', () => {
-          copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
-        });
-        buttonsContainer.appendChild(copyButton);
-
-        // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
-        if (isAdmin && isEditing) {
-          const editButton = document.createElement('button');
-          editButton.className = 'edit-button';
-          editButton.textContent = 'Modifier';
-          editButton.addEventListener('click', () => {
-            startEditingVenue(restaurant as Venue);
+        if (shouldShow) {
+          const marker = L.marker([restaurant.latitude, restaurant.longitude], {
+            icon: L.divIcon({
+              className: 'custom-marker restaurant-marker',
+              html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                       <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🍽️</span>
+                     </div>`,
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+              popupAnchor: [0, -15]
+            })
           });
-          buttonsContainer.appendChild(editButton);
 
-          const deleteButton = document.createElement('button');
-          deleteButton.className = 'delete-button';
-          deleteButton.textContent = 'Supprimer';
-          deleteButton.addEventListener('click', () => {
-            if (window.confirm('Êtes-vous sûr de vouloir supprimer ce restaurant ?')) {
-              deleteVenue(restaurant.id);
-            }
+          // Créer le contenu du popup pour le restaurant
+          const popupContent = document.createElement('div');
+          popupContent.className = 'venue-popup';
+          
+          // Contenu de base du restaurant
+          popupContent.innerHTML = `
+            <h3>${restaurant.name}</h3>
+            <p>${restaurant.description}</p>
+            <p class="venue-address">${restaurant.address}</p>
+          `;
+          
+          // Boutons d'actions
+          const buttonsContainer = document.createElement('div');
+          buttonsContainer.className = 'popup-buttons';
+          
+          // Bouton Google Maps
+          const mapsButton = document.createElement('button');
+          mapsButton.className = 'maps-button';
+          mapsButton.textContent = 'Ouvrir dans Google Maps';
+          mapsButton.addEventListener('click', () => {
+            openInGoogleMaps(restaurant);
           });
-          buttonsContainer.appendChild(deleteButton);
-        }
-        
-        popupContent.appendChild(buttonsContainer);
+          buttonsContainer.appendChild(mapsButton);
+          
+          // Bouton Copier l'adresse
+          const copyButton = document.createElement('button');
+          copyButton.className = 'copy-button';
+          copyButton.textContent = 'Copier l\'adresse';
+          copyButton.addEventListener('click', () => {
+            copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
+          });
+          buttonsContainer.appendChild(copyButton);
 
-        marker.bindPopup(popupContent);
-        
-        if (mapRef.current) {
-          marker.addTo(mapRef.current);
-          markersRef.current.push(marker);
+          // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
+          if (isAdmin && isEditing) {
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-button';
+            editButton.textContent = 'Modifier';
+            editButton.addEventListener('click', () => {
+              startEditingVenue(restaurant as Venue);
+            });
+            buttonsContainer.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-button';
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.addEventListener('click', () => {
+              if (window.confirm('Êtes-vous sûr de vouloir supprimer ce restaurant ?')) {
+                deleteVenue(restaurant.id);
+              }
+            });
+            buttonsContainer.appendChild(deleteButton);
+          }
+          
+          popupContent.appendChild(buttonsContainer);
+
+          marker.bindPopup(popupContent);
+          
+          if (mapRef.current) {
+            marker.addTo(mapRef.current);
+            markersRef.current.push(marker);
+          }
         }
       });
     }
@@ -2535,7 +2559,8 @@ function App() {
     setIsStarFilterActive(!isStarFilterActive);
     
     if (!isStarFilterActive) {
-      setEventFilter(preferredSport);
+      // Si le sport préféré est 'none', on utilise 'match' pour afficher tous les sports
+      setEventFilter(preferredSport === 'none' ? 'match' : preferredSport);
       setDelegationFilter(preferredDelegation);
     } else {
       setEventFilter('all');
@@ -2547,7 +2572,7 @@ function App() {
   };
 
   const getVenueOptions = () => {
-    if (eventFilter === 'all') {
+    if (eventFilter === 'all' || eventFilter === 'match') {
       return [{ value: 'Tous', label: 'Tous les lieux' }];
     }
 
@@ -2764,6 +2789,19 @@ function App() {
     }
   };
 
+  const handlePreferencesClick = () => {
+    // Appliquer les préférences
+    setEventFilter(preferences.sport === 'none' ? 'match' : preferences.sport);
+    setDelegationFilter(preferences.delegation);
+    setVenueFilter(preferences.venue);
+    setShowFemale(preferences.showFemale);
+    setShowMale(preferences.showMale);
+    setShowMixed(preferences.showMixed);
+    setShowParty(preferences.showParty);
+    setShowHotel(preferences.showHotel);
+    setShowRestaurant(preferences.showRestaurant);
+  };
+
   // Ajoute le header en haut du return
   return (
     <div className="app">
@@ -2938,6 +2976,7 @@ function App() {
                       >
                         <option value="none">Aucun</option>
                         <option value="all">Tous les événements</option>
+                        <option value="match">Tous les sports</option>
                         <option value="party">Soirées et Défilé ⭐</option>
                         <option value="Football">Football ⚽</option>
                         <option value="Basketball">Basketball 🏀</option>
@@ -2970,7 +3009,7 @@ function App() {
                         ))}
                       </select>
 
-                      {eventFilter !== 'none' && eventFilter !== 'all' && (
+                      {eventFilter !== 'none' && eventFilter !== 'all' && eventFilter !== 'match' && (
                         <select 
                           className="filter-select"
                           value={venueFilter}
