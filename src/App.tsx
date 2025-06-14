@@ -1543,8 +1543,17 @@ function App() {
       if (popup) {
         const matchesList = popup.querySelector('.matches-list');
         if (matchesList) {
-          // Scroll vers le haut de la liste des matchs
-          matchesList.scrollTo({ top: 0, behavior: 'smooth' });
+          // Trouver le premier match non passé et scroller vers lui
+          const firstNonPassedMatch = matchesList.querySelector('.match-item:not(.match-passed)');
+          if (firstNonPassedMatch) {
+            // Attendre que le popup soit complètement rendu
+            setTimeout(() => {
+              firstNonPassedMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          } else {
+            // Si pas de match non passé, scroller vers le haut de la liste
+            matchesList.scrollTo({ top: 0, behavior: 'smooth' });
+          }
           // Une fois que nous avons scrollé, on arrête d'observer
           obs.disconnect();
         }
@@ -2802,6 +2811,22 @@ function App() {
     setShowRestaurant(preferences.showRestaurant);
   };
 
+  // Juste après la déclaration de useAppPanels et des states principaux dans App()
+  const previousTabRef = useRef<TabType | null>(null);
+
+  useEffect(() => {
+    // Détecte le retour de 'planning' vers 'events' et déclenche le scroll
+    if (previousTabRef.current === 'planning' && activeTab === 'events') {
+      setTimeout(() => {
+        const firstNonPassedEvent = document.querySelector('.event-item:not(.passed)');
+        if (firstNonPassedEvent) {
+          firstNonPassedEvent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+    previousTabRef.current = activeTab;
+  }, [activeTab]);
+
   // Ajoute le header en haut du return
   return (
     <div className="app">
@@ -3134,7 +3159,15 @@ function App() {
                 <div className="planning-panel-header">
                   <h3>Plannings</h3>
                 </div>
-                <div style={{ padding: '2rem', textAlign: 'left', maxWidth: 800, margin: '0 auto' }}>
+                <div style={{ 
+                  padding: '2rem', 
+                  textAlign: 'center', 
+                  maxWidth: 800, 
+                  margin: '0 auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
+                }}>
                   <PlanningFiles />
                 </div>
               </div>
