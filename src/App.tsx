@@ -1,14 +1,14 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef} from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { auth, database, loginWithGoogle, handleGoogleRedirect } from './firebase';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
-import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged} from 'firebase/auth';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import PlanningFiles from './components/PlanningFiles';
@@ -380,10 +380,8 @@ function App() {
 
   // Gestion de la redirection Google au chargement
   useEffect(() => {
-    console.log('useEffect handleGoogleRedirect appelé');
     handleGoogleRedirect().then(user => {
       if (user) {
-        console.log('Redirection Google, user:', user);
         setUser(user);
       }
     }).catch(error => {
@@ -395,12 +393,10 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      console.log('onAuthStateChanged, user:', user);
       if (user) {
         const adminsRef = ref(database, 'admins');
         onValue(adminsRef, (snapshot) => {
           const admins = snapshot.val();
-          console.log('admins:', admins, 'user.uid:', user.uid);
           setIsAdmin(admins && admins[user.uid]);
         });
       } else {
@@ -664,30 +660,10 @@ function App() {
     return savedFavorites ? JSON.parse(savedFavorites) : [];
   });
 
-  // Fonction pour gérer les favoris
-  const toggleFavorite = (placeId: string) => {
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    const index = favorites.indexOf(placeId);
-    if (index === -1) {
-      favorites.push(placeId);
-    } else {
-      favorites.splice(index, 1);
-    }
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    triggerMarkerUpdate();
-  };
-
   // Déplacer la définition de triggerMarkerUpdate ici, avant son utilisation
   const triggerMarkerUpdate = () => {
     setAppAction(prev => prev + 1);
     if (mapRef.current) {
-      // Nettoyer les marqueurs existants
-      markersRef.current.forEach(marker => {
-        marker.remove();
-      });
-      markersRef.current = [];
-
-      // Recréer tous les marqueurs
       updateMapMarkers();
     }
   };
@@ -1019,7 +995,8 @@ function App() {
 
     try {
       await set(newVenueRef, newVenue);
-      triggerMarkerUpdate(); // Ajouter cette ligne
+      updateMapMarkers();
+      triggerMarkerUpdate(); 
       
       const venueId = newVenueRef.key || '';
       addToHistory({
@@ -1074,7 +1051,8 @@ function App() {
     if (venue) {
       const venueRef = ref(database, `venues/${id}`);
       await set(venueRef, null);
-      triggerMarkerUpdate(); // Ajouter cette ligne
+      updateMapMarkers();
+      triggerMarkerUpdate(); 
       
       // Ajouter l'action à l'historique avec une fonction d'annulation
       addToHistory({
@@ -1141,7 +1119,8 @@ function App() {
         ...venue,
         matches: updatedMatches
       });
-      triggerMarkerUpdate(); // Ajouter cette ligne
+      triggerMarkerUpdate(); 
+      updateMapMarkers();
       
       // Ajouter l'action à l'historique
       addToHistory({
@@ -1206,7 +1185,8 @@ function App() {
           ...venue,
           matches: updatedMatches
         });
-        triggerMarkerUpdate(); // Ajouter cette ligne
+        triggerMarkerUpdate(); 
+        updateMapMarkers();
         
         if (matchBefore) {
           addToHistory({
@@ -1259,7 +1239,8 @@ function App() {
         ...venue,
         matches: updatedMatches
       });
-      triggerMarkerUpdate(); // Ajouter cette ligne
+      triggerMarkerUpdate(); 
+      updateMapMarkers();
       
       // Ajouter l'action à l'historique avec une fonction d'annulation
       if (matchToDelete) {
@@ -1305,7 +1286,8 @@ function App() {
         
         try {
           await set(venueRef, updatedVenue);
-          triggerMarkerUpdate(); // Ajouter cette ligne
+          triggerMarkerUpdate(); 
+          updateMapMarkers();
           
           // Ajouter l'action à l'historique avec une fonction d'annulation
           addToHistory({
@@ -1337,7 +1319,7 @@ function App() {
   const startEditingVenue = (venue: Place) => {
     setEditingVenue({ id: venue.id, venue: venue as unknown as Venue });
     setIsEditing(true);
-    setIsAddingPlace(false);
+    setIsAddingPlace(true); 
     setNewVenueName(venue.name);
     setNewVenueDescription(venue.description);
     setNewVenueAddress(venue.address);
@@ -1465,8 +1447,9 @@ function App() {
           (event.type === 'match' && event.sport === eventFilter && eventFilter !== 'match'));
 
       // Filtre par délégation
-      const delegationMatch = delegationFilter === 'all' || 
-        (event.teams && event.teams.toLowerCase().includes(delegationFilter.toLowerCase()));
+      const delegationMatch = event.type === 'party' 
+  ? true 
+  : (delegationFilter === 'all' || (event.teams && event.teams.toLowerCase().includes(delegationFilter.toLowerCase())));
 
       // Filtre par lieu
       let venueMatch = true;
@@ -1533,44 +1516,19 @@ function App() {
   };
 
   // Fonction pour gérer l'ouverture des popups
-  const handlePopupOpen = (venueId: string) => {
-    setOpenPopup(venueId);
-    triggerMarkerUpdate();
-    
-    // Utiliser un MutationObserver pour détecter quand le popup est chargé
-    const observer = new MutationObserver((mutations, obs) => {
-      const popup = document.querySelector('.leaflet-popup-content');
-      if (popup) {
-        const matchesList = popup.querySelector('.matches-list');
-        if (matchesList) {
-          // Trouver le premier match non passé et scroller vers lui
-          const firstNonPassedMatch = matchesList.querySelector('.match-item:not(.match-passed)');
-          if (firstNonPassedMatch) {
-            // Attendre que le popup soit complètement rendu
+  function handlePopupOpen() {
             setTimeout(() => {
-              firstNonPassedMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+      const popup = document.querySelector('.leaflet-popup-content');
+      if (!popup) return;
+      // Scroll to the first upcoming match
+      const nextMatch = popup.querySelector('.match-item:not(.match-passed)');
+      if (nextMatch) {
+        nextMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
           } else {
-            // Si pas de match non passé, scroller vers le haut de la liste
-            matchesList.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-          // Une fois que nous avons scrollé, on arrête d'observer
-          obs.disconnect();
-        }
+        popup.scrollTop = 0;
       }
-    });
-
-    // Observer les changements dans le document
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
-    // Arrêter l'observation après 2 secondes au cas où
-    setTimeout(() => {
-      observer.disconnect();
-    }, 2000);
-  };
+    }, 0);
+  }
 
   const handleLocationSuccess = (position: GeolocationPosition) => {
     const { latitude, longitude } = position.coords;
@@ -1626,13 +1584,26 @@ function App() {
   useEffect(() => {
     if (!locationError && mapRef.current) {
       // Nettoyer les marqueurs existants
-      markersRef.current.forEach(marker => {
-        marker.remove();
-      });
+      markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
 
-      // Ajouter les marqueurs pour les lieux
+      // VENUES
       venues.forEach(venue => {
+        // Filtrage par délégation
+        const delegationMatch =
+          delegationFilter === 'all' ||
+          (venue.matches && venue.matches.some(match =>
+            match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
+          ));
+
+        // Filtrage par event et lieu
+        const shouldShow =
+          (eventFilter === 'all' || eventFilter === 'match' || eventFilter === venue.sport) &&
+          (venueFilter === 'Tous' || venue.id === venueFilter) &&
+          delegationMatch;
+
+        if (!shouldShow) return;
+
         const markerColor = getMarkerColor(venue.date);
         const marker = L.marker([venue.latitude, venue.longitude], {
           icon: L.divIcon({
@@ -1649,8 +1620,6 @@ function App() {
         // Créer le contenu du popup
         const popupContent = document.createElement('div');
         popupContent.className = 'venue-popup';
-        
-        // Contenu de base du lieu
         popupContent.innerHTML = `
           <h3>${venue.name}</h3>
           <p>${venue.description}</p>
@@ -1661,19 +1630,6 @@ function App() {
         // Boutons d'actions
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
-        
-        // Bouton Favoris
-        const favoriteButton = document.createElement('button');
-        favoriteButton.className = `favorite-button ${favorites.includes(venue.id) ? 'active' : ''}`;
-        favoriteButton.innerHTML = favorites.includes(venue.id) ? '★' : '☆';
-        favoriteButton.addEventListener('click', () => {
-          toggleFavorite(venue.id);
-          favoriteButton.className = `favorite-button ${favorites.includes(venue.id) ? 'active' : ''}`;
-          favoriteButton.innerHTML = favorites.includes(venue.id) ? '★' : '☆';
-        });
-        buttonsContainer.appendChild(favoriteButton);
-        
-        // Bouton Google Maps
         const mapsButton = document.createElement('button');
         mapsButton.className = 'maps-button';
         mapsButton.textContent = 'Ouvrir dans Google Maps';
@@ -1681,8 +1637,6 @@ function App() {
           openInGoogleMaps(venue);
         });
         buttonsContainer.appendChild(mapsButton);
-        
-        // Bouton Copier l'adresse
         const copyButton = document.createElement('button');
         copyButton.className = 'copy-button';
         copyButton.textContent = 'Copier l\'adresse';
@@ -1690,28 +1644,105 @@ function App() {
           copyToClipboard(venue.address || `${venue.latitude},${venue.longitude}`);
         });
         buttonsContainer.appendChild(copyButton);
-        
         popupContent.appendChild(buttonsContainer);
 
+        // Ajouter les matchs au popup
+        const matchesListDiv = document.createElement('div');
+        matchesListDiv.className = 'matches-list';
+        if (venue.matches && venue.matches.length > 0) {
+          matchesListDiv.innerHTML = '<h4>Matchs :</h4>';
+          const sortedMatches = [...venue.matches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          const matchesScrollContainer = document.createElement('div');
+          matchesScrollContainer.className = 'matches-scroll-container';
+          matchesScrollContainer.style.maxHeight = '200px';
+          matchesScrollContainer.style.overflowY = 'auto';
+          const style = document.createElement('style');
+          style.textContent = `
+            .match-passed { background-color:rgba(255, 255, 255, 0.05); }
+            .match-passed p { opacity: 0.3; color: var(--text-color); }
+            .match-passed .match-result { opacity: 0.3; font-weight: bold; color: var(--text-color); }
+          `;
+          document.head.appendChild(style);
+          sortedMatches.forEach(match => {
+            const matchItemDiv = document.createElement('div');
+            matchItemDiv.className = `match-item ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`;
+            matchItemDiv.innerHTML = `
+              <p class="match-date">${formatDateTime(match.date, match.endTime)}</p>
+              <p class="match-teams">${match.teams}</p>
+              <p class="match-description">${match.description}</p>
+              ${match.result ? `<p class="match-result"><strong>Résultat :</strong> ${match.result}</p>` : ''}
+            `;
+            if (isEditing && isAdmin) {
+              const matchActionsDiv = document.createElement('div');
+              matchActionsDiv.className = 'match-actions';
+              const editButton = document.createElement('button');
+              editButton.className = 'edit-match-button';
+              editButton.textContent = 'Modifier';
+              editButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startEditingMatch(venue.id || '', match);
+              });
+              const deleteButton = document.createElement('button');
+              deleteButton.className = 'delete-match-button';
+              deleteButton.textContent = 'Supprimer';
+              deleteButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteMatch(venue.id || '', match.id);
+              });
+              matchActionsDiv.appendChild(editButton);
+              matchActionsDiv.appendChild(deleteButton);
+              matchItemDiv.appendChild(matchActionsDiv);
+            }
+            matchesScrollContainer.appendChild(matchItemDiv);
+          });
+          matchesListDiv.appendChild(matchesScrollContainer);
+          popupContent.appendChild(matchesListDiv);
+        } else {
+          matchesListDiv.innerHTML = '<p>Aucun match prévu</p>';
+          popupContent.appendChild(matchesListDiv);
+        }
+        if (isEditing && isAdmin) {
+          const editButtonsContainer = document.createElement('div');
+          editButtonsContainer.className = 'popup-buttons';
+          const addMatchButton = document.createElement('button');
+          addMatchButton.className = 'add-match-button';
+          addMatchButton.textContent = 'Ajouter un match';
+          addMatchButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startEditingMatch(venue.id || '', null);
+          });
+          editButtonsContainer.appendChild(addMatchButton);
+          const editButton = document.createElement('button');
+          editButton.className = 'edit-button';
+          editButton.textContent = 'Modifier ce lieu';
+          editButton.addEventListener('click', () => {
+            startEditingVenue(venue);
+          });
+          editButtonsContainer.appendChild(editButton);
+          const deleteButton = document.createElement('button');
+          deleteButton.className = 'delete-button';
+          deleteButton.textContent = 'Supprimer ce lieu';
+          deleteButton.addEventListener('click', () => {
+            deleteVenue(venue.id || '');
+          });
+          editButtonsContainer.appendChild(deleteButton);
+          popupContent.appendChild(editButtonsContainer);
+        }
         marker.bindPopup(popupContent);
-        
-        marker.on('click', () => {
-          handlePopupOpen(venue.id || '');
+        marker.on('popupopen', () => {
+          handlePopupOpen();
         });
-
         if (mapRef.current) {
           marker.addTo(mapRef.current);
           markersRef.current.push(marker);
         }
       });
 
-      // Ajouter les marqueurs pour les hôtels
+      // HOTELS
       hotels.forEach(hotel => {
-        // Vérifier si l'hôtel doit être affiché selon les préférences
         const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
         const shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
-
-        if (shouldShow) {
+        if (!shouldShow) return;
           const marker = L.marker([hotel.latitude, hotel.longitude], {
             icon: L.divIcon({
               className: 'custom-marker hotel-marker',
@@ -1723,23 +1754,15 @@ function App() {
               popupAnchor: [0, -15]
             })
           });
-
-          // Créer le contenu du popup
           const popupContent = document.createElement('div');
           popupContent.className = 'venue-popup';
-          
-          // Contenu de base de l'hôtel
           popupContent.innerHTML = `
             <h3>${hotel.name}</h3>
             <p>${hotel.description}</p>
             <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
           `;
-          
-          // Boutons d'actions
           const buttonsContainer = document.createElement('div');
           buttonsContainer.className = 'popup-buttons';
-          
-          // Bouton Google Maps
           const mapsButton = document.createElement('button');
           mapsButton.className = 'maps-button';
           mapsButton.textContent = 'Ouvrir dans Google Maps';
@@ -1747,8 +1770,6 @@ function App() {
             openInGoogleMaps(hotel);
           });
           buttonsContainer.appendChild(mapsButton);
-          
-          // Bouton Copier l'adresse
           const copyButton = document.createElement('button');
           copyButton.className = 'copy-button';
           copyButton.textContent = 'Copier l\'adresse';
@@ -1756,25 +1777,22 @@ function App() {
             copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
           });
           buttonsContainer.appendChild(copyButton);
-          
           popupContent.appendChild(buttonsContainer);
-
           marker.bindPopup(popupContent);
-          
+          marker.on('popupopen', () => {
+            handlePopupOpen();
+          });
           if (mapRef.current) {
             marker.addTo(mapRef.current);
             markersRef.current.push(marker);
-          }
         }
       });
 
-      // Ajouter les marqueurs pour les restaurants
+      // RESTAURANTS
       restaurants.forEach(restaurant => {
-        // Vérifier si le restaurant doit être affiché selon les préférences
         const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
         const shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
-
-        if (shouldShow) {
+        if (!shouldShow) return;
           const marker = L.marker([restaurant.latitude, restaurant.longitude], {
             icon: L.divIcon({
               className: 'custom-marker restaurant-marker',
@@ -1786,34 +1804,15 @@ function App() {
               popupAnchor: [0, -15]
             })
           });
-
-          // Créer le contenu du popup pour le restaurant
           const popupContent = document.createElement('div');
           popupContent.className = 'venue-popup';
-          
-          // Contenu de base du restaurant
           popupContent.innerHTML = `
             <h3>${restaurant.name}</h3>
             <p>${restaurant.description}</p>
             <p class="venue-address">${restaurant.address}</p>
           `;
-          
-          // Boutons d'actions
           const buttonsContainer = document.createElement('div');
           buttonsContainer.className = 'popup-buttons';
-          
-          // Bouton Favoris
-          const favoriteButton = document.createElement('button');
-          favoriteButton.className = `favorite-button ${favorites.includes(restaurant.id) ? 'active' : ''}`;
-          favoriteButton.innerHTML = favorites.includes(restaurant.id) ? '★' : '☆';
-          favoriteButton.addEventListener('click', () => {
-            toggleFavorite(restaurant.id);
-            favoriteButton.className = `favorite-button ${favorites.includes(restaurant.id) ? 'active' : ''}`;
-            favoriteButton.innerHTML = favorites.includes(restaurant.id) ? '★' : '☆';
-          });
-          buttonsContainer.appendChild(favoriteButton);
-          
-          // Bouton Google Maps
           const mapsButton = document.createElement('button');
           mapsButton.className = 'maps-button';
           mapsButton.textContent = 'Ouvrir dans Google Maps';
@@ -1821,8 +1820,6 @@ function App() {
             openInGoogleMaps(restaurant);
           });
           buttonsContainer.appendChild(mapsButton);
-          
-          // Bouton Copier l'adresse
           const copyButton = document.createElement('button');
           copyButton.className = 'copy-button';
           copyButton.textContent = 'Copier l\'adresse';
@@ -1830,20 +1827,25 @@ function App() {
             copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
           });
           buttonsContainer.appendChild(copyButton);
-          
           popupContent.appendChild(buttonsContainer);
-
           marker.bindPopup(popupContent);
-          
+          marker.on('popupopen', () => {
+            handlePopupOpen();
+          });
           if (mapRef.current) {
             marker.addTo(mapRef.current);
             markersRef.current.push(marker);
-          }
         }
       });
 
-      // Ajouter les marqueurs pour les soirées
+      // PARTIES
       parties.forEach(party => {
+        const shouldShow =
+          (eventFilter === 'all' || eventFilter === 'party') &&
+          (venueFilter === 'Tous' || party.id === venueFilter);
+
+        if (!shouldShow) return;
+
         const marker = L.marker([party.latitude, party.longitude], {
           icon: L.divIcon({
             className: 'custom-marker party-marker',
@@ -1855,35 +1857,16 @@ function App() {
             popupAnchor: [0, -15]
           })
         });
-
-        // Créer le contenu du popup pour la soirée
         const popupContent = document.createElement('div');
         popupContent.className = 'venue-popup';
-        
-        // Contenu de base de la soirée
         popupContent.innerHTML = `
           <h3>${party.name}</h3>
           <p>${party.description}</p>
           <p class="venue-address">${party.address}</p>
           ${party.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
         `;
-        
-        // Boutons d'actions
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
-        
-        // Bouton Favoris
-        const favoriteButton = document.createElement('button');
-        favoriteButton.className = `favorite-button ${favorites.includes(party.id) ? 'active' : ''}`;
-        favoriteButton.innerHTML = favorites.includes(party.id) ? '★' : '☆';
-        favoriteButton.addEventListener('click', () => {
-          toggleFavorite(party.id);
-          favoriteButton.className = `favorite-button ${favorites.includes(party.id) ? 'active' : ''}`;
-          favoriteButton.innerHTML = favorites.includes(party.id) ? '★' : '☆';
-        });
-        buttonsContainer.appendChild(favoriteButton);
-        
-        // Bouton Google Maps
         const mapsButton = document.createElement('button');
         mapsButton.className = 'maps-button';
         mapsButton.textContent = 'Ouvrir dans Google Maps';
@@ -1891,8 +1874,6 @@ function App() {
           openInGoogleMaps(party);
         });
         buttonsContainer.appendChild(mapsButton);
-        
-        // Bouton Copier l'adresse
         const copyButton = document.createElement('button');
         copyButton.className = 'copy-button';
         copyButton.textContent = 'Copier l\'adresse';
@@ -1900,18 +1881,142 @@ function App() {
           copyToClipboard(party.address || `${party.latitude},${party.longitude}`);
         });
         buttonsContainer.appendChild(copyButton);
-        
         popupContent.appendChild(buttonsContainer);
-
         marker.bindPopup(popupContent);
-        
+        marker.on('popupopen', () => {
+          handlePopupOpen();
+        });
         if (mapRef.current) {
           marker.addTo(mapRef.current);
           markersRef.current.push(marker);
         }
       });
     }
-  }, [venues, hotels, parties, restaurants, isEditing, isAdmin, favorites]);
+  }, [venues, hotels, restaurants, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter]);
+
+  // Effet pour gérer les changements de préférences d'hôtels et restaurants
+  useEffect(() => {
+    const handlePreferenceChange = (e: StorageEvent) => {
+      if (e.key === 'preferredHotel' || e.key === 'preferredRestaurant') {
+        const map = mapRef.current;
+        if (!map) return;
+
+        // Supprimer uniquement les marqueurs d'hôtels et restaurants
+        markersRef.current = markersRef.current.filter(marker => {
+          const isHotelOrRestaurant = marker.getElement()?.classList.contains('hotel-marker') || 
+                                    marker.getElement()?.classList.contains('restaurant-marker');
+          if (isHotelOrRestaurant) {
+            marker.remove();
+            return false;
+          }
+          return true;
+        });
+
+        // Recréer les marqueurs d'hôtels
+        hotels.forEach(hotel => {
+          const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
+          if (preferredHotel === 'none' || hotel.id === preferredHotel) {
+            const marker = L.marker([hotel.latitude, hotel.longitude], {
+              icon: L.divIcon({
+                className: 'custom-marker hotel-marker',
+                html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                         <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🏢</span>
+                       </div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15],
+                popupAnchor: [0, -15]
+              })
+            });
+
+            const popupContent = document.createElement('div');
+            popupContent.className = 'venue-popup';
+            popupContent.innerHTML = `
+              <h3>${hotel.name}</h3>
+              <p>${hotel.description}</p>
+              <p class="venue-address">${hotel.address}</p>
+            `;
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'popup-buttons';
+            const mapsButton = document.createElement('button');
+            mapsButton.className = 'maps-button';
+            mapsButton.textContent = 'Ouvrir dans Google Maps';
+            mapsButton.addEventListener('click', () => {
+              openInGoogleMaps(hotel);
+            });
+            buttonsContainer.appendChild(mapsButton);
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.textContent = 'Copier l\'adresse';
+            copyButton.addEventListener('click', () => {
+              copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
+            });
+            buttonsContainer.appendChild(copyButton);
+            popupContent.appendChild(buttonsContainer);
+            marker.bindPopup(popupContent);
+            marker.on('popupopen', () => {
+              handlePopupOpen();
+            });
+
+            marker.addTo(map);
+            markersRef.current.push(marker);
+          }
+        });
+
+        // Recréer les marqueurs de restaurants
+        restaurants.forEach(restaurant => {
+          const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
+          if (preferredRestaurant === 'none' || restaurant.id === preferredRestaurant) {
+            const marker = L.marker([restaurant.latitude, restaurant.longitude], {
+              icon: L.divIcon({
+                className: 'custom-marker restaurant-marker',
+                html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                         <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🍽️</span>
+                       </div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15],
+                popupAnchor: [0, -15]
+              })
+            });
+
+            const popupContent = document.createElement('div');
+            popupContent.className = 'venue-popup';
+            popupContent.innerHTML = `
+              <h3>${restaurant.name}</h3>
+              <p>${restaurant.description}</p>
+              <p class="venue-address">${restaurant.address}</p>
+            `;
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'popup-buttons';
+            const mapsButton = document.createElement('button');
+            mapsButton.className = 'maps-button';
+            mapsButton.textContent = 'Ouvrir dans Google Maps';
+            mapsButton.addEventListener('click', () => {
+              openInGoogleMaps(restaurant);
+            });
+            buttonsContainer.appendChild(mapsButton);
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.textContent = 'Copier l\'adresse';
+            copyButton.addEventListener('click', () => {
+              copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
+            });
+            buttonsContainer.appendChild(copyButton);
+            popupContent.appendChild(buttonsContainer);
+            marker.bindPopup(popupContent);
+            marker.on('popupopen', () => {
+              handlePopupOpen();
+            });
+
+            marker.addTo(map);
+            markersRef.current.push(marker);
+          }
+        });
+      }
+    };
+
+    window.addEventListener('storage', handlePreferenceChange);
+    return () => window.removeEventListener('storage', handlePreferenceChange);
+  }, [hotels, restaurants]);
 
   // Fonction pour commencer l'édition d'un match
   const startEditingMatch = (venueId: string, match: Match | null) => {
@@ -1983,495 +2088,90 @@ function App() {
   const updateMapMarkers = () => {
     if (!mapRef.current) return;
 
-    // Nettoyer les marqueurs existants
-    markersRef.current.forEach(marker => {
-      marker.remove();
-    });
-    markersRef.current = [];
+    // Récupérer tous les marqueurs existants
+    const allMarkers = markersRef.current;
 
-    // Ajouter les marqueurs pour les lieux
-    venues.forEach(venue => {
-      // Vérifier si le lieu doit être affiché selon les filtres
-      const hasMatchingDelegation = delegationFilter === 'all' || 
-        (venue.matches && venue.matches.some(match => 
-          match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
-        ));
-
-      const shouldShow = 
-        (eventFilter === 'all' || eventFilter === 'match' || eventFilter === venue.sport) &&
-        (venueFilter === 'Tous' || venue.id === venueFilter) &&
-        hasMatchingDelegation;
-
-      if (shouldShow) {
-        const markerColor = getMarkerColor(venue.date);
-        const marker = L.marker([venue.latitude, venue.longitude], {
-          icon: L.divIcon({
-            className: 'custom-marker',
-            html: `<div class="marker-content" style="background-color: ${markerColor.color}; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${getSportIcon(venue.sport)}</span>
-                   </div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -15]
-          })
+    // Mettre à jour la visibilité de chaque marqueur
+    allMarkers.forEach(marker => {
+      const markerElement = marker.getElement();
+      if (markerElement) {
+        // Trouver le lieu correspondant au marqueur
+        const venue = venues.find(v => {
+          const markerLatLng = marker.getLatLng();
+          return v.latitude === markerLatLng.lat && v.longitude === markerLatLng.lng;
         });
 
-        // Créer le contenu du popup
-        const popupContent = document.createElement('div');
-        popupContent.className = 'venue-popup';
-        
-        // Contenu de base du lieu
-        popupContent.innerHTML = `
-          <h3>${venue.name}</h3>
-          <p>${venue.description}</p>
-          <p><strong>Sport:</strong> ${venue.sport}</p>
-          <p class="venue-address">${venue.address || `${venue.latitude}, ${venue.longitude}`}</p>
-        `;
+        // Trouver la soirée correspondante au marqueur
+        const party = parties.find(p => {
+          const markerLatLng = marker.getLatLng();
+          return p.latitude === markerLatLng.lat && p.longitude === markerLatLng.lng;
+        });
 
-        // Ajouter les matchs si présents
-        if (venue.matches && venue.matches.length > 0) {
-          const matchesList = document.createElement('div');
-          matchesList.className = 'matches-list';
-          matchesList.innerHTML = '<h4>Matchs :</h4>';
-          
-          // Trier les matchs par date
-          const sortedMatches = [...venue.matches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-          
-          sortedMatches.forEach(match => {
-            // Ne montrer que les matchs de la délégation sélectionnée
-            if (delegationFilter === 'all' || match.teams.toLowerCase().includes(delegationFilter.toLowerCase())) {
-              const matchElement = document.createElement('div');
-              matchElement.className = `match-item ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`;
-              matchElement.innerHTML = `
-                <p class="match-date">${formatDateTime(match.date, match.endTime)}</p>
-                <p class="match-teams">${match.teams}</p>
-                <p class="match-description">${match.description}</p>
-                ${match.result ? `<p class="match-result"><strong>Résultat :</strong> ${match.result}</p>` : ''}
-              `;
+        // Trouver l'hôtel correspondant au marqueur
+        const hotel = hotels.find(h => {
+          const markerLatLng = marker.getLatLng();
+          return h.latitude === markerLatLng.lat && h.longitude === markerLatLng.lng;
+        });
 
-              // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
-              if (isAdmin && isEditing) {
-                const matchActions = document.createElement('div');
-                matchActions.className = 'match-actions';
-                matchActions.innerHTML = `
-                  <button class="edit-match-button" onclick="event.stopPropagation();">
-                    ✏️
-                  </button>
-                  <button class="delete-match-button" onclick="event.stopPropagation();">
-                    🗑️
-                  </button>
-                `;
+        // Trouver le restaurant correspondant au marqueur
+        const restaurant = restaurants.find(r => {
+          const markerLatLng = marker.getLatLng();
+          return r.latitude === markerLatLng.lat && r.longitude === markerLatLng.lng;
+        });
 
-                // Ajouter les gestionnaires d'événements pour les boutons
-                const editButton = matchActions.querySelector('.edit-match-button');
-                const deleteButton = matchActions.querySelector('.delete-match-button');
+        if (venue) {
+          // Afficher le marqueur si :
+          // 1. Le filtre est sur "all" ou correspond au sport
+          // 2. Le filtre de lieu est sur "Tous" ou correspond au lieu
+          const shouldShow = 
+            (eventFilter === 'all' || eventFilter === venue.sport) &&
+            (venueFilter === 'Tous' || venue.id === venueFilter);
 
-                if (editButton) {
-                  editButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    startEditingMatch(venue.id, match);
-                  });
-                }
-
-                if (deleteButton) {
-                  deleteButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce match ?')) {
-                      deleteMatch(venue.id, match.id);
-                    }
-                  });
-                }
-
-                matchElement.appendChild(matchActions);
-              }
-
-              matchesList.appendChild(matchElement);
-            }
-          });
-
-          // Ajouter le style pour les matchs passés
-          const style = document.createElement('style');
-          style.textContent = `
-            .match-passed {
-              opacity: 0.5;
-              filter: grayscale(100%);
-            }
-            .match-passed p {
-              color: var(--text-color-light);
-            }
-          `;
-          document.head.appendChild(style);
-
-          // Défiler vers le premier match non passé
-          setTimeout(() => {
-            const firstNonPassedMatch = matchesList.querySelector('.match-item:not(.match-passed)');
-            if (firstNonPassedMatch) {
-              firstNonPassedMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }, 100);
-
-          popupContent.appendChild(matchesList);
-
-          // Ajouter le bouton pour ajouter un nouveau match si on est en mode admin ET en mode édition
-          // et que le lieu n'est pas un restaurant, une soirée ou un hôtel
-          if (isAdmin && isEditing && venue.type === 'venue') {
-            const addMatchButton = document.createElement('button');
-            addMatchButton.className = 'add-match-button';
-            addMatchButton.textContent = 'Ajouter un match';
-            addMatchButton.addEventListener('click', (e) => {
-              e.stopPropagation();
-              startEditingMatch(venue.id, null);
-            });
-            popupContent.appendChild(addMatchButton);
+          markerElement.style.display = shouldShow ? 'block' : 'none';
+          markerElement.style.opacity = shouldShow ? '1' : '0';
+        } else if (party) {
+          // Afficher le marqueur de soirée si :
+          // 1. Le filtre est sur "all" ou "party"
+          // 2. Le filtre de lieu correspond
+          let partyId = '';
+          switch (party.name) {
+            case 'Place Stanislas':
+              partyId = 'place-stanislas';
+              break;
+            case 'Centre Prouvé':
+              partyId = 'centre-prouve';
+              break;
+            case 'Parc des Expositions':
+              partyId = 'parc-expo';
+              break;
+            case 'Zénith':
+              partyId = 'zenith';
+              break;
+            default:
+              partyId = party.name.toLowerCase().replace(/\s+/g, '-');
           }
-        } else {
-          // Si aucun match n'est présent, afficher un message et le bouton d'ajout si applicable
-          const noMatchesMessage = document.createElement('p');
-          noMatchesMessage.textContent = 'Aucun match prévu';
-          popupContent.appendChild(noMatchesMessage);
 
-          // Ajouter le bouton pour ajouter un nouveau match si on est en mode admin ET en mode édition
-          // et que le lieu n'est pas un restaurant, une soirée ou un hôtel
-          if (isAdmin && isEditing && venue.type === 'venue') {
-            const addMatchButton = document.createElement('button');
-            addMatchButton.className = 'add-match-button';
-            addMatchButton.textContent = 'Ajouter un match';
-            addMatchButton.addEventListener('click', (e) => {
-              e.stopPropagation();
-              startEditingMatch(venue.id, null);
-            });
-            popupContent.appendChild(addMatchButton);
-          }
-        }
+          const shouldShow = 
+            (eventFilter === 'all' || eventFilter === 'party') &&
+            (venueFilter === 'Tous' || partyId === venueFilter);
 
-        // Boutons d'actions
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'popup-buttons';
-        
-        // Bouton Google Maps
-        const mapsButton = document.createElement('button');
-        mapsButton.className = 'maps-button';
-        mapsButton.textContent = 'Ouvrir dans Google Maps';
-        mapsButton.addEventListener('click', () => {
-          openInGoogleMaps(venue);
-        });
-        buttonsContainer.appendChild(mapsButton);
-        
-        // Bouton Copier l'adresse
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.textContent = 'Copier l\'adresse';
-        copyButton.addEventListener('click', () => {
-          copyToClipboard(venue.address || `${venue.latitude},${venue.longitude}`);
-        });
-        buttonsContainer.appendChild(copyButton);
-
-        // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
-        if (isAdmin && isEditing) {
-          const editButton = document.createElement('button');
-          editButton.className = 'edit-button';
-          editButton.textContent = 'Modifier';
-          editButton.addEventListener('click', () => {
-            startEditingVenue(venue);
-          });
-          buttonsContainer.appendChild(editButton);
-
-          const deleteButton = document.createElement('button');
-          deleteButton.className = 'delete-button';
-          deleteButton.textContent = 'Supprimer';
-          deleteButton.addEventListener('click', () => {
-            if (window.confirm('Êtes-vous sûr de vouloir supprimer ce lieu ?')) {
-              deleteVenue(venue.id);
-            }
-          });
-          buttonsContainer.appendChild(deleteButton);
-        }
-        
-        popupContent.appendChild(buttonsContainer);
-
-        marker.bindPopup(popupContent);
-        
-        if (mapRef.current) {
-          marker.addTo(mapRef.current);
-          markersRef.current.push(marker);
+          markerElement.style.display = shouldShow ? 'block' : 'none';
+          markerElement.style.opacity = shouldShow ? '1' : '0';
+        } else if (hotel) {
+          // Gérer les hôtels indépendamment des filtres
+          const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
+          const shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
+          markerElement.style.display = shouldShow ? 'block' : 'none';
+          markerElement.style.opacity = shouldShow ? '1' : '0';
+        } else if (restaurant) {
+          // Gérer les restaurants indépendamment des filtres
+          const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
+          const shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
+          markerElement.style.display = shouldShow ? 'block' : 'none';
+          markerElement.style.opacity = shouldShow ? '1' : '0';
         }
       }
     });
-
-    // Ajouter les marqueurs pour les hôtels
-    if (eventFilter === 'all') {
-      hotels.forEach(hotel => {
-        // Vérifier si l'hôtel doit être affiché selon les préférences
-        const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
-        const shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
-
-        if (shouldShow) {
-          const marker = L.marker([hotel.latitude, hotel.longitude], {
-            icon: L.divIcon({
-              className: 'custom-marker hotel-marker',
-              html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                       <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🏢</span>
-                     </div>`,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
-              popupAnchor: [0, -15]
-            })
-          });
-
-          // Créer le contenu du popup
-          const popupContent = document.createElement('div');
-          popupContent.className = 'venue-popup';
-          
-          // Contenu de base de l'hôtel
-          popupContent.innerHTML = `
-            <h3>${hotel.name}</h3>
-            <p>${hotel.description}</p>
-            <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
-          `;
-          
-          // Boutons d'actions
-          const buttonsContainer = document.createElement('div');
-          buttonsContainer.className = 'popup-buttons';
-          
-          // Bouton Google Maps
-          const mapsButton = document.createElement('button');
-          mapsButton.className = 'maps-button';
-          mapsButton.textContent = 'Ouvrir dans Google Maps';
-          mapsButton.addEventListener('click', () => {
-            openInGoogleMaps(hotel);
-          });
-          buttonsContainer.appendChild(mapsButton);
-          
-          // Bouton Copier l'adresse
-          const copyButton = document.createElement('button');
-          copyButton.className = 'copy-button';
-          copyButton.textContent = 'Copier l\'adresse';
-          copyButton.addEventListener('click', () => {
-            copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
-          });
-          buttonsContainer.appendChild(copyButton);
-
-          // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
-          if (isAdmin && isEditing) {
-            const editButton = document.createElement('button');
-            editButton.className = 'edit-button';
-            editButton.textContent = 'Modifier';
-            editButton.addEventListener('click', () => {
-              startEditingVenue(hotel as Venue);
-            });
-            buttonsContainer.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete-button';
-            deleteButton.textContent = 'Supprimer';
-            deleteButton.addEventListener('click', () => {
-              if (window.confirm('Êtes-vous sûr de vouloir supprimer cet hôtel ?')) {
-                deleteVenue(hotel.id);
-              }
-            });
-            buttonsContainer.appendChild(deleteButton);
-          }
-          
-          popupContent.appendChild(buttonsContainer);
-
-          marker.bindPopup(popupContent);
-          
-          if (mapRef.current) {
-            marker.addTo(mapRef.current);
-            markersRef.current.push(marker);
-          }
-        }
-      });
-    }
-
-    // Ajouter les marqueurs pour les restaurants
-    if (eventFilter === 'all') {
-      restaurants.forEach(restaurant => {
-        // Vérifier si le restaurant doit être affiché selon les préférences
-        const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
-        const shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
-
-        if (shouldShow) {
-          const marker = L.marker([restaurant.latitude, restaurant.longitude], {
-            icon: L.divIcon({
-              className: 'custom-marker restaurant-marker',
-              html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                       <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🍽️</span>
-                     </div>`,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
-              popupAnchor: [0, -15]
-            })
-          });
-
-          // Créer le contenu du popup pour le restaurant
-          const popupContent = document.createElement('div');
-          popupContent.className = 'venue-popup';
-          
-          // Contenu de base du restaurant
-          popupContent.innerHTML = `
-            <h3>${restaurant.name}</h3>
-            <p>${restaurant.description}</p>
-            <p class="venue-address">${restaurant.address}</p>
-          `;
-          
-          // Boutons d'actions
-          const buttonsContainer = document.createElement('div');
-          buttonsContainer.className = 'popup-buttons';
-          
-          // Bouton Google Maps
-          const mapsButton = document.createElement('button');
-          mapsButton.className = 'maps-button';
-          mapsButton.textContent = 'Ouvrir dans Google Maps';
-          mapsButton.addEventListener('click', () => {
-            openInGoogleMaps(restaurant);
-          });
-          buttonsContainer.appendChild(mapsButton);
-          
-          // Bouton Copier l'adresse
-          const copyButton = document.createElement('button');
-          copyButton.className = 'copy-button';
-          copyButton.textContent = 'Copier l\'adresse';
-          copyButton.addEventListener('click', () => {
-            copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
-          });
-          buttonsContainer.appendChild(copyButton);
-
-          // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
-          if (isAdmin && isEditing) {
-            const editButton = document.createElement('button');
-            editButton.className = 'edit-button';
-            editButton.textContent = 'Modifier';
-            editButton.addEventListener('click', () => {
-              startEditingVenue(restaurant as Venue);
-            });
-            buttonsContainer.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete-button';
-            deleteButton.textContent = 'Supprimer';
-            deleteButton.addEventListener('click', () => {
-              if (window.confirm('Êtes-vous sûr de vouloir supprimer ce restaurant ?')) {
-                deleteVenue(restaurant.id);
-              }
-            });
-            buttonsContainer.appendChild(deleteButton);
-          }
-          
-          popupContent.appendChild(buttonsContainer);
-
-          marker.bindPopup(popupContent);
-          
-          if (mapRef.current) {
-            marker.addTo(mapRef.current);
-            markersRef.current.push(marker);
-          }
-        }
-      });
-    }
-
-    // Ajouter les marqueurs pour les soirées
-    if (eventFilter === 'all' || eventFilter === 'party') {
-      parties.forEach(party => {
-        let partyId = '';
-        switch (party.name) {
-          case 'Place Stanislas':
-            partyId = 'place-stanislas';
-            break;
-          case 'Centre Prouvé':
-            partyId = 'centre-prouve';
-            break;
-          case 'Parc des Expositions':
-            partyId = 'parc-expo';
-            break;
-          case 'Zénith':
-            partyId = 'zenith';
-            break;
-          default:
-            partyId = party.name.toLowerCase().replace(/\s+/g, '-');
-        }
-
-        const shouldShow = venueFilter === 'Tous' || partyId === venueFilter;
-
-        if (shouldShow) {
-          const marker = L.marker([party.latitude, party.longitude], {
-            icon: L.divIcon({
-              className: 'custom-marker party-marker',
-              html: `<div style="background-color: #9C27B0; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                       <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${party.sport === 'Pompom' ? '🎀' : party.sport === 'Defile' ? '🎺' : '🎉'}</span>
-                     </div>`,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
-              popupAnchor: [0, -15]
-            })
-          });
-
-          // Créer le contenu du popup pour la soirée
-          const popupContent = document.createElement('div');
-          popupContent.className = 'venue-popup';
-          
-          // Contenu de base de la soirée
-          popupContent.innerHTML = `
-            <h3>${party.name}</h3>
-            <p>${party.description}</p>
-            <p class="venue-address">${party.address}</p>
-            ${party.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
-          `;
-          
-          // Boutons d'actions
-          const buttonsContainer = document.createElement('div');
-          buttonsContainer.className = 'popup-buttons';
-          
-          // Bouton Google Maps
-          const mapsButton = document.createElement('button');
-          mapsButton.className = 'maps-button';
-          mapsButton.textContent = 'Ouvrir dans Google Maps';
-          mapsButton.addEventListener('click', () => {
-            openInGoogleMaps(party);
-          });
-          buttonsContainer.appendChild(mapsButton);
-          
-          // Bouton Copier l'adresse
-          const copyButton = document.createElement('button');
-          copyButton.className = 'copy-button';
-          copyButton.textContent = 'Copier l\'adresse';
-          copyButton.addEventListener('click', () => {
-            copyToClipboard(party.address || `${party.latitude},${party.longitude}`);
-          });
-          buttonsContainer.appendChild(copyButton);
-
-          // Ajouter les boutons d'édition si on est en mode admin ET en mode édition
-          if (isAdmin && isEditing) {
-            const editButton = document.createElement('button');
-            editButton.className = 'edit-button';
-            editButton.textContent = 'Modifier';
-            editButton.addEventListener('click', () => {
-              startEditingVenue(party as Venue);
-            });
-            buttonsContainer.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete-button';
-            deleteButton.textContent = 'Supprimer';
-            deleteButton.addEventListener('click', () => {
-              if (window.confirm('Êtes-vous sûr de vouloir supprimer cette soirée ?')) {
-                deleteVenue(party.id);
-              }
-            });
-            buttonsContainer.appendChild(deleteButton);
-          }
-          
-          popupContent.appendChild(buttonsContainer);
-
-          marker.bindPopup(popupContent);
-          
-          if (mapRef.current) {
-            marker.addTo(mapRef.current);
-            markersRef.current.push(marker);
-          }
-        }
-      });
-    }
   };
 
   // Mettre à jour les marqueurs lorsque le filtre change ou qu'une action est effectuée
@@ -2639,11 +2339,6 @@ function App() {
   };
 
   const handleGenderFilterChange = (gender: 'female' | 'male' | 'mixed') => {
-    ReactGA.event({
-      category: 'filter',
-      action: 'change_gender_filter',
-      label: gender
-    });
     if (gender === 'female') setShowFemale(!showFemale);
     if (gender === 'male') setShowMale(!showMale);
     if (gender === 'mixed') setShowMixed(!showMixed);
@@ -2667,7 +2362,6 @@ function App() {
         const lastMsg = messages[messages.length - 1];
         const newTimestamp = lastMsg.timestamp;
         localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
-        console.log('App - Updated lastSeenChatTimestamp:', newTimestamp);
       }
     }
   };
@@ -2796,19 +2490,6 @@ function App() {
         }
       }, 100);
     }
-  };
-
-  const handlePreferencesClick = () => {
-    // Appliquer les préférences
-    setEventFilter(preferences.sport === 'none' ? 'match' : preferences.sport);
-    setDelegationFilter(preferences.delegation);
-    setVenueFilter(preferences.venue);
-    setShowFemale(preferences.showFemale);
-    setShowMale(preferences.showMale);
-    setShowMixed(preferences.showMixed);
-    setShowParty(preferences.showParty);
-    setShowHotel(preferences.showHotel);
-    setShowRestaurant(preferences.showRestaurant);
   };
 
   // Juste après la déclaration de useAppPanels et des states principaux dans App()
@@ -3583,7 +3264,6 @@ function App() {
               <li><strong>Police :</strong> 17</li>
               <li><strong>Pompier :</strong> 18</li>
               <li><strong>Numéro européen :</strong> 112</li>
-              <li><strong>Urgence sourds/malentendants :</strong> 114 (SMS)</li>
             </ul>
             <button 
                 className="close-button" 
@@ -3603,7 +3283,7 @@ function App() {
               </button>          </div>
         </div>
       )}
-      <Outlet context={{ closeAllPanels, getAllDelegations }} />
+      <Outlet />
     </div>
   );
 }

@@ -37,7 +37,7 @@ export interface PlanningFile {
   name: string;
   type: 'image' | 'file';
   url: string;
-  description: string;
+  description?: string;
   eventType: string;
   uploadDate: number;
   uploadedBy: string;

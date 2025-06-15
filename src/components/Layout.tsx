@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation, useOutletContext, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import './Layout.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
@@ -73,7 +73,6 @@ const Layout: React.FC = () => {
   const [showChat, setShowChat] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -101,7 +100,6 @@ const Layout: React.FC = () => {
   const [newMessageSender, setNewMessageSender] = useState('Organisation');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const location = useLocation();
-  const { closeAllPanels } = (useOutletContext() || {}) as { closeAllPanels?: () => void };
   const navigate = useNavigate();
 
   // Gestion de l'authentification
@@ -700,7 +698,6 @@ const Layout: React.FC = () => {
               <li><strong>Police :</strong> 17</li>
               <li><strong>Pompier :</strong> 18</li>
               <li><strong>Numéro européen :</strong> 112</li>
-              <li><strong>Urgence sourds/malentendants :</strong> 114 (SMS)</li>
             </ul>
           </div>
         </div>

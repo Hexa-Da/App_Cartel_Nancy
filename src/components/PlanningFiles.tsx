@@ -3,61 +3,7 @@ import { ref, onValue, push, remove, set } from 'firebase/database';
 import { database, storage } from '../firebase';
 import { PlanningFile } from '../types';
 import { auth } from '../firebase';
-import { ref as storageRef, uploadBytes, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
-
-// Fonction pour compresser l'image
-const compressImage = async (file: File): Promise<Blob> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        
-        // Calculer les nouvelles dimensions tout en gardant le ratio
-        const MAX_WIDTH = 1920;
-        const MAX_HEIGHT = 1080;
-        
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height = Math.round((height * MAX_WIDTH) / width);
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width = Math.round((width * MAX_HEIGHT) / height);
-            height = MAX_HEIGHT;
-          }
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        
-        // Convertir en Blob avec une qualité de 0.8
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              resolve(blob);
-            } else {
-              reject(new Error('Erreur lors de la compression de l\'image'));
-            }
-          },
-          'image/jpeg',
-          0.8
-        );
-      };
-      img.onerror = () => reject(new Error('Erreur lors du chargement de l\'image'));
-    };
-    reader.onerror = () => reject(new Error('Erreur lors de la lecture du fichier'));
-  });
-};
+import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
 
 export default function PlanningFiles() {
   const [files, setFiles] = useState<PlanningFile[]>([]);
@@ -69,7 +15,6 @@ export default function PlanningFiles() {
     name: '',
     type: 'image' as const,
     url: '',
-    description: '',
     eventType: ''
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -176,13 +121,20 @@ export default function PlanningFiles() {
             // fallback: essayer de retrouver le chemin à partir du nom
             storagePath = `planningFiles/${fileToDelete.name}`;
           }
-          // Supprimer du storage
-          await deleteObject(storageRef(storage, storagePath));
+          // Supprimer du storage (mais ignorer l'erreur 404)
+          try {
+            await deleteObject(storageRef(storage, storagePath));
+          } catch (error: any) {
+            if (error.code === 'storage/object-not-found') {
+              console.info('Fichier déjà supprimé ou inexistant dans Firebase Storage.');
+            } else {
+              throw error;
+            }
+          }
         }
-        // Supprimer de la base
+        // Supprimer de la base (toujours)
         await remove(ref(database, `planningFiles/${fileId}`));
       } catch (error) {
-        console.error('Erreur lors de la suppression du fichier:', error);
         alert('Une erreur est survenue lors de la suppression du fichier.');
       }
     }
@@ -242,17 +194,16 @@ export default function PlanningFiles() {
       const newFileRef = push(ref(database, 'planningFiles'));
       await set(newFileRef, {
         ...newFile,
-              url: downloadURL,
+        url: downloadURL,
         uploadDate: Date.now(),
         uploadedBy: auth.currentUser?.uid || 'unknown'
       });
 
       setNewFile({
         name: '',
-              type: 'file',
+        type: 'image',
         url: '',
-              description: '',
-              eventType: ''
+        eventType: ''
       });
       setShowAddForm(false);
 
@@ -285,10 +236,6 @@ export default function PlanningFiles() {
     }
   };
 
-  const handleImageClick = (url: string) => {
-    setSelectedImage(url);
-  };
-
   const closeImageModal = () => {
     setSelectedImage(null);
   };
@@ -318,7 +265,6 @@ export default function PlanningFiles() {
         borderRadius: '6px',
         overflow: 'hidden',
         marginBottom: '0.3rem',
-        maxWidth: '100%',
       }}>
         <div style={{
           width: `${uploadProgress}%`,
@@ -544,7 +490,8 @@ export default function PlanningFiles() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(12px)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -554,14 +501,13 @@ export default function PlanningFiles() {
               padding: isMobile ? '1rem 0.5rem' : '2rem 1rem',
               borderRadius: '12px',
               width: '100%',
-              maxWidth: isMobile ? '95vw' : '500px',
+              maxWidth: isMobile ? '85vw' : '400px',
               minWidth: 0,
               maxHeight: '90vh',
               overflowY: 'auto',
               position: 'relative',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
-              border: '2px solid var(--accent-color)',
-              background: 'rgba(10, 10, 10, 0.98)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.65)',
+              background: 'rgba(15, 15, 15, 0.95)',
               color: 'var(--text-primary)',
               margin: '0 auto',
               display: 'flex',
@@ -677,29 +623,7 @@ export default function PlanningFiles() {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="fileDescription">Description (optionnelle)</label>
-            <textarea
-              id="fileDescription"
-              value={newFile.description}
-              onChange={(e) => setNewFile({ ...newFile, description: e.target.value })}
-                    placeholder="Description du planning..."
-                    style={{
-                      width: '100%',
-                      padding: isMobile ? '0.4rem' : '0.5rem',
-                      borderRadius: '4px',
-                      border: '1px solid var(--border-color)',
-                      background: 'var(--bg-primary)',
-                      color: 'var(--text-primary)',
-                      minHeight: isMobile ? '60px' : '100px',
-                      resize: 'vertical',
-                      fontSize: isMobile ? '0.98rem' : '1rem',
-                      boxSizing: 'border-box',
-                    }}
-            />
-          </div>
-
-                <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '1rem', justifyContent: 'space-between', marginTop: '1rem', flexWrap: isMobile ? 'wrap' : 'nowrap', width: '100%' }}>
+          <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '1rem', justifyContent: 'space-between', marginTop: '1rem', flexWrap: isMobile ? 'wrap' : 'nowrap', width: '100%' }}>
                   <button 
                     type="button"
                     onClick={() => setShowAddForm(false)}
@@ -997,7 +921,7 @@ export default function PlanningFiles() {
       `}</style>
     </div>
   );
-}
+} 
 
 // Ajoute ce style en haut du composant
 const arrowBtnMinimal = {
