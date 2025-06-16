@@ -75,7 +75,6 @@ interface HistoryAction {
 
 // Initialiser Google Analytics correctement avec debugging
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-XXXXXXXX';
-console.log('[GA] ID de mesure utilisé:', GA_MEASUREMENT_ID);
 
 // Configuration avec mode test activé pour la validation
 ReactGA.initialize(GA_MEASUREMENT_ID, {
@@ -85,9 +84,6 @@ ReactGA.initialize(GA_MEASUREMENT_ID, {
   }
 });
 
-// Afficher explicitement l'objet ReactGA pour le déboggage
-console.log('[GA] Objet ReactGA:', ReactGA);
-
 // Envoyer un événement test pour vérifier la connexion
 ReactGA.event({
   category: 'testing',
@@ -95,7 +91,6 @@ ReactGA.event({
   label: 'Validation de connexion GA4'
 });
 
-console.log('[GA] Google Analytics initialisé en mode test');
 
 // Composant pour la géolocalisation
 function LocationMarker() {
@@ -2262,7 +2257,15 @@ function App() {
 
   // Ajouter la fonction pour gérer le clic sur le bouton ⭐
   const handleStarFilterClick = () => {
-    const preferredSport = localStorage.getItem('preferredSport') || 'all';
+    const preferredSportRaw = localStorage.getItem('preferredSport') || 'all';
+    let preferredSport;
+    try {
+      const parsed = JSON.parse(preferredSportRaw);
+      preferredSport = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+    } catch {
+      preferredSport = preferredSportRaw;
+    }
+    setEventFilter(preferredSport === 'none' ? 'match' : preferredSport);
     const preferredDelegation = localStorage.getItem('preferredDelegation') || 'all';
     
     setIsStarFilterActive(!isStarFilterActive);

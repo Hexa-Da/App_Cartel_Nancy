@@ -16,14 +16,15 @@ interface AuthPlugin {
 // Déclaration du plugin d'authentification
 const Auth = registerPlugin<AuthPlugin>('Auth');
 
+// Configuration Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyBFB_-a5O4KD1V0MSa4HYpsEMekpBTL044",
-  authDomain: "cummap-7afee.firebaseapp.com",
-  databaseURL: "https://cummap-7afee-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "cummap-7afee",
-  storageBucket: "cummap-7afee.firebasestorage.app",
-  messagingSenderId: "402641775282",
-  appId: "1:402641775282:web:585cabb0a67ae4475937ab"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL
 };
 
 const app = initializeApp(firebaseConfig);

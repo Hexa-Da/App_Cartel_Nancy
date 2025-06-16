@@ -530,38 +530,12 @@ const Layout: React.FC = () => {
       />
       <main className="app-main">
         <Outlet context={{ 
-          isEditing, 
-          setIsEditing, 
-          isAddingPlace, 
-          setIsAddingPlace,
-          newVenueName,
-          setNewVenueName,
-          newVenueDescription,
-          setNewVenueDescription,
-          newVenueAddress,
-          setNewVenueAddress,
-          selectedSport,
-          setSelectedSport,
-          selectedEmoji,
-          setSelectedEmoji,
-          tempMarker,
-          setTempMarker,
-          isPlacingMarker,
-          setIsPlacingMarker,
-          editingVenue,
-          setEditingVenue,
-          handleAddVenue,
-          handleUpdateVenue,
-          deleteVenue,
-          editingMatch,
-          setEditingMatch,
-          newMatch,
-          setNewMatch,
-          handleAddMatch,
-          handleUpdateMatch,
-          deleteMatch,
-          startEditingMatch,
-          finishEditingMatch
+          getFilteredEvents: () => venues,
+          getAllDelegations,
+          userPreferences: {
+            favoriteSports:  localStorage.getItem('preferredSport') || 'all',
+            delegation: localStorage.getItem('preferredDelegation') || 'all'
+          } 
         }} />
       </main>
       <BottomNav closeLayoutPanels={closeLayoutPanels} />

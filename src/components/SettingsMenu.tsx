@@ -57,7 +57,16 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   // Langue
   const [language, setLanguage] = React.useState(() => getInitial('language', 'fr'));
   // Sport préféré
-  const [preferredSport, setPreferredSport] = React.useState(() => getInitial('preferredSport', 'all'));
+  const [favoriteSports, setFavoriteSports] = React.useState<string[]>(() => {
+    const stored = localStorage.getItem('preferredSport');
+    if (!stored) return [];
+    try {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      return [stored];
+    }
+  });
   // Délégation préférée
   const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
   // Hôtel préféré
@@ -72,7 +81,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
         setPreferredDelegation(e.newValue);
       }
       if (e.key === 'preferredSport' && e.newValue !== null) {
-        setPreferredSport(e.newValue);
+        setFavoriteSports(JSON.parse(e.newValue));
       }
       if (e.key === 'preferredHotel' && e.newValue !== null) {
         setPreferredHotel(e.newValue);
@@ -90,7 +99,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   React.useEffect(() => {
     const handlePreferenceChange = (e: CustomEvent) => {
       if (e.detail.key === 'preferredSport') {
-        setPreferredSport(e.detail.value);
+        setFavoriteSports(JSON.parse(e.detail.value));
       }
       if (e.detail.key === 'preferredDelegation') {
         setPreferredDelegation(e.detail.value);
@@ -164,8 +173,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   };
 
   const handleSportChange = (sport: string) => {
-    setPreferredSport(sport);
-    handlePreferenceChange('preferredSport', sport);
+    const newFavoriteSports = sport === 'none' ? [] : [sport];
+    setFavoriteSports(newFavoriteSports);
+    handlePreferenceChange('preferredSport', JSON.stringify(newFavoriteSports));
   };
 
   const handleDelegationChange = (delegation: string) => {
@@ -258,7 +268,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
             <select 
               id="preferred-sport" 
               className="settings-select" 
-              value={preferredSport} 
+              value={favoriteSports[0] || 'none'} 
               onChange={e => handleSportChange(e.target.value)}
             >
               {sportOptions.map(option => (
