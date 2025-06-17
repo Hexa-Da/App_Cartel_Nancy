@@ -854,6 +854,7 @@ html, body, #root {
   font-size: 0.75rem;
   min-width: 180px;
   max-width: 250px;
+  pointer-events: auto;
 }
 
 .location-error-buttons {
@@ -861,6 +862,7 @@ html, body, #root {
   display: flex;
   gap: 0.3rem;
   justify-content: flex-start;
+  pointer-events: auto;
 }
 
 .retry-button {
@@ -872,6 +874,17 @@ html, body, #root {
   background: white;
   color: var(--danger-color);
   transition: background 0.2s, color 0.2s;
+  pointer-events: auto;
+  z-index: 2001;
+}
+
+.retry-button:hover {
+  background: var(--bg-secondary);
+  color: var(--danger-color);
+}
+
+.retry-button:active {
+  transform: scale(0.95);
 }
 
 .retry-icon {
@@ -2585,9 +2598,7 @@ html, body, #root {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: var(--bg-primary);
-  color: white;
-  border: none;
+  background-color: var(--bg-primary) !important;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
@@ -2595,16 +2606,20 @@ html, body, #root {
   font-size: 16px;
   cursor: pointer;
   z-index: 2000;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
   pointer-events: auto;
+  opacity: 1 !important;
 }
 
 .recenter-button:hover {
-  background-color: var(--primary-color-dark);
+  background-color: var(--bg-primary) !important;
   transform: scale(1.05);
+  opacity: 1 !important;
 }
 
 .recenter-button:active {
   transform: scale(0.95);
+  background-color: var(--bg-primary) !important;
+  opacity: 1 !important;
 }
 

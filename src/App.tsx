@@ -16,6 +16,8 @@ import { Outlet, useLocation} from 'react-router-dom';
 import { useAppPanels, TabType } from './AppPanelsContext';
 import Header from './components/Header';
 import NotificationService from './services/NotificationService';
+import { Geolocation, Position } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -106,79 +108,13 @@ function LocationMarker() {
   const [position, setPosition] = useState<LatLng | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [permissionStatus, setPermissionStatus] = useState<PermissionState>('prompt');
   const map = useMap();
   const lastErrorTime = useRef<number>(0);
+  const watchIdRef = useRef<string | number | null>(null);
   const [isLocationEnabled, setIsLocationEnabled] = useState(() => {
     const stored = localStorage.getItem('location');
     return stored === null ? true : stored === 'true';
   });
-
-  // Vérifier le statut de la permission de géolocalisation
-  useEffect(() => {
-    if ('permissions' in navigator) {
-      navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
-        setPermissionStatus(permissionStatus.state);
-        
-        permissionStatus.onchange = () => {
-          setPermissionStatus(permissionStatus.state);
-          if (permissionStatus.state === 'granted') {
-            setError(null);
-            setIsLoading(true);
-            requestLocation();
-          }
-        };
-      });
-    }
-  }, []);
-
-  const requestLocation = () => {
-    if (!navigator.geolocation) {
-      setError("La géolocalisation n'est pas supportée par votre navigateur");
-      return;
-    }
-
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    };
-
-    setIsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const newPosition = new LatLng(latitude, longitude);
-        setPosition(newPosition);
-        map.flyTo(newPosition, 16);
-        setError(null);
-        setIsLoading(false);
-      },
-      (err) => {
-        setIsLoading(false);
-        const now = Date.now();
-        if (now - lastErrorTime.current < 3000) {
-          return;
-        }
-        lastErrorTime.current = now;
-
-        let errorMessage = "Erreur de géolocalisation";
-        switch (err.code) {
-          case err.PERMISSION_DENIED:
-            errorMessage = "L'accès à la géolocalisation a été refusé. Veuillez autoriser l'accès dans les paramètres de votre appareil.";
-            break;
-          case err.POSITION_UNAVAILABLE:
-            errorMessage = "La position n'est pas disponible. Vérifiez que la géolocalisation est activée sur votre appareil.";
-            break;
-          case err.TIMEOUT:
-            errorMessage = "La demande de géolocalisation a expiré. Veuillez réessayer.";
-            break;
-        }
-        setError(errorMessage);
-      },
-      options
-    );
-  };
 
   // Écouter les changements de l'état de localisation
   useEffect(() => {
@@ -189,7 +125,7 @@ function LocationMarker() {
         if (!newValue) {
           setPosition(null);
           setError(null);
-        } else if (permissionStatus === 'granted') {
+        } else {
           requestLocation();
         }
       }
@@ -197,7 +133,67 @@ function LocationMarker() {
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [permissionStatus]);
+  }, []);
+
+  const requestLocation = async () => {
+    if (!isLocationEnabled) return;
+
+    try {
+      setIsLoading(true);
+      
+      if (Capacitor.isNativePlatform()) {
+        // Utiliser l'API Capacitor pour mobile
+        const coordinates = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000
+        });
+        
+        const newPosition = new LatLng(coordinates.coords.latitude, coordinates.coords.longitude);
+        setPosition(newPosition);
+        map.flyTo(newPosition, 16);
+        setError(null);
+      } else {
+        // Utiliser l'API Web standard pour le navigateur
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const newPosition = new LatLng(position.coords.latitude, position.coords.longitude);
+            setPosition(newPosition);
+            map.flyTo(newPosition, 16);
+            setError(null);
+          },
+          (error) => {
+            handleLocationError(error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      }
+    } catch (err: any) {
+      handleLocationError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLocationError = (err: any) => {
+    console.error('Erreur de géolocalisation:', err);
+    const now = Date.now();
+    if (now - lastErrorTime.current < 3000) return;
+    lastErrorTime.current = now;
+
+    let errorMessage = "Erreur de géolocalisation";
+    if (err.message?.includes('permission') || err.code === 1) {
+      errorMessage = "L'accès à la géolocalisation a été refusé. Veuillez autoriser l'accès dans les paramètres.";
+    } else if (err.message?.includes('unavailable') || err.code === 2) {
+      errorMessage = "La position n'est pas disponible. Vérifiez que la géolocalisation est activée.";
+    } else if (err.message?.includes('timeout') || err.code === 3) {
+      errorMessage = "La demande de géolocalisation a expiré. Veuillez réessayer.";
+    }
+    setError(errorMessage);
+  };
 
   useEffect(() => {
     if (!isLocationEnabled) {
@@ -206,17 +202,33 @@ function LocationMarker() {
       return;
     }
 
-    if (map && permissionStatus === 'granted') {
-      requestLocation();
+    requestLocation();
+
+    // Surveiller la position
+    if (Capacitor.isNativePlatform()) {
+      // Utiliser l'API Capacitor pour mobile
+      Geolocation.watchPosition({
+        enableHighAccuracy: true,
+        timeout: 10000
+      }, (position: Position | null) => {
+        if (position) {
+          const newPosition = new LatLng(position.coords.latitude, position.coords.longitude);
+          setPosition(newPosition);
+          setError(null);
+        }
+      }).then((watchId) => {
+        watchIdRef.current = watchId;
+      });
+    } else {
+      // Utiliser l'API Web standard pour le navigateur
       const watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          const newPosition = new LatLng(latitude, longitude);
+        (position) => {
+          const newPosition = new LatLng(position.coords.latitude, position.coords.longitude);
           setPosition(newPosition);
           setError(null);
         },
-        () => {
-          // Ne pas afficher d'erreur pour le watchPosition
+        (error) => {
+          handleLocationError(error);
         },
         {
           enableHighAccuracy: true,
@@ -224,11 +236,19 @@ function LocationMarker() {
           maximumAge: 0
         }
       );
-      return () => {
-        navigator.geolocation.clearWatch(watchId);
-      };
+      watchIdRef.current = watchId;
     }
-  }, [map, isLocationEnabled, permissionStatus]);
+
+    return () => {
+      if (watchIdRef.current) {
+        if (Capacitor.isNativePlatform()) {
+          Geolocation.clearWatch({ id: watchIdRef.current as string });
+        } else {
+          navigator.geolocation.clearWatch(watchIdRef.current as number);
+        }
+      }
+    };
+  }, [isLocationEnabled]);
 
   if (isLoading) {
     return (
@@ -243,10 +263,30 @@ function LocationMarker() {
       <div className="location-error">
         <p>{error}</p>
         <div className="location-error-buttons">
-          <button className="retry-button" onClick={requestLocation}>
+          <button 
+            className="retry-button" 
+            onClick={() => {
+              setError(null);
+              setIsLoading(true);
+              requestLocation();
+            }}
+          >
             Réessayer
           </button>
-          <button className="retry-button" onClick={() => setError(null)}>
+          <button 
+            className="retry-button" 
+            onClick={() => {
+              setError(null);
+              setIsLocationEnabled(false);
+              localStorage.setItem('location', 'false');
+              window.dispatchEvent(new StorageEvent('storage', {
+                key: 'location',
+                newValue: 'false',
+                oldValue: 'true',
+                storageArea: localStorage
+              }));
+            }}
+          >
             Annuler
           </button>
         </div>
@@ -259,7 +299,7 @@ function LocationMarker() {
       map.flyTo(position, 16, {
         duration: 1.5
       });
-    } else if (permissionStatus === 'granted') {
+    } else {
       requestLocation();
     }
   };
@@ -2576,10 +2616,29 @@ function App() {
           <div className="location-error">
             <p>{locationError}</p>
             <div className="location-error-buttons">
-              <button className="retry-button" onClick={retryLocation}>
+              <button 
+                className="retry-button" 
+                onClick={() => {
+                  setIsLoading(true);
+                  retryLocation();
+                }}
+              >
                 Réessayer
               </button>
-              <button className="retry-button" onClick={handleDontAskAgain}>
+              <button 
+                className="retry-button" 
+                onClick={() => {
+                  setLocationError(null);
+                  setShowLocationPrompt(false);
+                  localStorage.setItem('location', 'false');
+                  window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'location',
+                    newValue: 'false',
+                    oldValue: 'true',
+                    storageArea: localStorage
+                  }));
+                }}
+              >
                 Annuler
               </button>
             </div>

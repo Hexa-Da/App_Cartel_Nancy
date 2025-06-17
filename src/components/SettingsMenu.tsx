@@ -74,7 +74,11 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   // Sport préféré
   const [favoriteSports, setFavoriteSports] = React.useState<string[]>(() => {
     const stored = localStorage.getItem('preferredSport');
-    if (!stored) return [];
+    if (!stored) {
+      // Si aucune préférence n'est stockée, on met "Tous les sports" par défaut
+      localStorage.setItem('preferredSport', JSON.stringify(['none']));
+      return ['none'];
+    }
     try {
       const parsed = JSON.parse(stored);
       return Array.isArray(parsed) ? parsed : [parsed];
