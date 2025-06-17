@@ -513,6 +513,25 @@ const Layout: React.FC = () => {
     return Array.from(delegations).sort();
   };
 
+  // Fonction pour vérifier les championnats disponibles pour un sport
+  const hasGenderMatches = (sport: string): { hasFemale: boolean, hasMale: boolean, hasMixed: boolean } => {
+    let hasFemale = false;
+    let hasMale = false;
+    let hasMixed = false;
+
+    venues.forEach(venue => {
+      if (venue.sport === sport && venue.matches) {
+        venue.matches.forEach(match => {
+          if (match.description?.toLowerCase().includes('féminin')) hasFemale = true;
+          if (match.description?.toLowerCase().includes('masculin')) hasMale = true;
+          if (match.description?.toLowerCase().includes('mixte')) hasMixed = true;
+        });
+      }
+    });
+
+    return { hasFemale, hasMale, hasMixed };
+  };
+
   return (
     <div className="layout">
       <Header
@@ -527,6 +546,7 @@ const Layout: React.FC = () => {
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
         getAllDelegations={getAllDelegations}
+        hasGenderMatches={hasGenderMatches}
       />
       <main className="app-main">
         <Outlet context={{ 

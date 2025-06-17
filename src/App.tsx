@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { auth, database, loginWithGoogle, handleGoogleRedirect } from './firebase';
@@ -15,6 +15,7 @@ import PlanningFiles from './components/PlanningFiles';
 import { Outlet, useLocation} from 'react-router-dom';
 import { useAppPanels, TabType } from './AppPanelsContext';
 import Header from './components/Header';
+import NotificationService from './services/NotificationService';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -91,18 +92,93 @@ ReactGA.event({
   label: 'Validation de connexion GA4'
 });
 
+// Créer un contexte pour la position
+const LocationContext = createContext<{
+  position: LatLng | null;
+  isLocationEnabled: boolean;
+}>({
+  position: null,
+  isLocationEnabled: true
+});
 
 // Composant pour la géolocalisation
 function LocationMarker() {
   const [position, setPosition] = useState<LatLng | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [permissionStatus, setPermissionStatus] = useState<PermissionState>('prompt');
   const map = useMap();
   const lastErrorTime = useRef<number>(0);
   const [isLocationEnabled, setIsLocationEnabled] = useState(() => {
     const stored = localStorage.getItem('location');
     return stored === null ? true : stored === 'true';
   });
+
+  // Vérifier le statut de la permission de géolocalisation
+  useEffect(() => {
+    if ('permissions' in navigator) {
+      navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
+        setPermissionStatus(permissionStatus.state);
+        
+        permissionStatus.onchange = () => {
+          setPermissionStatus(permissionStatus.state);
+          if (permissionStatus.state === 'granted') {
+            setError(null);
+            setIsLoading(true);
+            requestLocation();
+          }
+        };
+      });
+    }
+  }, []);
+
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      setError("La géolocalisation n'est pas supportée par votre navigateur");
+      return;
+    }
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    };
+
+    setIsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const newPosition = new LatLng(latitude, longitude);
+        setPosition(newPosition);
+        map.flyTo(newPosition, 16);
+        setError(null);
+        setIsLoading(false);
+      },
+      (err) => {
+        setIsLoading(false);
+        const now = Date.now();
+        if (now - lastErrorTime.current < 3000) {
+          return;
+        }
+        lastErrorTime.current = now;
+
+        let errorMessage = "Erreur de géolocalisation";
+        switch (err.code) {
+          case err.PERMISSION_DENIED:
+            errorMessage = "L'accès à la géolocalisation a été refusé. Veuillez autoriser l'accès dans les paramètres de votre appareil.";
+            break;
+          case err.POSITION_UNAVAILABLE:
+            errorMessage = "La position n'est pas disponible. Vérifiez que la géolocalisation est activée sur votre appareil.";
+            break;
+          case err.TIMEOUT:
+            errorMessage = "La demande de géolocalisation a expiré. Veuillez réessayer.";
+            break;
+        }
+        setError(errorMessage);
+      },
+      options
+    );
+  };
 
   // Écouter les changements de l'état de localisation
   useEffect(() => {
@@ -113,13 +189,15 @@ function LocationMarker() {
         if (!newValue) {
           setPosition(null);
           setError(null);
+        } else if (permissionStatus === 'granted') {
+          requestLocation();
         }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [permissionStatus]);
 
   useEffect(() => {
     if (!isLocationEnabled) {
@@ -128,52 +206,8 @@ function LocationMarker() {
       return;
     }
 
-    if (map) {
-      if (!navigator.geolocation) {
-        setError("La géolocalisation n'est pas supportée par votre navigateur");
-        return;
-      }
-      const options = {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      };
-
-      setIsLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          const newPosition = new LatLng(latitude, longitude);
-          setPosition(newPosition);
-          map.flyTo(newPosition, 16);
-          setError(null);
-          setIsLoading(false);
-        },
-        (err) => {
-          setIsLoading(false);
-          if (err.code === err.PERMISSION_DENIED) {
-            // Ne pas afficher d'erreur si refus explicite
-            return;
-          }
-          const now = Date.now();
-          if (now - lastErrorTime.current < 3000) {
-            // Moins de 3s depuis la dernière erreur, ne pas réafficher
-            return;
-          }
-          lastErrorTime.current = now;
-          let errorMessage = "Erreur de géolocalisation";
-          switch (err.code) {
-            case err.POSITION_UNAVAILABLE:
-              errorMessage = "La position n'est pas disponible. Vérifiez que la géolocalisation est activée sur votre appareil.";
-              break;
-            case err.TIMEOUT:
-              errorMessage = "La demande de géolocalisation a expiré. Veuillez réessayer.";
-              break;
-          }
-          setError(errorMessage);
-        },
-        options
-      );
+    if (map && permissionStatus === 'granted') {
+      requestLocation();
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
@@ -184,13 +218,17 @@ function LocationMarker() {
         () => {
           // Ne pas afficher d'erreur pour le watchPosition
         },
-        options
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
       );
       return () => {
         navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [map, isLocationEnabled]);
+  }, [map, isLocationEnabled, permissionStatus]);
 
   if (isLoading) {
     return (
@@ -205,44 +243,7 @@ function LocationMarker() {
       <div className="location-error">
         <p>{error}</p>
         <div className="location-error-buttons">
-          <button className="retry-button" onClick={() => {
-            setError(null);
-            setIsLoading(true);
-            if (map) {
-              const options = {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-              };
-              navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                  const { latitude, longitude } = pos.coords;
-                  const newPosition = new LatLng(latitude, longitude);
-                  setPosition(newPosition);
-                  map.flyTo(newPosition, 16);
-                  setIsLoading(false);
-                },
-                (err) => {
-                  setIsLoading(false);
-                  console.error('Erreur de géolocalisation:', err);
-                  let errorMessage = "Erreur de géolocalisation";
-                  switch (err.code) {
-                    case err.PERMISSION_DENIED:
-                      errorMessage = "L'accès à la géolocalisation a été refusé. Veuillez autoriser l'accès dans les paramètres de votre navigateur.";
-                      break;
-                    case err.POSITION_UNAVAILABLE:
-                      errorMessage = "La position n'est pas disponible. Vérifiez que la géolocalisation est activée sur votre appareil.";
-                      break;
-                    case err.TIMEOUT:
-                      errorMessage = "La demande de géolocalisation a expiré. Veuillez réessayer.";
-                      break;
-                  }
-                  setError(errorMessage);
-                },
-                options
-              );
-            }
-          }}>
+          <button className="retry-button" onClick={requestLocation}>
             Réessayer
           </button>
           <button className="retry-button" onClick={() => setError(null)}>
@@ -253,10 +254,29 @@ function LocationMarker() {
     );
   }
 
-  return position === null ? null : (
-    <Marker position={position} icon={UserIcon}>
-      <Popup>Vous êtes ici</Popup>
-    </Marker>
+  const handleRecenter = () => {
+    if (position) {
+      map.flyTo(position, 16, {
+        duration: 1.5
+      });
+    } else if (permissionStatus === 'granted') {
+      requestLocation();
+    }
+  };
+
+  return (
+    <>
+      {position === null ? null : (
+        <>
+          <Marker position={position} icon={UserIcon}>
+            <Popup>Vous êtes ici</Popup>
+          </Marker>
+          <button className="recenter-button" onClick={handleRecenter} title="Me localiser">
+            📍
+          </button>
+        </>
+      )}
+    </>
   );
 }
 
@@ -422,32 +442,25 @@ function App() {
   }, []);
 
   // Ajout d'un message dans Firebase (avec nom personnalisé)
-  const handleAddMessage = (msg: string, sender: string) => {
+  const handleAddMessage = async (msg: string, sender: string) => {
     const newMsgRef = push(ref(database, 'chatMessages'));
-    set(newMsgRef, {
+    await set(newMsgRef, {
       content: msg,
       sender: sender || 'Organisation',
       timestamp: Date.now(),
       isAdmin: true
     });
 
-    // Notification locale (web)
-    if (window.Notification && Notification.permission === 'granted') {
-      new Notification('Nouveau message de l\'organisation', {
-        body: msg,
-        icon: '/favicon.png'
-      });
-    } else if (window.Notification && Notification.permission !== 'denied') {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          new Notification('Nouveau message de l\'organisation', {
-            body: msg,
-            icon: '/favicon.png'
-          });
-        }
-      });
+    // Envoyer une notification
+    const notificationService = NotificationService.getInstance();
+    const hasPermission = await notificationService.checkPermission();
+    
+    if (hasPermission) {
+      await notificationService.sendLocalNotification(
+        'Nouveau message de l\'organisation',
+        msg
+      );
     }
-    // TODO: Intégrer ici FCM (Firebase Cloud Messaging) pour notifications push sur mobile/app
   };
 
   // Modification d'un message dans Firebase (texte et nom)
@@ -2265,8 +2278,15 @@ function App() {
     } catch {
       preferredSport = preferredSportRaw;
     }
-    setEventFilter(preferredSport === 'none' ? 'match' : preferredSport);
     const preferredDelegation = localStorage.getItem('preferredDelegation') || 'all';
+    const preferredChampionshipRaw = localStorage.getItem('preferredChampionship') || 'none';
+    let preferredChampionship;
+    try {
+      const parsed = JSON.parse(preferredChampionshipRaw);
+      preferredChampionship = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+    } catch {
+      preferredChampionship = preferredChampionshipRaw;
+    }
     
     setIsStarFilterActive(!isStarFilterActive);
     
@@ -2274,9 +2294,23 @@ function App() {
       // Si le sport préféré est 'none', on utilise 'match' pour afficher tous les sports
       setEventFilter(preferredSport === 'none' ? 'match' : preferredSport);
       setDelegationFilter(preferredDelegation);
+      
+      // Appliquer les filtres de genre en fonction du championnat sélectionné
+      if (preferredChampionship !== 'none') {
+        setShowFemale(preferredChampionship === 'female');
+        setShowMale(preferredChampionship === 'male');
+        setShowMixed(preferredChampionship === 'mixed');
+      } else {
+        setShowFemale(true);
+        setShowMale(true);
+        setShowMixed(true);
+      }
     } else {
       setEventFilter('all');
       setDelegationFilter('all');
+      setShowFemale(true);
+      setShowMale(true);
+      setShowMixed(true);
     }
     
     triggerMarkerUpdate();
@@ -2535,6 +2569,7 @@ function App() {
         }}
         isEditing={isEditing}
         getAllDelegations={getAllDelegations}
+        hasGenderMatches={hasGenderMatches}
       />
       <main className="app-main">
         {locationError && showLocationPrompt && (

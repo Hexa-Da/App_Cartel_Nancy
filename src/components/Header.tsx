@@ -15,6 +15,7 @@ interface HeaderProps {
   onEditModeToggle?: () => void;
   isEditing?: boolean;
   getAllDelegations: () => string[];
+  hasGenderMatches: (sport: string) => { hasFemale: boolean, hasMale: boolean, hasMixed: boolean };
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -27,7 +28,8 @@ const Header: React.FC<HeaderProps> = ({
   onBack,
   onEditModeToggle,
   isEditing,
-  getAllDelegations
+  getAllDelegations,
+  hasGenderMatches
 }) => {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
@@ -131,6 +133,7 @@ const Header: React.FC<HeaderProps> = ({
         isOpen={showSettings} 
         onClose={() => setShowSettings(false)} 
         getAllDelegations={getAllDelegations}
+        hasGenderMatches={hasGenderMatches}
       />
     </>
   );

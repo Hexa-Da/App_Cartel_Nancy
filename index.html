@@ -18,6 +18,16 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js"></script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <script>
+      // Appliquer le thème sombre par défaut avant le chargement de l'application
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme === null) {
+        localStorage.setItem('theme', 'true');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', storedTheme === 'true' ? 'dark' : 'light');
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

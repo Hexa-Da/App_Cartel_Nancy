@@ -63,7 +63,17 @@ const Home: React.FC = () => {
         return [raw];
       }
     })(),
-    delegation: localStorage.getItem('preferredDelegation') || ''
+    delegation: localStorage.getItem('preferredDelegation') || '',
+    championship: (() => {
+      const raw = localStorage.getItem('preferredChampionship');
+      if (!raw) return 'none';
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+      } catch {
+        return raw;
+      }
+    })()
   });
 
   useEffect(() => {
@@ -73,7 +83,7 @@ const Home: React.FC = () => {
     };
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'preferredSport' || e.key === 'preferredDelegation') {
+      if (e.key === 'preferredSport' || e.key === 'preferredDelegation' || e.key === 'preferredChampionship') {
         setUserPreferences(prev => ({
           favoriteSports: e.key === 'preferredSport'
             ? (() => {
@@ -88,21 +98,43 @@ const Home: React.FC = () => {
             : prev.favoriteSports,
           delegation: e.key === 'preferredDelegation'
             ? (e.newValue || '')
-            : prev.delegation
+            : prev.delegation,
+          championship: e.key === 'preferredChampionship'
+            ? (() => {
+                if (!e.newValue) return 'none';
+                try {
+                  const parsed = JSON.parse(e.newValue);
+                  return Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+                } catch {
+                  return e.newValue;
+                }
+              })()
+            : prev.championship
         }));
       }
       updateEvents();
     };
 
     const handlePreferenceChange = (e: CustomEvent) => {
-      if (e.detail.key === 'favoriteSports' || e.detail.key === 'preferredDelegation') {
+      if (e.detail.key === 'favoriteSports' || e.detail.key === 'preferredDelegation' || e.detail.key === 'preferredChampionship') {
         setUserPreferences(prev => ({
           favoriteSports: e.detail.key === 'favoriteSports'
             ? JSON.parse(e.detail.value || '[]')
             : prev.favoriteSports,
           delegation: e.detail.key === 'preferredDelegation'
             ? (e.detail.value || '')
-            : prev.delegation
+            : prev.delegation,
+          championship: e.detail.key === 'preferredChampionship'
+            ? (() => {
+                if (!e.detail.value) return 'none';
+                try {
+                  const parsed = JSON.parse(e.detail.value);
+                  return Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+                } catch {
+                  return e.detail.value;
+                }
+              })()
+            : prev.championship
         }));
       }
       updateEvents();
@@ -169,7 +201,23 @@ const Home: React.FC = () => {
         return place.matches.filter(match => {
           const teams = match.teams.toLowerCase();
           const delegationLower = delegation.toLowerCase();
-          return teams.includes(delegationLower) && match.sport === sport;
+          const sportMatch = match.sport === sport;
+          const delegationMatch = teams.includes(delegationLower);
+          
+          // Vérifier le championnat
+          const isFemale = match.description?.toLowerCase().includes('féminin');
+          const isMale = match.description?.toLowerCase().includes('masculin');
+          const isMixed = match.description?.toLowerCase().includes('mixte');
+          
+          let championshipMatch = true;
+          if (userPreferences.championship !== 'none') {
+            championshipMatch = 
+              (userPreferences.championship === 'female' && isFemale) ||
+              (userPreferences.championship === 'male' && isMale) ||
+              (userPreferences.championship === 'mixed' && isMixed);
+          }
+
+          return sportMatch && delegationMatch && championshipMatch;
         });
       }
       return [];

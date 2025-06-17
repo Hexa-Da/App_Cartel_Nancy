@@ -18,7 +18,9 @@ const config: CapacitorConfig = {
       webClientId: '402641775282-flmj306kcpqct1hmrific149uhthiqcq.apps.googleusercontent.com'
     },
     PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert']
+      presentationOptions: ['badge', 'sound', 'alert'],
+      smallIcon: 'ic_stat_icon_config_sample',
+      iconColor: '#488AFF'
     },
     Auth: {
       // Configuration spécifique au plugin d'authentification si nécessaire

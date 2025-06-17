@@ -63,26 +63,96 @@
   --bg-secondary: #f8f9fa;
   --border-color: #e0e0e0;
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --bg-primary: #fff;
+  --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
   --text-primary: #181818;
   --text-secondary: #555;
-  --accent-color: #1976d2;
-  --error-color: #d32f2f;
+  --accent-color: #4CAF50;
+  --error-color: #f44336;
   --bg-hover: #f0f0f0;
   --bg-disabled: #e0e0e0;
 }
 
 [data-theme="dark"] {
-  --bg-primary: #181818;
-  --bg-secondary: #232323;
-  --text-primary: #fff;
-  --text-secondary: #aaa;
-  --border-color: #333;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --border-color: #404040;
   --accent-color: #4CAF50;
   --error-color: #f44336;
-  --bg-hover: #222;
-  --bg-disabled: #444;
+  --bg-hover: #333333;
+  --bg-disabled: #404040;
+}
+
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text-primary: #181818;
+  --text-secondary: #555;
+  --border-color: #e0e0e0;
+  --accent-color: #4CAF50;
+  --error-color: #f44336;
+  --bg-hover: #f0f0f0;
+  --bg-disabled: #e0e0e0;
+}
+
+/* Styles de base utilisant les variables */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.settings-menu {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+}
+
+.settings-menu-content {
+  background-color: var(--bg-primary);
+}
+
+.settings-item {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-item label {
+  color: var(--text-primary);
+}
+
+.settings-select {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.settings-select option {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.switch {
+  background-color: var(--bg-secondary);
+}
+
+.slider {
+  background-color: var(--bg-disabled);
+}
+
+input:checked + .slider {
+  background-color: var(--accent-color);
+}
+
+.slider:before {
+  background-color: var(--bg-primary);
+}
+
+.settings-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.settings-item:last-child {
+  border-bottom: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -142,7 +212,7 @@
   }
 
   .location-error p {
-    color: var(--text-color);
+    color: white;
   }
 }
 
@@ -2483,5 +2553,58 @@ html, body, #root {
 
 .view-button {
   color: #2196F3;
+}
+
+.leaflet-control-recenter {
+  margin-top: 10px;
+}
+
+.leaflet-control-recenter a {
+  background-color: var(--primary-color);
+  color: white;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-bottom: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.leaflet-control-recenter a:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.recenter-button {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--bg-primary);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 2000;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.recenter-button:hover {
+  background-color: var(--primary-color-dark);
+  transform: scale(1.05);
+}
+
+.recenter-button:active {
+  transform: scale(0.95);
 }
 
