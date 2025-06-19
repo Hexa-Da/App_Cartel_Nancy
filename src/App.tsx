@@ -18,6 +18,7 @@ import Header from './components/Header';
 import NotificationService from './services/NotificationService';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -385,6 +386,13 @@ function App() {
   const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
   const location = useLocation();
 
+  // Forcer l'orientation portrait au démarrage
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      ScreenOrientation.lock({ orientation: 'portrait' });
+    }
+  }, []);
+
   // Effet pour gérer le changement de route
   useEffect(() => {
     if (location.pathname === '/map' && activeTab === 'map') {
@@ -643,8 +651,26 @@ function App() {
     }
   ]);
 
+  const [isVenuesLoading, setIsVenuesLoading] = useState(true);
+
+  const [showVenuesLoadingOverlay, setShowVenuesLoadingOverlay] = useState(false);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    if (isVenuesLoading) {
+      timer = setTimeout(() => setShowVenuesLoadingOverlay(true), 500);
+    } else {
+      setShowVenuesLoadingOverlay(false);
+      if (timer) clearTimeout(timer);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [isVenuesLoading]);
+
   // Charger les lieux depuis Firebase au démarrage
   useEffect(() => {
+    setIsVenuesLoading(true);
     const venuesRef = ref(database, 'venues');
     const unsubscribe = onValue(venuesRef, (snapshot) => {
       const data = snapshot.val();
@@ -663,6 +689,7 @@ function App() {
       } else {
         setVenues([]); // Si pas de données, initialiser avec un tableau vide
       }
+      setIsVenuesLoading(false);
     });
 
     // Cleanup function
@@ -1646,11 +1673,29 @@ function App() {
             match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
           ));
 
+        // Filtrage par genre : au moins un match du lieu doit correspondre au filtre de genre
+        let genderMatch = true;
+        if (venue.matches && venue.matches.length > 0) {
+          genderMatch = venue.matches.some(match => {
+            const desc = match.description?.toLowerCase() || '';
+            const isFemale = desc.includes('féminin');
+            const isMale = desc.includes('masculin');
+            const isMixed = desc.includes('mixte');
+            return (
+              (isFemale && showFemale) ||
+              (isMale && showMale) ||
+              (isMixed && showMixed) ||
+              (!isFemale && !isMale && !isMixed) // Si pas de genre précisé, toujours afficher
+            );
+          });
+        }
+
         // Filtrage par event et lieu
         const shouldShow =
           (eventFilter === 'all' || eventFilter === 'match' || eventFilter === venue.sport) &&
           (venueFilter === 'Tous' || venue.id === venueFilter) &&
-          delegationMatch;
+          delegationMatch &&
+          genderMatch;
 
         if (!shouldShow) return;
 
@@ -1890,7 +1935,7 @@ function App() {
 
       // PARTIES
       parties.forEach(party => {
-        const shouldShow =
+        const shouldShow = 
           (eventFilter === 'all' || eventFilter === 'party') &&
           (venueFilter === 'Tous' || party.id === venueFilter);
 
@@ -1942,7 +1987,7 @@ function App() {
         }
       });
     }
-  }, [venues, hotels, restaurants, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter]);
+  }, [venues, hotels, restaurants, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed]);
 
   // Effet pour gérer les changements de préférences d'hôtels et restaurants
   useEffect(() => {
@@ -2361,7 +2406,36 @@ function App() {
 
   const getVenueOptions = () => {
     if (eventFilter === 'all' || eventFilter === 'match') {
-      return [{ value: 'Tous', label: 'Tous les lieux' }];
+      // Proposer tous les lieux qui ont au moins un match correspondant à la délégation ET au(x) genre(s) sélectionné(s)
+      const filteredVenues = venues.filter(venue => {
+        // Filtrage par délégation
+        const delegationMatch =
+          delegationFilter === 'all' ||
+          (venue.matches && venue.matches.some(match =>
+            match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
+          ));
+        // Filtrage par genre
+        let genderMatch = true;
+        if (venue.matches && venue.matches.length > 0) {
+          genderMatch = venue.matches.some(match => {
+            const desc = match.description?.toLowerCase() || '';
+            const isFemale = desc.includes('féminin');
+            const isMale = desc.includes('masculin');
+            const isMixed = desc.includes('mixte');
+            return (
+              (isFemale && showFemale) ||
+              (isMale && showMale) ||
+              (isMixed && showMixed) ||
+              (!isFemale && !isMale && !isMixed)
+            );
+          });
+        }
+        return delegationMatch && genderMatch;
+      });
+      return [
+        { value: 'Tous', label: 'Tous les lieux' },
+        ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
+      ];
     }
 
     // Pour les soirées et défilés, retourner les lieux fixes
@@ -2375,17 +2449,37 @@ function App() {
       ];
     }
 
-    // Pour les sports, filtrer les lieux par sport
-    const filteredVenues = venues.filter(venue => venue.sport === eventFilter);
-    const venueOptions = [
+    // Pour les sports spécifiques, filtrer les lieux par sport, délégation et genre
+    const filteredVenues = venues.filter(venue => {
+      if (venue.sport !== eventFilter) return false;
+      // Filtrage par délégation
+      const delegationMatch =
+        delegationFilter === 'all' ||
+        (venue.matches && venue.matches.some(match =>
+          match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
+        ));
+      // Filtrage par genre
+      let genderMatch = true;
+      if (venue.matches && venue.matches.length > 0) {
+        genderMatch = venue.matches.some(match => {
+          const desc = match.description?.toLowerCase() || '';
+          const isFemale = desc.includes('féminin');
+          const isMale = desc.includes('masculin');
+          const isMixed = desc.includes('mixte');
+          return (
+            (isFemale && showFemale) ||
+            (isMale && showMale) ||
+            (isMixed && showMixed) ||
+            (!isFemale && !isMale && !isMixed)
+          );
+        });
+      }
+      return delegationMatch && genderMatch;
+    });
+    return [
       { value: 'Tous', label: 'Tous les lieux' },
-      ...filteredVenues.map(venue => ({
-        value: venue.id,
-        label: venue.name
-      }))
+      ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
     ];
-
-    return venueOptions;
   };
 
   const hasGenderMatches = (sport: string): { hasFemale: boolean, hasMale: boolean, hasMixed: boolean } => {
@@ -2590,6 +2684,26 @@ function App() {
   // Ajoute le header en haut du return
   return (
     <div className="app">
+      {/* Overlay de chargement global */}
+      {showVenuesLoadingOverlay && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'var(--background-color)',
+          zIndex: 5000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}>
+          <div className="location-loading-spinner" style={{ width: 60, height: 60, borderWidth: 6, marginBottom: 24 }}></div>
+          <div style={{ color: '#1976D2', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: 8 }}>Chargement des données…</div>
+          <div style={{ color: '#555', fontSize: '1rem' }}>Récupération des lieux et matchs depuis la base de données</div>
+        </div>
+      )}
       <Header
         onChat={handleOpenChat}
         onEmergency={() => setShowEmergency(true)}

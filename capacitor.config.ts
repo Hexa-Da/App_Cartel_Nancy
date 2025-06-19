@@ -24,6 +24,9 @@ const config: CapacitorConfig = {
     },
     Auth: {
       // Configuration spécifique au plugin d'authentification si nécessaire
+    },
+    Screen: {
+      orientation: 'portrait'
     }
   }
 };
