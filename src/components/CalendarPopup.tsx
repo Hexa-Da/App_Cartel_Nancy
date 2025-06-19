@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './CalendarPopup.css';
 import { Venue } from '../types';
+import Header from './Header';
+import BottomNav from './BottomNav';
 
 interface Event {
   type: 'match' | 'party';
@@ -30,6 +32,23 @@ interface CalendarPopupProps {
   onDelegationFilterChange: (value: string) => void;
   onVenueFilterChange: (value: string) => void;
   onGenderFilterChange: (gender: 'female' | 'male' | 'mixed') => void;
+  // Nouvelles props pour définir directement les filtres de genre
+  onSetGenderFilters?: (female: boolean, male: boolean, mixed: boolean) => void;
+  // Props pour synchroniser l'état des filtres
+  showFilters: boolean;
+  onShowFiltersChange: (show: boolean) => void;
+  // Props pour le Header
+  onChat?: () => void;
+  onEmergency?: () => void;
+  onAdmin?: () => void;
+  isAdmin?: boolean;
+  user?: any;
+  showChat?: boolean;
+  unreadCount?: number;
+  onEditModeToggle?: () => void;
+  isEditing?: boolean;
+  onBack?: () => void;
+  isBackDisabled?: boolean;
 }
 
 const CalendarPopup: React.FC<CalendarPopupProps> = ({ 
@@ -46,16 +65,33 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   onEventFilterChange,
   onDelegationFilterChange,
   onVenueFilterChange,
-  onGenderFilterChange
+  onGenderFilterChange,
+  // Nouvelles props pour définir directement les filtres de genre
+  onSetGenderFilters,
+  // Props pour synchroniser l'état des filtres
+  showFilters,
+  onShowFiltersChange,
+  // Props pour le Header
+  onChat,
+  onEmergency,
+  onAdmin,
+  isAdmin,
+  user,
+  showChat,
+  unreadCount,
+  onEditModeToggle,
+  isEditing,
+  onBack,
+  isBackDisabled
 }) => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [showFiltersCalendar, setShowFiltersCalendar] = useState(false);
+  const [isStarFilterActive, setIsStarFilterActive] = useState(false);
 
   const sportOptions = [
     { value: 'none', label: 'Aucun' },
     { value: 'all', label: 'Tous les événements' },
     { value: 'party', label: 'Soirée et Défilé ⭐' },
-    { value: 'none', label: 'Tous les sports' },
+    { value: 'match', label: 'Tous les sports' },
     { value: 'Football', label: 'Football ⚽' },
     { value: 'Basketball', label: 'Basketball 🏀' },
     { value: 'Handball', label: 'Handball 🤾' },
@@ -101,8 +137,35 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
       ];
     }
 
-    // Pour les sports, filtrer les lieux par sport
-    const filteredVenues = venues.filter(venue => venue.sport === eventFilter);
+    // Pour les sports, filtrer les lieux par sport, délégation et genre
+    const filteredVenues = venues.filter(venue => {
+      // Vérifier que le lieu correspond au sport sélectionné
+      if (venue.sport !== eventFilter) return false;
+      
+      // Vérifier que le lieu a au moins un match correspondant à la délégation
+      const delegationMatch = delegationFilter === 'all' || 
+        (venue.matches && venue.matches.some(match =>
+          match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
+        ));
+      
+      // Vérifier que le lieu a au moins un match correspondant aux filtres de genre
+      const genderMatch = venue.matches && venue.matches.some(match => {
+        const desc = match.description?.toLowerCase() || '';
+        const isFemale = desc.includes('féminin');
+        const isMale = desc.includes('masculin');
+        const isMixed = desc.includes('mixte');
+        
+        return (
+          (isFemale && showFemale) ||
+          (isMale && showMale) ||
+          (isMixed && showMixed) ||
+          (!isFemale && !isMale && !isMixed) // Si pas de genre précisé, toujours afficher
+        );
+      });
+      
+      return delegationMatch && genderMatch;
+    });
+
     const venueOptions = [
       { value: 'Tous', label: 'Tous les lieux' },
       ...filteredVenues.map(venue => ({
@@ -420,286 +483,396 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     return { hasFemale, hasMale, hasMixed };
   };
 
+  const handleStarFilterClick = () => {
+    const preferredSportRaw = localStorage.getItem('preferredSport') || 'all';
+    let preferredSport;
+    try {
+      const parsed = JSON.parse(preferredSportRaw);
+      preferredSport = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+    } catch {
+      preferredSport = preferredSportRaw;
+    }
+    const preferredDelegation = localStorage.getItem('preferredDelegation') || 'all';
+    const preferredChampionshipRaw = localStorage.getItem('preferredChampionship') || 'none';
+    let preferredChampionship;
+    try {
+      const parsed = JSON.parse(preferredChampionshipRaw);
+      preferredChampionship = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+    } catch {
+      preferredChampionship = preferredChampionshipRaw;
+    }
+    
+    setIsStarFilterActive(!isStarFilterActive);
+    
+    if (!isStarFilterActive) {
+      // Si le sport préféré est 'none', on utilise 'match' pour afficher tous les sports
+      onEventFilterChange(preferredSport === 'none' ? 'match' : preferredSport);
+      onDelegationFilterChange(preferredDelegation);
+      
+      // Appliquer les filtres de genre en fonction du championnat sélectionné
+      if (preferredChampionship !== 'none') {
+        if (onSetGenderFilters) {
+          // Utiliser la nouvelle prop pour définir directement les filtres
+          onSetGenderFilters(
+            preferredChampionship === 'female',
+            preferredChampionship === 'male',
+            preferredChampionship === 'mixed'
+          );
+        } else {
+          // Fallback: utiliser la méthode toggle
+          // Désactiver tous les genres d'abord
+          if (showFemale) onGenderFilterChange('female');
+          if (showMale) onGenderFilterChange('male');
+          if (showMixed) onGenderFilterChange('mixed');
+          
+          // Puis activer seulement le genre préféré
+          if (preferredChampionship === 'female') {
+            if (!showFemale) onGenderFilterChange('female');
+          } else if (preferredChampionship === 'male') {
+            if (!showMale) onGenderFilterChange('male');
+          } else if (preferredChampionship === 'mixed') {
+            if (!showMixed) onGenderFilterChange('mixed');
+          }
+        }
+      } else {
+        // Si pas de championnat préféré, activer tous les genres
+        if (onSetGenderFilters) {
+          onSetGenderFilters(true, true, true);
+        } else {
+          // Fallback: utiliser la méthode toggle
+          if (!showFemale) onGenderFilterChange('female');
+          if (!showMale) onGenderFilterChange('male');
+          if (!showMixed) onGenderFilterChange('mixed');
+        }
+      }
+    } else {
+      // Réinitialiser tous les filtres
+      onEventFilterChange('all');
+      onDelegationFilterChange('all');
+      onVenueFilterChange('Tous');
+      // Réinitialiser tous les genres
+      if (onSetGenderFilters) {
+        onSetGenderFilters(true, true, true);
+      } else {
+        // Fallback: utiliser la méthode toggle
+        if (!showFemale) onGenderFilterChange('female');
+        if (!showMale) onGenderFilterChange('male');
+        if (!showMixed) onGenderFilterChange('mixed');
+      }
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="calendar-popup-overlay" onClick={onClose}>
       <div className="calendar-popup" onClick={e => e.stopPropagation()}>
-        <div className="calendar-popup-header">
-          <h3>Calendrier</h3>
-        </div>
-        <div className="calendar-filter-buttons-row" style={{ display: 'flex', gap: '0.5rem', margin: '0.5rem 0.5rem 0rem 0.5rem' }}>
-          <button 
-            className="filter-toggle-button"
-            onClick={() => setShowFiltersCalendar(v => !v)}
-          >
-            {showFiltersCalendar ? 'Masquer les filtres' : 'Filtrer'}
-          </button>
-          {showFiltersCalendar && (
+        {/* Header du Layout */}
+        <Header
+          onChat={onChat}
+          onEmergency={onEmergency}
+          onAdmin={onAdmin}
+          isAdmin={isAdmin}
+          user={user}
+          showChat={showChat}
+          unreadCount={unreadCount}
+          onBack={onBack}
+          onEditModeToggle={onEditModeToggle}
+          isEditing={isEditing}
+          getAllDelegations={getAllDelegations}
+          hasGenderMatches={hasGenderMatches}
+          isBackDisabled={isBackDisabled}
+        />
+        
+        <div className="calendar-popup-content">
+          <div className="calendar-panel-header">
+            <h3>Calendrier</h3>
             <button 
-              className="filter-reset-button"
-              onClick={() => {
-                // Vérifier si les filtres sont déjà réinitialisés
-                const isAlreadyReset = 
-                  eventFilter === 'all' && 
-                  delegationFilter === 'all' && 
-                  venueFilter === 'Tous' && 
-                  showFemale && 
-                  showMale && 
-                  showMixed;
-
-                // Ne réinitialiser que si nécessaire
-                if (!isAlreadyReset) {
-                  // Réinitialiser tous les filtres en une seule fois
-                  onEventFilterChange('all');
-                  onDelegationFilterChange('all');
-                  onVenueFilterChange('Tous');
-                  // Forcer un délai pour s'assurer que tous les changements sont appliqués
-                  setTimeout(() => {
-                    onEventFilterChange('all');
-                  }, 0);
-                }
-              }}
+              className="filter-toggle-button"
+              onClick={() => onShowFiltersChange(!showFilters)}
             >
-              Réinitialiser
+              {showFilters ? 'Masquer' : 'Filtrer'}
             </button>
-          )}
-        </div>
-        {showFiltersCalendar && (
-          <>
-            <div className="filter-row">
-              <select 
-                className="filter-select"
-                value={eventFilter}
-                onChange={(e) => {
-                  onEventFilterChange(e.target.value);
-                  // Réinitialiser le filtre de lieu quand le type d'événement change
-                  onVenueFilterChange('Tous');
-                }}
-              >
-                {sportOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="filter-select"
-                value={delegationFilter}
-                onChange={(e) => onDelegationFilterChange(e.target.value)}
-              >
-                <option value="all">Toutes les délégations</option>
-                {getAllDelegations().map(delegation => (
-                  <option key={delegation} value={delegation}>
-                    {delegation}
-                  </option>
-                ))}
-              </select>
-
-              {/* Filtre des lieux sur la même ligne */}
-              {eventFilter !== 'none' && eventFilter !== 'all' && (
+          </div>
+          
+          {showFilters && (
+            <div className="calendar-filters-section">
+              <div className="filter-row">
+                <button
+                  className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
+                  style={{ right: '124px', top: '79px', position: 'absolute' }}
+                  onClick={handleStarFilterClick}
+                  title="Appliquer vos préférences"
+                >
+                  ⭐
+                </button>
+                <button
+                  className="filter-reset-button"
+                  onClick={() => {
+                    // Vérifier si on est déjà dans l'état initial
+                    const isAlreadyReset = 
+                      eventFilter === 'all' && 
+                      delegationFilter === 'all' && 
+                      venueFilter === 'Tous' && 
+                      showFemale && 
+                      showMale && 
+                      showMixed &&
+                      !isStarFilterActive;
+                    
+                    // Si on est déjà dans l'état initial, ne rien faire
+                    if (isAlreadyReset) {
+                      return;
+                    }
+                    
+                    // Sinon, réinitialiser tous les filtres
+                    onEventFilterChange('all');
+                    onDelegationFilterChange('all');
+                    onVenueFilterChange('Tous');
+                    setIsStarFilterActive(false);
+                    
+                    // Réinitialiser tous les genres seulement s'ils ne sont pas déjà actifs
+                    if (!showFemale) onGenderFilterChange('female');
+                    if (!showMale) onGenderFilterChange('male');
+                    if (!showMixed) onGenderFilterChange('mixed');
+                  }}
+                >
+                  🔄
+                </button>
+                <div className="filter-buttons-row"></div>
                 <select 
                   className="filter-select"
-                  value={venueFilter}
-                  onChange={(e) => onVenueFilterChange(e.target.value)}
+                  value={eventFilter}
+                  onChange={(e) => onEventFilterChange(e.target.value)}
                 >
-                  {getVenueOptions().map(option => (
+                  {sportOptions.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
                 </select>
+
+                <select
+                  className="filter-select"
+                  value={delegationFilter}
+                  onChange={(e) => onDelegationFilterChange(e.target.value)}
+                >
+                  <option value="all">Toutes les délégations</option>
+                  {getAllDelegations().map(delegation => (
+                    <option key={delegation} value={delegation}>
+                      {delegation}
+                    </option>
+                  ))}
+                </select>
+
+                {eventFilter !== 'none' && eventFilter !== 'all' && eventFilter !== 'match' && (
+                  <select 
+                    className="filter-select"
+                    value={venueFilter}
+                    onChange={(e) => onVenueFilterChange(e.target.value)}
+                  >
+                    {getVenueOptions().map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {eventFilter !== 'all' && eventFilter !== 'party' && (() => {
+                  const { hasFemale, hasMale, hasMixed } = hasGenderMatches(eventFilter);
+                  if (!hasFemale && !hasMale && !hasMixed) return null;
+                  return (
+                    <div className="gender-filter-row">
+                      {hasFemale && (
+                        <button 
+                          className={`gender-filter-button ${showFemale ? 'active' : ''}`}
+                          onClick={() => onGenderFilterChange('female')}
+                        >
+                          Féminin
+                        </button>
+                      )}
+                      {hasMale && (
+                        <button 
+                          className={`gender-filter-button ${showMale ? 'active' : ''}`}
+                          onClick={() => onGenderFilterChange('male')}
+                        >
+                          Masculin
+                        </button>
+                      )}
+                      {hasMixed && (
+                        <button 
+                          className={`gender-filter-button ${showMixed ? 'active' : ''}`}
+                          onClick={() => onGenderFilterChange('mixed')}
+                        >
+                          Mixte
+                        </button>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+          
+          <div className="calendar-scrollable-content">
+            <div className="calendar-grid">
+              <div className="calendar-hours">
+                <div className="calendar-hour-header"></div>
+                {hours.map(hour => (
+                  <div key={hour} className="calendar-hour">{hour}</div>
+                ))}
+              </div>
+              <div className="calendar-days">
+                {days.map(day => {
+                  const events = getEventsForDay(day.date);
+                  return (
+                    <div key={day.date} className="calendar-day-column">
+                      <div className="calendar-day-header">{day.label}</div>
+                      <div className="calendar-events">
+                        {day.date === getTodayDate() && getCurrentTimePosition() !== '' && (
+                          <div 
+                            className="current-time-indicator"
+                            style={{ top: getCurrentTimePosition() }}
+                          />
+                        )}
+                        {getOverlappingEvents(events).map((group, groupIndex) => {
+                          return (
+                            <div key={groupIndex} className="event-group">
+                              {group.map((event, index) => {
+                                const position = getEventPosition(event.time, event.endTime, index, group.length);
+                                const isPassed = isEventPassed(`${day.date}T${event.time}`, event.endTime ? `${day.date}T${event.endTime}` : undefined, event.type);
+                                return (
+                                  <div 
+                                    key={`${event.time}-${index}`}
+                                    className={`calendar-event ${isPassed ? 'passed' : ''}`}
+                                    style={{
+                                      backgroundColor: event.color,
+                                      top: position.top,
+                                      height: position.height,
+                                      width: position.width,
+                                      left: position.left
+                                    }}
+                                    onClick={() => handleEventClick(event)}
+                                  >
+                                    <div className="calendar-event-title-container">
+                                      <div className="calendar-event-name">{event.name}</div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          {selectedEvent && (
+            <div className="match-event-details">
+              <h3>{selectedEvent.name}</h3>
+              <p>Horaire: {selectedEvent.time} - {selectedEvent.endTime}</p>
+              {selectedEvent.type === 'match' ? (
+                <>
+                  {selectedEvent.sport && <p>Sport: {selectedEvent.sport}</p>}
+                  {selectedEvent.venue && <p>Lieu: {selectedEvent.venue}</p>}
+                  {selectedEvent.teams && <p>Équipes: {selectedEvent.teams}</p>}
+                  {selectedEvent.description && <p>Description: {selectedEvent.description}</p>}
+                  {selectedEvent.result && <p className="match-result"><strong>Résultat :</strong> {selectedEvent.result}</p>}
+                </>
+              ) : (
+                <>
+                  {selectedEvent.description && <p>Description: {selectedEvent.description}</p>}
+                  {selectedEvent.venue && <p>Adresse: {selectedEvent.venue}</p>}
+                </>
               )}
-            </div>
-
-            {/* Ligne séparée pour les boutons de genre */}
-            {eventFilter !== 'none' && eventFilter !== 'party' && (() => {
-              const { hasFemale, hasMale, hasMixed } = hasGenderMatches(eventFilter);
-              return (hasFemale || hasMale || hasMixed) && (
-                <div className="filter-row gender-filter-row">
-                  {hasFemale && (
-                    <button 
-                      className={`gender-filter-button ${showFemale ? 'active' : ''}`}
-                      onClick={() => onGenderFilterChange('female')}
-                    >
-                      Féminin
-                    </button>
-                  )}
-                  {hasMale && (
-                    <button 
-                      className={`gender-filter-button ${showMale ? 'active' : ''}`}
-                      onClick={() => onGenderFilterChange('male')}
-                    >
-                      Masculin
-                    </button>
-                  )}
-                  {hasMixed && (
-                    <button 
-                      className={`gender-filter-button ${showMixed ? 'active' : ''}`}
-                      onClick={() => onGenderFilterChange('mixed')}
-                    >
-                      Mixte
-                    </button>
-                  )}
-                </div>
-              );
-            })()}
-          </>
-        )}
-        <div className="calendar-grid">
-          <div className="calendar-hours">
-            <div className="calendar-hour-header"></div>
-            {hours.map(hour => (
-              <div key={hour} className="calendar-hour">{hour}</div>
-            ))}
-          </div>
-          <div className="calendar-days">
-            {days.map(day => {
-              const events = getEventsForDay(day.date);
-              return (
-                <div key={day.date} className="calendar-day-column">
-                  <div className="calendar-day-header">{day.label}</div>
-                  <div className="calendar-events">
-                    {day.date === getTodayDate() && getCurrentTimePosition() !== '' && (
-                      <div 
-                        className="current-time-indicator"
-                        style={{ top: getCurrentTimePosition() }}
-                      />
-                    )}
-                    {getOverlappingEvents(events).map((group, groupIndex) => {
-                      return (
-                        <div key={groupIndex} className="event-group">
-                          {group.map((event, index) => {
-                            const position = getEventPosition(event.time, event.endTime, index, group.length);
-                            const isPassed = isEventPassed(`${day.date}T${event.time}`, event.endTime ? `${day.date}T${event.endTime}` : undefined, event.type);
-                            return (
-                              <div
-                                key={`${event.time}-${index}`}
-                                className={`calendar-event ${isPassed ? 'passed' : ''}`}
-                                style={{
-                                  backgroundColor: event.color,
-                                  top: position.top,
-                                  height: position.height,
-                                  width: position.width,
-                                  left: position.left
-                                }}
-                                onClick={() => handleEventClick(event)}
-                              >
-                                <div className="calendar-event-title-container">
-                                  <div className="calendar-event-name">{event.name}</div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        {selectedEvent && (
-          <div className="match-event-details">
-            <h3>{selectedEvent.name}</h3>
-            <p>Horaire: {selectedEvent.time} - {selectedEvent.endTime}</p>
-            {selectedEvent.type === 'match' ? (
-              <>
-                {selectedEvent.sport && <p>Sport: {selectedEvent.sport}</p>}
-                {selectedEvent.venue && <p>Lieu: {selectedEvent.venue}</p>}
-                {selectedEvent.teams && <p>Équipes: {selectedEvent.teams}</p>}
-                {selectedEvent.description && <p>Description: {selectedEvent.description}</p>}
-                {selectedEvent.result && <p className="match-result"><strong>Résultat :</strong> {selectedEvent.result}</p>}
-              </>
-            ) : (
-              <>
-                {selectedEvent.description && <p>Description: {selectedEvent.description}</p>}
-                {selectedEvent.venue && <p>Adresse: {selectedEvent.venue}</p>}
-              </>
-            )}
-            <div className="match-event-buttons">
-              <button onClick={() => {
-                if (selectedEvent.type === 'match') {
-                  const venue = venues.find(v => v.name === selectedEvent.venue);
-                  if (venue) {
-                    onViewOnMap(venue);
-                    setSelectedEvent(null)
-                  }
-                } else if (selectedEvent.type === 'party') {
-                  const partyVenues: { [key: string]: Venue } = {
-                    'Place Stanislas': {
-                      id: 'place-stanislas',
-                      name: 'Place Stanislas',
-                      description: 'Place Stanislas',
-                      address: 'Pl. Stanislas, 54000 Nancy',
-                      latitude: 48.693524,
-                      longitude: 6.183270,
-                      position: [48.693524, 6.183270],
-                      sport: 'Defile',
-                      date: '',
-                      emoji: '🎺',
-                      matches: [],
-                      type: 'venue'
-                    },
-                    'Centre Prouvé': {
-                      id: 'centre-prouve',
-                      name: 'Centre Prouvé',
-                      description: 'Centre Prouvé',
-                      address: '1 Pl. de la République, 54000 Nancy',
-                      latitude: 48.687858,
-                      longitude: 6.176977,
-                      position: [48.687858, 6.176977],
-                      sport: 'Pompom',
-                      date: '',
-                      emoji: '🎀',
-                      matches: [],
-                      type: 'venue'
-                    },
-                    'Parc des Expositions': {
-                      id: 'parc-expo',
-                      name: 'Parc des Expositions',
-                      description: 'Parc des Expositions',
-                      address: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy',
-                      latitude: 48.663272,
-                      longitude: 6.190715,
-                      position: [48.663272, 6.190715],
-                      sport: 'Party',
-                      date: '',
-                      emoji: '🎉',
-                      matches: [],
-                      type: 'venue'
-                    },
-                    'Zénith': {
-                      id: 'zenith',
-                      name: 'Zénith',
-                      description: 'Zénith',
-                      address: 'Rue du Zénith, 54320 Maxéville',
-                      latitude: 48.710237,
-                      longitude: 6.139252,
-                      position: [48.710237, 6.139252],
-                      sport: 'Party',
-                      date: '',
-                      emoji: '🎉',
-                      matches: [],
-                      type: 'venue'
+              <div className="match-event-buttons">
+                <button onClick={() => {
+                  if (selectedEvent.type === 'match') {
+                    const venue = venues.find(v => v.name === selectedEvent.venue);
+                    if (venue) {
+                      onViewOnMap(venue);
+                      setSelectedEvent(null)
                     }
-                  };
+                  } else if (selectedEvent.type === 'party') {
+                    const partyVenues: { [key: string]: Venue } = {
+                      'Place Stanislas': {
+                        id: 'place-stanislas',
+                        name: 'Place Stanislas',
+                        description: 'Place Stanislas',
+                        address: 'Pl. Stanislas, 54000 Nancy',
+                        latitude: 48.693524,
+                        longitude: 6.183270,
+                        position: [48.693524, 6.183270],
+                        sport: 'Defile',
+                        date: '',
+                        emoji: '🎺',
+                        matches: [],
+                        type: 'venue'
+                      },
+                      'Centre Prouvé': {
+                        id: 'centre-prouve',
+                        name: 'Centre Prouvé',
+                        description: 'Centre Prouvé',
+                        address: '1 Pl. de la République, 54000 Nancy',
+                        latitude: 48.687858,
+                        longitude: 6.176977,
+                        position: [48.687858, 6.176977],
+                        sport: 'Pompom',
+                        date: '',
+                        emoji: '🎀',
+                        matches: [],
+                        type: 'venue'
+                      },
+                      'Parc des Expositions': {
+                        id: 'parc-expo',
+                        name: 'Parc des Expositions',
+                        description: 'Parc des Expositions',
+                        address: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy',
+                        latitude: 48.663272,
+                        longitude: 6.190715,
+                        position: [48.663272, 6.190715],
+                        sport: 'Party',
+                        date: '',
+                        emoji: '🎉',
+                        matches: [],
+                        type: 'venue'
+                      },
+                      'Zénith': {
+                        id: 'zenith',
+                        name: 'Zénith',
+                        description: 'Zénith',
+                        address: 'Rue du Zénith, 54320 Maxéville',
+                        latitude: 48.710237,
+                        longitude: 6.139252,
+                        position: [48.710237, 6.139252],
+                        sport: 'Party',
+                        date: '',
+                        emoji: '🎉',
+                        matches: [],
+                        type: 'venue'
+                      }
+                    };
 
-                  const venue = partyVenues[selectedEvent.name];
-                  if (venue) {
-                    onViewOnMap(venue);
-                    setSelectedEvent(null)
+                    const venue = partyVenues[selectedEvent.name];
+                    if (venue) {
+                      onViewOnMap(venue);
+                      setSelectedEvent(null)
+                    }
                   }
-                }
-              }}>
-                Voir sur la carte
-              </button>
-              <button onClick={() => setSelectedEvent(null)}>Fermer</button>
+                }}>
+                  Voir sur la carte
+                </button>
+                <button onClick={() => setSelectedEvent(null)}>Fermer</button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+        
+        {/* BottomNav du Layout */}
+        <BottomNav closeLayoutPanels={onClose} />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar';
+export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info';
 
 interface AppPanelsContextType {
   activeTab: TabType;

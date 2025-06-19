@@ -152,6 +152,76 @@ const Layout: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  // Gestion du bouton physique retour des téléphones
+  useEffect(() => {
+    let isHandlingPopState = false;
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (isHandlingPopState) return;
+      isHandlingPopState = true;
+
+      // Si le chat est ouvert, le fermer
+      if (showChat) {
+        setShowChat(false);
+        // Empêcher la navigation en ajoutant une nouvelle entrée
+        window.history.pushState({ path: location.pathname, chat: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+      
+      // Pages principales : empêcher complètement la navigation
+      if (location.pathname === '/' || location.pathname === '/info') {
+        // Empêcher la navigation en ajoutant une nouvelle entrée
+        window.history.pushState({ path: location.pathname }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+      
+      // Pour la page map, gérer selon la logique existante
+      if (location.pathname === '/map') {
+        if (activeTab !== 'map') {
+          setActiveTab('map');
+          window.history.pushState({ path: location.pathname, tab: 'map' }, '', location.pathname);
+        } else {
+          // Permettre la navigation normale
+          navigate(-1);
+        }
+      }
+      
+      isHandlingPopState = false;
+    };
+
+    // Écouter les événements de navigation (bouton retour physique)
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showChat, location.pathname, activeTab, navigate]);
+
+  // Ajouter une entrée dans l'historique pour les pages principales et empêcher le retour
+  useEffect(() => {
+    if (location.pathname === '/' || location.pathname === '/info') {
+      // Remplacer l'entrée actuelle et ajouter une nouvelle pour empêcher le retour
+      window.history.replaceState({ path: location.pathname }, '', location.pathname);
+      window.history.pushState({ path: location.pathname }, '', location.pathname);
+    }
+  }, [location.pathname]);
+
+  // Gestion agressive pour empêcher le retour sur les pages principales
+  useEffect(() => {
+    if (location.pathname === '/' || location.pathname === '/info') {
+      const preventBack = (e: PopStateEvent) => {
+        if (location.pathname === '/' || location.pathname === '/info') {
+          window.history.pushState({ path: location.pathname }, '', location.pathname);
+        }
+      };
+      
+      window.addEventListener('popstate', preventBack);
+      return () => window.removeEventListener('popstate', preventBack);
+    }
+  }, [location.pathname]);
+
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
@@ -487,6 +557,11 @@ const Layout: React.FC = () => {
 
   // Mise à jour du timestamp de dernière lecture lors de l'ouverture du chat
   const handleChatToggle = () => {
+    if (!showChat) {
+      // Ajouter une entrée dans l'historique quand on ouvre le chat
+      window.history.pushState({ path: location.pathname, chat: true }, '', location.pathname);
+    }
+    
     setShowChat(!showChat);
     if (!showChat && messages.length > 0) {
       const lastMsg = messages[messages.length - 1];
@@ -547,6 +622,7 @@ const Layout: React.FC = () => {
         isEditing={isEditing}
         getAllDelegations={getAllDelegations}
         hasGenderMatches={hasGenderMatches}
+        isBackDisabled={(location.pathname === '/' || location.pathname === '/info') && !showChat}
       />
       <main className="app-main">
         <Outlet context={{ 

@@ -16,6 +16,7 @@ interface HeaderProps {
   isEditing?: boolean;
   getAllDelegations: () => string[];
   hasGenderMatches: (sport: string) => { hasFemale: boolean, hasMale: boolean, hasMixed: boolean };
+  isBackDisabled?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -29,7 +30,8 @@ const Header: React.FC<HeaderProps> = ({
   onEditModeToggle,
   isEditing,
   getAllDelegations,
-  hasGenderMatches
+  hasGenderMatches,
+  isBackDisabled
 }) => {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
@@ -48,9 +50,18 @@ const Header: React.FC<HeaderProps> = ({
         {/* Bouton retour complètement à gauche */}
         <button
           className="header-back-button"
-          onClick={onBack || (() => navigate(-1))}
-          style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', marginRight: 0, marginLeft: -30, marginTop: 20 }}
-          title="Retour"
+          onClick={isBackDisabled ? undefined : (onBack || (() => navigate(-1)))}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            fontSize: 24, 
+            cursor: isBackDisabled ? 'default' : 'pointer', 
+            marginRight: 0, 
+            marginLeft: -30, 
+            marginTop: 20,
+          }}
+          title={isBackDisabled ? "Retour non disponible" : "Retour"}
+          disabled={isBackDisabled}
         >
           ⬅️
         </button>

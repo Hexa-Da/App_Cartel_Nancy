@@ -432,7 +432,8 @@ function App() {
   const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null);
   const [editingMessageValue, setEditingMessageValue] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar'>('map');
+  const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info'>('map');
+  const [chatOriginTab, setChatOriginTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info'>('map');
   
   useEffect(() => {
     if (location.pathname === '/map') {
@@ -2524,13 +2525,18 @@ function App() {
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
 
   const handleOpenChat = () => {
-    // Si on est déjà sur le chat, on retourne à l'onglet précédent
+    // Si on est déjà sur le chat, on retourne à l'onglet d'origine
     if (activeTab === 'chat') {
-      setActiveTab(previousTab);
+      setActiveTab(chatOriginTab);
+      // Ne pas ajouter d'entrée dans l'historique pour permettre la navigation continue
     } else {
-      // Sinon on mémorise l'onglet actuel et on ouvre le chat
-      setPreviousTab(activeTab);
+      // Sinon on mémorise l'onglet actuel comme origine et on ouvre le chat
+      setChatOriginTab(activeTab);
       setActiveTab('chat');
+      // Ajouter une entrée dans l'historique seulement si on ne vient pas d'une page principale
+      if (activeTab !== 'map' && activeTab !== 'home' && activeTab !== 'info') {
+        window.history.pushState({ tab: 'chat', origin: activeTab }, '', window.location.pathname);
+      }
       if (messages.length > 0) {
         const lastMsg = messages[messages.length - 1];
         const newTimestamp = lastMsg.timestamp;
@@ -2640,14 +2646,22 @@ function App() {
         setActiveTab('events');
         break;
       case 'chat':
-        setActiveTab('map');
+        setActiveTab(chatOriginTab);
         break;
+      case 'home':
+      case 'info':
+        // Pas de retour possible depuis les pages principales
+        return;
       default:
         setActiveTab('map');
     }
   };
 
-  const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'planning' | 'calendar') => {
+  const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info') => {
+    // Ajouter une entrée dans l'historique pour toutes les pages secondaires
+    if (tab !== 'map' && tab !== 'home' && tab !== 'info') {
+      window.history.pushState({ tab }, '', window.location.pathname);
+    }
     setPreviousTab(activeTab);
     setActiveTab(tab);
     if (tab === 'planning' || tab === 'calendar') {
@@ -2668,9 +2682,82 @@ function App() {
   // Juste après la déclaration de useAppPanels et des states principaux dans App()
   const previousTabRef = useRef<TabType | null>(null);
 
+  // Gestion du bouton physique retour des téléphones
   useEffect(() => {
-    // Détecte le retour de 'planning' vers 'events' et déclenche le scroll
-    if (previousTabRef.current === 'planning' && activeTab === 'events') {
+    let isHandlingPopState = false;
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (isHandlingPopState) return;
+      isHandlingPopState = true;
+
+      // Pages principales : empêcher complètement la navigation
+      if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
+        // Empêcher la navigation en ajoutant une nouvelle entrée
+        window.history.pushState({ tab: activeTab }, '', window.location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+      
+      // Si on est sur le chat, retourner à la page d'origine
+      if (activeTab === 'chat') {
+        setActiveTab(chatOriginTab);
+        // Ne pas ajouter d'entrée dans l'historique ici pour permettre la navigation continue
+        isHandlingPopState = false;
+        return;
+      }
+      
+      // Pour les autres pages secondaires, gérer selon la logique existante
+      switch (activeTab as TabType) {
+        case 'planning':
+          setActiveTab('events');
+          break;
+        case 'events':
+          setActiveTab('map');
+          break;
+        case 'calendar':
+          setActiveTab('events');
+          break;
+        default:
+          setActiveTab('map');
+      }
+      
+      isHandlingPopState = false;
+    };
+
+    // Écouter les événements de navigation (bouton retour physique)
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [activeTab, chatOriginTab]);
+
+  // Ajouter une entrée dans l'historique pour les pages principales et empêcher le retour
+  useEffect(() => {
+    if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
+      // Remplacer l'entrée actuelle et ajouter une nouvelle pour empêcher le retour
+      window.history.replaceState({ tab: activeTab }, '', window.location.pathname);
+      window.history.pushState({ tab: activeTab }, '', window.location.pathname);
+    }
+  }, [activeTab]);
+
+  // Gestion agressive pour empêcher le retour sur les pages principales
+  useEffect(() => {
+    if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
+      const preventBack = (e: PopStateEvent) => {
+        if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
+          window.history.pushState({ tab: activeTab }, '', window.location.pathname);
+        }
+      };
+      
+      window.addEventListener('popstate', preventBack);
+      return () => window.removeEventListener('popstate', preventBack);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    // Détecte le retour de 'planning' ou 'calendar' vers 'events' et déclenche le scroll
+    if ((previousTabRef.current === 'planning' || previousTabRef.current === 'calendar') && activeTab === 'events') {
       setTimeout(() => {
         const firstNonPassedEvent = document.querySelector('.event-item:not(.passed)');
         if (firstNonPassedEvent) {
@@ -2692,7 +2779,8 @@ function App() {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'var(--background-color)',
+          background: 'var(--bg-primary)',
+          opacity: 0.8,
           zIndex: 5000,
           display: 'flex',
           alignItems: 'center',
@@ -2701,7 +2789,6 @@ function App() {
         }}>
           <div className="location-loading-spinner" style={{ width: 60, height: 60, borderWidth: 6, marginBottom: 24 }}></div>
           <div style={{ color: '#1976D2', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: 8 }}>Chargement des données…</div>
-          <div style={{ color: '#555', fontSize: '1rem' }}>Récupération des lieux et matchs depuis la base de données</div>
         </div>
       )}
       <Header
@@ -2726,6 +2813,7 @@ function App() {
         isEditing={isEditing}
         getAllDelegations={getAllDelegations}
         hasGenderMatches={hasGenderMatches}
+        isBackDisabled={activeTab === 'map' || activeTab === 'home' || activeTab === 'info'}
       />
       <main className="app-main">
         {locationError && showLocationPrompt && (
@@ -3465,6 +3553,34 @@ function App() {
           if (gender === 'male') setShowMale(!showMale);
           if (gender === 'mixed') setShowMixed(!showMixed);
         }}
+        onSetGenderFilters={(female, male, mixed) => {
+          setShowFemale(female);
+          setShowMale(male);
+          setShowMixed(mixed);
+        }}
+        showFilters={showFilters}
+        onShowFiltersChange={setShowFilters}
+        // Props pour le Header
+        onChat={handleOpenChat}
+        onEmergency={() => setShowEmergency(true)}
+        onAdmin={handleAdminClick}
+        isAdmin={isAdmin}
+        user={user}
+        showChat={activeTab === 'chat'}
+        unreadCount={unreadCount}
+        onEditModeToggle={() => {
+          setIsEditing(!isEditing);
+          if (isEditing) {
+            // Si on désactive le mode édition, on réinitialise les états liés à l'édition
+            setIsAddingPlace(false);
+            setEditingVenue({ id: null, venue: null });
+            setTempMarker(null);
+            setIsPlacingMarker(false);
+          }
+        }}
+        isEditing={isEditing}
+        onBack={handleBack}
+        isBackDisabled={activeTab === 'map' || activeTab === 'home' || activeTab === 'info'}
       />
       {showEmergency && (
         <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
