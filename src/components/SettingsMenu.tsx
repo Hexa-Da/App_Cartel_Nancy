@@ -83,7 +83,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       const parsed = JSON.parse(stored);
       return Array.isArray(parsed) ? parsed : [parsed];
     } catch {
-      return [stored];
+      // En cas d'erreur de parsing, on met "Tous les sports" par défaut
+      localStorage.setItem('preferredSport', JSON.stringify(['none']));
+      return ['none'];
     }
   });
   // Championnat préféré

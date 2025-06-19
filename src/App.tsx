@@ -152,6 +152,7 @@ function LocationMarker() {
         setPosition(newPosition);
         map.flyTo(newPosition, 16);
         setError(null);
+        setIsLoading(false);
       } else {
         // Utiliser l'API Web standard pour le navigateur
         navigator.geolocation.getCurrentPosition(
@@ -160,9 +161,11 @@ function LocationMarker() {
             setPosition(newPosition);
             map.flyTo(newPosition, 16);
             setError(null);
+            setIsLoading(false);
           },
           (error) => {
             handleLocationError(error);
+            setIsLoading(false);
           },
           {
             enableHighAccuracy: true,
@@ -173,7 +176,6 @@ function LocationMarker() {
       }
     } catch (err: any) {
       handleLocationError(err);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -2169,10 +2171,10 @@ function App() {
 
         if (venue) {
           // Afficher le marqueur si :
-          // 1. Le filtre est sur "all" ou correspond au sport
+          // 1. Le filtre est sur "all", "match" (tous les sports) ou correspond au sport
           // 2. Le filtre de lieu est sur "Tous" ou correspond au lieu
           const shouldShow = 
-            (eventFilter === 'all' || eventFilter === venue.sport) &&
+            (eventFilter === 'all' || eventFilter === 'match' || eventFilter === venue.sport) &&
             (venueFilter === 'Tous' || venue.id === venueFilter);
 
           markerElement.style.display = shouldShow ? 'block' : 'none';
