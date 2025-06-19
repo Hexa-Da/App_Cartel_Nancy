@@ -24,16 +24,7 @@ const Info: React.FC = () => {
   const navigate = useNavigate();
 
   const handleCardClick = (section: string) => {
-    switch (section) {
-      case 'map':
-        navigate('/map');
-        break;
-      case 'schedule':
-        navigate('/calendar');
-        break;
-      default:
-        console.log(`Clicked on ${section}`);
-    }
+    console.log(`Clicked on ${section}`);
   };
 
   return (

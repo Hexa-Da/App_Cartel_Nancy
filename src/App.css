@@ -60,13 +60,10 @@
   --text-color: #2c3e50;
   --text-color-light: #7f8c8d;
   --bg-color: #ffffff;
-  --bg-secondary: #f8f9fa;
+  --bg-secondary: #6e6e6e;
   --border-color: #e0e0e0;
   --shadow-color: rgba(0, 0, 0, 0.1);
   --bg-primary: #ffffff;
-  --bg-secondary: #f5f5f5;
-  --text-primary: #181818;
-  --text-secondary: #555;
   --accent-color: #4CAF50;
   --error-color: #f44336;
   --bg-hover: #f0f0f0;
@@ -87,7 +84,7 @@
 
 [data-theme="light"] {
   --bg-primary: #ffffff;
-  --bg-secondary: #f5f5f5;
+  --bg-secondary: #6e6e6e;
   --text-primary: #181818;
   --text-secondary: #555;
   --border-color: #e0e0e0;
@@ -240,7 +237,7 @@ html, body, #root {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
 
@@ -638,7 +635,7 @@ html, body, #root {
 /* Style pour Firefox */
 .matches-list {
   scrollbar-width: 4px;
-  scrollbar-color: var(--primary-color);
+  scrollbar-color: var(--primary-color) transparent;
 }
 
 .matches-list h4 {
@@ -1179,7 +1176,7 @@ html, body, #root {
   background-color: var(--bg-secondary);
   border-radius: 8px;
   padding: 0.75rem;
-  box-shadow: 0 2px 6px var(--shadow-color);
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease;
   cursor: pointer;
   margin-bottom: 0.5rem;
@@ -1562,7 +1559,7 @@ html, body, #root {
   background-color: var(--bg-secondary);
   border-radius: 8px;
   padding: 0.75rem;
-  box-shadow: 0 2px 6px var(--shadow-color);
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease;
   cursor: pointer;
 }
@@ -1882,72 +1879,7 @@ html, body, #root {
   }
 }
 
-.chat-container {
-  padding: 1rem;
-  height: calc(110vh - 120px);
-  overflow-y: auto;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-.chat-message {
-  margin-bottom: 1rem;
-  padding: 0.8rem;
-  border-radius: 8px;
-  background-color: var(--bg-secondary);
-  box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-.chat-message-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-.chat-message-content {
-  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
-  line-height: 1.4;
-  max-width: 90vw;
-  word-break: break-word;
-  white-space: pre-line;
-  padding: 0.2rem 0.1rem;
-  color: var(--text-color);
-}
-
-.chat-message.admin {
-  background-color: var(--secondary-color);
-  color: var(--text-color);
-}
-
-.chat-message.admin .chat-message-header {
-  color: var(--text-color);
-}
-
-
-.chat-container {
-  background-color: var(--bg-color);
-}
-
-.chat-message {
-  background-color: var(--bg-secondary);
-  border-left: 4px solid var(--primary-color);
-}
-
-.chat-message.admin {
-  background-color: var(--secondary-color);
-  border-left: 4px solid var(--primary-color);
-}
-
-@media (max-width: 600px) {
-  .chat-message-content {
-    font-size: 1rem;
-    padding: 0.2rem 0.2rem;
-    max-width: 98vw;
-  }
-}
-
+/* Styles unifiés pour le chat sur toutes les pages */
 .chat-panel {
   position: fixed;
   top: 0;
@@ -1959,6 +1891,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-bottom: 1000px;
 }
 
 .chat-panel-header {
@@ -1982,6 +1915,46 @@ html, body, #root {
   position: flex;
 }
 
+.chat-container {
+  padding: 1rem;
+  height: calc(110vh - 120px);
+  overflow-y: auto;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.chat-message {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background-color: var(--bg-secondary);
+  box-shadow: 0 4px 4px var(--shadow-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+.chat-message.admin {
+  background-color: var(--secondary-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+.chat-message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.chat-message-content {
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  line-height: 1.4;
+  max-width: 90vw;
+  word-break: break-word;
+  white-space: pre-line;
+  padding: 0.2rem 0.1rem;
+  color: var(--text-color);
+}
+
 .add-message-button {
   background-color: var(--primary-color); 
   color: white;
@@ -1995,6 +1968,90 @@ html, body, #root {
   align-items: center;
 }
 
+/* Style spécifique pour le chat panel sur Home et Info */
+.home-info-chat {
+  position: fixed;
+  top: 4.5rem;
+  right: 1rem;
+  height: calc(100% - 4rem - 60px); /* 4rem pour le header, 60px pour la nav */
+  background-color: var(--bg-color);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.home-info-chat .chat-panel-header {
+  padding: 0.7rem;
+  background-color: var(--bg-color);
+  position: sticky;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--border-color);
+  margin-top: -50px;
+  padding-top: 0;
+}
+
+.home-info-chat .chat-panel-header h3 {
+  margin-top: 3.7rem;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  position: flex;
+}
+
+.home-info-chat .chat-container {
+  padding: 1rem;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.home-info-chat .chat-message {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background-color: var(--bg-secondary);
+  box-shadow: 0 2px 4px var(--shadow-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+.home-info-chat .chat-message.admin {
+  background-color: var(--secondary-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+.home-info-chat .chat-message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.home-info-chat .chat-message-content {
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  line-height: 1.4;
+  max-width: 90vw;
+  word-break: break-word;
+  white-space: pre-line;
+  padding: 0.2rem 0.1rem;
+  color: var(--text-color);
+}
+
+@media (max-width: 600px) {
+  .chat-message-content {
+    font-size: 1rem;
+    padding: 0.2rem 0.2rem;
+    max-width: 98vw;
+  }
+}
+
+/* Styles pour les boutons d'urgence et autres éléments */
 .emergency-button {
   background: transparent;
   border: none;
@@ -2065,6 +2122,7 @@ html, body, #root {
   margin-right: 0.5rem;
 }
 
+/* Styles pour le panneau de planning */
 .planning-panel {
   position: fixed;
   top: 2rem;
@@ -2202,7 +2260,6 @@ html, body, #root {
   color: #f44336;
 }
 
-
 /* Styles pour le formulaire d'ajout de fichiers */
 .admin-controls {
   margin-bottom: 20px;
@@ -2306,6 +2363,7 @@ html, body, #root {
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+/* Styles pour le calendrier */
 .calendar-popup-overlay {
   position: fixed;
   top: 0;

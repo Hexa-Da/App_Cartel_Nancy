@@ -476,7 +476,7 @@ const Home: React.FC = () => {
           background-color: var(--bg-secondary);
           border-radius: 6px;
           padding: 12px;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
           transition: transform 0.2s ease;
         }
 

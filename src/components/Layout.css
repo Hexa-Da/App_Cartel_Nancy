@@ -132,6 +132,7 @@ body {
   padding: 0;
   margin: 0;
 }
+
 .emergency-popup {
   position: fixed;
   top: 0;
@@ -190,81 +191,7 @@ body {
   margin-right: 0.5rem;
 }
 
-/* Styles pour le chat sur les pages Home et Info */
-.home-info-chat {
-  position: fixed;
-  top: 4.5rem;
-  right: 1rem;
-  height: calc(100% - 4rem - 60px); /* 4rem pour le header, 60px pour la nav */
-  background-color: var(--bg-color);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.home-info-chat .chat-panel-header {
-  padding: 0.7rem;
-  background-color: var(--bg-color);
-  position: sticky;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-  margin-top: -50px;
-  padding-top: 0;
-}
-
-.home-info-chat .chat-panel-header h3 {
-  margin-top: 3.7rem;
-  color: var(--text-color);
-  font-size: 1.2rem;
-  align-items: center;
-  justify-content: center;
-  position: flex;
-}
-
-.home-info-chat .chat-container {
-  padding: 1rem;
-  height: calc(100vh - 120px);
-  overflow-y: auto;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-.home-info-chat .chat-message {
-  margin-bottom: 1rem;
-  padding: 0.8rem;
-  border-radius: 8px;
-  background-color: var(--bg-secondary);
-  box-shadow: 0 2px 4px var(--shadow-color);
-  border-left: 4px solid var(--primary-color);
-}
-
-.home-info-chat .chat-message.admin {
-  background-color: var(--secondary-color);
-  border-left: 4px solid var(--primary-color);
-}
-
-.home-info-chat .chat-message-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-.home-info-chat .chat-message-content {
-  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
-  line-height: 1.4;
-  max-width: 90vw;
-  word-break: break-word;
-  white-space: pre-line;
-  padding: 0.2rem 0.1rem;
-  color: var(--text-color);
-}
-
+/* Styles pour le bouton de fermeture du chat sur Home et Info */
 .home-info-chat .close-chat-button {
   position: absolute;
   right: 10px;

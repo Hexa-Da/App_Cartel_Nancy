@@ -382,6 +382,8 @@ declare global {
   }
 }
 
+import VSSForm from './components/VSSForm';
+
 function App() {
   const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
   const location = useLocation();
@@ -2816,7 +2818,8 @@ function App() {
     previousTabRef.current = activeTab;
   }, [activeTab]);
 
-  // Ajoute le header en haut du return
+  const [showVSSForm, setShowVSSForm] = useState(false);
+
   return (
     <div className="app">
       {/* Overlay de chargement global */}
@@ -3634,15 +3637,8 @@ function App() {
         <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
           <div className="emergency-popup-content" onClick={e => e.stopPropagation()}>
             <div className="emergency-popup-header">
-            <h3>Contacts d'urgence</h3>
-            </div>
-            <ul style={{ textAlign: 'left', margin: '1.5rem 1rem'}}>
-              <li><strong>SAMU :</strong> 15</li>
-              <li><strong>Police :</strong> 17</li>
-              <li><strong>Pompier :</strong> 18</li>
-              <li><strong>Numéro européen :</strong> 112</li>
-            </ul>
-            <button 
+              <h3>Contacts d'urgence</h3>
+              <button 
                 className="close-button" 
                 onClick={() => setShowEmergency(false)}
                 style={{
@@ -3650,16 +3646,68 @@ function App() {
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: 'pointer',
+                  padding: '0.5rem',
                   position: 'absolute',
-                  right: '0rem',
-                  top: '1rem',
+                  right: '-0.5rem',
+                  top: '0rem',
                   color: 'var(--text-color)'
                 }}
               >
                 ×
-              </button>          </div>
+              </button>
+            </div>
+            <ul style={{ textAlign: 'left', margin: '1.5rem 1rem' }}>
+              <li><strong>SAMU :</strong> 15</li>
+              <li><strong>Police :</strong> 17</li>
+              <li><strong>Pompier :</strong> 18</li>
+              <li><strong>Numéro européen :</strong> 112</li>
+            </ul>
+            <div style={{
+              padding: '1rem',
+              marginTop: '1rem',
+              borderTop: '1px solid var(--border-color)',
+              textAlign: 'center'
+            }}>
+              <button
+                onClick={() => {
+                  setShowVSSForm(true);
+                  setShowEmergency(false);
+                }}
+                style={{
+                  backgroundColor: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '12px 20px',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#c0392b';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = '#e74c3c';
+                }}
+              >
+                Signaler une VSS
+              </button>
+            </div>
+          </div>
         </div>
       )}
+
+      {/* Formulaire VSS */}
+      {showVSSForm && (
+        <VSSForm onClose={() => setShowVSSForm(false)} />
+      )}
+
       <Outlet />
     </div>
   );

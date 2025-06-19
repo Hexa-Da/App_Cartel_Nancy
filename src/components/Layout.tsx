@@ -8,6 +8,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import { useAppPanels } from '../AppPanelsContext';
+import VSSForm from './VSSForm';
 
 const sportEmojis = {
   'Football': '⚽',
@@ -73,6 +74,7 @@ const Layout: React.FC = () => {
   const [showChat, setShowChat] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showVSSForm, setShowVSSForm] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -769,8 +771,50 @@ const Layout: React.FC = () => {
               <li><strong>Pompier :</strong> 18</li>
               <li><strong>Numéro européen :</strong> 112</li>
             </ul>
+            <div style={{
+              padding: '1rem',
+              marginTop: '1rem',
+              borderTop: '1px solid var(--border-color)',
+              textAlign: 'center'
+            }}>
+              <button
+                onClick={() => {
+                  setShowVSSForm(true);
+                  setShowEmergency(false);
+                }}
+                style={{
+                  backgroundColor: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '12px 20px',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#c0392b';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = '#e74c3c';
+                }}
+              >
+                Signaler une VSS
+              </button>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Formulaire VSS */}
+      {showVSSForm && (
+        <VSSForm onClose={() => setShowVSSForm(false)} />
       )}
 
       {/* Fenêtre modale pour l'administration */}
