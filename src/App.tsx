@@ -151,7 +151,7 @@ function LocationMarker() {
         
         const newPosition = new LatLng(coordinates.coords.latitude, coordinates.coords.longitude);
         setPosition(newPosition);
-        map.flyTo(newPosition, 16);
+        // Supprimer le flyTo automatique vers la position de l'utilisateur
         setError(null);
         setIsLoading(false);
       } else {
@@ -160,7 +160,7 @@ function LocationMarker() {
           (position) => {
             const newPosition = new LatLng(position.coords.latitude, position.coords.longitude);
             setPosition(newPosition);
-            map.flyTo(newPosition, 16);
+            // Supprimer le flyTo automatique vers la position de l'utilisateur
             setError(null);
             setIsLoading(false);
           },
@@ -402,7 +402,7 @@ function App() {
       // Forcer la mise à jour de la carte
       if (mapRef.current) {
         mapRef.current.invalidateSize();
-    }
+      }
     }
   }, [location.pathname, activeTab]);
 
@@ -434,7 +434,54 @@ function App() {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info'>('map');
   const [chatOriginTab, setChatOriginTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info'>('map');
+  const [appAction, setAppAction] = useState(0);
   
+  // Effet pour gérer le lieu sélectionné depuis la page Home
+  useEffect(() => {
+    const selectedVenueData = localStorage.getItem('selectedVenue');
+    if (selectedVenueData && location.pathname === '/map') {
+      try {
+        const selectedVenue = JSON.parse(selectedVenueData);
+        
+        // Attendre que la carte et les marqueurs soient chargés
+        const checkAndFlyTo = () => {
+          if (mapRef.current && markersRef.current.length > 0) {
+            // Centrer la carte sur le lieu sélectionné
+            mapRef.current.flyTo([selectedVenue.latitude, selectedVenue.longitude], 18, {
+              duration: 2.5
+            });
+            
+            // Trouver et ouvrir le marqueur correspondant
+            const marker = markersRef.current.find(m => {
+              const latlng = m.getLatLng();
+              return Math.abs(latlng.lat - selectedVenue.latitude) < 0.0001 && 
+                     Math.abs(latlng.lng - selectedVenue.longitude) < 0.0001;
+            });
+            
+            if (marker) {
+              setTimeout(() => {
+                marker.openPopup();
+              }, 2500);
+            }
+            
+            // Nettoyer le localStorage
+            localStorage.removeItem('selectedVenue');
+          } else {
+            // Réessayer après un court délai si les marqueurs ne sont pas encore chargés
+            setTimeout(checkAndFlyTo, 100);
+          }
+        };
+        
+        // Démarrer la vérification
+        checkAndFlyTo();
+        
+      } catch (error) {
+        console.error('Erreur lors du parsing du lieu sélectionné:', error);
+        localStorage.removeItem('selectedVenue');
+      }
+    }
+  }, [location.pathname, venues]); // Ajouter venues comme dépendance pour s'assurer que les marqueurs sont chargés
+
   useEffect(() => {
     if (location.pathname === '/map') {
       setActiveTab('map');
@@ -725,7 +772,6 @@ function App() {
   const [showMale, setShowMale] = useState<boolean>(true);
   const [showMixed, setShowMixed] = useState<boolean>(true);
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  const [appAction, setAppAction] = useState<number>(0);
   const [fromEvents, setFromEvents] = useState(false);
   const [isStarFilterActive, setIsStarFilterActive] = useState(false);
 
@@ -1595,17 +1641,19 @@ function App() {
 
   // Fonction pour gérer l'ouverture des popups
   function handlePopupOpen() {
-            setTimeout(() => {
+    // Attendre que le popup soit ouvert et le DOM mis à jour
+    setTimeout(() => {
       const popup = document.querySelector('.leaflet-popup-content');
-      if (!popup) return;
-      // Scroll to the first upcoming match
-      const nextMatch = popup.querySelector('.match-item:not(.match-passed)');
-      if (nextMatch) {
-        nextMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          } else {
-        popup.scrollTop = 0;
+      if (popup) {
+        const matchesScrollContainer = popup.querySelector('.matches-scroll-container');
+        if (matchesScrollContainer) {
+          const firstNonPassedMatch = matchesScrollContainer.querySelector('.match-item:not(.match-passed)');
+          if (firstNonPassedMatch) {
+            firstNonPassedMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
       }
-    }, 0);
+    }, 100);
   }
 
   const handleLocationSuccess = (position: GeolocationPosition) => {

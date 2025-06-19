@@ -1,0 +1,94 @@
+.event-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.event-details-content {
+  background-color: var(--bg-color);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 90%;
+  width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
+}
+
+.match-event-details {
+  color: var(--text-color);
+}
+
+.match-event-details h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.5rem;
+  color: var(--text-color);
+}
+
+.match-event-details p {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.match-event-details .match-result {
+  color: var(--success-color);
+  font-weight: 500;
+}
+
+.match-event-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.match-event-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.match-event-buttons button:first-child {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.match-event-buttons button:last-child {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.match-event-buttons button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  .event-details-content {
+    width: 85%;
+    padding: 15px;
+  }
+
+  .match-event-details h3 {
+    font-size: 1.25rem;
+  }
+
+  .match-event-details p {
+    font-size: 0.9rem;
+  }
+
+  .match-event-buttons button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+} 

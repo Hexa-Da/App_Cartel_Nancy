@@ -3,19 +3,7 @@ import './CalendarPopup.css';
 import { Venue } from '../types';
 import Header from './Header';
 import BottomNav from './BottomNav';
-
-interface Event {
-  type: 'match' | 'party';
-  time: string;
-  endTime?: string;
-  name: string;
-  teams?: string;
-  description?: string;
-  color: string;
-  sport?: string;
-  venue?: string;
-  result?: string;
-}
+import EventDetails, { Event } from './EventDetails';
 
 interface CalendarPopupProps {
   isOpen: boolean;
@@ -770,110 +758,23 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
               </div>
             </div>
           </div>
-          {selectedEvent && (
-            <div className="match-event-details">
-              <h3>{selectedEvent.name}</h3>
-              <p>Horaire: {selectedEvent.time} - {selectedEvent.endTime}</p>
-              {selectedEvent.type === 'match' ? (
-                <>
-                  {selectedEvent.sport && <p>Sport: {selectedEvent.sport}</p>}
-                  {selectedEvent.venue && <p>Lieu: {selectedEvent.venue}</p>}
-                  {selectedEvent.teams && <p>Équipes: {selectedEvent.teams}</p>}
-                  {selectedEvent.description && <p>Description: {selectedEvent.description}</p>}
-                  {selectedEvent.result && <p className="match-result"><strong>Résultat :</strong> {selectedEvent.result}</p>}
-                </>
-              ) : (
-                <>
-                  {selectedEvent.description && <p>Description: {selectedEvent.description}</p>}
-                  {selectedEvent.venue && <p>Adresse: {selectedEvent.venue}</p>}
-                </>
-              )}
-              <div className="match-event-buttons">
-                <button onClick={() => {
-                  if (selectedEvent.type === 'match') {
-                    const venue = venues.find(v => v.name === selectedEvent.venue);
-                    if (venue) {
-                      onViewOnMap(venue);
-                      setSelectedEvent(null)
-                    }
-                  } else if (selectedEvent.type === 'party') {
-                    const partyVenues: { [key: string]: Venue } = {
-                      'Place Stanislas': {
-                        id: 'place-stanislas',
-                        name: 'Place Stanislas',
-                        description: 'Place Stanislas',
-                        address: 'Pl. Stanislas, 54000 Nancy',
-                        latitude: 48.693524,
-                        longitude: 6.183270,
-                        position: [48.693524, 6.183270],
-                        sport: 'Defile',
-                        date: '',
-                        emoji: '🎺',
-                        matches: [],
-                        type: 'venue'
-                      },
-                      'Centre Prouvé': {
-                        id: 'centre-prouve',
-                        name: 'Centre Prouvé',
-                        description: 'Centre Prouvé',
-                        address: '1 Pl. de la République, 54000 Nancy',
-                        latitude: 48.687858,
-                        longitude: 6.176977,
-                        position: [48.687858, 6.176977],
-                        sport: 'Pompom',
-                        date: '',
-                        emoji: '🎀',
-                        matches: [],
-                        type: 'venue'
-                      },
-                      'Parc des Expositions': {
-                        id: 'parc-expo',
-                        name: 'Parc des Expositions',
-                        description: 'Parc des Expositions',
-                        address: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy',
-                        latitude: 48.663272,
-                        longitude: 6.190715,
-                        position: [48.663272, 6.190715],
-                        sport: 'Party',
-                        date: '',
-                        emoji: '🎉',
-                        matches: [],
-                        type: 'venue'
-                      },
-                      'Zénith': {
-                        id: 'zenith',
-                        name: 'Zénith',
-                        description: 'Zénith',
-                        address: 'Rue du Zénith, 54320 Maxéville',
-                        latitude: 48.710237,
-                        longitude: 6.139252,
-                        position: [48.710237, 6.139252],
-                        sport: 'Party',
-                        date: '',
-                        emoji: '🎉',
-                        matches: [],
-                        type: 'venue'
-                      }
-                    };
-
-                    const venue = partyVenues[selectedEvent.name];
-                    if (venue) {
-                      onViewOnMap(venue);
-                      setSelectedEvent(null)
-                    }
-                  }
-                }}>
-                  Voir sur la carte
-                </button>
-                <button onClick={() => setSelectedEvent(null)}>Fermer</button>
-              </div>
-            </div>
-          )}
         </div>
         
         {/* BottomNav du Layout */}
         <BottomNav closeLayoutPanels={onClose} />
       </div>
+
+      {selectedEvent && (
+        <EventDetails
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onViewOnMap={(venue) => {
+            onViewOnMap(venue);
+            setSelectedEvent(null);
+          }}
+          venues={venues}
+        />
+      )}
     </div>
   );
 };

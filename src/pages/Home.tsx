@@ -1,57 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
+import EventDetails, { Event } from '../components/EventDetails';
+import { Match, Venue } from '../types';
+import './Home.css';
+import '../components/EventDetails.css';
 
-interface Match {
-  id: string;
-  teams: string;
-  date: string;
-  description: string;
-  endTime?: string;
-  result?: string;
-  sport?: string;
-}
-
-interface Venue {
-  type: 'venue';
-  id: string;
-  name: string;
-  sport: string;
-  matches: Match[];
-}
-
-interface Hotel {
-  type: 'hotel';
-  id: string;
-  name: string;
-  sport: string;
-  matches: Match[];
-}
-
-interface Restaurant {
-  type: 'restaurant';
-  id: string;
-  name: string;
-  sport: string;
-  matches: Match[];
-}
-
-interface Party {
-  type: 'party';
-  id: string;
-  name: string;
-  sport: string;
-}
-
-type Place = Venue | Hotel | Restaurant | Party;
+type Place = Venue;
 
 interface OutletContext {
   getFilteredEvents: () => Place[];
   getAllDelegations: () => string[];
 }
 
+interface ExtendedMatch extends Match {
+  venue?: string;
+}
+
 const Home: React.FC = () => {
   const { getFilteredEvents, getAllDelegations } = useOutletContext<OutletContext>();
   const [events, setEvents] = useState<Place[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const navigate = useNavigate();
   const [userPreferences, setUserPreferences] = useState({
     favoriteSports: (() => {
       const raw = localStorage.getItem('preferredSport');
@@ -150,14 +119,64 @@ const Home: React.FC = () => {
     };
   }, [getFilteredEvents]);
 
+  // Fonction pour vérifier si un match est passé (reprise de App.tsx)
+  const isMatchPassed = (startDate: string, endTime?: string, type: 'match' | 'party' = 'match') => {
+    const now = new Date();
+    const start = new Date(startDate);
+    
+    // Si l'événement est dans le futur, il n'est pas passé
+    if (start > now) {
+      return false;
+    }
+    
+    // Si une heure de fin est spécifiée, l'utiliser
+    if (endTime) {
+      const end = new Date(endTime);
+      return end < now;
+    }
+    
+    // Pour les soirées sans heure de fin, on considère qu'elles se terminent à 23h
+    if (type === 'party') {
+      const end = new Date(startDate);
+      end.setHours(23, 0, 0, 0);
+      return end < now;
+    }
+    
+    // Pour les matchs sans heure de fin, on considère qu'ils durent 1h
+    const end = new Date(startDate);
+    end.setHours(end.getHours() + 1);
+    return end < now;
+  };
+
+  // Fonction pour faire défiler vers le premier match non passé
+  const scrollToFirstNonPassedMatch = () => {
+    setTimeout(() => {
+      const horizontalScrolls = document.querySelectorAll('.horizontal-scroll');
+      horizontalScrolls.forEach(scrollContainer => {
+        const firstNonPassedMatch = scrollContainer.querySelector('.event-item:not(.match-passed)');
+        if (firstNonPassedMatch) {
+          firstNonPassedMatch.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'nearest', 
+            inline: 'center' 
+          });
+        }
+      });
+    }, 100);
+  };
+
+  // Effet pour déclencher le scroll automatique quand les événements changent
+  useEffect(() => {
+    if (events.length > 0) {
+      scrollToFirstNonPassedMatch();
+    }
+  }, [events]);
+
   const getUpcomingMatches = (places: Place[]) => {
     const now = new Date();
     return places.flatMap(place => {
-      if (place.type === 'venue' && 'matches' in place && Array.isArray(place.matches)) {
-        return place.matches.filter(match => {
-          const matchDate = new Date(match.date);
-          return matchDate > now;
-        }).map(match => ({
+      if ('matches' in place && Array.isArray(place.matches)) {
+        return place.matches.map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,
           sport: place.sport
@@ -169,8 +188,8 @@ const Home: React.FC = () => {
 
   const getMatchesBySport = (places: Place[], sport: string) => {
     return places.flatMap(place => {
-      if (place.type === 'venue' && place.sport === sport && 'matches' in place && Array.isArray(place.matches)) {
-        return place.matches.map(match => ({
+      if (place.sport === sport && 'matches' in place && Array.isArray(place.matches)) {
+        return place.matches.map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,
           sport: place.sport
@@ -182,10 +201,10 @@ const Home: React.FC = () => {
 
   const getMatchesByDelegation = (places: Place[], delegation: string) => {
     return places.flatMap(place => {
-      if (place.type === 'venue' && 'matches' in place && Array.isArray(place.matches)) {
-        return place.matches.filter(match => 
+      if ('matches' in place && Array.isArray(place.matches)) {
+        return place.matches.filter((match: Match) => 
           match.teams.toLowerCase().includes(delegation.toLowerCase())
-        ).map(match => ({
+        ).map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,
           sport: place.sport
@@ -197,8 +216,8 @@ const Home: React.FC = () => {
 
   const getMatchesByDelegationAndSport = (places: Place[], delegation: string, sport: string) => {
     return places.flatMap(place => {
-      if (place.type === 'venue' && place.matches) {
-        return place.matches.filter(match => {
+      if ('matches' in place && Array.isArray(place.matches)) {
+        return place.matches.filter((match: Match) => {
           const teams = match.teams.toLowerCase();
           const delegationLower = delegation.toLowerCase();
           const sportMatch = match.sport === sport;
@@ -218,7 +237,11 @@ const Home: React.FC = () => {
           }
 
           return sportMatch && delegationMatch && championshipMatch;
-        });
+        }).map((match: Match): ExtendedMatch => ({
+          ...match,
+          venue: place.name,
+          sport: place.sport
+        }));
       }
       return [];
     });
@@ -253,6 +276,33 @@ const Home: React.FC = () => {
     return icons[sport] || '🏆';
   };
 
+  const handleEventClick = (match: ExtendedMatch) => {
+    const [, time] = match.date.split('T');
+    setSelectedEvent({
+      type: match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party' : 'match',
+      time: time.split('.')[0],
+      endTime: match.endTime ? match.endTime.split('T')[1].split('.')[0] : undefined,
+      name: match.description || match.name,
+      teams: match.teams,
+      description: match.description,
+      color: match.sport === 'Soirée' || match.sport === 'Défilé' ? '#9C27B0' : '#4CAF50',
+      sport: match.sport,
+      venue: match.venue || '',
+      result: match.result
+    });
+  };
+
+  const handleViewOnMap = (venue: Venue) => {
+    // Stocker le lieu sélectionné dans localStorage pour que la carte puisse le récupérer
+    localStorage.setItem('selectedVenue', JSON.stringify(venue));
+    
+    // Naviguer vers la page carte
+    navigate('/map');
+    
+    // Fermer le popup
+    setSelectedEvent(null);
+  };
+
   return (
     <div className="home-page">
       <h1 className="welcome-title">Bienvenue Au Cartel de Nancy</h1>
@@ -265,7 +315,11 @@ const Home: React.FC = () => {
               return matches.length > 0 ? (
                 <div key={sport} className="horizontal-scroll">
                   {matches.map(match => (
-                    <div key={match.id} className="event-item match-event">
+                    <div 
+                      key={match.id} 
+                      className={`event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+                      onClick={() => handleEventClick(match)}
+                    >
                       <div className="event-header">
                         <span className="event-type-badge">
                           {getSportIcon(sport)} {sport}
@@ -300,7 +354,11 @@ const Home: React.FC = () => {
             {userPreferences.delegation ? (
               getMatchesByDelegation(events, userPreferences.delegation).length > 0 ? (
                 getMatchesByDelegation(events, userPreferences.delegation).map(match => (
-                  <div key={match.id} className="event-item match-event">
+                  <div 
+                    key={match.id} 
+                    className={`event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+                    onClick={() => handleEventClick(match)}
+                  >
                     <div className="event-header">
                       <span className="event-type-badge">
                         {getSportIcon(match.sport || '')} {match.sport}
@@ -330,7 +388,11 @@ const Home: React.FC = () => {
           <div className="horizontal-scroll">
             {getUpcomingMatches(events).length > 0 ? (
               getUpcomingMatches(events).map(match => (
-                <div key={match.id} className="event-item match-event">
+                <div 
+                  key={match.id} 
+                  className={`event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+                  onClick={() => handleEventClick(match)}
+                >
                   <div className="event-header">
                     <span className="event-type-badge">
                       {getSportIcon(match.sport || '')} {match.sport}
@@ -350,6 +412,15 @@ const Home: React.FC = () => {
           </div>
         </section>
       </div>
+
+      {selectedEvent && (
+        <EventDetails
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onViewOnMap={handleViewOnMap}
+          venues={events}
+        />
+      )}
 
       <style>{`
         .home-page {
@@ -392,15 +463,13 @@ const Home: React.FC = () => {
           display: flex;
           overflow-x: auto;
           gap: 0.5rem;
-          padding: 0.2rem 0;
-          scrollbar-width: none;
+          padding: 0rem 0;
+          scrollbar-width: 4px;
+          scrollbar-color: var(--bg-secondary) transparent;
           -webkit-overflow-scrolling: touch;
           min-height: 90px;
         }
 
-        .horizontal-scroll::-webkit-scrollbar {
-          display: none;
-        }
 
         .event-item {
           min-width: 260px;
@@ -415,6 +484,17 @@ const Home: React.FC = () => {
           transform: translateY(-1px);
         }
 
+        .event-item.match-passed {
+          background-color: rgba(255, 255, 255, 0.05);
+          opacity: 0.7;
+        }
+
+        .event-item.match-passed .event-name,
+        .event-item.match-passed .event-description,
+        .event-item.match-passed .event-result {
+          opacity: 0.5;
+        }
+
         .event-header {
           display: flex;
           justify-content: space-between;
@@ -423,8 +503,6 @@ const Home: React.FC = () => {
         }
 
         .event-type-badge {
-          background-color: var(--primary-color);
-          color: white;
           padding: 0.1rem 0.2rem;
           border-radius: 3px;
           font-size: 0.7rem;
@@ -432,6 +510,15 @@ const Home: React.FC = () => {
           display: flex;
           align-items: center;
           gap: 0.1rem;
+          color: white;
+        }
+
+        .match-event .event-type-badge {
+          background-color: #4CAF50;
+        }
+
+        .party-event .event-type-badge {
+          background-color: #9C27B0;
         }
 
         .event-date {
@@ -450,13 +537,19 @@ const Home: React.FC = () => {
           font-size: 0.9rem;
           font-weight: 500;
           text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .event-description {
-          color: var(--text-color-light);
+          color: var(--warning-color);
           font-size: 0.8rem;
           margin: 0.2rem 0;
           line-height: 1.2;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .event-result {
@@ -465,6 +558,9 @@ const Home: React.FC = () => {
           margin: 0.2rem 0;
           font-size: 0.8rem;
           text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .no-matches {

@@ -638,7 +638,7 @@ html, body, #root {
 /* Style pour Firefox */
 .matches-list {
   scrollbar-width: 4px;
-  scrollbar-color: var(--primary-color) transparent;
+  scrollbar-color: var(--primary-color);
 }
 
 .matches-list h4 {
@@ -1172,6 +1172,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 80px;
 }
 
 .event-item {
@@ -1209,6 +1210,14 @@ html, body, #root {
   min-height: 24px;
 }
 
+.match-event .event-type-badge {
+  background-color: #4CAF50;
+}
+
+.party-event .event-type-badge {
+  background-color: #9C27B0;
+}
+
 .event-date {
   color: var(--danger-color);
   font-weight: 600;
@@ -1243,14 +1252,6 @@ html, body, #root {
   margin-top: 15px;
   padding-top: 10px;
   border-top: 1px solid var(--border-color);
-}
-
-.match-event {
-  border-left: 4px solid var(--primary-color);
-}
-
-.party-event {
-  border-left: 4px solid var(--warning-color);
 }
 
 /* Ajustement pour la vue mobile */
@@ -1622,14 +1623,6 @@ html, body, #root {
   display: flex;
   gap: 0.5rem;
   flex-direction: column;
-}
-
-.match-event {
-  border-left: 4px solid var(--primary-color);
-}
-
-.party-event {
-  border-left: 4px solid var(--warning-color);
 }
 
 /* Styles personnalisés pour les contrôles de zoom */
