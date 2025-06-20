@@ -403,7 +403,7 @@ function App() {
   // Forcer l'orientation portrait au démarrage
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
-      ScreenOrientation.lock({ orientation: 'portrait' });
+      ScreenOrientation.lock({ orientation: 'portrait-primary' });
     }
   }, []);
 
@@ -805,7 +805,10 @@ function App() {
   });
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [fromEvents, setFromEvents] = useState(false);
-  const [isStarFilterActive, setIsStarFilterActive] = useState(false);
+  const [isStarFilterActive, setIsStarFilterActive] = useState(() => {
+    const saved = localStorage.getItem('starFilterActive');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
 
   // État pour l'historique des actions et l'index actuel
   const [history, setHistory] = useState<HistoryAction[]>([]);
@@ -861,6 +864,57 @@ function App() {
       window.removeEventListener('preferenceChange', handlePreferenceChange as EventListener);
     };
   }, []);
+
+  // Écouter les changements de l'état de l'étoile dans le localStorage
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'starFilterActive') {
+        const newValue = e.newValue === 'true';
+        setIsStarFilterActive(newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Effet pour détecter les changements de filtres et mettre à jour l'état de l'étoile
+  useEffect(() => {
+    // Vérifier si les filtres actuels correspondent aux préférences
+    const preferredSportRaw = localStorage.getItem('preferredSport') || 'all';
+    let preferredSport;
+    try {
+      const parsed = JSON.parse(preferredSportRaw);
+      preferredSport = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+    } catch {
+      preferredSport = preferredSportRaw;
+    }
+    const preferredDelegation = localStorage.getItem('preferredDelegation') || 'all';
+    const preferredChampionshipRaw = localStorage.getItem('preferredChampionship') || 'none';
+    let preferredChampionship;
+    try {
+      const parsed = JSON.parse(preferredChampionshipRaw);
+      preferredChampionship = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
+    } catch {
+      preferredChampionship = preferredChampionshipRaw;
+    }
+
+    // Vérifier si les filtres correspondent aux préférences
+    const sportMatches = eventFilter === (preferredSport === 'none' ? 'match' : preferredSport);
+    const delegationMatches = delegationFilter === preferredDelegation;
+    const genderMatches = preferredChampionship === 'none' ? 
+      (showFemale && showMale && showMixed) :
+      (preferredChampionship === 'female' ? showFemale && !showMale && !showMixed :
+       preferredChampionship === 'male' ? !showFemale && showMale && !showMixed :
+       preferredChampionship === 'mixed' ? !showFemale && !showMale && showMixed : false);
+
+    const shouldBeActive = sportMatches && delegationMatches && genderMatches;
+    
+    if (shouldBeActive !== isStarFilterActive) {
+      setIsStarFilterActive(shouldBeActive);
+      localStorage.setItem('starFilterActive', JSON.stringify(shouldBeActive));
+    }
+  }, [eventFilter, delegationFilter, showFemale, showMale, showMixed, isStarFilterActive]);
 
   const mapStyles = {
     osm: {
@@ -2456,7 +2510,9 @@ function App() {
       preferredChampionship = preferredChampionshipRaw;
     }
     
-    setIsStarFilterActive(!isStarFilterActive);
+    const newStarFilterActive = !isStarFilterActive;
+    setIsStarFilterActive(newStarFilterActive);
+    localStorage.setItem('starFilterActive', JSON.stringify(newStarFilterActive));
     
     if (!isStarFilterActive) {
       // Si le sport préféré est 'none', on utilise 'match' pour afficher tous les sports
@@ -3070,8 +3126,34 @@ function App() {
                     <button 
                       className="filter-toggle-button"
                       onClick={() => setShowFilters(!showFilters)}
+                      style={{ 
+                        backgroundColor: 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0px',
+                        margin: '0px',
+                        border: 'none',
+                        minWidth: 'auto',
+                        width: 'auto'
+                      }}
                     >
-                    {showFilters ? 'Masquer' : 'Filtrer'}
+                      <svg 
+                        width="28" 
+                        height="28" 
+                        viewBox="0 0 24 24" 
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ 
+                          transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.3s ease'
+                        }}
+                      >
+                        <path d="M18 4H6l5 6.5v4.5l2 2v-6.5L18 4Z"/>
+                      </svg>
                     </button>
                 </div>
                 <div className={`event-filters ${showFilters ? 'show' : ''}`}>
@@ -3079,14 +3161,17 @@ function App() {
                     <>
                       <button
                         className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
-                        style={{ right: '124px', top: '47px', position: 'absolute' }}
+                        style={{ right: '80px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         onClick={handleStarFilterClick}
                         title="Appliquer vos préférences"
                       >
-                        ⭐
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 1.5L14.5 8.5L22 9L16 14.5L17.5 22L12 18L6.5 22L8 14.5L2 9L9.5 8.5L12 1.5Z"/>
+                        </svg>
                       </button>
                       <button
                         className="filter-reset-button"
+                        style={{ right: '45px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         onClick={() => {
                           setEventFilterWithSave('all');
                           setDelegationFilterWithSave('all');
@@ -3095,11 +3180,14 @@ function App() {
                           setShowMaleWithSave(true);
                           setShowMixedWithSave(true);
                           setIsStarFilterActive(false);
+                          localStorage.setItem('starFilterActive', 'false');
                           triggerMarkerUpdate();
                           setTimeout(scrollToFirstNonPassedEvent, 100);
                         }}
                       >
-                        🔄
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                        </svg>
                       </button>
                       <div className="filter-buttons-row"></div>
                       <select 
@@ -3110,7 +3198,7 @@ function App() {
                         <option value="none">Aucun</option>
                         <option value="all">Tous les événements</option>
                         <option value="match">Tous les sports</option>
-                        <option value="party">Soirées et Défilé ⭐</option>
+                        <option value="party">Soirées et Défilé ★</option>
                         <option value="Football">Football ⚽</option>
                         <option value="Basketball">Basketball 🏀</option>
                         <option value="Handball">Handball 🤾</option>

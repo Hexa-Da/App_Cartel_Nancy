@@ -64,6 +64,7 @@
   display: inline-block;
   width: 50px;
   height: 24px;
+  background-color: transparent;
 }
 
 .switch input {
@@ -81,6 +82,7 @@
   bottom: 0;
   background-color: #ccc;
   transition: .4s;
+  border-radius: 24px;
 }
 
 .slider:before {
@@ -92,6 +94,8 @@
   bottom: 4px;
   background-color: white;
   transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 input:checked + .slider {
@@ -127,4 +131,33 @@ input:checked + .slider:before {
   outline: none;
   border-color: var(--success-color);
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Suppression des effets de focus et de sélection */
+.settings-menu * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.settings-menu button:focus,
+.settings-menu input:focus,
+.settings-menu select:focus,
+.settings-menu .switch:focus,
+.settings-menu .slider:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Permettre la sélection de texte pour les labels */
+.settings-menu label {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }

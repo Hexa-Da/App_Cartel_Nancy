@@ -129,23 +129,15 @@ body {
 }
 
 .switch {
-  background-color: var(--bg-secondary);
+  background-color: transparent;
 }
 
 .slider {
   background-color: var(--bg-disabled);
 }
 
-input:checked + .slider {
-  background-color: var(--accent-color);
-}
-
 .slider:before {
   background-color: var(--bg-primary);
-}
-
-.settings-item:hover {
-  background-color: var(--bg-hover);
 }
 
 .settings-item:last-child {
@@ -2713,4 +2705,54 @@ body.ios .location-loading {
 body.ios .recenter-button {
   bottom: 80px;
 }
+
+/* Suppression des effets de focus par défaut */
+button:focus,
+input:focus,
+select:focus,
+.switch:focus,
+.slider:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Suppression de l'effet de sélection sur les éléments */
+button,
+input,
+select,
+.switch,
+.slider {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Suppression de l'effet de focus sur les éléments de paramètres */
+.settings-item button:focus,
+.settings-item input:focus,
+.settings-item select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Suppression de l'effet de focus sur les switches */
+.switch input:focus + .slider {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.settings-item {
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Style pour le bouton étoile actif */
+.filter-reset-button.star.active {
+  color: #ffd700;
+}
+
+/* Suppression des effets de focus par défaut */
 
