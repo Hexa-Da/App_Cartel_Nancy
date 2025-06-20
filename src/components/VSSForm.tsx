@@ -27,7 +27,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     `;
 
     // Créer l'URL mailto avec le contenu
-    const mailtoUrl = `mailto:signalement@cartel-nancy.fr?subject=Signalement VSS&body=${encodeURIComponent(emailContent)}`;
+    const mailtoUrl = `mailto:signalement@cartelnancy2026.fr?subject=Signalement VSS&body=${encodeURIComponent(emailContent)}`;
     
     // Ouvrir le client mail par défaut
     window.location.href = mailtoUrl;

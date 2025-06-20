@@ -89,6 +89,10 @@
   flex-shrink: 0; /* Empêche le header de se rétrécir */
 }
 
+body.ios .calendar-panel-header {
+  margin-top: 6.5rem;
+}
+
 .calendar-panel-header h3 {
   margin: 0;
   color: var(--text-color);

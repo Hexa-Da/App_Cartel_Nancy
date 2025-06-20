@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './BottomNav.css';
 import { useAppPanels } from '../AppPanelsContext';
+import { Capacitor } from '@capacitor/core';
 
 interface BottomNavProps {
   closeLayoutPanels?: () => void;
@@ -11,6 +12,12 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { closeAllPanels } = useAppPanels();
+  const [platformClass, setPlatformClass] = useState('');
+
+  useEffect(() => {
+    const platform = Capacitor.getPlatform();
+    setPlatformClass(platform);
+  }, []);
 
   const handleNavClick = (path: string) => {
     closeAllPanels();
@@ -19,13 +26,12 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
   };
 
   return (
-    <nav className="bottom-nav">
+    <nav className={`bottom-nav ${platformClass}`}>
       <button 
         className={`nav-button ${location.pathname === '/' ? 'active' : ''}`}
         onClick={() => handleNavClick('/')}
       >
         <span className="nav-icon">🏠</span>
-        <span className="nav-label">Accueil</span>
       </button>
       
       <button 
@@ -33,7 +39,6 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
         onClick={() => handleNavClick('/map')}
       >
         <span className="nav-icon">🗺️</span>
-        <span className="nav-label">Carte</span>
       </button>
       
       <button 
@@ -41,7 +46,6 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
         onClick={() => handleNavClick('/info')}
       >
         <span className="nav-icon">ℹ️</span>
-        <span className="nav-label">Info</span>
       </button>
     </nav>
   );

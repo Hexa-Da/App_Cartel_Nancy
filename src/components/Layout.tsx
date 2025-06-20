@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import { useAppPanels } from '../AppPanelsContext';
 import VSSForm from './VSSForm';
+import { Capacitor } from '@capacitor/core';
 
 const sportEmojis = {
   'Football': '⚽',
@@ -103,6 +104,12 @@ const Layout: React.FC = () => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Ajoute la classe de la plateforme au body
+  useEffect(() => {
+    const platform = Capacitor.getPlatform();
+    document.body.classList.add(platform);
+  }, []);
 
   // Gestion de l'authentification
   useEffect(() => {

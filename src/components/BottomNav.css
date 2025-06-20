@@ -4,14 +4,12 @@
   bottom: -4px;
   left: 0;
   right: 0;
-  height: 56px;
+  height: 60px;
   background: var(--bg-secondary);
   display: flex;
   justify-content: space-around;
   align-items: center;
   box-shadow: 0 -4px 24px var(--shadow-color);
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
   z-index: 1000;
   padding: 0 8px;
   transition: box-shadow 0.3s;
@@ -88,14 +86,18 @@
 
 @media (max-width: 600px) {
   .bottom-nav {
-    height: 52px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    padding: 0 2px;
+    height: 50px;
+    padding-bottom: 1px;
     width: 100vw;
     min-width: unset;
     max-width: 100vw;
   }
+
+  body.ios .bottom-nav {
+    height: 70px;
+    padding-bottom: 20px;
+  }
+
   .nav-icon {
     font-size: 22px;
   }

@@ -46,34 +46,27 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <div className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1rem'}}>
-        {/* Bouton retour complètement à gauche */}
-        <button
-          className="header-back-button"
-          onClick={isBackDisabled ? undefined : (onBack || (() => navigate(-1)))}
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            fontSize: 24, 
-            cursor: isBackDisabled ? 'default' : 'pointer', 
-            marginRight: 0, 
-            marginLeft: -30, 
-            marginTop: 20,
-          }}
-          title={isBackDisabled ? "Retour non disponible" : "Retour"}
-          disabled={isBackDisabled}
-        >
-          ⬅️
-        </button>
-        {/* Espace central (titre ou vide) */}
-        <div style={{ flex: 1 }}></div>
-        {/* Boutons à droite : admin (collé à droite), puis paramètres, chat, urgence (ordre demandé, gap 10px) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 15, marginTop: 10 }}>
+      <div className="app-header">
+        <div className="header-left">
+          <button
+            className="header-back-button"
+            onClick={isBackDisabled ? undefined : (onBack || (() => navigate(-1)))}
+            title={isBackDisabled ? "Retour non disponible" : "Retour"}
+            disabled={isBackDisabled}
+          >
+            ⬅️
+          </button>
+        </div>
+        
+        <div className="header-right">
           {isAdmin && onEditModeToggle && (
             <button
               className={`edit-button${isEditing ? ' active' : ''}`}
               onClick={onEditModeToggle}
-              style={{ marginLeft: 0, marginTop: 10 }}
+              style={{
+                backgroundColor: isEditing ? 'var(--danger-color)' : 'var(--warning-color)',
+                padding: '0.2rem 0.5rem', color: 'white'
+              }}
               title={isEditing ? 'Quitter le mode édition' : 'Activer le mode édition'}
             >
               {isEditing ? 'Terminer' : 'Editer'}
@@ -84,7 +77,6 @@ const Header: React.FC<HeaderProps> = ({
               className="emergency-button"
               onClick={onEmergency}
               title="Contacts d'urgence"
-              style={{ padding: 0, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 20, color: '#e74c3c', marginTop: 10 }}
             >
               🚨
             </button>
@@ -94,36 +86,16 @@ const Header: React.FC<HeaderProps> = ({
               className="chat-button"
               onClick={onChat}
               title="Messages de l'orga"
-              style={{ padding: 0, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 20, position: 'relative', marginTop: 10 }}
             >
               💬
               {unreadCount !== undefined && unreadCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: -4,
-                  right: -4,
-                  background: 'red',
-                  color: 'white',
-                  borderRadius: '50%',
-                  minWidth: 18,
-                  height: 18,
-                  fontSize: 12,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0 5px',
-                  zIndex: 10,
-                  fontWeight: 700,
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)'
-                }}
-                >{unreadCount}</span>
+                <span className="unread-badge">{unreadCount}</span>
               )}
             </button>
           )}
           <button
             className="header-settings-button"
             onClick={() => setShowSettings(true)}
-            style={{ padding: 0, background: 'transparent', border: 'none', fontSize: 20, cursor: 'pointer', marginLeft: 0, marginTop: 10 }}
             title="Paramètres"
           >
             <span role="img" aria-label="Paramètres">⚙️</span>
@@ -133,7 +105,6 @@ const Header: React.FC<HeaderProps> = ({
               className="admin-button"
               onClick={onAdmin}
               title={user ? "Se déconnecter" : "Se connecter"}
-              style={{ padding: 0, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 20, marginLeft: 0, marginTop: 10 }}
             >
               {user ? (isAdmin ? "🔓" : "🔒") : "🔒"}
             </button>
@@ -148,6 +119,6 @@ const Header: React.FC<HeaderProps> = ({
       />
     </>
   );
-};
+}
 
 export default Header; 

@@ -12,8 +12,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
-    "deploy-android": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk",
-    "android-full-deploy": "npm run build && npx cap sync android && cd android && ./gradlew clean && ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk && cd .."
+    "android-full-deploy": "npm run build && npx cap sync android && cd android && ./gradlew clean && ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk && cd ..",
+    "ios-full-deploy": "npm run build && npx cap sync ios && cd ios/App && xcodebuild clean -workspace App.xcworkspace -scheme App && cd ../.. && npx cap sync ios"
   },
   "dependencies": {
     "@capacitor/android": "^5.7.8",

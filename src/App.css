@@ -854,6 +854,10 @@ html, body, #root {
   pointer-events: auto;
 }
 
+body.ios .location-error {
+  bottom: 80px;
+}
+
 .location-error-buttons {
   margin-top: 0.3rem;
   display: flex;
@@ -1292,6 +1296,10 @@ html, body, #root {
   gap: 0.5rem;
 }
 
+body.ios .events-toggle-button {
+  top: 110px !important;
+}
+
 .events-toggle-button.active {
   background-color: var(--danger-color);
   color: white;
@@ -1310,6 +1318,10 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+body.ios .events-panel {
+  top: 4rem;
 }
 
 .events-panel-header {
@@ -1636,6 +1648,10 @@ html, body, #root {
   overflow: hidden !important;
 }
 
+body.ios .leaflet-control-zoom{
+  top: 95px !important
+}
+
 .leaflet-control-zoom a {
   width: 35px !important;
   height: 35px !important;
@@ -1894,6 +1910,10 @@ html, body, #root {
   margin-bottom: 1000px;
 }
 
+body.ios .chat-panel {
+  top: 2rem !important;
+}
+
 .chat-panel-header {
   padding: 0.7rem;
   background-color: var(--bg-color);
@@ -1973,12 +1993,15 @@ html, body, #root {
   position: fixed;
   top: 4.5rem;
   right: 1rem;
-  height: calc(100% - 4rem - 60px); /* 4rem pour le header, 60px pour la nav */
   background-color: var(--bg-color);
-  z-index: 1000;
+  z-index: 900;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+body.ios .home-info-chat {
+  top: 6.5rem;
 }
 
 .home-info-chat .chat-panel-header {
@@ -1992,6 +2015,10 @@ html, body, #root {
   border-bottom: 2px solid var(--border-color);
   margin-top: -50px;
   padding-top: 0;
+}
+
+body.ios .home-info-chat .chat-panel-header {
+  margin-top: 15px;
 }
 
 .home-info-chat .chat-panel-header h3 {
@@ -2134,6 +2161,10 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+body.ios .planning-panel {
+  top: 4rem;
 }
 
 .planning-panel-header {
@@ -2494,6 +2525,10 @@ html, body, #root {
   pointer-events: auto;
 }
 
+body.ios .add-venue-button {
+  bottom: 80px;
+}
+
 /* Styles pour les popups de la carte */
 .leaflet-popup {
   position: absolute;
@@ -2563,6 +2598,10 @@ html, body, #root {
   right: 20px;
   bottom: 60px;
   z-index: 1000;
+}
+
+body.ios .location-loading {
+  bottom: 80px;
 }
 
 .location-loading-spinner {
@@ -2660,6 +2699,10 @@ html, body, #root {
   transition: transform 0.3s ease;
   pointer-events: auto;
   opacity: 1 !important;
+}
+
+body.ios .recenter-button {
+  bottom: 80px;
 }
 
 .recenter-button:hover {
