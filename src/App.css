@@ -1941,6 +1941,7 @@ body.ios .chat-panel {
   overflow-y: auto;
   background-color: var(--bg-color);
   color: var(--text-color);
+  margin-bottom: 30px;
 }
 
 .chat-message {
@@ -2012,7 +2013,7 @@ body.ios .home-info-chat {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   margin-top: -50px;
   padding-top: 0;
 }
@@ -2036,6 +2037,7 @@ body.ios .home-info-chat .chat-panel-header {
   overflow-y: auto;
   background-color: var(--bg-color);
   color: var(--text-color);
+  margin-bottom: 100px;
 }
 
 .home-info-chat .chat-message {
@@ -2501,16 +2503,16 @@ body.ios .planning-panel {
 }
 
 .leaflet-control-add-venue a i {
-  font-size: 10px;
+  font-size: 20px;
 }
 
 .add-venue-button {
   position: fixed;
   bottom: 60px;
   left: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
   background-color: black;
   color: white;
   border: none;
@@ -2518,7 +2520,9 @@ body.ios .planning-panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 20px;
+  line-height: 0;
+  padding: 0;
   cursor: pointer;
   z-index: 2000;
   transition: all 0.3s ease;
@@ -2663,7 +2667,6 @@ body.ios .location-loading {
 }
 
 .leaflet-control-recenter a {
-  background-color: var(--primary-color);
   color: white;
   width: 30px;
   height: 30px;
@@ -2677,43 +2680,37 @@ body.ios .location-loading {
   transition: all 0.3s ease;
 }
 
-.leaflet-control-recenter a:hover {
-  background-color: var(--primary-color-dark);
-}
-
 .recenter-button {
   position: fixed;
   bottom: 60px;
   right: 20px;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background-color: var(--bg-primary) !important;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   z-index: 2000;
   transition: transform 0.3s ease;
   pointer-events: auto;
   opacity: 1 !important;
+  border: none;
+  padding: 0;
+}
+
+.recenter-button svg {
+  width: 24px;
+  height: 24px;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 1px 2px var(--shadow-color));
 }
 
 body.ios .recenter-button {
   bottom: 80px;
-}
-
-.recenter-button:hover {
-  background-color: var(--bg-primary) !important;
-  transform: scale(1.05);
-  opacity: 1 !important;
-}
-
-.recenter-button:active {
-  transform: scale(0.95);
-  background-color: var(--bg-primary) !important;
-  opacity: 1 !important;
 }
 

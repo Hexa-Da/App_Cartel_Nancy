@@ -36,22 +36,31 @@
   margin: 0 6px;
   font-weight: 500;
   font-size: 1rem;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition: all 0.2s ease;
   box-shadow: none;
+  position: relative;
 }
 
 .nav-button:hover {
-  background: var(--bg-color);
   color: var(--text-color);
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 2px 8px var(--shadow-color);
+  transform: translateY(-1px);
 }
 
 .nav-button.active {
-  color: var(--text-color);
-  background: var(--primary-color);
-  box-shadow: 0 4px 16px var(--shadow-color);
-  transform: translateY(-4px) scale(1.08);
+  background: none;
+  transform: none;
+  scale: 1.4;
+}
+
+
+.nav-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.nav-button:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .nav-icon {
@@ -59,6 +68,26 @@
   margin-bottom: 2px;
   filter: drop-shadow(0 2px 4px var(--shadow-color));
   transition: filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon svg {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 2px 4px var(--shadow-color));
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover .nav-icon svg {
+  filter: drop-shadow(0 4px 8px var(--shadow-color));
+  transform: scale(1.02);
+}
+
+.nav-button.active .nav-icon svg {
+  filter: drop-shadow(0 4px 8px var(--shadow-color));
+  transform: none;
 }
 
 .nav-label {
@@ -100,6 +129,10 @@
 
   .nav-icon {
     font-size: 22px;
+  }
+  .nav-icon svg {
+    width: 22px;
+    height: 22px;
   }
   .nav-label {
     font-size: 10px;

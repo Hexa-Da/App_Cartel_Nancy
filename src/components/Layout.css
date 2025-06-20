@@ -42,10 +42,33 @@ body.ios .app-header {
   cursor: pointer;
   padding: 0;
   color: var(--text-color);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.header-back-button:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+.header-back-button:disabled {
+  cursor: not-allowed;
+}
+
+.header-back-button {
+  margin-left: -10px;
+}
+
+.header-back-button svg {
+  transition: stroke 0.2s ease;
+}
+
+.header-back-button:hover:not(:disabled) svg {
+  stroke: var(--primary-color);
 }
 
 .chat-button {
   position: relative;
+  transform: scale(1);
+  transition: transform 0.2s ease;
 }
 
 .unread-badge {
@@ -131,6 +154,39 @@ body {
 .emergency-button,
 .admin-button {
   transition: transform 0.2s;
+}
+
+/* Styles pour les SVG du header */
+.emergency-button svg,
+.chat-button svg,
+.header-settings-button svg,
+.admin-button svg {
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 1px 2px var(--shadow-color));
+}
+
+.emergency-button:hover svg,
+.chat-button:hover svg,
+.header-settings-button:hover svg,
+.admin-button:hover svg {
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px var(--shadow-color));
+}
+
+.emergency-button svg {
+  color: #e74c3c;
+}
+
+.emergency-button:hover svg {
+  color: #c0392b;
+}
+
+.chat-button.active svg {
+  filter: drop-shadow(0 2px 4px var(--shadow-color));
+}
+
+.chat-button.active {
+  transform: scale(1.1);
 }
 
 /* Ajuster le contenu des pages pour tenir compte du header */
@@ -279,4 +335,11 @@ body {
     -webkit-transform: none !important;
     transform: none !important;
   }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-right: -8px;
 }

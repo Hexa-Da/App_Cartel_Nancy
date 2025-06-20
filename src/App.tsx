@@ -315,7 +315,19 @@ function LocationMarker() {
             <Popup>Vous êtes ici</Popup>
           </Marker>
           <button className="recenter-button" onClick={handleRecenter} title="Me localiser">
-            📍
+            <svg 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
           </button>
         </>
       )}
@@ -767,12 +779,30 @@ function App() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: Venue | null }>({ id: null, venue: null });
   const [selectedEmoji, setSelectedEmoji] = useState('⚽');
-  const [eventFilter, setEventFilter] = useState<string>('all');
-  const [delegationFilter, setDelegationFilter] = useState<string>('all');
-  const [venueFilter, setVenueFilter] = useState<string>('Tous');
-  const [showFemale, setShowFemale] = useState<boolean>(true);
-  const [showMale, setShowMale] = useState<boolean>(true);
-  const [showMixed, setShowMixed] = useState<boolean>(true);
+  const [eventFilter, setEventFilter] = useState<string>(() => {
+    const saved = localStorage.getItem('mapEventFilter');
+    return saved || 'all';
+  });
+  const [delegationFilter, setDelegationFilter] = useState<string>(() => {
+    const saved = localStorage.getItem('mapDelegationFilter');
+    return saved || 'all';
+  });
+  const [venueFilter, setVenueFilter] = useState<string>(() => {
+    const saved = localStorage.getItem('mapVenueFilter');
+    return saved || 'Tous';
+  });
+  const [showFemale, setShowFemale] = useState<boolean>(() => {
+    const saved = localStorage.getItem('mapShowFemale');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [showMale, setShowMale] = useState<boolean>(() => {
+    const saved = localStorage.getItem('mapShowMale');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [showMixed, setShowMixed] = useState<boolean>(() => {
+    const saved = localStorage.getItem('mapShowMixed');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [fromEvents, setFromEvents] = useState(false);
   const [isStarFilterActive, setIsStarFilterActive] = useState(false);
@@ -2388,9 +2418,9 @@ function App() {
       action: 'change_event_filter',
       label: e.target.value
     });
-    setEventFilter(e.target.value);
+    setEventFilterWithSave(e.target.value);
     // Réinitialiser le filtre de lieu quand le type d'événement change
-    setVenueFilter('Tous');
+    setVenueFilterWithSave('Tous');
     triggerMarkerUpdate();
     setTimeout(scrollToFirstNonPassedEvent, 100);
   };
@@ -2401,7 +2431,7 @@ function App() {
       action: 'change_delegation_filter',
       label: e.target.value
     });
-    setDelegationFilter(e.target.value);
+    setDelegationFilterWithSave(e.target.value);
     triggerMarkerUpdate();
     setTimeout(scrollToFirstNonPassedEvent, 100);
   };
@@ -2430,25 +2460,25 @@ function App() {
     
     if (!isStarFilterActive) {
       // Si le sport préféré est 'none', on utilise 'match' pour afficher tous les sports
-      setEventFilter(preferredSport === 'none' ? 'match' : preferredSport);
-      setDelegationFilter(preferredDelegation);
+      setEventFilterWithSave(preferredSport === 'none' ? 'match' : preferredSport);
+      setDelegationFilterWithSave(preferredDelegation);
       
       // Appliquer les filtres de genre en fonction du championnat sélectionné
       if (preferredChampionship !== 'none') {
-        setShowFemale(preferredChampionship === 'female');
-        setShowMale(preferredChampionship === 'male');
-        setShowMixed(preferredChampionship === 'mixed');
+        setShowFemaleWithSave(preferredChampionship === 'female');
+        setShowMaleWithSave(preferredChampionship === 'male');
+        setShowMixedWithSave(preferredChampionship === 'mixed');
       } else {
-        setShowFemale(true);
-        setShowMale(true);
-        setShowMixed(true);
+        setShowFemaleWithSave(true);
+        setShowMaleWithSave(true);
+        setShowMixedWithSave(true);
       }
     } else {
-      setEventFilter('all');
-      setDelegationFilter('all');
-      setShowFemale(true);
-      setShowMale(true);
-      setShowMixed(true);
+      setEventFilterWithSave('all');
+      setDelegationFilterWithSave('all');
+      setShowFemaleWithSave(true);
+      setShowMaleWithSave(true);
+      setShowMixedWithSave(true);
     }
     
     triggerMarkerUpdate();
@@ -2557,15 +2587,15 @@ function App() {
       action: 'change_venue_filter',
       label: e.target.value
     });
-    setVenueFilter(e.target.value);
+    setVenueFilterWithSave(e.target.value);
     triggerMarkerUpdate();
     setTimeout(scrollToFirstNonPassedEvent, 100);
   };
 
   const handleGenderFilterChange = (gender: 'female' | 'male' | 'mixed') => {
-    if (gender === 'female') setShowFemale(!showFemale);
-    if (gender === 'male') setShowMale(!showMale);
-    if (gender === 'mixed') setShowMixed(!showMixed);
+    if (gender === 'female') setShowFemaleWithSave(!showFemale);
+    if (gender === 'male') setShowMaleWithSave(!showMale);
+    if (gender === 'mixed') setShowMixedWithSave(!showMixed);
     triggerMarkerUpdate();
     setTimeout(scrollToFirstNonPassedEvent, 100);
   };
@@ -2820,6 +2850,37 @@ function App() {
 
   const [showVSSForm, setShowVSSForm] = useState(false);
 
+  // Fonctions wrapper pour sauvegarder les filtres dans le localStorage
+  const setEventFilterWithSave = (value: string) => {
+    setEventFilter(value);
+    localStorage.setItem('mapEventFilter', value);
+  };
+
+  const setDelegationFilterWithSave = (value: string) => {
+    setDelegationFilter(value);
+    localStorage.setItem('mapDelegationFilter', value);
+  };
+
+  const setVenueFilterWithSave = (value: string) => {
+    setVenueFilter(value);
+    localStorage.setItem('mapVenueFilter', value);
+  };
+
+  const setShowFemaleWithSave = (value: boolean) => {
+    setShowFemale(value);
+    localStorage.setItem('mapShowFemale', JSON.stringify(value));
+  };
+
+  const setShowMaleWithSave = (value: boolean) => {
+    setShowMale(value);
+    localStorage.setItem('mapShowMale', JSON.stringify(value));
+  };
+
+  const setShowMixedWithSave = (value: boolean) => {
+    setShowMixed(value);
+    localStorage.setItem('mapShowMixed', JSON.stringify(value));
+  };
+
   return (
     <div className="app">
       {/* Overlay de chargement global */}
@@ -2970,8 +3031,22 @@ function App() {
                 handleTabChange(activeTab === 'map' ? 'events' : 'map');
               }}
             >
-              {activeTab === 'map' ? '📆 Événements' : '✖️ Fermer'}
-                  </button>
+              {activeTab === 'map' ? (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                  </svg>
+                  Événements
+                </>
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                  </svg>
+                  Fermer
+                </>
+              )}
+            </button>
             
             {activeTab === 'events' && (
               <div className="events-panel">
@@ -3013,12 +3088,12 @@ function App() {
                       <button
                         className="filter-reset-button"
                         onClick={() => {
-                          setEventFilter('all');
-                          setDelegationFilter('all');
-                          setVenueFilter('Tous');
-                          setShowFemale(true);
-                          setShowMale(true);
-                          setShowMixed(true);
+                          setEventFilterWithSave('all');
+                          setDelegationFilterWithSave('all');
+                          setVenueFilterWithSave('Tous');
+                          setShowFemaleWithSave(true);
+                          setShowMaleWithSave(true);
+                          setShowMixedWithSave(true);
                           setIsStarFilterActive(false);
                           triggerMarkerUpdate();
                           setTimeout(scrollToFirstNonPassedEvent, 100);
@@ -3596,18 +3671,18 @@ function App() {
         showFemale={showFemale}
         showMale={showMale}
         showMixed={showMixed}
-        onEventFilterChange={setEventFilter}
-        onDelegationFilterChange={setDelegationFilter}
-        onVenueFilterChange={setVenueFilter}
+        onEventFilterChange={setEventFilterWithSave}
+        onDelegationFilterChange={setDelegationFilterWithSave}
+        onVenueFilterChange={setVenueFilterWithSave}
         onGenderFilterChange={(gender) => {
-          if (gender === 'female') setShowFemale(!showFemale);
-          if (gender === 'male') setShowMale(!showMale);
-          if (gender === 'mixed') setShowMixed(!showMixed);
+          if (gender === 'female') setShowFemaleWithSave(!showFemale);
+          if (gender === 'male') setShowMaleWithSave(!showMale);
+          if (gender === 'mixed') setShowMixedWithSave(!showMixed);
         }}
         onSetGenderFilters={(female, male, mixed) => {
-          setShowFemale(female);
-          setShowMale(male);
-          setShowMixed(mixed);
+          setShowFemaleWithSave(female);
+          setShowMaleWithSave(male);
+          setShowMixedWithSave(mixed);
         }}
         showFilters={showFilters}
         onShowFiltersChange={setShowFilters}
