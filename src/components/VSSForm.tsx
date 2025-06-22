@@ -50,6 +50,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
           </button>
         </div>
 
+        <div className="vss-form-content">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="date">Date de l'incident</label>
@@ -121,6 +122,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
         <p className="form-note">
           Ce formulaire est strictement confidentiel. Les informations seront transmises uniquement aux personnes responsables.
         </p>
+      </div>
       </div>
     </div>
   );

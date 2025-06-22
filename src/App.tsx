@@ -2672,6 +2672,15 @@ function App() {
     // Si on est déjà sur le chat, on retourne à l'onglet d'origine
     if (activeTab === 'chat') {
       setActiveTab(chatOriginTab);
+      // Déclencher l'auto-scroll si on revient à l'onglet événements
+      if (chatOriginTab === 'events') {
+        setTimeout(() => {
+          const firstNonPassedEvent = document.querySelector('.event-item:not(.passed)');
+          if (firstNonPassedEvent) {
+            firstNonPassedEvent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
       // Ne pas ajouter d'entrée dans l'historique pour permettre la navigation continue
     } else {
       // Sinon on mémorise l'onglet actuel comme origine et on ouvre le chat
@@ -3097,8 +3106,8 @@ function App() {
             >
               {activeTab === 'map' ? (
                 <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
-                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+                    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
                   </svg>
                   Événements
                 </>
@@ -3110,7 +3119,7 @@ function App() {
                   Fermer
                 </>
               )}
-            </button>
+                  </button>
             
             {activeTab === 'events' && (
               <div className="events-panel">
@@ -3119,17 +3128,56 @@ function App() {
                     className="calendar-button"
                     onClick={() => handleTabChange('calendar')}
                     title="Voir le calendrier"
-                    style={{ width: 80 }}
+                    style={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '8px 12px',
+                      margin: '0px',
+                      border: 'none',
+                      borderRadius: '8px',
+                      backgroundColor: 'var(--bg-secondary)',
+                      color: 'var(--text-color)',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                      fontWeight: '500',
+                      transition: 'all 0.2s ease',
+                      minWidth: 'auto',
+                      width: 'auto'
+                    }}
                   >
-                    <i className="fas fa-calendar"></i>Calendrier
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+                      <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                    </svg>
+                    Calendrier
                   </button>
                   <button
                     className="planning-button"
-                    style={{ left: 100, width: 80 }}
+                    style={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '8px 12px',
+                      margin: '0px',
+                      marginLeft: '35px',
+                      border: 'none',
+                      borderRadius: '8px',
+                      backgroundColor: 'var(--bg-secondary)',
+                      color: 'var(--text-color)',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                      fontWeight: '500',
+                      transition: 'all 0.2s ease',
+                      minWidth: 'auto',
+                      width: 'auto'
+                    }}
                     onClick={() => handleTabChange('planning')}
                     title="Voir les plannings (bus, tournois, etc.)"
                   >
-                    <i className="fas fa-table"></i>Planning
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
+                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Planning
                   </button>
                     <button 
                       className="filter-toggle-button"
@@ -3296,13 +3344,27 @@ function App() {
                     >
                       <div className="event-header">
                         <span className="event-type-badge">
-                          {event.type === 'match' 
-                            ? `${getSportIcon(event.sport || '')} ${event.sport}`
-                            : event.sport === 'Defile'
-                              ? '🎺 Défilé'
-                              : event.sport === 'Pompom'
-                                ? '🎀 Pompom'
-                                : '🎉 Soirée'}
+                          {event.type === 'match' ? (
+                            <>
+                              <span>{getSportIcon(event.sport || '')}</span>
+                              <span>{event.sport}</span>
+                            </>
+                          ) : event.sport === 'Defile' ? (
+                            <>
+                              <span>🎺</span>
+                              <span>Défilé</span>
+                            </>
+                          ) : event.sport === 'Pompom' ? (
+                            <>
+                              <span>🎀</span>
+                              <span>Pompom</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>🎉</span>
+                              <span>Soirée</span>
+                            </>
+                          )}
                         </span>
                         <span className="event-date">{formatDateTime(event.date)}</span>
                       </div>

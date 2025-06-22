@@ -1,8 +1,8 @@
 import React from 'react';
 import './Info.css';
-import { FaUtensils, FaCalendarAlt, FaShoppingCart, FaMapMarkedAlt } from 'react-icons/fa';
-import { IoMdFitness } from 'react-icons/io';
-import { MdPayment, MdLeaderboard, MdEventNote } from 'react-icons/md';
+import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard } from 'react-icons/fa';
+import { GiPartyPopper } from 'react-icons/gi';
+import { MdLeaderboard, MdEventNote } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
 interface InfoCardProps {
@@ -24,7 +24,11 @@ const Info: React.FC = () => {
   const navigate = useNavigate();
 
   const handleCardClick = (section: string) => {
-    console.log(`Clicked on ${section}`);
+    if (section === 'map') {
+      navigate('/map');
+    } else {
+      navigate(`/info/${section}`);
+    }
   };
 
   return (
@@ -39,19 +43,19 @@ const Info: React.FC = () => {
         />
         
         <InfoCard
-          icon={<IoMdFitness />}
-          title="Activités TOSS"
+          icon={<FaTrophy />}
+          title="Info Sport"
           onClick={() => handleCardClick('activities')}
         />
         
         <InfoCard
-          icon={<FaCalendarAlt />}
+          icon={<GiPartyPopper />}
           title="Planning Soirées"
           onClick={() => handleCardClick('planning')}
         />
         
         <InfoCard
-          icon={<MdPayment />}
+          icon={<FaIdCard />}
           title="Bracelets Cashless"
           onClick={() => handleCardClick('cashless')}
         />

@@ -2634,13 +2634,27 @@ function App() {
                     >
                       <div className="event-header">
                         <span className="event-type-badge">
-                          {event.type === 'match' 
-                            ? `${getSportIcon(event.sport || '')} ${event.sport}`
-                            : event.sport === 'Defile'
-                              ? '🎺 Défilé'
-                              : event.sport === 'Pompom'
-                                ? '🎀 Pompom'
-                                : '🎉 Soirée'}
+                          {event.type === 'match' ? (
+                            <>
+                              <span>{getSportIcon(event.sport || '')}</span>
+                              <span>{event.sport}</span>
+                            </>
+                          ) : event.sport === 'Defile' ? (
+                            <>
+                              <span>🎺</span>
+                              <span>Défilé</span>
+                            </>
+                          ) : event.sport === 'Pompom' ? (
+                            <>
+                              <span>🎀</span>
+                              <span>Pompom</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>🎉</span>
+                              <span>Soirée</span>
+                            </>
+                          )}
                         </span>
                         <span className="event-date">{formatDateTime(event.date)}</span>
                       </div>

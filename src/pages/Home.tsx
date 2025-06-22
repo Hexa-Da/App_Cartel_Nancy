@@ -196,7 +196,7 @@ const Home: React.FC = () => {
         }));
       }
       return [];
-    });
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
   const getMatchesByDelegation = (places: Place[], delegation: string) => {
@@ -211,7 +211,7 @@ const Home: React.FC = () => {
         }));
       }
       return [];
-    });
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
   const getMatchesByDelegationAndSport = (places: Place[], delegation: string, sport: string) => {
@@ -244,7 +244,7 @@ const Home: React.FC = () => {
         }));
       }
       return [];
-    });
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
   const formatDateTime = (dateString: string, endTimeString?: string) => {
@@ -322,7 +322,8 @@ const Home: React.FC = () => {
                     >
                       <div className="event-header">
                         <span className="event-type-badge">
-                          {getSportIcon(sport)} {sport}
+                          <span>{getSportIcon(sport)}</span>
+                          <span>{sport}</span>
                         </span>
                         <span className="event-date">{formatDateTime(match.date, match.endTime)}</span>
                       </div>
@@ -361,7 +362,8 @@ const Home: React.FC = () => {
                   >
                     <div className="event-header">
                       <span className="event-type-badge">
-                        {getSportIcon(match.sport || '')} {match.sport}
+                        <span>{getSportIcon(match.sport || '')}</span>
+                        <span>{match.sport}</span>
                       </span>
                       <span className="event-date">{formatDateTime(match.date, match.endTime)}</span>
                     </div>
@@ -395,7 +397,8 @@ const Home: React.FC = () => {
                 >
                   <div className="event-header">
                     <span className="event-type-badge">
-                      {getSportIcon(match.sport || '')} {match.sport}
+                      <span>{getSportIcon(match.sport || '')}</span>
+                      <span>{match.sport}</span>
                     </span>
                     <span className="event-date">{formatDateTime(match.date, match.endTime)}</span>
                   </div>
@@ -503,22 +506,56 @@ const Home: React.FC = () => {
         }
 
         .event-type-badge {
-          padding: 0.1rem 0.2rem;
-          border-radius: 3px;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+          color: var(--text-color);
+          padding: 0.35rem 0.75rem;
+          border-radius: 20px;
           font-size: 0.7rem;
-          font-weight: 500;
+          font-weight: 600;
           display: flex;
           align-items: center;
-          gap: 0.1rem;
-          color: white;
+          gap: 0.6rem;
+          min-width: 36px;
+          min-height: 28px;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(8px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+        }
+
+        .event-type-badge span {
+          display: inline-block;
         }
 
         .match-event .event-type-badge {
-          background-color: #4CAF50;
+          background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08));
+          border-color: rgba(76, 175, 80, 0.3);
+          color: #4CAF50;
+          box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
         }
 
         .party-event .event-type-badge {
-          background-color: #9C27B0;
+          background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(156, 39, 176, 0.08));
+          border-color: rgba(156, 39, 176, 0.3);
+          color: #9C27B0;
+          box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
+        }
+
+        .event-type-badge:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .match-event .event-type-badge:hover {
+          box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
+          background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.12));
+        }
+
+        .party-event .event-type-badge:hover {
+          box-shadow: 0 4px 12px rgba(156, 39, 176, 0.25);
+          background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(156, 39, 176, 0.12));
         }
 
         .event-date {
