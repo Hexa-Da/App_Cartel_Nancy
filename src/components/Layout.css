@@ -38,15 +38,11 @@ body.ios .app-header {
 .header-right button {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 36px;
   cursor: pointer;
   padding: 0;
   color: var(--text-color);
   transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.header-back-button:hover:not(:disabled) {
-  transform: scale(1.1);
 }
 
 .header-back-button:disabled {
@@ -54,21 +50,44 @@ body.ios .app-header {
 }
 
 .header-back-button {
+  background: none;
   margin-left: -10px;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
 }
 
 .header-back-button svg {
-  transition: stroke 0.2s ease;
+  width: 28px;
+  height: 28px;
+  stroke: var(--text-primary);
+}
+
+.header-back-button:hover:not(:disabled) {
+  background-color: transparent;
+}
+
+.header-back-button:active, .header-back-button:focus {
+  background-color: transparent;
+  outline: none;
 }
 
 .header-back-button:hover:not(:disabled) svg {
-  stroke: var(--primary-color);
+  stroke: var(--text-primary);
 }
 
 .chat-button {
   position: relative;
   transform: scale(1);
   transition: transform 0.2s ease;
+}
+
+body.ios .chat-button {
+  margin-top: 30px;
 }
 
 .unread-badge {
@@ -94,10 +113,18 @@ body.ios .app-header {
   color: #e74c3c !important;
 }
 
+body.ios .emergency-button {
+  margin-top: 30px;
+}
+
 .edit-button {
   font-size: 16px !important;
   font-weight: bold;
   color: var(--warning-color);
+}
+
+body.ios .edit-button {
+  margin-top: 30px;
 }
 
 .edit-button:button  {
@@ -154,6 +181,10 @@ body {
 .emergency-button,
 .admin-button {
   transition: transform 0.2s;
+}
+
+body.ios .admin-button {
+  margin-top: 30px;
 }
 
 /* Styles pour les SVG du header */
@@ -342,4 +373,8 @@ body {
   align-items: center;
   gap: 15px;
   margin-right: -8px;
+}
+
+body.ios .header-settings-button {
+  margin-top: 30px;
 }

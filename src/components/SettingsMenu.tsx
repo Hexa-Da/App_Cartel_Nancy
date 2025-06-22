@@ -314,18 +314,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
           <button 
             className="close-button" 
             onClick={onClose}
-            style={{ 
-              background: 'none',
-              border: 'none',
-              fontSize: '1.5rem',
-              cursor: 'pointer',
-              color: 'var(--text-color)',
-              position: 'absolute',
-              right: '0.5rem',
-              top: '0.5rem',
-              padding: '0.5rem',
-              lineHeight: '1'
-            }}
           >
             ×
           </button>

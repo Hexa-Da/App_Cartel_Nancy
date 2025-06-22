@@ -81,11 +81,8 @@ const Header: React.FC<HeaderProps> = ({
           {isAdmin && onEditModeToggle && (
             <button
               className={`edit-button${isEditing ? ' active' : ''}`}
+              style={{ right: '175px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: isEditing ? 'var(--danger-color)' : 'var(--warning-color)', padding: '0.2rem 0.5rem', color: 'white' }}
               onClick={onEditModeToggle}
-              style={{
-                backgroundColor: isEditing ? 'var(--danger-color)' : 'var(--warning-color)',
-                padding: '0.2rem 0.5rem', color: 'white'
-              }}
               title={isEditing ? 'Quitter le mode édition' : 'Activer le mode édition'}
             >
               {isEditing ? 'Terminer' : 'Editer'}
@@ -94,6 +91,7 @@ const Header: React.FC<HeaderProps> = ({
           {onChat && (
             <button
               className={`chat-button${showChat ? ' active' : ''}`}
+              style={{ right: '135px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               onClick={onChat}
               title="Messages de l'orga"
             >
@@ -117,6 +115,7 @@ const Header: React.FC<HeaderProps> = ({
           {onEmergency && (
             <button
               className="emergency-button"
+              style={{ right: '95px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               onClick={onEmergency}
               title="Contacts d'urgence"
             >
@@ -138,6 +137,7 @@ const Header: React.FC<HeaderProps> = ({
           )}
           <button
             className="header-settings-button"
+            style={{ right: '55px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             onClick={() => setShowSettings(true)}
             title="Paramètres"
           >
@@ -158,6 +158,7 @@ const Header: React.FC<HeaderProps> = ({
           {onAdmin && (
             <button
               className="admin-button"
+              style={{ right: '15px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               onClick={onAdmin}
               title={user ? "Se déconnecter" : "Se connecter"}
             >

@@ -624,4 +624,12 @@ body.ios .calendar-panel-header {
 .calendar-scrollable-content {
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) var(--bg-secondary);
+}
+
+.calendar-popup .gender-filter-button:not(:last-child) {
+  margin-right: 10px;
+}
+
+body.ios .calendar-popup .filter-reset-button {
+  margin-top: 32px;
 } 

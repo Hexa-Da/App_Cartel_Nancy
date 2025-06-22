@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import { useAppPanels } from '../AppPanelsContext';
 import VSSForm from './VSSForm';
+import EmergencyPopup from './EmergencyPopup';
 import { Capacitor } from '@capacitor/core';
 
 const sportEmojis = {
@@ -749,75 +750,11 @@ const Layout: React.FC = () => {
       )}
 
       {/* Fenêtre modale pour les contacts d'urgence */}
-      {showEmergency && (
-        <div className="emergency-popup" onClick={() => setShowEmergency(false)}>
-          <div className="emergency-popup-content" onClick={e => e.stopPropagation()}>
-            <div className="emergency-popup-header">
-            <h3>Contacts d'urgence</h3>
-              <button 
-                className="close-button" 
-                onClick={() => setShowEmergency(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  padding: '0.5rem',
-                  position: 'absolute',
-                  right: '-0.5rem',
-                  top: '0rem',
-                  color: 'var(--text-color)'
-                }}
-              >
-                ×
-              </button>
-            </div>
-            <ul style={{ textAlign: 'left', margin: '1.5rem 1rem' }}>
-              <li><strong>SAMU :</strong> 15</li>
-              <li><strong>Police :</strong> 17</li>
-              <li><strong>Pompier :</strong> 18</li>
-              <li><strong>Numéro européen :</strong> 112</li>
-            </ul>
-            <div style={{
-              padding: '1rem',
-              marginTop: '1rem',
-              borderTop: '1px solid var(--border-color)',
-              textAlign: 'center'
-            }}>
-              <button
-                onClick={() => {
-                  setShowVSSForm(true);
-                  setShowEmergency(false);
-                }}
-                style={{
-                  backgroundColor: '#e74c3c',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '12px 20px',
-                  fontSize: '0.9rem',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  transition: 'background-color 0.2s ease'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = '#c0392b';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = '#e74c3c';
-                }}
-              >
-                Signaler une VSS
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <EmergencyPopup 
+        isOpen={showEmergency}
+        onClose={() => setShowEmergency(false)}
+        onShowVSS={() => setShowVSSForm(true)}
+      />
 
       {/* Formulaire VSS */}
       {showVSSForm && (
