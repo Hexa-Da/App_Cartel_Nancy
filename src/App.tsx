@@ -4,7 +4,7 @@ import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { auth, database, loginWithGoogle, handleGoogleRedirect } from './firebase';
+import { auth, database, loginWithGoogle, handleGoogleRedirect, testGoogleAuthConfiguration, testAlternativeGoogleAuth } from './firebase';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
@@ -396,6 +396,7 @@ declare global {
 }
 
 import VSSForm from './components/VSSForm';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 function App() {
   const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
@@ -2780,9 +2781,33 @@ function App() {
     } else {
       // Sinon on tente de se connecter
       try {
-        await loginWithGoogle();
+        console.log('=== DÉBUT PROCESSUS DE CONNEXION ADMIN ===');
+        
+        // Test alternatif en premier
+        console.log('1. Test alternatif Google Auth...');
+        const alternativeTest = await testAlternativeGoogleAuth();
+        
+        if (alternativeTest) {
+          console.log('✅ Test alternatif réussi, tentative de connexion complète...');
+          const user = await loginWithGoogle();
+          console.log('Utilisateur connecté:', user);
+        } else {
+          console.log('❌ Test alternatif échoué, tentative avec configuration complète...');
+          // Test de configuration Google Auth
+          console.log('2. Test de configuration Google Auth...');
+          await testGoogleAuthConfiguration();
+          
+          console.log('3. Début de la connexion Google Auth...');
+          console.log('Scopes demandés: profile, email');
+          const user = await loginWithGoogle();
+          console.log('Utilisateur connecté:', user);
+        }
       } catch (error) {
-        console.error('Erreur lors de la connexion:', error);
+        console.error('❌ ERREUR LORS DE LA CONNEXION:', error);
+        console.error('Type d\'erreur:', typeof error);
+        console.error('Message d\'erreur:', error instanceof Error ? error.message : 'Erreur inconnue');
+        console.error('Stack trace:', error instanceof Error ? error.stack : 'Pas de stack trace');
+        alert(`Erreur de connexion: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
       }
     }
   };
@@ -2952,6 +2977,15 @@ function App() {
   const setShowMixedWithSave = (value: boolean) => {
     setShowMixed(value);
     localStorage.setItem('mapShowMixed', JSON.stringify(value));
+  };
+
+  const signIn = async () => {
+    try {
+      const user = await GoogleAuth.signIn();
+      // Utilise user pour Firebase ou autre
+    } catch (err) {
+      console.error('Erreur Google Auth:', err);
+    }
   };
 
   return (

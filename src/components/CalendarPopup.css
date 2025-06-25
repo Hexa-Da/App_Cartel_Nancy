@@ -30,7 +30,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  margin-bottom: 60px; /* Espace pour le BottomNav */
+  margin-bottom: 45px; /* Espace pour le BottomNav */
 }
 
 .calendar-popup .planning-panel-header {

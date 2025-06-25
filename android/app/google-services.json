@@ -8,14 +8,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:402641775282:android:0b934e37f78f1a5d5937ab",
+        "mobilesdk_app_id": "1:402641775282:android:95177a8ee9b463ca5937ab",
         "android_client_info": {
           "package_name": "com.cartelnancy.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "402641775282-4gscsht88aek9v7jsfvga58293mi5at1.apps.googleusercontent.com",
+          "client_id": "402641775282-2g2kh1vb785nj0c6o10kqfbeor951lpu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.cartelnancy.app",

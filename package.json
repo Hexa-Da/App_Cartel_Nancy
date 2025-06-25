@@ -13,7 +13,13 @@
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
     "android-full-deploy": "npm run build && npx cap sync android && cd android && ./gradlew clean && ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk && cd ..",
-    "ios-full-deploy": "npm run build && npx cap sync ios && cd ios/App && xcodebuild clean -workspace App.xcworkspace -scheme App && cd ../.. && npx cap sync ios"
+    "ios-full-deploy": "npm run build && npx cap sync ios && cd ios/App && xcodebuild clean -workspace App.xcworkspace -scheme App && cd ../.. && npx cap sync ios",
+    "sync-android": "npm run build && npx cap sync android",
+    "sync-ios": "npm run build && npx cap sync ios",
+    "clean-android": "cd android && ./gradlew clean && cd ..",
+    "clean-ios": "cd ios/App && xcodebuild clean -workspace App.xcworkspace -scheme App && cd ../..",
+    "rebuild-android": "npm run clean-android && npm run sync-android",
+    "rebuild-ios": "npm run clean-ios && npm run sync-ios"
   },
   "dependencies": {
     "@capacitor/android": "^5.7.8",
@@ -52,6 +58,10 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^5.0.0",
+    "@capacitor/cli": "^7.2.0",
+    "@capacitor/ios": "^7.2.0",
+    "@capacitor/android": "^5.7.8",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
@@ -60,9 +70,8 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "gh-pages": "^6.3.0",
-    "terser": "^5.39.0",
+    "gh-pages": "^6.1.1",
     "typescript": "^5.2.2",
-    "vite": "^5.1.6"
+    "vite": "^5.2.0"
   }
 }

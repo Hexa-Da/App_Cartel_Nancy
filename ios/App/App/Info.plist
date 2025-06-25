@@ -64,5 +64,16 @@
 	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>REVERSED_CLIENT_ID</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.402641775282-bcu1on4ld4bk3609sl9e9rcmvsb23epp</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
