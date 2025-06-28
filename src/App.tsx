@@ -20,6 +20,7 @@ import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import EmergencyPopup from './components/EmergencyPopup';
+import './components/ModalForm.css';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -1952,7 +1953,7 @@ function App() {
           });
           editButtonsContainer.appendChild(addMatchButton);
           const editButton = document.createElement('button');
-          editButton.className = 'edit-button';
+          editButton.className = 'modif-button';
           editButton.textContent = 'Modifier ce lieu';
           editButton.addEventListener('click', () => {
             startEditingVenue(venue);
@@ -3611,136 +3612,36 @@ function App() {
       
       {/* Formulaire d'ajout/modification de match */}
       {editingMatch.venueId && (
-        <div className="form-overlay">
-          <div className="edit-form match-edit-form">
-            <div className="edit-form-header">
-              <h3>{editingMatch.match ? 'Modifier le match' : 'Ajouter un match'}</h3>
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>{editingMatch.match ? 'Modifier le match' : 'Ajouter un match'}</h2>
+              <button className="close-button" onClick={finishEditingMatch}>×</button>
             </div>
-            <div className="edit-form-content">
-              <div className="form-group">
+            <div className="modal-form-content">
+              <div className="modal-form-group">
                 <label htmlFor="match-date">Date et heure de début</label>
-                <input
-                  id="match-date"
-                  type="datetime-local"
-                  value={editingMatch.match ? editingMatch.match.date : newMatch.date}
-                  onChange={(e) => {
-                    if (editingMatch.match) {
-                      const updatedMatch = { ...editingMatch.match, date: e.target.value };
-                      setEditingMatch({ ...editingMatch, match: updatedMatch });
-                    } else {
-                      setNewMatch({ ...newMatch, date: e.target.value });
-                    }
-                  }}
-                  className="form-input"
-                />
+                <input id="match-date" type="datetime-local" value={editingMatch.match ? editingMatch.match.date : newMatch.date} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, date: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, date: e.target.value }); } }} className="modal-form-input" />
               </div>
-              <div className="form-group">
+              <div className="modal-form-group">
                 <label htmlFor="match-end-time">Heure de fin</label>
-                <input
-                  id="match-end-time"
-                  type="datetime-local"
-                  value={editingMatch.match ? editingMatch.match.endTime : (newMatch.endTime || '')}
-                  min={editingMatch.match ? editingMatch.match.date : newMatch.date}
-                  onChange={(e) => {
-                    if (editingMatch.match) {
-                      const updatedMatch = { ...editingMatch.match, endTime: e.target.value };
-                      setEditingMatch({ ...editingMatch, match: updatedMatch });
-                    } else {
-                      setNewMatch({ ...newMatch, endTime: e.target.value });
-                    }
-                  }}
-                  className="form-input"
-                />
+                <input id="match-end-time" type="datetime-local" value={editingMatch.match ? editingMatch.match.endTime : (newMatch.endTime || '')} min={editingMatch.match ? editingMatch.match.date : newMatch.date} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, endTime: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, endTime: e.target.value }); } }} className="modal-form-input" />
               </div>
-              <div className="form-group">
+              <div className="modal-form-group">
                 <label htmlFor="match-teams">Équipes</label>
-                <input
-                  id="match-teams"
-                  type="text"
-                  value={editingMatch.match ? editingMatch.match.teams : newMatch.teams}
-                  onChange={(e) => {
-                    if (editingMatch.match) {
-                      const updatedMatch = { ...editingMatch.match, teams: e.target.value };
-                      setEditingMatch({ ...editingMatch, match: updatedMatch });
-                    } else {
-                      setNewMatch({ ...newMatch, teams: e.target.value });
-                    }
-                  }}
-                  placeholder="Ex: Nancy vs Alès"
-                  className="form-input"
-                />
+                <input id="match-teams" type="text" value={editingMatch.match ? editingMatch.match.teams : newMatch.teams} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, teams: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, teams: e.target.value }); } }} placeholder="Ex: Nancy vs Alès" className="modal-form-input" />
               </div>
-              <div className="form-group">
+              <div className="modal-form-group">
                 <label htmlFor="match-description">Description</label>
-                <input
-                  id="match-description"
-                  type="text"
-                  value={editingMatch.match ? editingMatch.match.description : newMatch.description}
-                  onChange={(e) => {
-                    if (editingMatch.match) {
-                      const updatedMatch = { ...editingMatch.match, description: e.target.value };
-                      setEditingMatch({ ...editingMatch, match: updatedMatch });
-                    } else {
-                      setNewMatch({ ...newMatch, description: e.target.value });
-                    }
-                  }}
-                  placeholder="Ex: Phase de poules M"
-                  className="form-input"
-                />
+                <input id="match-description" type="text" value={editingMatch.match ? editingMatch.match.description : newMatch.description} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, description: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, description: e.target.value }); } }} placeholder="Ex: Phase de poules M" className="modal-form-input" />
               </div>
-              <div className="form-group">
+              <div className="modal-form-group">
                 <label htmlFor="match-result">Résultat</label>
-                <input
-                  id="match-result"
-                  type="text"
-                  value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')}
-                  onChange={(e) => {
-                    if (editingMatch.match) {
-                      const updatedMatch = { ...editingMatch.match, result: e.target.value };
-                      setEditingMatch({ ...editingMatch, match: updatedMatch });
-                    } else {
-                      setNewMatch({ ...newMatch, result: e.target.value });
-                    }
-                  }}
-                  placeholder="Ex: 2-1"
-                  className="form-input"
-                />
+                <input id="match-result" type="text" value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, result: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, result: e.target.value }); } }} placeholder="Ex: 2-1" className="modal-form-input" />
               </div>
-              <div className="form-actions">
-                <button 
-                  className="add-button"
-                  onClick={() => {
-                    if (editingMatch.match) {
-                      handleUpdateMatch(
-                        editingMatch.venueId!, 
-                        editingMatch.match.id, 
-                        {
-                          date: editingMatch.match.date,
-                          endTime: editingMatch.match.endTime || '',
-                          teams: editingMatch.match.teams,
-                          description: editingMatch.match.description,
-                          result: editingMatch.match.result
-                        }
-                      );
-                      finishEditingMatch();
-                    } else {
-                      handleAddMatch(editingMatch.venueId!);
-                    }
-                  }}
-                  disabled={
-                    editingMatch.match 
-                      ? !editingMatch.match.date || !editingMatch.match.teams || !editingMatch.match.description
-                      : !newMatch.date || !newMatch.teams || !newMatch.description
-                  }
-                >
-                  {editingMatch.match ? 'Mettre à jour' : 'Ajouter'}
-                </button>
-                <button 
-                  className="cancel-button"
-                  onClick={finishEditingMatch}
-                >
-                  Annuler
-                </button>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => { if (editingMatch.match) { handleUpdateMatch(editingMatch.venueId!, editingMatch.match.id, { date: editingMatch.match.date, endTime: editingMatch.match.endTime || '', teams: editingMatch.match.teams, description: editingMatch.match.description, result: editingMatch.match.result }); finishEditingMatch(); } else { handleAddMatch(editingMatch.venueId!); } }} disabled={editingMatch.match ? !editingMatch.match.date || !editingMatch.match.teams || !editingMatch.match.description : !newMatch.date || !newMatch.teams || !newMatch.description}>{editingMatch.match ? 'Mettre à jour' : 'Ajouter'}</button>
+                <button className="modal-form-cancel" onClick={finishEditingMatch}>Annuler</button>
               </div>
             </div>
           </div>
@@ -3749,65 +3650,29 @@ function App() {
       
       {/* Formulaire d'édition de lieu */}
       {isAddingPlace && (
-        <div className="form-overlay">
-          <div className="edit-form venue-edit-form">
-            <div className="edit-form-header">
-              <h3>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un lieu'}</h3>
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un lieu'}</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
             </div>
-            <div className="edit-form-content">
-              <div className="form-group">
+            <div className="modal-form-content">
+              <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du lieu</label>
-                <input
-                  id="venue-name"
-                  type="text"
-                  value={newVenueName}
-                  onChange={(e) => setNewVenueName(e.target.value)}
-                  placeholder="Ex: Gymnase Raymond Poincaré"
-                  className="form-input"
-                />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Gymnase Raymond Poincaré" className="modal-form-input" />
               </div>
-              <div className="form-group">
+              <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input
-                  id="venue-description"
-                  type="text"
-                  value={newVenueDescription}
-                  onChange={(e) => setNewVenueDescription(e.target.value)}
-                  placeholder="Ex: Pour rentrer il faut..."
-                  className="form-input"
-                />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Pour rentrer il faut..." className="modal-form-input" />
               </div>
-              <div className="form-group">
+              <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input
-                  id="venue-address"
-                  type="text"
-                  value={newVenueAddress}
-                  onChange={(e) => setNewVenueAddress(e.target.value)}
-                  placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy"
-                  className="form-input"
-                />
-                <button
-                  className="place-marker-button"
-                  onClick={() => {
-                    setIsPlacingMarker(true);
-                    setIsAddingPlace(false);
-                  }}
-                >
-                  Placer sur la carte
-                </button>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
-              <div className="form-group">
+              <div className="modal-form-group">
                 <label htmlFor="venue-sport">Sport</label>
-                <select
-                  id="venue-sport"
-                  value={selectedSport}
-                  onChange={(e) => {
-                    setSelectedSport(e.target.value);
-                    setSelectedEmoji(sportEmojis[e.target.value as keyof typeof sportEmojis] || '⚽');
-                  }}
-                  className="form-input"
-                >
+                <select id="venue-sport" value={selectedSport} onChange={(e) => { setSelectedSport(e.target.value); setSelectedEmoji(sportEmojis[e.target.value as keyof typeof sportEmojis] || '⚽'); }} className="modal-form-input">
                   <option value="Football">Football ⚽</option>
                   <option value="Basketball">Basketball 🏀</option>
                   <option value="Handball">Handball 🤾</option>
@@ -3826,26 +3691,9 @@ function App() {
                   <option value="Jeux de société">Jeux de société 🎲</option>
                 </select>
               </div>
-              <div className="form-actions">
-                <button
-                  className="add-button"
-                  onClick={() => {
-                    if (editingVenue.id) {
-                      handleUpdateVenue();
-                    } else {
-                      handleAddVenue();
-                    }
-                  }}
-                  disabled={!newVenueName || !newVenueDescription || (!newVenueAddress && !tempMarker)}
-                >
-                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
-                </button>
-                <button
-                  className="cancel-button"
-                  onClick={cancelEditingVenue}
-                >
-                  Annuler
-                </button>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleAddVenue()} disabled={!newVenueName || !newVenueAddress}>Ajouter</button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
               </div>
             </div>
           </div>

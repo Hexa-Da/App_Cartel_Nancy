@@ -148,17 +148,20 @@ const Home: React.FC = () => {
     return end < now;
   };
 
-  // Fonction pour faire défiler vers le premier match non passé
+  // Fonction pour faire défiler et centrer le premier match non passé, même si cela fait déborder l'item
   const scrollToFirstNonPassedMatch = () => {
     setTimeout(() => {
       const horizontalScrolls = document.querySelectorAll('.horizontal-scroll');
       horizontalScrolls.forEach(scrollContainer => {
         const firstNonPassedMatch = scrollContainer.querySelector('.event-item:not(.match-passed)');
-        if (firstNonPassedMatch) {
-          firstNonPassedMatch.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'nearest', 
-            inline: 'center' 
+        if (firstNonPassedMatch && scrollContainer) {
+          // Centrage strict, même si l'item déborde
+          const item = firstNonPassedMatch as HTMLElement;
+          const container = scrollContainer as HTMLElement;
+          const targetScrollLeft = item.offsetLeft + item.offsetWidth / 2 - container.offsetWidth / 2;
+          container.scrollTo({
+            left: targetScrollLeft,
+            behavior: 'smooth'
           });
         }
       });
@@ -317,7 +320,7 @@ const Home: React.FC = () => {
                   {matches.map(match => (
                     <div 
                       key={match.id} 
-                      className={`event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+                      className={`event-item home-event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
                       onClick={() => handleEventClick(match)}
                     >
                       <div className="event-header">
@@ -357,7 +360,7 @@ const Home: React.FC = () => {
                 getMatchesByDelegation(events, userPreferences.delegation).map(match => (
                   <div 
                     key={match.id} 
-                    className={`event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+                    className={`event-item home-event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
                     onClick={() => handleEventClick(match)}
                   >
                     <div className="event-header">
@@ -386,13 +389,45 @@ const Home: React.FC = () => {
 
         {/* Liste des prochains matchs */}
         <section className="matches-section">
-          <h2>Prochains Matchs</h2>
+          <h2>Matchs en direct</h2>
           <div className="horizontal-scroll">
-            {getUpcomingMatches(events).length > 0 ? (
-              getUpcomingMatches(events).map(match => (
+            {getUpcomingMatches(events).filter(match => {
+              // Un match est en direct si la date de début est passée mais la date de fin n'est pas encore atteinte
+              const now = new Date();
+              const start = new Date(match.date);
+              let end;
+              if (match.endTime) {
+                end = new Date(match.endTime);
+              } else {
+                // Par défaut, durée 1h pour un match, 23h pour une soirée
+                end = new Date(match.date);
+                if (match.sport === 'Soirée' || match.sport === 'Défilé') {
+                  end.setHours(23, 0, 0, 0);
+                } else {
+                  end.setHours(end.getHours() + 1);
+                }
+              }
+              return start <= now && end > now;
+            }).length > 0 ? (
+              getUpcomingMatches(events).filter(match => {
+                const now = new Date();
+                const start = new Date(match.date);
+                let end;
+                if (match.endTime) {
+                  end = new Date(match.endTime);
+                } else {
+                  end = new Date(match.date);
+                  if (match.sport === 'Soirée' || match.sport === 'Défilé') {
+                    end.setHours(23, 0, 0, 0);
+                  } else {
+                    end.setHours(end.getHours() + 1);
+                  }
+                }
+                return start <= now && end > now;
+              }).map(match => (
                 <div 
                   key={match.id} 
-                  className={`event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+                  className={`event-item home-event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
                   onClick={() => handleEventClick(match)}
                 >
                   <div className="event-header">
@@ -410,7 +445,7 @@ const Home: React.FC = () => {
                 </div>
               ))
             ) : (
-              <p className="no-matches">Aucun match à venir</p>
+              <p className="no-matches">Aucun match en direct</p>
             )}
           </div>
         </section>
@@ -424,287 +459,6 @@ const Home: React.FC = () => {
           venues={events}
         />
       )}
-
-      <style>{`
-        .home-page {
-          padding: 10px;
-          margin-top: 40px;
-          background-color: var(--bg-color);
-          color: var(--text-color);
-        }
-
-        .welcome-title {
-          top: 10px;
-          position: relative;
-          font-size: 3rem;
-          font-weight: 700;
-          color: var(--text-color);
-          margin: 0 0 50px 0;
-          padding: 20px;
-          text-align: center;
-        }
-
-        .matches-section {
-          margin: 0px 0;
-        }
-        .matches-section:first-of-type {
-          margin-top: 30px;
-        }
-        .matches-section:last-of-type {
-          margin-bottom: 0;
-        }
-
-        .matches-section h2 {
-          font-size: 1rem;
-          font-weight: 500;
-          color: var(--text-color);
-          margin: 0 0 8px 0;
-          padding: 0;
-        }
-
-        .horizontal-scroll {
-          display: flex;
-          overflow-x: auto;
-          gap: 0.5rem;
-          padding: 0rem 0;
-          scrollbar-width: 4px;
-          scrollbar-color: var(--bg-secondary) transparent;
-          -webkit-overflow-scrolling: touch;
-          min-height: 90px;
-        }
-
-
-        .event-item {
-          min-width: 260px;
-          background-color: var(--bg-secondary);
-          border-radius: 6px;
-          padding: 12px;
-          box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-          transition: transform 0.2s ease;
-        }
-
-        .event-item:hover {
-          transform: translateY(-1px);
-        }
-
-        .event-item.match-passed {
-          background-color: rgba(255, 255, 255, 0.05);
-          opacity: 0.7;
-        }
-
-        .event-item.match-passed .event-name,
-        .event-item.match-passed .event-description,
-        .event-item.match-passed .event-result {
-          opacity: 0.5;
-        }
-
-        .event-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.2rem;
-        }
-
-        .event-type-badge {
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-          color: var(--text-color);
-          padding: 0.35rem 0.75rem;
-          border-radius: 20px;
-          font-size: 0.7rem;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          min-width: 36px;
-          min-height: 28px;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(8px);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          transition: all 0.3s ease;
-          letter-spacing: 0.02em;
-          text-transform: uppercase;
-        }
-
-        .event-type-badge span {
-          display: inline-block;
-        }
-
-        .match-event .event-type-badge {
-          background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08));
-          border-color: rgba(76, 175, 80, 0.3);
-          color: #4CAF50;
-          box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
-        }
-
-        .party-event .event-type-badge {
-          background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(156, 39, 176, 0.08));
-          border-color: rgba(156, 39, 176, 0.3);
-          color: #9C27B0;
-          box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
-        }
-
-        .event-type-badge:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .match-event .event-type-badge:hover {
-          box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
-          background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.12));
-        }
-
-        .party-event .event-type-badge:hover {
-          box-shadow: 0 4px 12px rgba(156, 39, 176, 0.25);
-          background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(156, 39, 176, 0.12));
-        }
-
-        .event-date {
-          color: var(--danger-color);
-          font-weight: 500;
-          font-size: 0.7rem;
-        }
-
-        .event-title-container {
-          margin: 0.2rem 0;
-        }
-
-        .event-name {
-          margin: 0;
-          color: var(--text-color);
-          font-size: 0.9rem;
-          font-weight: 500;
-          text-align: center;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .event-description {
-          color: var(--warning-color);
-          font-size: 0.8rem;
-          margin: 0.2rem 0;
-          line-height: 1.2;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .event-result {
-          color: var(--success-color);
-          font-weight: 500;
-          margin: 0.2rem 0;
-          font-size: 0.8rem;
-          text-align: center;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .no-matches {
-          color: var(--text-color-light);
-          width: 100%;
-          font-size: 0.9rem;
-          text-align: center;
-          padding: 0.8rem;
-          background-color: var(--bg-secondary);
-          border-radius: 4px;
-          margin: 0.4rem 0;
-        }
-
-        @media (max-width: 480px) {
-          .home-page {
-            padding: 8px;
-            margin-top: 35px;
-          }
-
-          .welcome-title {
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            padding: 8px;
-          }
-
-          .matches-section {
-            margin: 10px 0;
-          }
-
-          .event-item {
-            min-width: 220px;
-            padding: 8px;
-          }
-        }
-
-        @media (max-height: 700px) {
-          .home-page {
-            padding: 5px;
-            margin-top: 30px;
-          }
-
-          .welcome-title {
-            margin: 0 0 8px 0;
-            padding: 2px;
-          }
-
-          .matches-section {
-            margin: 8px 0;
-          }
-
-          .event-item {
-            padding: 6px;
-          }
-        }
-
-        @media (max-height: 600px) {
-          .home-page {
-            padding: 3px;
-            margin-top: 25px;
-          }
-
-          .welcome-title {
-            margin: 0 0 5px 0;
-            padding: 1px;
-          }
-
-          .matches-section {
-            margin: 5px 0;
-          }
-
-          .event-item {
-            padding: 4px;
-          }
-        }
-
-        @media (min-width: 500px) and (max-width: 700px) {
-          .home-page {
-            padding: 16px;
-            margin-top: 50px;
-          }
-          .welcome-title {
-            font-size: 2.2rem;
-            margin: 0 0 28px 0;
-            padding: 8px;
-          }
-          .matches-section {
-            margin: 16px 0;
-          }
-          .matches-section h2 {
-            font-size: 1.15rem;
-            margin: 0 0 12px 0;
-          }
-          .event-item {
-            min-width: 280px;
-            padding: 16px;
-          }
-          .event-name {
-            font-size: 1.1rem;
-          }
-          .event-description {
-            font-size: 1rem;
-          }
-          .event-type-badge, .event-date {
-            font-size: 1rem;
-          }
-        }
-      `}</style>
     </div>
   );
 };
