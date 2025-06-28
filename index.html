@@ -27,8 +27,19 @@
         document.documentElement.setAttribute('data-theme', storedTheme === 'true' ? 'dark' : 'light');
       }
     </script>
+    <style>
+      body {
+        background: #000 !important;
+      }
+    </style>
   </head>
-  <body>
+  <body style="background:#000;">
+    <div id="loader" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999"></div>
+    <script>
+      window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('loader').style.display = 'none';
+      });
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

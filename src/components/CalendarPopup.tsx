@@ -132,7 +132,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   const sportOptions = [
     { value: 'none', label: 'Aucun' },
     { value: 'all', label: 'Tous les événements' },
-    { value: 'party', label: 'Soirée et Défilé ★' },
+    { value: 'party', label: 'Soirées et Défilé ⭐' },
     { value: 'match', label: 'Tous les sports' },
     { value: 'Football', label: 'Football ⚽' },
     { value: 'Basketball', label: 'Basketball 🏀' },

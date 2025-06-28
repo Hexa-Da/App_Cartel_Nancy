@@ -48,6 +48,7 @@ dependencies {
     // Google Play Services dependencies for Google Auth
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
     implementation 'com.google.android.gms:play-services-base:18.3.0'
+    implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
 }
 
 apply from: 'capacitor.build.gradle'

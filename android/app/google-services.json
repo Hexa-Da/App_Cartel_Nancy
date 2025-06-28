@@ -19,7 +19,8 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.cartelnancy.app",
-            "certificate_hash": "b93d0dc14308b897bafda30acd92fa908541498c"
+            "certificate_hash": "b93d0dc14308b897bafda30acd92fa908541498c",
+            "certificate_hash_sha256": "278f1c0d6e89901235f411e14ff42154692a935dd45b8f15ccd20fc0c1c3bbef"
           }
         },
         {

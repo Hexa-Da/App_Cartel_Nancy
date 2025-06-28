@@ -3288,7 +3288,7 @@ function App() {
                         <option value="none">Aucun</option>
                         <option value="all">Tous les événements</option>
                         <option value="match">Tous les sports</option>
-                        <option value="party">Soirées et Défilé ★</option>
+                        <option value="party">Soirées et Défilé ⭐</option>
                         <option value="Football">Football ⚽</option>
                         <option value="Basketball">Basketball 🏀</option>
                         <option value="Handball">Handball 🤾</option>
