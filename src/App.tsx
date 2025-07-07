@@ -1898,9 +1898,9 @@ function App() {
           matchesScrollContainer.style.overflowY = 'auto';
           const style = document.createElement('style');
           style.textContent = `
-            .match-passed { background-color:rgba(255, 255, 255, 0.05); }
-            .match-passed p { opacity: 0.3; color: var(--text-color); }
-            .match-passed .match-result { opacity: 0.3; font-weight: bold; color: var(--text-color); }
+            .match-passed { background-color:rgba(255, 255, 255, 0.01); }
+            .match-passed p { opacity: 0.2; color: var(--text-color); }
+            .match-passed .match-result { opacity: 0.2; font-weight: bold; color: var(--text-color); }
           `;
           document.head.appendChild(style);
           sortedMatches.forEach(match => {

@@ -143,8 +143,7 @@ input:checked + .slider:before {
 
 .settings-select:focus {
   outline: none;
-  border-color: var(--success-color);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  border: 1px solid var(--border-color);
 }
 
 /* Suppression des effets de focus et de sélection */

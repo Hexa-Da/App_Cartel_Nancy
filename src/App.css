@@ -144,67 +144,6 @@ body {
   border-bottom: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-color: #4a9eff;
-    --primary-hover: #3a8eef;
-    --success-color: #2ecc71;
-    --success-hover: #27ae60;
-    --danger-color: #ff6b6b;
-    --danger-hover: #ff5252;
-    --warning-color: #f39c12;
-    --warning-hover: #d35400;
-    --text-color: #ecf0f1;
-    --text-color-light: #bdc3c7;
-    --bg-color: #1a1a1a;
-    --bg-secondary: #2d2d2d;
-    --border-color: #404040;
-    --shadow-color: rgba(0, 0, 0, 0.3);
-  }
-
-  .leaflet-container {
-    background-color: var(--bg-color) !important;
-  }
-
-  .leaflet-popup-content-wrapper {
-    background-color: var(--bg-secondary) !important;
-    color: var(--text-color) !important;
-  }
-
-  .leaflet-popup-tip {
-    background-color: var(--bg-secondary) !important;
-  }
-
-  .leaflet-control-attribution {
-    background-color: var(--bg-secondary) !important;
-    color: var(--text-color) !important;
-  }
-
-  .leaflet-control-zoom {
-    background-color: var(--bg-secondary) !important;
-    border: 1px solid var(--border-color) !important;
-  }
-
-  .leaflet-control-zoom a {
-    background-color: var(--bg-secondary) !important;
-    color: var(--text-color) !important;
-    border-bottom: 1px solid var(--border-color) !important;
-  }
-
-  .retry-button {
-    background-color: var(--primary-color);
-    color: white;
-  }
-
-  .location-error {
-    background-color: var(--bg-secondary);
-  }
-
-  .location-error p {
-    color: white;
-  }
-}
-
 html, body, #root {
   height: 100%;
   width: 100%;
@@ -607,28 +546,12 @@ html, body, #root {
   padding-top: 0.5rem;
   max-height: 300px; /* Hauteur maximale avant le scroll */
   overflow-y: auto; /* Ajoute le scroll vertical si nécessaire */
+  /* Propriétés pour faire disparaître les scrollbars automatiquement */
+  scrollbar-gutter: stable;
+  overflow-scrollbar: auto;
 }
 
-/* Style personnalisé pour la scrollbar */
-.matches-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.matches-list::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 2px;
-}
-
-.matches-list::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 2px;
-}
-
-/* Style pour Firefox */
-.matches-list {
-  scrollbar-width: 4px;
-  scrollbar-color: var(--primary-color) transparent;
-}
+/* Styles de scrollbars uniformes - gérés par les styles globaux */
 
 .matches-list h4 {
   margin-top: 0;
@@ -638,10 +561,11 @@ html, body, #root {
 }
 
 .match-item {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-secondary);
   padding: 0.5rem;
   margin-bottom: 0.5rem;
   border-radius: 4px;
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .match-date {
@@ -653,11 +577,13 @@ html, body, #root {
 
 .match-teams {
   font-weight: 600;
+  color: var(--warning-color);
   margin: 0.25rem 0;
 }
 
 .match-description {
   font-style: italic;
+  color: var(--text-color-light);
   font-size: 0.85rem;
   margin: 0.25rem 0;
 }
@@ -705,20 +631,6 @@ html, body, #root {
 .add-match-button:active {
   transform: translateY(0);
   background-color: var(--success-color);
-}
-
-@media (prefers-color-scheme: dark) {
-  .match-item {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .add-match-button {
-    background-color: #4CAF50;
-  }
-  
-  .add-match-button:active {
-    background-color: #2E7D32;
-  }
 }
 
 /* Styles pour les popups Leaflet */
@@ -923,13 +835,6 @@ body.ios .location-error {
   transition: all 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  .delete-match-button {
-    background-color: var(--danger-color);
-    color: white;
-  }
-}
-
 .map-style-selector {
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -944,14 +849,6 @@ body.ios .location-error {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px var(--shadow-color);
-}
-
-@media (prefers-color-scheme: dark) {
-  .map-style-selector {
-    background-color: var(--bg-secondary);
-    color: var(--text-color);
-    border-color: var(--border-color);
-  }
 }
 
 .emoji-selector {
@@ -1056,16 +953,6 @@ body.ios .location-error {
   background-color: #512DA8;
 }
 
-@media (prefers-color-scheme: dark) {
-  .copy-button {
-    background-color: #9575CD;
-  }
-  
-  .copy-button:active {
-    background-color: #673AB7;
-  }
-}
-
 .popup-buttons .modif-button {
   background-color: #FF9800; /* Orange */
   color: white;
@@ -1081,16 +968,6 @@ body.ios .location-error {
 .popup-buttons .modif-button:active {
   transform: translateY(0);
   background-color: #EF6C00;
-}
-
-@media (prefers-color-scheme: dark) {
-  .popup-buttons .modif-button {
-    background-color: #FFB74D; /* Orange clair */
-  }
-  
-  .popup-buttons .modif-button:active {
-    background-color: #FF9800;
-  }
 }
 
 .popup-buttons .delete-button {
@@ -1109,16 +986,6 @@ body.ios .location-error {
 .popup-buttons .delete-button:active {
   transform: translateY(0);
   background-color: #B71C1C;
-}
-
-@media (prefers-color-scheme: dark) {
-  .popup-buttons .delete-button {
-    background-color: #EF5350;
-  }
-  
-  .popup-buttons .delete-button:active {
-    background-color: #D32F2F;
-  }
 }
 
 .emoji-preview {
@@ -1165,7 +1032,7 @@ body.ios .location-error {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 70px;
+  margin-bottom: 60px;
 }
 
 .event-item {
@@ -1303,7 +1170,7 @@ body.ios .location-error {
 /* Style pour le bouton flottant d'événements */
 .events-toggle-button {
   position: fixed !important;
-  top: 80px !important;
+  top: 60px !important;
   left: 10px !important;
   z-index: 1000;
   padding: 0.5rem 1rem;
@@ -1334,7 +1201,7 @@ body.ios .events-toggle-button {
 /* Repositionner le panneau d'événements à gauche */
 .events-panel {
   position: fixed;
-  top: 2rem;
+  top: 1rem;
   left: 0;
   width: 100%;
   height: 100%;
@@ -1406,7 +1273,7 @@ body.ios .events-panel {
   right: 10px;
   padding: 8px 16px;
   background-color: var(--warning-color);
-  color: white;
+  color: var(--text-color);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -1442,17 +1309,11 @@ body.ios .events-panel {
   transform: translateY(0);
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-toggle-button {
-    background-color: var(--warning-color);
-  }
-  
-}
-
 .gender-filter-row {
   display: flex;
   gap: 0.5rem;
   flex: 1.03;
+  width: 100%;
 }
 
 .gender-filter-button {
@@ -1461,28 +1322,17 @@ body.ios .events-panel {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  flex: 1;
+  width: 100%;
+}
+
+.gender-filter-button:focus {
+  outline: none;
+  border: 1px solid var(--border-color);
 }
 
 .gender-filter-button.active {
   background-color: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
-@media (prefers-color-scheme: dark) {
-  .gender-filter-button {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-color);
-    color: var(--text-color);
-  }
-  
-  .gender-filter-button.active {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-  }
 }
 
 .close-events-button {
@@ -1524,28 +1374,15 @@ body.ios .events-panel {
   cursor: pointer;
   transition: all 0.3s ease;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='currentColor' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 12px;
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
 @media (prefers-color-scheme: dark) {
   .filter-select {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-color);
-    color: var(--text-color);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
-  }
-  
-  .filter-select:focus {
-    border-color: var(--primary-color);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   }
 }
 
@@ -1697,7 +1534,7 @@ body.ios .events-panel {
 /* Styles personnalisés pour les contrôles de zoom */
 .leaflet-control-zoom {
   position: fixed !important;
-  top: 65px !important;
+  top: 45px !important;
   right: 0px !important;
   z-index: 1000;
   border: none !important;
@@ -1859,13 +1696,6 @@ body.ios .leaflet-control-zoom{
   font-size: 14px;
 }
 
-/* Style pour le logo dans le mode sombre */
-@media (prefers-color-scheme: dark) {
-  .app-header img {
-    filter: brightness(1.2) contrast(1.1);
-  }
-}
-
 /* Styles pour le logo */
 .logo {
   height: 6em;
@@ -1949,16 +1779,10 @@ body.ios .leaflet-control-zoom{
   font-size: 0.9rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  .event-result, .match-result {
-    color: var(--success-color);
-  }
-}
-
 /* Styles unifiés pour le chat sur toutes les pages */
 .chat-panel {
   position: fixed;
-  top: 0;
+  top: -1rem;
   left: 0;
   width: 100%;
   height: 100%;
@@ -2052,7 +1876,7 @@ body.ios .chat-panel {
 /* Style spécifique pour le chat panel sur Home et Info */
 .home-info-chat {
   position: fixed;
-  top: 4.5rem;
+  top: 3.5rem;
   right: 1rem;
   background-color: var(--bg-color);
   z-index: 900;
@@ -2214,7 +2038,7 @@ body.ios .home-info-chat .chat-panel-header {
 /* Styles pour le panneau de planning */
 .planning-panel {
   position: fixed;
-  top: 2rem;
+  top: 1rem;
   left: 0;
   width: 100%;
   height: 100%;
@@ -2450,12 +2274,6 @@ body.ios .planning-panel {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.filter-select:focus {
-  border-color: #80bdff;
-  outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
 /* Styles pour le calendrier */
 .calendar-popup-overlay {
   position: fixed;
@@ -2573,8 +2391,8 @@ body.ios .planning-panel {
   width: 48px;
   height: 48px;
   border-radius: 9999px;
-  background-color: black;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   border: none;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;

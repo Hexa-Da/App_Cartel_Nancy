@@ -175,6 +175,13 @@ const Home: React.FC = () => {
     }
   }, [events]);
 
+  // Effet pour déclencher le scroll automatique quand les préférences utilisateur changent
+  useEffect(() => {
+    if (events.length > 0) {
+      scrollToFirstNonPassedMatch();
+    }
+  }, [userPreferences, events]);
+
   const getUpcomingMatches = (places: Place[]) => {
     const now = new Date();
     return places.flatMap(place => {
@@ -308,7 +315,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-page">
-      <h1 className="welcome-title">Bienvenue Au Cartel de Nancy</h1>
+      {/* <h1 className="welcome-title">Bienvenue Au Cartel de Nancy</h1> */}
       <div className="matches-section">
         <section className="matches-section">
           <h2>Vos Matchs</h2>

@@ -12,14 +12,14 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 24px var(--shadow-color);
   z-index: 1000;
   padding: 5px 20px;
-  padding-top: 35px;
+  padding-top: 15px;
   height: auto;
 }
 
@@ -84,6 +84,7 @@ body.ios .app-header {
   position: relative;
   transform: scale(1);
   transition: transform 0.2s ease;
+  margin-top: -20px;
 }
 
 body.ios .chat-button {
@@ -111,6 +112,7 @@ body.ios .chat-button {
 
 .emergency-button {
   color: #e74c3c !important;
+  margin-top: -20px;
 }
 
 body.ios .emergency-button {
@@ -121,6 +123,7 @@ body.ios .emergency-button {
   font-size: 16px !important;
   font-weight: bold;
   color: var(--warning-color);
+  margin-top: -20px;
 }
 
 body.ios .edit-button {
@@ -181,6 +184,7 @@ body {
 .emergency-button,
 .admin-button {
   transition: transform 0.2s;
+  margin-top: -20px;
 }
 
 body.ios .admin-button {
@@ -194,14 +198,6 @@ body.ios .admin-button {
 .admin-button svg {
   transition: all 0.2s ease;
   filter: drop-shadow(0 1px 2px var(--shadow-color));
-}
-
-.emergency-button:hover svg,
-.chat-button:hover svg,
-.header-settings-button:hover svg,
-.admin-button:hover svg {
-  transform: scale(1.1);
-  filter: drop-shadow(0 2px 4px var(--shadow-color));
 }
 
 .emergency-button svg {
@@ -373,6 +369,10 @@ body.ios .admin-button {
   align-items: center;
   gap: 15px;
   margin-right: -8px;
+}
+
+.header-settings-button {
+  margin-top: -20px;
 }
 
 body.ios .header-settings-button {

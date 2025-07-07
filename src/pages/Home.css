@@ -44,25 +44,15 @@
   overflow-x: auto;
   gap: 8px;
   padding: 0 10px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--bg-secondary) transparent;
   -webkit-overflow-scrolling: touch;
   min-height: 120px;
   scroll-behavior: smooth;
+  /* Propriétés pour faire disparaître les scrollbars automatiquement */
+  scrollbar-gutter: stable;
+  overflow-scrollbar: auto;
 }
 
-.horizontal-scroll::-webkit-scrollbar {
-  height: 4px;
-}
-
-.horizontal-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.horizontal-scroll::-webkit-scrollbar-thumb {
-  background: var(--bg-secondary);
-  border-radius: 2px;
-}
+/* Styles de scrollbars uniformes - gérés par les styles globaux */
 
 .event-item {
   background-color: var(--bg-secondary);
@@ -233,6 +223,7 @@
   .welcome-title {
     margin: 0 0 20px 0;
     padding: 10px 8px;
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
   }
 
   .matches-section {
@@ -241,6 +232,7 @@
 
   .matches-section h2 {
     margin: 0 0 10px 8px;
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
   }
 
   .horizontal-scroll {
@@ -261,6 +253,24 @@
   .event-type-badge {
     padding: 4px 8px;
     gap: 3px;
+    font-size: clamp(0.6rem, 3vw, 0.8rem);
+  }
+  
+  .event-name {
+    font-size: clamp(0.8rem, 3.5vw, 1rem);
+  }
+  
+  .event-description {
+    font-size: clamp(0.7rem, 3vw, 0.85rem);
+  }
+  
+  .event-result {
+    font-size: clamp(0.7rem, 3vw, 0.85rem);
+  }
+  
+  .no-matches {
+    font-size: clamp(0.8rem, 3.5vw, 1rem);
+    padding: 15px;
   }
 }
 
@@ -273,6 +283,7 @@
   .welcome-title {
     margin: 0 0 15px 0;
     padding: 8px 6px;
+    font-size: clamp(1.6rem, 5.5vw, 2.2rem);
   }
 
   .matches-section {
@@ -286,35 +297,51 @@
   }
 
   .home-event-item {
-    width: 180px;
-    flex: 0 0 180px;
+    width: 200px;
+    flex: 0 0 200px;
   }
 
   .event-type-badge {
     padding: 3px 6px;
-    font-size: 0.6rem;
+    font-size: clamp(0.5rem, 2.8vw, 0.7rem);
   }
-
+  
   .event-date {
-    font-size: 0.6rem;
+    font-size: clamp(0.5rem, 2.8vw, 0.7rem);
+  }
+  
+  .event-name {
+    font-size: clamp(0.7rem, 3.2vw, 0.9rem);
+  }
+  
+  .event-description {
+    font-size: clamp(0.6rem, 2.8vw, 0.8rem);
+  }
+  
+  .event-result {
+    font-size: clamp(0.6rem, 2.8vw, 0.8rem);
+  }
+  
+  .no-matches {
+    font-size: clamp(0.7rem, 3.2vw, 0.9rem);
+    padding: 12px;
   }
 }
 
-/* Ajustements basés sur la hauteur de l'écran */
 @media (min-height: 700px) {
   .home-page {
-    margin-top: 15px;
+    margin-top: 40px;
   }
 
   .welcome-title {
-    margin: 0 0 20px 0;
+    margin: 0 0 25px 0;
     margin-top: -10px;
-    padding: 20px 10px 0 10px;
-    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    padding: 15px 10px 0 10px;
+    font-size: clamp(2.5rem, 6.5vw, 3.2rem);
   }
 
   .matches-section {
-    margin: 15px 0;
+    margin: 20px 0;
   }
 
   .matches-section h2 {
@@ -324,35 +351,14 @@
 
 @media (min-height: 800px) {
   .home-page {
-    margin-top: 20px;
-  }
-
-  .welcome-title {
-    margin: 0 0 25px 0;
-    margin-top: -10px;
-    padding: 25px 10px 0 10px;
-    font-size: clamp(2.7rem, 6vw, 4.6rem);
-  }
-
-  .matches-section {
-    margin: 20px 0;
-  }
-
-  .matches-section h2 {
-    margin: 0 0 18px 10px;
-  }
-}
-
-@media (min-height: 900px) {
-  .home-page {
-    margin-top: 25px;
+    margin-top: 45px;
   }
 
   .welcome-title {
     margin: 0 0 30px 0;
     margin-top: -10px;
-    padding: 30px 10px 0 10px;
-    font-size: clamp(2.9rem, 6.5vw, 4.9rem);
+    padding: 20px 10px 0 10px;
+    font-size: clamp(2.8rem, 7vw, 3.8rem);
   }
 
   .matches-section {
@@ -364,16 +370,16 @@
   }
 }
 
-@media (min-height: 1000px) {
+@media (min-height: 900px) {
   .home-page {
-    margin-top: 30px;
+    margin-top: 50px;
   }
 
   .welcome-title {
     margin: 0 0 35px 0;
     margin-top: -10px;
-    padding: 35px 10px 0 10px;
-    font-size: clamp(3.1rem, 7vw, 5.2rem);
+    padding: 25px 10px 0 10px;
+    font-size: clamp(3rem, 7.5vw, 4.2rem);
   }
 
   .matches-section {
@@ -382,6 +388,27 @@
 
   .matches-section h2 {
     margin: 0 0 25px 10px;
+  }
+}
+
+@media (min-height: 1000px) {
+  .home-page {
+    margin-top: 55px;
+  }
+
+  .welcome-title {
+    margin: 0 0 40px 0;
+    margin-top: -10px;
+    padding: 30px 10px 0 10px;
+    font-size: clamp(3.2rem, 8vw, 4.8rem);
+  }
+
+  .matches-section {
+    margin: 35px 0;
+  }
+
+  .matches-section h2 {
+    margin: 0 0 30px 10px;
   }
 }
 
@@ -612,4 +639,126 @@ body.ios .welcome-title {
   margin-top: -20px !important;
   padding-top: 0px !important;
   padding-bottom: 10px !important;
+}
+
+/* Améliorations pour les très petits écrans */
+@media (max-width: 320px) {
+  .home-page {
+    padding: 4px;
+    margin-top: 25px;
+  }
+  
+  .welcome-title {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    margin: 0 0 12px 0;
+    padding: 6px 4px;
+  }
+  
+  .matches-section {
+    margin: 8px 0;
+  }
+  
+  .matches-section h2 {
+    font-size: clamp(0.8rem, 3.5vw, 1rem);
+    margin: 0 0 8px 6px;
+  }
+  
+  .horizontal-scroll {
+    padding: 0 4px;
+    gap: 4px;
+    min-height: 90px;
+  }
+  
+  .home-event-item {
+    width: 180px;
+    flex: 0 0 180px;
+  }
+  
+  .event-item {
+    padding: 5px;
+  }
+  
+  .event-type-badge {
+    padding: 2px 5px;
+    font-size: clamp(0.4rem, 2.5vw, 0.6rem);
+  }
+  
+  .event-date {
+    font-size: clamp(0.4rem, 2.5vw, 0.6rem);
+  }
+  
+  .event-name {
+    font-size: clamp(0.6rem, 3vw, 0.8rem);
+  }
+  
+  .event-description {
+    font-size: clamp(0.5rem, 2.8vw, 0.7rem);
+  }
+  
+  .event-result {
+    font-size: clamp(0.5rem, 2.8vw, 0.7rem);
+  }
+  
+  .no-matches {
+    font-size: clamp(0.6rem, 3vw, 0.8rem);
+    padding: 10px;
+  }
+}
+
+/* Améliorations pour les écrans en mode paysage sur mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .home-page {
+    padding: 4px;
+    margin-top: 20px;
+  }
+  
+  .welcome-title {
+    font-size: clamp(1rem, 3vw, 1.8rem);
+    margin: 0 0 8px 0;
+    padding: 4px 0;
+  }
+  
+  .matches-section {
+    margin: 6px 0;
+  }
+  
+  .matches-section h2 {
+    font-size: clamp(0.8rem, 3vw, 1rem);
+    margin: 0 0 6px 8px;
+  }
+  
+  .horizontal-scroll {
+    min-height: 80px;
+    gap: 5px;
+  }
+  
+  .home-event-item {
+    width: 160px;
+    flex: 0 0 160px;
+  }
+  
+  .event-item {
+    padding: 4px;
+  }
+  
+  .event-type-badge {
+    padding: 2px 4px;
+    font-size: clamp(0.4rem, 2.2vw, 0.5rem);
+  }
+  
+  .event-date {
+    font-size: clamp(0.4rem, 2.2vw, 0.5rem);
+  }
+  
+  .event-name {
+    font-size: clamp(0.5rem, 2.5vw, 0.7rem);
+  }
+  
+  .event-description {
+    font-size: clamp(0.4rem, 2.2vw, 0.6rem);
+  }
+  
+  .event-result {
+    font-size: clamp(0.4rem, 2.2vw, 0.6rem);
+  }
 } 
