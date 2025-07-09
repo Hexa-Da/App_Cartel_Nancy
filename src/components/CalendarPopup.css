@@ -77,7 +77,7 @@
 
 .calendar-panel-header {
   padding: 0.5rem;
-  margin-top: 3.5rem;
+  margin-top: 2.8rem;
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
@@ -548,7 +548,7 @@ body.ios .calendar-panel-header {
 /* Styles de scrollbars uniformes - gérés par les styles globaux */
 
 .calendar-popup .filter-reset-button {
-  margin-top: -16px;
+  margin-top: -27px;
 } 
 
 body.ios .calendar-popup .filter-reset-button {

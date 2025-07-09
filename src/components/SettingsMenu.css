@@ -53,6 +53,7 @@
 
 .settings-menu-content {
   padding: 1rem;
+  background-color: var(--bg-color);
 }
 
 .settings-item {

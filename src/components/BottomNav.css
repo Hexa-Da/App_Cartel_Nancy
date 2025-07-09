@@ -1,22 +1,20 @@
 /* Barre de navigation modernisée avec débordement sur la carte */
 .bottom-nav {
   position: fixed;
-  bottom: -4px;
+  bottom: -10px;
   left: 0;
   right: 0;
-  height: 60px;
-  background: var(--bg-color);
+  background: var(--bg-primary);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 -4px 24px var(--shadow-color);
-  z-index: 1000;
-  padding: 0 8px;
+  box-shadow: 0 -2px 12px var(--shadow-color);
+  z-index: 999;
   transition: box-shadow 0.3s;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -30,7 +28,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  padding: 6px 0 3px 0;
+  padding: 0px 0 3px 0;
   color: var(--text-color);
   border-radius: 14px;
   margin: 0 6px;

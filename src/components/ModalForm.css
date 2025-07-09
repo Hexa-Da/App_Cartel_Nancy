@@ -1,11 +1,11 @@
 /* Overlay flouté et centré */
 .modal-form-overlay {
   position: fixed;
-  top: 2rem;
+  top: 0rem;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color: var(--bg-primary);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,24 +37,30 @@ body.ios .modal-form-overlay {
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem;
+  margin-top: 10px;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
   z-index: 1;
   flex-shrink: 0;
   height: 60px;
 }
-.modal-form-header h2, .modal-form-header h3 {
-  margin: 0;
+
+.modal-form-header h2 {
+  margin-top: -10px;
+  padding: 10px;
   color: var(--text-color);
   font-size: 1.3rem;
 }
+
 .modal-form-header .close-button {
-  margin-top: 5px;
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   color: var(--text-color);
+  position: relative;
+  margin-top: 10px;
+  margin-right: -7px;
 }
 
 /* Contenu scrollable */
@@ -86,11 +92,45 @@ body.ios .modal-form-overlay {
   color: var(--text-color);
   font-size: 0.95rem;
   -webkit-appearance: none;
+  appearance: none;
 }
 .modal-form-group textarea {
   resize: vertical;
   min-height: 100px;
 }
+
+
+/* Style pour l'icône de calendrier dans datetime-local */
+.modal-form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: var(--calendar-filter);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit {
+  color: var(--text-color);
+}
+
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper {
+  color: var(--text-color);
+}
+
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-text {
+  color: var(--text-color);
+}
+
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-month-field,
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-day-field,
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-year-field {
+  color: var(--text-color);
+}
+
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-hour-field,
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-minute-field,
+.modal-form-group input[type="datetime-local"]::-webkit-datetime-edit-second-field {
+  color: var(--text-color);
+}
+
 
 /* Actions */
 .modal-form-actions {

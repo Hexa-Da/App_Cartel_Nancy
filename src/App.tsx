@@ -445,7 +445,7 @@ function App() {
   }, [location.pathname]);
 
   const [newMessage, setNewMessage] = useState('');
-  const [newMessageSender, setNewMessageSender] = useState('Organisation'); 
+  const [newMessageSender, setNewMessageSender] = useState(''); 
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -587,7 +587,7 @@ function App() {
 
   // Modification d'un message dans Firebase (texte et nom)
   const handleEditMessage = (id: string, newContent: string, newSender: string) => {
-    update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender || 'Organisation' });
+    update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender});
   };
 
   // Suppression d'un message dans Firebase
@@ -3492,19 +3492,30 @@ function App() {
                 {showAddMessage && (
                   <form
                     className="add-message-form"
-                    style={{ display: 'flex', gap: '8px', padding: '1rem', alignItems: 'center', background: 'var(--bg-secondary)' }}
+                    style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      gap: '12px', 
+                      padding: '1.5rem', 
+                      alignItems: 'stretch',
+                      background: 'var(--bg-color)', 
+                      borderBottom: '1px solid var(--border-color)',
+                      width: '100%',
+                      maxWidth: '800px',
+                      margin: '0 auto'
+                    }}
                     onSubmit={e => {
                       e.preventDefault();
                       if (newMessage.trim()) {
                         if (editingMessageId) {
                           // Si on édite un message existant
-                          handleEditMessage(editingMessageId, newMessage, newMessageSender || 'Organisation');
+                          handleEditMessage(editingMessageId, newMessage, newMessageSender);
                         } else {
                           // Sinon, on ajoute un nouveau message
-                          handleAddMessage(newMessage, newMessageSender || 'Organisation');
+                          handleAddMessage(newMessage, newMessageSender);
                         }
                         setNewMessage('');
-                        setNewMessageSender('Organisation');
+                        setNewMessageSender('');
                         setShowAddMessage(false);
                         setEditingMessageId(null);
                       }
@@ -3517,18 +3528,57 @@ function App() {
                         value={newMessageSender}
                         onChange={e => setNewMessageSender(e.target.value)}
                         placeholder="Nom (ex: Organisation, Prénom...)"
-                        style={{ width: 100, height: 25, padding: '8px', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                        style={{ 
+                          width: 280,
+                          height: 25,
+                          padding: '8px',
+                          borderRadius: '4px',
+                          border: '1px solid var(--border-color)',
+                          background: 'var(--bg-color)',
+                          position: 'fixed',
+                          top: '7rem',
+                          left: '1.5rem'
+                        }}
                       />
                     )}
-                    <input
-                      type="text"
+                    <textarea
                       value={newMessage}
-                      onChange={e => setNewMessage(e.target.value)}
+                      onChange={e => {
+                        setNewMessage(e.target.value);
+                        // Ajuster automatiquement la hauteur
+                        e.target.style.height = '25px'; // Reset d'abord à la hauteur minimale
+                        e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`; // Limiter à 200px max
+                      }}
                       placeholder="Votre message..."
-                      style={{ flex: 1, height: 25, padding: '8px', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                      style={{
+                        flex: 1,
+                        height: '25px', // Hauteur initiale
+                        minHeight: '25px',
+                        maxHeight: '200px', 
+                        padding: '8px',
+                        borderRadius: '4px',
+                        border: '1px solid var(--border-color)',
+                        background: 'var(--bg-color)',
+                        resize: 'none',
+                        overflowY: 'auto', // Permettre le scroll vertical si nécessaire
+                        marginTop: '2rem',
+                        transition: 'height 0.1s ease' // Animation fluide du changement de hauteur
+                      }}
                       autoFocus
                     />
-                    <button type="submit" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                    <button 
+                      type="submit" 
+                      style={{ 
+                        background: 'none',
+                        border: 'none', 
+                        cursor: 'pointer',
+                        padding: 0,
+                        position: 'fixed',
+                        top: '7rem',
+                        fontSize: '22px',
+                        right: '1.5rem'
+                      }}
+                    >
                       ➡️
                     </button>
                   </form>
@@ -3538,7 +3588,7 @@ function App() {
                     <div key={message.id || index} className={`chat-message ${message.isAdmin ? 'admin' : ''}`} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
                       {/* Header du message : affiche le nom de l'expéditeur */}
                       <div className="chat-message-header" style={{ justifyContent: 'space-between' }}>
-                        <span>{message.sender || 'Organisation'}</span>
+                        <span>{message.sender}</span>
                         <span>{new Date(message.timestamp).toLocaleString()}</span>
                       </div>
                       {/* Contenu du message */}
@@ -3550,7 +3600,7 @@ function App() {
                             onSubmit={e => {
                               e.preventDefault();
                               if (message.id) {
-                                handleEditMessage(message.id, editingMessageValue, newMessageSender || 'Organisation');
+                                handleEditMessage(message.id, editingMessageValue, newMessageSender);
                               }
                               setEditingMessageIndex(null);
                               setEditingMessageValue('');
@@ -3580,7 +3630,7 @@ function App() {
                               // Ouvre le formulaire d'ajout en haut, pré-rempli
                               setShowAddMessage(true);
                               setNewMessage(message.content);
-                              setNewMessageSender(message.sender || 'Organisation');
+                              setNewMessageSender(message.sender);
                               setEditingMessageId(message.id || null);
                             }}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}

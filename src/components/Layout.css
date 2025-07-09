@@ -12,14 +12,14 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: var(--bg-color);
+  background-color: var(--bg-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 24px var(--shadow-color);
   z-index: 1000;
   padding: 5px 20px;
-  padding-top: 15px;
+  padding-top: 5px;
   height: auto;
 }
 
@@ -84,7 +84,7 @@ body.ios .app-header {
   position: relative;
   transform: scale(1);
   transition: transform 0.2s ease;
-  margin-top: -20px;
+  margin-top: -30px;
 }
 
 body.ios .chat-button {
@@ -112,7 +112,7 @@ body.ios .chat-button {
 
 .emergency-button {
   color: #e74c3c !important;
-  margin-top: -20px;
+  margin-top: -30px;
 }
 
 body.ios .emergency-button {
@@ -123,7 +123,7 @@ body.ios .emergency-button {
   font-size: 16px !important;
   font-weight: bold;
   color: var(--warning-color);
-  margin-top: -20px;
+  margin-top: -30px;
 }
 
 body.ios .edit-button {
@@ -184,7 +184,7 @@ body {
 .emergency-button,
 .admin-button {
   transition: transform 0.2s;
-  margin-top: -20px;
+  margin-top: -30px;
 }
 
 body.ios .admin-button {
@@ -372,7 +372,7 @@ body.ios .admin-button {
 }
 
 .header-settings-button {
-  margin-top: -20px;
+  margin-top: -30px;
 }
 
 body.ios .header-settings-button {

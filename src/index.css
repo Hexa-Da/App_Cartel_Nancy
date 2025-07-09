@@ -20,6 +20,8 @@
   --warning-color: #f39c12;
   --success-color: #2ecc71;
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --calendar-filter: none;
+  --checkbox-filter: none;
 }
 
 [data-theme="dark"] {
@@ -32,6 +34,22 @@
   --warning-color: #f39c12;
   --success-color: #2ecc71;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  --calendar-filter: invert(0);
+  --checkbox-filter: invert(0);
+}
+
+[data-theme="light"] {
+  --bg-color: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text-color: #213547;
+  --border-color: #e0e0e0;
+  --primary-color: #646cff;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+  --success-color: #2ecc71;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --calendar-filter: invert(1);
+  --checkbox-filter: invert(1);
 }
 
 * {
