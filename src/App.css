@@ -1111,6 +1111,12 @@ body.ios .location-error {
   background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(156, 39, 176, 0.12));
 }
 
+.event-date {
+  color: var(--danger-color);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
 .event-description {
   color: var(--warning-color);
   font-weight: 100;
@@ -1468,24 +1474,9 @@ body.ios .events-panel {
 }
 
 .event-date {
-  background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(231, 76, 60, 0.08));
   color: var(--danger-color);
-  padding: 0.15rem 0.3rem;
-  border-radius: 8px;
-  font-size: 0.3rem;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  min-height: 12px;
-  border: 1px solid rgba(231, 76, 60, 0.3);
-  backdrop-filter: blur(4px);
-  box-shadow: 0 1px 3px rgba(231, 76, 60, 0.15);
-  transition: all 0.3s ease;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  gap: 0.25rem;
+  font-size: 0.8rem;
 }
 
 .event-description {

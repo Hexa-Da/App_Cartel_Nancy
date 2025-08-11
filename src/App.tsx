@@ -4,7 +4,7 @@ import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { auth, database, loginWithGoogle, handleGoogleRedirect, testGoogleAuthConfiguration, testAlternativeGoogleAuth } from './firebase';
+import { auth, database, loginWithGoogle, handleGoogleRedirect } from './firebase';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
@@ -68,6 +68,7 @@ interface Restaurant extends BaseItem {
 
 interface Party extends BaseItem {
   type: 'party';
+  result?: string;
 }
 
 type Place = Venue | Hotel | Party | Restaurant;
@@ -398,6 +399,7 @@ declare global {
 
 import VSSForm from './components/VSSForm';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { App as CapacitorApp } from '@capacitor/app';
 
 function App() {
   const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
@@ -668,60 +670,66 @@ function App() {
     }
   ]);
 
-  const [parties] = useState<Party[]>([
-    {
-      id: '1',
-      name: "Place Stanislas",
-      position: [48.693524, 6.183270],
-      description: "Rendez vous 12h puis départ du Défilé à 13h",
-      address: "Pl. Stanislas, 54000 Nancy",
-      type: 'party',
-      date: '2026-04-16T12:00:00',
-      latitude: 48.693524,
-      longitude: 6.183270,
-      emoji: '🎺',
-      sport: 'Defile'
-    },
-    {
-      id: '2',
-      name: "Centre Prouvé",
-      position: [48.687858, 6.176977],
-      description: "Soirée Pompoms du 16 avril, 21h-3h",
-      address: "1 Pl. de la République, 54000 Nancy",
-      type: 'party',
-      date: '2026-04-16T21:00:00',
-      latitude: 48.687858,
-      longitude: 6.176977,
-      emoji: '🎀',
-      sport: 'Pompom'
-    },
-    {
-      id: '3',
-      name: "Parc des Expositions",
-      position: [48.663272, 6.190715],
-      description: "Soirée du 17 avril, 22h-4h",
-      address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
-      type: 'party',
-      date: '2026-04-17T22:00:00',
-      latitude: 48.663272,
-      longitude: 6.190715,
-      emoji: '🎉',
-      sport: 'Party'
-    },
-    {
-      id: '4',
-      name: "Zénith",
-      position: [48.710237, 6.139252],
-      description: "Soirée du 18 avril, 20h-4h",
-      address: "Rue du Zénith, 54320 Maxéville",
-      type: 'party',
-      date: '2026-04-18T20:00:00',
-      latitude: 48.710237,
-      longitude: 6.139252,
-      emoji: '🎉',
-      sport: 'Party'
-    }
-  ]);
+  const [parties, setParties] = useState<Party[]>(() => {
+    const savedResult = localStorage.getItem('centre-prouve-result') || 'à venir';
+    const savedDJResult = localStorage.getItem('zenith-dj-contest-result') || 'à venir';
+    return [
+      {
+        id: '1',
+        name: "Place Stanislas",
+        position: [48.693524, 6.183270],
+        description: "Rendez vous 12h puis départ du Défilé à 13h",
+        address: "Pl. Stanislas, 54000 Nancy",
+        type: 'party',
+        date: '2026-04-16T12:00:00',
+        latitude: 48.693524,
+        longitude: 6.183270,
+        emoji: '🎺',
+        sport: 'Defile'
+      },
+      {
+        id: '2',
+        name: "Centre Prouvé",
+        position: [48.687858, 6.176977],
+        description: "Soirée Pompoms du 16 avril, 21h-3h",
+        address: "1 Pl. de la République, 54000 Nancy",
+        type: 'party',
+        date: '2026-04-16T21:00:00',
+        latitude: 48.687858,
+        longitude: 6.176977,
+        emoji: '🎀',
+        sport: 'Pompom',
+        result: savedResult
+      },
+      {
+        id: '3',
+        name: "Zénith",
+        position: [48.710498, 6.137549],
+        description: "Soirée DJ contest 17 avril, 20h-4h",
+        address: "Rue du Zénith, 54320 Maxéville",
+        type: 'party',
+        date: '2026-04-18T20:00:00',
+        latitude: 48.710498,
+        longitude: 6.137549,
+        emoji: '🎧',
+        sport: 'Party',
+        result: savedDJResult
+      },
+      {
+        id: '4',
+        name: "Zénith",
+        position: [48.711077, 6.139991],
+        description: "Soirée du 17 avril, 20h-4h",
+        address: "Rue du Zénith, 54320 Maxéville",
+        type: 'party',
+        date: '2026-04-18T20:00:00',
+        latitude: 48.711077,
+        longitude: 6.139991,
+        emoji: '🏆',
+        sport: 'Party'
+      }
+    ];
+  });
 
   const [isVenuesLoading, setIsVenuesLoading] = useState(true);
 
@@ -775,6 +783,9 @@ function App() {
   const [selectedSport, setSelectedSport] = useState('Football');
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [editingMatch, setEditingMatch] = useState<{venueId: string | null, match: Match | null}>({ venueId: null, match: null });
+  const [editingPartyResult, setEditingPartyResult] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
+  const [showEditResultModal, setShowEditResultModal] = useState(false);
+  const [editingResult, setEditingResult] = useState('');
   const [newMatch, setNewMatch] = useState<{date: string, teams: string, description: string, endTime?: string, result?: string}>({
     date: '',
     teams: '',
@@ -2090,7 +2101,7 @@ function App() {
           icon: L.divIcon({
             className: 'custom-marker party-marker',
             html: `<div style="background-color: #9C27B0; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${party.sport === 'Pompom' ? '🎀' : party.sport === 'Defile' ? '🎺' : '🎉'}</span>
+                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${party.emoji || (party.sport === 'Pompom' ? '🎀' : party.sport === 'Defile' ? '🎺' : '🎉')}</span>
                    </div>`,
             iconSize: [30, 30],
             iconAnchor: [15, 15],
@@ -2104,6 +2115,8 @@ function App() {
           <p>${party.description}</p>
           <p class="venue-address">${party.address}</p>
           ${party.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
+          ${party.name === 'Centre Prouvé' ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+          ${party.name === 'Zénith' && party.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         `;
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
@@ -2121,6 +2134,20 @@ function App() {
           copyToClipboard(party.address || `${party.latitude},${party.longitude}`);
         });
         buttonsContainer.appendChild(copyButton);
+        
+        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ contest) seulement si le mode édition est activé
+        if (isAdmin && isEditing && (party.name === 'Centre Prouvé' || (party.name === 'Zénith' && party.description.includes('DJ contest')))) {
+          const editResultButton = document.createElement('button');
+          editResultButton.className = 'edit-result-button';
+          editResultButton.textContent = 'Modifier le résultat';
+          editResultButton.style.cssText = 'background-color: #FF8C00; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+          editResultButton.addEventListener('click', () => {
+            // Ouvrir le formulaire modal pour éditer le résultat
+            openEditResultModal(party.id, party.result || 'à venir');
+          });
+          popupContent.appendChild(editResultButton);
+        }
+        
         popupContent.appendChild(buttonsContainer);
         marker.bindPopup(popupContent);
         marker.on('popupopen', () => {
@@ -2290,6 +2317,55 @@ function App() {
     triggerMarkerUpdate();
   };
 
+  // Fonction pour sauvegarder le résultat de la soirée pompom
+  const savePartyResult = (partyId: string, result: string) => {
+    if (partyId === '2') { // Centre Prouvé
+      localStorage.setItem('centre-prouve-result', result);
+      // Mettre à jour l'état local
+      setParties((prevParties: Party[]) => 
+        prevParties.map((party: Party) => 
+          party.id === '2' ? { ...party, result } : party
+        )
+      );
+      triggerMarkerUpdate();
+    } else if (partyId === '3') { // Zénith DJ Contest
+      localStorage.setItem('zenith-dj-contest-result', result);
+      // Mettre à jour l'état local
+      setParties((prevParties: Party[]) => 
+        prevParties.map((party: Party) => 
+          party.id === '3' ? { ...party, result } : party
+        )
+      );
+      triggerMarkerUpdate();
+    }
+    setEditingPartyResult({ partyId: null, isEditing: false });
+  };
+
+  // Fonction pour ouvrir le modal d'édition du résultat
+  const openEditResultModal = (partyId: string, currentResult: string) => {
+    setEditingPartyResult({ partyId, isEditing: true });
+    setEditingResult(currentResult);
+    setShowEditResultModal(true);
+  };
+
+  // Fonction pour fermer le modal d'édition du résultat
+  const closeEditResultModal = () => {
+    setShowEditResultModal(false);
+    setEditingResult('');
+  };
+
+  // Fonction pour sauvegarder le résultat depuis le modal
+  const handleSaveResultFromModal = () => {
+    if (editingResult.trim() !== '') {
+      // Déterminer quelle soirée éditer selon le contexte
+      const currentPartyId = editingPartyResult.partyId;
+      if (currentPartyId) {
+        savePartyResult(currentPartyId, editingResult.trim());
+        closeEditResultModal();
+      }
+    }
+  };
+
   // Enregistrer la visite de la page au chargement
   useEffect(() => {
     // Forcer l'envoi d'un pageview après un court délai pour assurer le chargement complet
@@ -2380,9 +2456,6 @@ function App() {
               break;
             case 'Centre Prouvé':
               partyId = 'centre-prouve';
-              break;
-            case 'Parc des Expositions':
-              partyId = 'parc-expo';
               break;
             case 'Zénith':
               partyId = 'zenith';
@@ -2591,7 +2664,6 @@ function App() {
         { value: 'Tous', label: 'Tous les lieux' },
         { value: 'place-stanislas', label: 'Place Stanislas' },
         { value: 'centre-prouve', label: 'Centre Prouvé' },
-        { value: 'parc-expo', label: 'Parc des Expositions' },
         { value: 'zenith', label: 'Zénith' }
       ];
     }
@@ -2784,25 +2856,10 @@ function App() {
       try {
         console.log('=== DÉBUT PROCESSUS DE CONNEXION ADMIN ===');
         
-        // Test alternatif en premier
-        console.log('1. Test alternatif Google Auth...');
-        const alternativeTest = await testAlternativeGoogleAuth();
+        console.log('1. Tentative de connexion Google Auth...');
+        const user = await loginWithGoogle();
+        console.log('Utilisateur connecté:', user);
         
-        if (alternativeTest) {
-          console.log('✅ Test alternatif réussi, tentative de connexion complète...');
-          const user = await loginWithGoogle();
-          console.log('Utilisateur connecté:', user);
-        } else {
-          console.log('❌ Test alternatif échoué, tentative avec configuration complète...');
-          // Test de configuration Google Auth
-          console.log('2. Test de configuration Google Auth...');
-          await testGoogleAuthConfiguration();
-          
-          console.log('3. Début de la connexion Google Auth...');
-          console.log('Scopes demandés: profile, email');
-          const user = await loginWithGoogle();
-          console.log('Utilisateur connecté:', user);
-        }
       } catch (error) {
         console.error('❌ ERREUR LORS DE LA CONNEXION:', error);
         console.error('Type d\'erreur:', typeof error);
@@ -3289,7 +3346,7 @@ function App() {
                         <option value="none">Aucun</option>
                         <option value="all">Tous les événements</option>
                         <option value="match">Tous les sports</option>
-                        <option value="party">Soirées et Défilé ⭐</option>
+                        <option value="party">Soirées et Défilé 🎉</option>
                         <option value="Football">Football ⚽</option>
                         <option value="Basketball">Basketball 🏀</option>
                         <option value="Handball">Handball 🤾</option>
@@ -3394,6 +3451,16 @@ function App() {
                               <span>🎀</span>
                               <span>Pompom</span>
                             </>
+                          ) : event.name === 'Zénith' && event.description.includes('DJ contest') ? (
+                            <>
+                              <span>🎧</span>
+                              <span>DJ CONTEST</span>
+                            </>
+                          ) : event.name === 'Zénith' && event.description.includes('Soirée du 17 avril') ? (
+                            <>
+                              <span>🏆</span>
+                              <span>RÉSULTATS</span>
+                            </>
                           ) : (
                             <>
                               <span>🎉</span>
@@ -3424,7 +3491,16 @@ function App() {
                           )}
                           {event.name === 'Centre Prouvé' && (
                             <div className="party-results">
-                              <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>Résultat : à venir</h4>
+                              <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
+                                Résultat : {localStorage.getItem('centre-prouve-result') || 'à venir'}
+                              </h4>
+                            </div>
+                          )}
+                          {event.name === 'Zénith' && event.description.includes('DJ contest') && (
+                            <div className="party-results">
+                              <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
+                                Résultat : {localStorage.getItem('zenith-dj-contest-result') || 'à venir'}
+                              </h4>
                             </div>
                           )}
                         </>
@@ -3807,6 +3883,47 @@ function App() {
       {showVSSForm && (
         <VSSForm onClose={() => setShowVSSForm(false)} />
       )}
+
+              {/* Modal d'édition du résultat de la soirée pompom */}
+        {showEditResultModal && (
+          <div className="modal-form-overlay">
+            <div className="modal-form-container">
+              <div className="modal-form-header">
+                <h2>
+                  {editingPartyResult.partyId === '2' ? 'Résultat de la soirée pompom' : 
+                   editingPartyResult.partyId === '3' ? 'Résultat du DJ Contest' : 
+                   'Résultat de la soirée'}
+                </h2>
+                <button className="close-button" onClick={closeEditResultModal}>×</button>
+              </div>
+              <div className="modal-form-content">
+                <div className="modal-form-group">
+                  <label htmlFor="party-result">Résultat de la soirée pompom</label>
+                  <textarea 
+                    id="party-result" 
+                    value={editingResult} 
+                    onChange={(e) => setEditingResult(e.target.value)} 
+                    placeholder="Entrez le résultat de la soirée pompom..." 
+                    className="modal-form-input"
+                    rows={4}
+                  />
+                </div>
+                <div className="modal-form-actions">
+                  <button 
+                    className="modal-form-submit" 
+                    onClick={handleSaveResultFromModal} 
+                    disabled={!editingResult.trim()}
+                  >
+                    Sauvegarder le résultat
+                  </button>
+                  <button className="modal-form-cancel" onClick={closeEditResultModal}>
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       <Outlet />
     </div>
