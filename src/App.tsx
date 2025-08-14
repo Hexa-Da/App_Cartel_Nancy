@@ -606,79 +606,98 @@ function App() {
     return true;
   };
 
-  const [hotels] = useState<Hotel[]>([
-    {
-      id: '1',
-      name: "ibis budget Nancy Porte Sud",
-      position: [48.638751, 6.183532],
-      description: "+33 892 68 31 25",
-      address: "Za Frocourt, 6 All. de la Genelière, 54180 Houdemont",
-      type: 'hotel',
-      date: '',
-      latitude: 48.638751,
-      longitude: 6.183532,
-      emoji: '🏢',
-      sport: 'Hotel',
-      matches: []
-    },
-    {
-      id: '2',
-      name: "KYRIAD DIRECT NANCY SUD - Vandoeuvre",
-      position: [48.650667, 6.146258],
-      description: "+33 3 83 44 66 00",
-      address: "1 Av. de la Forêt de Haye, 54500 Vandœuvre-lès-Nancy",
-      type: 'hotel',
-      date: '',
-      latitude: 48.650667,
-      longitude: 6.146258,
-      emoji: '🏢',
-      sport: 'Hotel',
-      matches: []
-    },
-  ]);
+  const [hotels, setHotels] = useState<Hotel[]>(() => {
+    // Charger les descriptions modifiées depuis le localStorage
+    const savedDescription1 = localStorage.getItem('hotel-description-1') || "+33 892 68 31 25";
+    const savedDescription2 = localStorage.getItem('hotel-description-2') || "+33 3 83 44 66 00";
+    
+    return [
+      {
+        id: '1',
+        name: "ibis budget Nancy Porte Sud",
+        position: [48.638751, 6.183532],
+        description: savedDescription1,
+        address: "Za Frocourt, 6 All. de la Genelière, 54180 Houdemont",
+        type: 'hotel',
+        date: '',
+        latitude: 48.638751,
+        longitude: 6.183532,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      },
+      {
+        id: '2',
+        name: "KYRIAD DIRECT NANCY SUD - Vandoeuvre",
+        position: [48.650667, 6.146258],
+        description: savedDescription2,
+        address: "1 Av. de la Forêt de Haye, 54500 Vandœuvre-lès-Nancy",
+        type: 'hotel',
+        date: '',
+        latitude: 48.650667,
+        longitude: 6.146258,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      },
+    ];
+  });
 
-  const [restaurants] = useState<Restaurant[]>([
-    {
-      id: '1',
-      name: "Crous ARTEM",
-      position: [48.673570, 6.169268],
-      description: "Repas du soir",
-      address: "Rue Michel Dinet, 54000 Nancy",
-      type: 'restaurant',
-      date: '',
-      latitude: 48.673570,
-      longitude: 6.169268,
-      emoji: '🍽️',
-      sport: 'Restaurant',
-      mealType: 'soir',
-      matches: []
-    },
-    {
-      id: '2',
-      name: "Parc Saint-Marie",
-      position: [48.680449, 6.170722],
-      description: "Repas du midi",
-      address: "1 Av. Boffrand, 54000 Nancy",
-      type: 'restaurant',
-      date: '',
-      latitude: 48.680449,
-      longitude: 6.170722,
-      emoji: '🍽️',
-      sport: 'Restaurant',
-      mealType: 'midi',
-      matches: []
-    }
-  ]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(() => {
+    // Charger les descriptions modifiées depuis le localStorage
+    const savedDescription1 = localStorage.getItem('restaurant-description-1') || "Repas du soir";
+    const savedDescription2 = localStorage.getItem('restaurant-description-2') || "Repas du midi";
+    
+    return [
+      {
+        id: '1',
+        name: "Crous ARTEM",
+        position: [48.673570, 6.169268],
+        description: savedDescription1,
+        address: "Rue Michel Dinet, 54000 Nancy",
+        type: 'restaurant',
+        date: '',
+        latitude: 48.673570,
+        longitude: 6.169268,
+        emoji: '🍽️',
+        sport: 'Restaurant',
+        mealType: 'soir',
+        matches: []
+      },
+      {
+        id: '2',
+        name: "Parc Saint-Marie",
+        position: [48.680449, 6.170722],
+        description: savedDescription2,
+        address: "1 Av. Boffrand, 54000 Nancy",
+        type: 'restaurant',
+        date: '',
+        latitude: 48.680449,
+        longitude: 6.170722,
+        emoji: '🍽️',
+        sport: 'Restaurant',
+        mealType: 'midi',
+        matches: []
+      }
+    ];
+  });
 
   const [parties, setParties] = useState<Party[]>(() => {
     const savedResult = localStorage.getItem('centre-prouve-result') || 'à venir';
     const savedDJResult = localStorage.getItem('zenith-dj-contest-result') || 'à venir';
+    
+    // Charger les descriptions modifiées depuis le localStorage
+    const savedDescription1 = localStorage.getItem('party-description-1') || "Rendez vous 12h puis départ du Défilé à 13h";
+    const savedDescription2 = localStorage.getItem('party-description-2') || "Soirée Pompoms du 16 avril, 21h-3h";
+    const savedDescription3 = localStorage.getItem('party-description-3') || "Soirée DJ contest 17 avril, 20h-4h";
+    const savedDescription4 = localStorage.getItem('party-description-4') || "Soirée du 17 avril, 20h-4h";
+    
     return [
       {
         id: '1',
         name: "Place Stanislas",
         position: [48.693524, 6.183270],
-        description: "Rendez vous 12h puis départ du Défilé à 13h",
+        description: savedDescription1,
         address: "Pl. Stanislas, 54000 Nancy",
         type: 'party',
         date: '2026-04-16T12:00:00',
@@ -691,7 +710,7 @@ function App() {
         id: '2',
         name: "Centre Prouvé",
         position: [48.687858, 6.176977],
-        description: "Soirée Pompoms du 16 avril, 21h-3h",
+        description: savedDescription2,
         address: "1 Pl. de la République, 54000 Nancy",
         type: 'party',
         date: '2026-04-16T21:00:00',
@@ -705,7 +724,7 @@ function App() {
         id: '3',
         name: "Zénith",
         position: [48.710498, 6.137549],
-        description: "Soirée DJ contest 17 avril, 20h-4h",
+        description: savedDescription3,
         address: "Rue du Zénith, 54320 Maxéville",
         type: 'party',
         date: '2026-04-18T20:00:00',
@@ -719,7 +738,7 @@ function App() {
         id: '4',
         name: "Zénith",
         position: [48.711077, 6.139991],
-        description: "Soirée du 17 avril, 20h-4h",
+        description: savedDescription4,
         address: "Rue du Zénith, 54320 Maxéville",
         type: 'party',
         date: '2026-04-18T20:00:00',
@@ -786,6 +805,15 @@ function App() {
   const [editingPartyResult, setEditingPartyResult] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
   const [showEditResultModal, setShowEditResultModal] = useState(false);
   const [editingResult, setEditingResult] = useState('');
+  const [editingPartyDescription, setEditingPartyDescription] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
+  const [showEditDescriptionModal, setShowEditDescriptionModal] = useState(false);
+  const [editingDescription, setEditingDescription] = useState('');
+  const [editingHotelDescription, setEditingHotelDescription] = useState<{hotelId: string | null, isEditing: boolean}>({ hotelId: null, isEditing: false });
+  const [showEditHotelDescriptionModal, setShowEditHotelDescriptionModal] = useState(false);
+  const [editingHotelDescriptionText, setEditingHotelDescriptionText] = useState('');
+  const [editingRestaurantDescription, setEditingRestaurantDescription] = useState<{restaurantId: string | null, isEditing: boolean}>({ restaurantId: null, isEditing: false });
+  const [showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal] = useState(false);
+  const [editingRestaurantDescriptionText, setEditingRestaurantDescriptionText] = useState('');
   const [newMatch, setNewMatch] = useState<{date: string, teams: string, description: string, endTime?: string, result?: string}>({
     date: '',
     teams: '',
@@ -1648,15 +1676,21 @@ function App() {
 
     // Ajouter les soirées
     parties.forEach(party => {
+      // Calculer l'heure de fin par défaut (6h après le début)
+      const startDate = new Date(party.date);
+      const endDate = new Date(startDate);
+      endDate.setHours(startDate.getHours() + 6);
+      
       events.push({
         id: `party-${party.id || party.name}`,
         name: party.name,
         date: party.date,
+        endTime: endDate.toISOString(), // Ajouter l'heure de fin calculée
         description: party.description,
         address: party.address || `${party.latitude}, ${party.longitude}`,
         location: [party.latitude, party.longitude],
         type: 'party',
-        isPassed: isMatchPassed(party.date, undefined, 'party'),
+        isPassed: isMatchPassed(party.date, endDate.toISOString(), 'party'),
         sport: party.sport
       });
     });
@@ -1909,9 +1943,43 @@ function App() {
           matchesScrollContainer.style.overflowY = 'auto';
           const style = document.createElement('style');
           style.textContent = `
-            .match-passed { background-color:rgba(255, 255, 255, 0.01); }
-            .match-passed p { opacity: 0.2; color: var(--text-color); }
-            .match-passed .match-result { opacity: 0.2; font-weight: bold; color: var(--text-color); }
+            .match-passed { 
+              background-color: rgba(255, 255, 255, 0.05); 
+              opacity: 0.7;
+            }
+            .match-passed p { 
+              opacity: 0.7; 
+              color: var(--text-color); 
+            }
+            .match-passed .match-result { 
+              opacity: 0.7; 
+              font-weight: bold; 
+              color: var(--text-color); 
+            }
+            .match-passed .match-date { 
+              opacity: 0.7; 
+              color: var(--danger-color) !important; 
+            }
+            .match-passed .match-teams { 
+              opacity: 0.7; 
+              color: var(--text-color) !important; 
+            }
+            .match-passed .match-description { 
+              opacity: 0.7; 
+              color: var(--warning-color) !important; 
+            }
+            .match-passed .match-result { 
+              opacity: 0.7; 
+              color: var(--success-color) !important; 
+            }
+           
+            
+            /* Styles pour les couleurs des matchs dans les popups Leaflet */
+            .leaflet-popup .match-date { color: var(--danger-color) !important; }
+            .leaflet-popup .match-teams { color: var(--text-color) !important; }
+            .leaflet-popup .match-description { color: var(--warning-color) !important; }
+            .leaflet-popup .match-result { color: var(--success-color) !important; }
+            .leaflet-popup .match-item { border-left: none !important; }
           `;
           document.head.appendChild(style);
           sortedMatches.forEach(match => {
@@ -2028,6 +2096,20 @@ function App() {
             copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
           });
           buttonsContainer.appendChild(copyButton);
+          
+          // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
+          if (isAdmin && isEditing) {
+            const editDescriptionButton = document.createElement('button');
+            editDescriptionButton.className = 'edit-description-button';
+            editDescriptionButton.textContent = 'Modifier la description';
+            editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+            editDescriptionButton.addEventListener('click', () => {
+              // Ouvrir le formulaire modal pour éditer la description
+              openEditHotelDescriptionModal(hotel.id, hotel.description || '');
+            });
+            popupContent.appendChild(editDescriptionButton);
+          }
+          
           popupContent.appendChild(buttonsContainer);
           marker.bindPopup(popupContent);
           marker.on('popupopen', () => {
@@ -2078,6 +2160,20 @@ function App() {
             copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
           });
           buttonsContainer.appendChild(copyButton);
+          
+          // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
+          if (isAdmin && isEditing) {
+            const editDescriptionButton = document.createElement('button');
+            editDescriptionButton.className = 'edit-description-button';
+            editDescriptionButton.textContent = 'Modifier la description';
+            editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+            editDescriptionButton.addEventListener('click', () => {
+              // Ouvrir le formulaire modal pour éditer la description
+              openEditRestaurantDescriptionModal(restaurant.id, restaurant.description || '');
+            });
+            popupContent.appendChild(editDescriptionButton);
+          }
+          
           popupContent.appendChild(buttonsContainer);
           marker.bindPopup(popupContent);
           marker.on('popupopen', () => {
@@ -2146,6 +2242,19 @@ function App() {
             openEditResultModal(party.id, party.result || 'à venir');
           });
           popupContent.appendChild(editResultButton);
+        }
+        
+        // Ajouter le bouton d'édition de la description pour les admins (tous les événements party) seulement si le mode édition est activé
+        if (isAdmin && isEditing) {
+          const editDescriptionButton = document.createElement('button');
+          editDescriptionButton.className = 'edit-description-button';
+          editDescriptionButton.textContent = 'Modifier la description';
+          editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+          editDescriptionButton.addEventListener('click', () => {
+            // Ouvrir le formulaire modal pour éditer la description
+            openEditDescriptionModal(party.id, party.description || '');
+          });
+          popupContent.appendChild(editDescriptionButton);
         }
         
         popupContent.appendChild(buttonsContainer);
@@ -2341,6 +2450,54 @@ function App() {
     setEditingPartyResult({ partyId: null, isEditing: false });
   };
 
+  // Fonction pour sauvegarder la description de la soirée
+  const savePartyDescription = (partyId: string, description: string) => {
+    // Sauvegarder dans localStorage avec une clé unique
+    localStorage.setItem(`party-description-${partyId}`, description);
+    
+    // Mettre à jour l'état local
+    setParties((prevParties: Party[]) => 
+      prevParties.map((party: Party) => 
+        party.id === partyId ? { ...party, description } : party
+      )
+    );
+    
+    triggerMarkerUpdate();
+    setEditingPartyDescription({ partyId: null, isEditing: false });
+  };
+
+  // Fonction pour sauvegarder la description de l'hôtel
+  const saveHotelDescription = (hotelId: string, description: string) => {
+    // Sauvegarder dans localStorage avec une clé unique
+    localStorage.setItem(`hotel-description-${hotelId}`, description);
+    
+    // Mettre à jour l'état local
+    setHotels((prevHotels: Hotel[]) => 
+      prevHotels.map((hotel: Hotel) => 
+        hotel.id === hotelId ? { ...hotel, description } : hotel
+      )
+    );
+    
+    triggerMarkerUpdate();
+    setEditingHotelDescription({ hotelId: null, isEditing: false });
+  };
+
+  // Fonction pour sauvegarder la description du restaurant
+  const saveRestaurantDescription = (restaurantId: string, description: string) => {
+    // Sauvegarder dans localStorage avec une clé unique
+    localStorage.setItem(`restaurant-description-${restaurantId}`, description);
+    
+    // Mettre à jour l'état local
+    setRestaurants((prevRestaurants: Restaurant[]) => 
+      prevRestaurants.map((restaurant: Restaurant) => 
+        restaurant.id === restaurantId ? { ...restaurant, description } : restaurant
+      )
+    );
+    
+    triggerMarkerUpdate();
+    setEditingRestaurantDescription({ restaurantId: null, isEditing: false });
+  };
+
   // Fonction pour ouvrir le modal d'édition du résultat
   const openEditResultModal = (partyId: string, currentResult: string) => {
     setEditingPartyResult({ partyId, isEditing: true });
@@ -2362,6 +2519,79 @@ function App() {
       if (currentPartyId) {
         savePartyResult(currentPartyId, editingResult.trim());
         closeEditResultModal();
+      }
+    }
+  };
+
+  // Fonction pour ouvrir le modal d'édition de la description
+  const openEditDescriptionModal = (partyId: string, currentDescription: string) => {
+    setEditingPartyDescription({ partyId, isEditing: true });
+    setEditingDescription(currentDescription);
+    setShowEditDescriptionModal(true);
+  };
+
+  // Fonction pour fermer le modal d'édition de la description
+  const closeEditDescriptionModal = () => {
+    setShowEditDescriptionModal(false);
+    setEditingDescription('');
+  };
+
+  // Fonction pour sauvegarder la description depuis le modal
+  const handleSaveDescriptionFromModal = () => {
+    if (editingDescription.trim() !== '') {
+      // Déterminer quelle soirée éditer selon le contexte
+      const currentPartyId = editingPartyDescription.partyId;
+      if (currentPartyId) {
+        savePartyDescription(currentPartyId, editingDescription.trim());
+        closeEditDescriptionModal();
+      }
+    }
+  };
+
+  // Fonction pour ouvrir le modal d'édition de la description de l'hôtel
+  const openEditHotelDescriptionModal = (hotelId: string, currentDescription: string) => {
+    setEditingHotelDescription({ hotelId, isEditing: true });
+    setEditingHotelDescriptionText(currentDescription);
+    setShowEditHotelDescriptionModal(true);
+  };
+
+  // Fonction pour fermer le modal d'édition de la description de l'hôtel
+  const closeEditHotelDescriptionModal = () => {
+    setShowEditHotelDescriptionModal(false);
+    setEditingHotelDescriptionText('');
+  };
+
+  // Fonction pour sauvegarder la description de l'hôtel depuis le modal
+  const handleSaveHotelDescriptionFromModal = () => {
+    if (editingHotelDescriptionText.trim() !== '') {
+      const currentHotelId = editingHotelDescription.hotelId;
+      if (currentHotelId) {
+        saveHotelDescription(currentHotelId, editingHotelDescriptionText.trim());
+        closeEditHotelDescriptionModal();
+      }
+    }
+  };
+
+  // Fonction pour ouvrir le modal d'édition de la description du restaurant
+  const openEditRestaurantDescriptionModal = (restaurantId: string, currentDescription: string) => {
+    setEditingRestaurantDescription({ restaurantId, isEditing: true });
+    setEditingRestaurantDescriptionText(currentDescription);
+    setShowEditRestaurantDescriptionModal(true);
+  };
+
+  // Fonction pour fermer le modal d'édition de la description du restaurant
+  const closeEditRestaurantDescriptionModal = () => {
+    setShowEditRestaurantDescriptionModal(false);
+    setEditingRestaurantDescriptionText('');
+  };
+
+  // Fonction pour sauvegarder la description du restaurant depuis le modal
+  const handleSaveRestaurantDescriptionFromModal = () => {
+    if (editingRestaurantDescriptionText.trim() !== '') {
+      const currentRestaurantId = editingRestaurantDescription.restaurantId;
+      if (currentRestaurantId) {
+        saveRestaurantDescription(currentRestaurantId, editingRestaurantDescriptionText.trim());
+        closeEditRestaurantDescriptionModal();
       }
     }
   };
@@ -3142,6 +3372,7 @@ function App() {
           />
           <LocationMarker />
           <MapEvents onMapClick={handleMapClick} />
+          {/* Pinne temporaire supprimée pour éviter l'affichage de la pinne orange
           {tempMarker && (
             <Marker
               position={tempMarker}
@@ -3150,6 +3381,7 @@ function App() {
               <Popup>Nouveau lieu</Popup>
             </Marker>
           )}
+          */}
               <div className="leaflet-control-container">
                 <div className="leaflet-top leaflet-right">
                   <div className="leaflet-control-zoom leaflet-bar leaflet-control">
@@ -3468,7 +3700,7 @@ function App() {
                             </>
                           )}
                         </span>
-                        <span className="event-date">{formatDateTime(event.date)}</span>
+                        <span className="event-date">{formatDateTime(event.date, event.endTime)}</span>
                       </div>
                       <div className="event-title-container">
                         <h3 className="event-name">{event.name}</h3>
@@ -3890,7 +4122,7 @@ function App() {
             <div className="modal-form-container">
               <div className="modal-form-header">
                 <h2>
-                  {editingPartyResult.partyId === '2' ? 'Résultat de la soirée pompom' : 
+                  {editingPartyResult.partyId === '2' ? 'Résultat du show pompom' : 
                    editingPartyResult.partyId === '3' ? 'Résultat du DJ Contest' : 
                    'Résultat de la soirée'}
                 </h2>
@@ -3917,6 +4149,121 @@ function App() {
                     Sauvegarder le résultat
                   </button>
                   <button className="modal-form-cancel" onClick={closeEditResultModal}>
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal d'édition de la description de la soirée */}
+        {showEditDescriptionModal && (
+          <div className="modal-form-overlay">
+            <div className="modal-form-container">
+              <div className="modal-form-header">
+                <h2>
+                  {editingPartyDescription.partyId === '2' ? 'Description du show pompom' : 
+                   editingPartyDescription.partyId === '3' ? 'Description du DJ Contest' : 
+                   'Description de la soirée'}
+                </h2>
+                <button className="close-button" onClick={closeEditDescriptionModal}>×</button>
+              </div>
+              <div className="modal-form-content">
+                <div className="modal-form-group">
+                  <label htmlFor="party-description">Description de la soirée</label>
+                  <textarea 
+                    id="party-description" 
+                    value={editingDescription} 
+                    onChange={(e) => setEditingDescription(e.target.value)} 
+                    placeholder="Entrez la description de la soirée..." 
+                    className="modal-form-input"
+                    rows={4}
+                  />
+                </div>
+                <div className="modal-form-actions">
+                  <button 
+                    className="modal-form-submit" 
+                    onClick={handleSaveDescriptionFromModal} 
+                    disabled={!editingDescription.trim()}
+                  >
+                    Sauvegarder la description
+                  </button>
+                  <button className="modal-form-cancel" onClick={closeEditDescriptionModal}>
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal d'édition de la description de l'hôtel */}
+        {showEditHotelDescriptionModal && (
+          <div className="modal-form-overlay">
+            <div className="modal-form-container">
+              <div className="modal-form-header">
+                <h2>Description de l'hôtel</h2>
+                <button className="close-button" onClick={closeEditHotelDescriptionModal}>×</button>
+              </div>
+              <div className="modal-form-content">
+                <div className="modal-form-group">
+                  <label htmlFor="hotel-description">Description de l'hôtel</label>
+                  <textarea 
+                    id="hotel-description" 
+                    value={editingHotelDescriptionText} 
+                    onChange={(e) => setEditingHotelDescriptionText(e.target.value)} 
+                    placeholder="Entrez la description de l'hôtel..." 
+                    className="modal-form-input"
+                    rows={4}
+                  />
+                </div>
+                <div className="modal-form-actions">
+                  <button 
+                    className="modal-form-submit" 
+                    onClick={handleSaveHotelDescriptionFromModal} 
+                    disabled={!editingHotelDescriptionText.trim()}
+                  >
+                    Sauvegarder la description
+                  </button>
+                  <button className="modal-form-cancel" onClick={closeEditHotelDescriptionModal}>
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal d'édition de la description du restaurant */}
+        {showEditRestaurantDescriptionModal && (
+          <div className="modal-form-overlay">
+            <div className="modal-form-container">
+              <div className="modal-form-header">
+                <h2>Description du restaurant</h2>
+                <button className="close-button" onClick={closeEditRestaurantDescriptionModal}>×</button>
+              </div>
+              <div className="modal-form-content">
+                <div className="modal-form-group">
+                  <label htmlFor="restaurant-description">Description du restaurant</label>
+                  <textarea 
+                    id="restaurant-description" 
+                    value={editingRestaurantDescriptionText} 
+                    onChange={(e) => setEditingRestaurantDescriptionText(e.target.value)} 
+                    placeholder="Entrez la description du restaurant..." 
+                    className="modal-form-input"
+                    rows={4}
+                  />
+                </div>
+                <div className="modal-form-actions">
+                  <button 
+                    className="modal-form-submit" 
+                    onClick={handleSaveRestaurantDescriptionFromModal} 
+                    disabled={!editingRestaurantDescriptionText.trim()}
+                  >
+                    Sauvegarder la description
+                  </button>
+                  <button className="modal-form-cancel" onClick={closeEditRestaurantDescriptionModal}>
                     Annuler
                   </button>
                 </div>

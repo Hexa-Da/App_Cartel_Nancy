@@ -261,6 +261,15 @@ const Home: React.FC = () => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', hour: '2-digit', minute: '2-digit' };
     const formattedDate = date.toLocaleDateString('fr-FR', options);
+    
+    // Si on a une heure de fin, l'ajouter
+    if (endTimeString) {
+      const endDate = new Date(endTimeString);
+      const endOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
+      const formattedEndTime = endDate.toLocaleTimeString('fr-FR', endOptions);
+      return `${formattedDate} - ${formattedEndTime}`;
+    }
+    
     return formattedDate;
   };
 

@@ -65,8 +65,8 @@
 }
 
 .home-event-item {
-  width: 280px;
-  flex: 0 0 280px;
+  width: 320px;
+  flex: 0 0 320px;
 }
 
 .event-item:hover {
@@ -81,6 +81,7 @@
 .event-item.match-passed {
   background-color: rgba(255, 255, 255, 0.05);
   opacity: 0.6;
+  border-left: none;
 }
 
 .event-item.match-passed .event-name,
@@ -242,8 +243,8 @@
   }
 
   .home-event-item {
-    width: 220px;
-    flex: 0 0 220px;
+    width: 260px;
+    flex: 0 0 260px;
   }
 
   .event-header {
@@ -297,8 +298,8 @@
   }
 
   .home-event-item {
-    width: 200px;
-    flex: 0 0 200px;
+    width: 240px;
+    flex: 0 0 240px;
   }
 
   .event-type-badge {
@@ -521,8 +522,8 @@
   }
   
   .home-event-item {
-    width: 300px;
-    flex: 0 0 300px;
+    width: 340px;
+    flex: 0 0 340px;
   }
   
   .event-name {
@@ -570,8 +571,8 @@
   }
   
   .home-event-item {
-    width: 320px;
-    flex: 0 0 320px;
+    width: 360px;
+    flex: 0 0 360px;
   }
   
   .event-name {
@@ -594,8 +595,8 @@
   }
   
   .home-event-item {
-    width: 350px;
-    flex: 0 0 350px;
+    width: 380px;
+    flex: 0 0 380px;
   }
 }
 
