@@ -1067,6 +1067,77 @@ function App() {
     return sportIcons[sport] || '🏆';
   };
 
+  // Charger les descriptions et résultats depuis Firebase au démarrage
+  useEffect(() => {
+    let unsubscribeFunctions: (() => void)[] = [];
+    
+    // Charger les résultats des soirées
+    const unsubscribePartyResults = loadFromFirebase('editableData/partyResults', (data) => {
+      if (data) {
+        // Mettre à jour les résultats des soirées
+        if (data['centre-prouve'] && data['centre-prouve'].result) {
+          localStorage.setItem('centre-prouve-result', data['centre-prouve'].result);
+        }
+        if (data['zenith-dj-contest'] && data['zenith-dj-contest'].result) {
+          localStorage.setItem('zenith-dj-contest-result', data['zenith-dj-contest'].result);
+        }
+      }
+    });
+
+    // Charger les descriptions des hôtels
+    const unsubscribeHotelDescriptions = loadFromFirebase('editableData/hotelDescriptions', (data) => {
+      if (data) {
+        Object.entries(data).forEach(([hotelId, hotelData]: [string, any]) => {
+          if (hotelData.description) {
+            localStorage.setItem(`hotel-description-${hotelId}`, hotelData.description);
+          }
+        });
+      }
+    });
+
+    // Charger les descriptions des restaurants
+    const unsubscribeRestaurantDescriptions = loadFromFirebase('editableData/restaurantDescriptions', (data) => {
+      if (data) {
+        Object.entries(data).forEach(([restaurantId, restaurantData]: [string, any]) => {
+          if (restaurantData.description) {
+            localStorage.setItem(`restaurant-description-${restaurantId}`, restaurantData.description);
+          }
+        });
+      }
+    });
+
+    // Charger les descriptions des soirées
+    const unsubscribePartyDescriptions = loadFromFirebase('editableData/partyDescriptions', (data) => {
+      if (data) {
+        Object.entries(data).forEach(([partyId, partyData]: [string, any]) => {
+          if (partyData.description) {
+            localStorage.setItem(`party-description-${partyId}`, partyData.description);
+          }
+        });
+      }
+    });
+
+    // Ajouter seulement les fonctions unsubscribe valides
+    if (unsubscribePartyResults) unsubscribeFunctions.push(unsubscribePartyResults);
+    if (unsubscribeHotelDescriptions) unsubscribeFunctions.push(unsubscribeHotelDescriptions);
+    if (unsubscribeRestaurantDescriptions) unsubscribeFunctions.push(unsubscribeRestaurantDescriptions);
+    if (unsubscribePartyDescriptions) unsubscribeFunctions.push(unsubscribePartyDescriptions);
+
+    // Cleanup function
+    return () => {
+      unsubscribeFunctions.forEach(unsubscribe => {
+        if (unsubscribe) unsubscribe();
+      });
+    };
+  }, []);
+
+  // Initialiser la branche Firebase editableData au démarrage
+  useEffect(() => {
+    if (isAdmin) {
+      initializeEditableDataBranch();
+    }
+  }, [isAdmin]);
+
   // Fonction pour ajouter une action à l'historique
   const addToHistory = (action: HistoryAction) => {
     // Supprimer les actions futures (si on est revenu en arrière)
@@ -2430,6 +2501,8 @@ function App() {
   const savePartyResult = (partyId: string, result: string) => {
     if (partyId === '2') { // Centre Prouvé
       localStorage.setItem('centre-prouve-result', result);
+      // Sauvegarder dans Firebase
+      saveToFirebase('editableData/partyResults/centre-prouve', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
         prevParties.map((party: Party) => 
@@ -2439,6 +2512,8 @@ function App() {
       triggerMarkerUpdate();
     } else if (partyId === '3') { // Zénith DJ Contest
       localStorage.setItem('zenith-dj-contest-result', result);
+      // Sauvegarder dans Firebase
+      saveToFirebase('editableData/partyResults/zenith-dj-contest', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
         prevParties.map((party: Party) => 
@@ -2454,6 +2529,9 @@ function App() {
   const savePartyDescription = (partyId: string, description: string) => {
     // Sauvegarder dans localStorage avec une clé unique
     localStorage.setItem(`party-description-${partyId}`, description);
+    
+    // Sauvegarder dans Firebase
+    saveToFirebase(`editableData/partyDescriptions/${partyId}`, { description, updatedAt: new Date().toISOString() });
     
     // Mettre à jour l'état local
     setParties((prevParties: Party[]) => 
@@ -2471,6 +2549,9 @@ function App() {
     // Sauvegarder dans localStorage avec une clé unique
     localStorage.setItem(`hotel-description-${hotelId}`, description);
     
+    // Sauvegarder dans Firebase
+    saveToFirebase(`editableData/hotelDescriptions/${hotelId}`, { description, updatedAt: new Date().toISOString() });
+    
     // Mettre à jour l'état local
     setHotels((prevHotels: Hotel[]) => 
       prevHotels.map((hotel: Hotel) => 
@@ -2487,6 +2568,9 @@ function App() {
     // Sauvegarder dans localStorage avec une clé unique
     localStorage.setItem(`restaurant-description-${restaurantId}`, description);
     
+    // Sauvegarder dans Firebase
+    saveToFirebase(`editableData/restaurantDescriptions/${restaurantId}`, { description, updatedAt: new Date().toISOString() });
+    
     // Mettre à jour l'état local
     setRestaurants((prevRestaurants: Restaurant[]) => 
       prevRestaurants.map((restaurant: Restaurant) => 
@@ -2494,7 +2578,6 @@ function App() {
       )
     );
     
-    triggerMarkerUpdate();
     setEditingRestaurantDescription({ restaurantId: null, isEditing: false });
   };
 
@@ -2593,6 +2676,143 @@ function App() {
         saveRestaurantDescription(currentRestaurantId, editingRestaurantDescriptionText.trim());
         closeEditRestaurantDescriptionModal();
       }
+    }
+  };
+
+  // Fonction pour sauvegarder les descriptions et résultats dans Firebase
+  const saveToFirebase = async (path: string, data: any) => {
+    try {
+      const dbRef = ref(database, path);
+      await set(dbRef, data);
+    } catch (error) {
+      // Les données sont déjà sauvegardées localement
+    }
+  };
+
+  // Fonction pour charger les descriptions et résultats depuis Firebase
+  const loadFromFirebase = (path: string, callback: (data: any) => void) => {
+    try {
+      const dbRef = ref(database, path);
+      const unsubscribe = onValue(dbRef, (snapshot) => {
+        const data = snapshot.val();
+        callback(data);
+      });
+      return unsubscribe;
+    } catch (error) {
+      callback(null);
+    }
+  };
+
+  // Fonction pour mettre à jour l'état local avec les données Firebase
+  const updateLocalStateFromFirebase = () => {
+    // Mettre à jour les résultats des soirées
+    const centreProuveResult = localStorage.getItem('centre-prouve-result') || 'à venir';
+    const zenithDJResult = localStorage.getItem('zenith-dj-contest-result') || 'à venir';
+    
+    setParties((prevParties: Party[]) => 
+      prevParties.map((party: Party) => {
+        if (party.id === '2') {
+          return { ...party, result: centreProuveResult };
+        } else if (party.id === '3') {
+          return { ...party, result: zenithDJResult };
+        }
+        return party;
+      })
+    );
+
+    // Mettre à jour les descriptions des hôtels dynamiquement
+    setHotels((prevHotels: Hotel[]) => 
+      prevHotels.map((hotel: Hotel) => {
+        const savedDescription = localStorage.getItem(`hotel-description-${hotel.id}`);
+        if (savedDescription) {
+          return { ...hotel, description: savedDescription };
+        }
+        return hotel;
+      })
+    );
+
+    // Mettre à jour les descriptions des restaurants dynamiquement
+    setRestaurants((prevRestaurants: Restaurant[]) => 
+      prevRestaurants.map((restaurant: Restaurant) => {
+        const savedDescription = localStorage.getItem(`restaurant-description-${restaurant.id}`);
+        if (savedDescription) {
+          return { ...restaurant, description: savedDescription };
+        }
+        return restaurant;
+      })
+    );
+  };
+
+  // Fonction pour initialiser la branche editableData sur Firebase
+  const initializeEditableDataBranch = async () => {
+    try {
+      const editableDataRef = ref(database, 'editableData');
+      
+      // Générer dynamiquement la structure pour inclure tous les hôtels et restaurants
+      const generateHotelDescriptions = () => {
+        const hotelDescriptions: any = {};
+        hotels.forEach((hotel) => {
+          hotelDescriptions[hotel.id] = {
+            description: localStorage.getItem(`hotel-description-${hotel.id}`) || hotel.description,
+            updatedAt: new Date().toISOString()
+          };
+        });
+        return hotelDescriptions;
+      };
+
+      const generateRestaurantDescriptions = () => {
+        const restaurantDescriptions: any = {};
+        restaurants.forEach((restaurant) => {
+          restaurantDescriptions[restaurant.id] = {
+            description: localStorage.getItem(`restaurant-description-${restaurant.id}`) || restaurant.description,
+            updatedAt: new Date().toISOString()
+          };
+        });
+        return restaurantDescriptions;
+      };
+
+      // Structure complète avec toutes les données existantes
+      const initialStructure = {
+        partyResults: {
+          'centre-prouve': {
+            result: localStorage.getItem('centre-prouve-result') || 'à venir',
+            updatedAt: new Date().toISOString()
+          },
+          'zenith-dj-contest': {
+            result: localStorage.getItem('zenith-dj-contest-result') || 'à venir',
+            updatedAt: new Date().toISOString()
+          }
+        },
+        hotelDescriptions: generateHotelDescriptions(),
+        restaurantDescriptions: generateRestaurantDescriptions(),
+        partyDescriptions: {
+          '1': {
+            description: localStorage.getItem('party-description-1') || 'Rendez vous 12h puis départ du Défilé à 13h',
+            updatedAt: new Date().toISOString()
+          },
+          '2': {
+            description: localStorage.getItem('party-description-2') || 'Soirée Pompoms du 16 avril, 21h-3h',
+            updatedAt: new Date().toISOString()
+          },
+          '3': {
+            description: localStorage.getItem('party-description-3') || 'Soirée DJ contest 17 avril, 20h-4h',
+            updatedAt: new Date().toISOString()
+          },
+          '4': {
+            description: localStorage.getItem('party-description-4') || 'Soirée du 17 avril, 20h-4h',
+            updatedAt: new Date().toISOString()
+          }
+        }
+      };
+
+      // Écrire directement dans la branche editableData
+      await set(editableDataRef, initialStructure);
+      
+      // Mettre à jour l'état local avec les données Firebase
+      updateLocalStateFromFirebase();
+      
+    } catch (error) {
+      // Les données restent sauvegardées localement
     }
   };
 
