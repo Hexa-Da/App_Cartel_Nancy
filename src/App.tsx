@@ -19,6 +19,7 @@ import NotificationService from './services/NotificationService';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { Browser } from '@capacitor/browser';
 import EmergencyPopup from './components/EmergencyPopup';
 import './components/ModalForm.css';
 
@@ -1070,6 +1071,15 @@ function App() {
   // Charger les descriptions et résultats depuis Firebase au démarrage
   useEffect(() => {
     let unsubscribeFunctions: (() => void)[] = [];
+    let dataLoaded = false;
+    
+    // Fonction pour vérifier si toutes les données sont chargées et mettre à jour l'état
+    const checkAllDataLoaded = () => {
+      if (dataLoaded) {
+        // Mettre à jour l'état local avec les données Firebase
+        updateLocalStateFromFirebase();
+      }
+    };
     
     // Charger les résultats des soirées
     const unsubscribePartyResults = loadFromFirebase('editableData/partyResults', (data) => {
@@ -1081,6 +1091,8 @@ function App() {
         if (data['zenith-dj-contest'] && data['zenith-dj-contest'].result) {
           localStorage.setItem('zenith-dj-contest-result', data['zenith-dj-contest'].result);
         }
+        dataLoaded = true;
+        checkAllDataLoaded();
       }
     });
 
@@ -1092,6 +1104,8 @@ function App() {
             localStorage.setItem(`hotel-description-${hotelId}`, hotelData.description);
           }
         });
+        dataLoaded = true;
+        checkAllDataLoaded();
       }
     });
 
@@ -1103,6 +1117,8 @@ function App() {
             localStorage.setItem(`restaurant-description-${restaurantId}`, restaurantData.description);
           }
         });
+        dataLoaded = true;
+        checkAllDataLoaded();
       }
     });
 
@@ -1114,6 +1130,8 @@ function App() {
             localStorage.setItem(`party-description-${partyId}`, partyData.description);
           }
         });
+        dataLoaded = true;
+        checkAllDataLoaded();
       }
     });
 
@@ -1137,6 +1155,12 @@ function App() {
       initializeEditableDataBranch();
     }
   }, [isAdmin]);
+
+  // Mettre à jour l'état local au démarrage avec les données du localStorage
+  useEffect(() => {
+    // Mettre à jour l'état local avec les données existantes
+    updateLocalStateFromFirebase();
+  }, []);
 
   // Fonction pour ajouter une action à l'historique
   const addToHistory = (action: HistoryAction) => {
@@ -1846,9 +1870,22 @@ function App() {
   };
 
   // Fonction pour ouvrir dans Google Maps
-  const openInGoogleMaps = (place: Place) => {
+  const openInGoogleMaps = async (place: Place) => {
     const url = `https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}`;
-    window.open(url, '_blank');
+    
+    if (Capacitor.isNativePlatform()) {
+      // Sur mobile natif, utiliser le plugin Capacitor Browser
+      try {
+        await Browser.open({ url });
+      } catch (error) {
+        console.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
+        // Fallback vers window.open si le plugin échoue
+        window.open(url, '_blank');
+      }
+    } else {
+      // Sur web, utiliser window.open
+      window.open(url, '_blank');
+    }
   };
 
   // Fonction pour gérer l'ouverture des popups
@@ -1989,8 +2026,8 @@ function App() {
         const mapsButton = document.createElement('button');
         mapsButton.className = 'maps-button';
         mapsButton.textContent = 'Ouvrir dans Google Maps';
-        mapsButton.addEventListener('click', () => {
-          openInGoogleMaps(venue);
+        mapsButton.addEventListener('click', async () => {
+          await openInGoogleMaps(venue);
         });
         buttonsContainer.appendChild(mapsButton);
         const copyButton = document.createElement('button');
@@ -2156,8 +2193,8 @@ function App() {
           const mapsButton = document.createElement('button');
           mapsButton.className = 'maps-button';
           mapsButton.textContent = 'Ouvrir dans Google Maps';
-          mapsButton.addEventListener('click', () => {
-            openInGoogleMaps(hotel);
+          mapsButton.addEventListener('click', async () => {
+            await openInGoogleMaps(hotel);
           });
           buttonsContainer.appendChild(mapsButton);
           const copyButton = document.createElement('button');
@@ -2220,8 +2257,8 @@ function App() {
           const mapsButton = document.createElement('button');
           mapsButton.className = 'maps-button';
           mapsButton.textContent = 'Ouvrir dans Google Maps';
-          mapsButton.addEventListener('click', () => {
-            openInGoogleMaps(restaurant);
+          mapsButton.addEventListener('click', async () => {
+            await openInGoogleMaps(restaurant);
           });
           buttonsContainer.appendChild(mapsButton);
           const copyButton = document.createElement('button');
@@ -2290,8 +2327,8 @@ function App() {
         const mapsButton = document.createElement('button');
         mapsButton.className = 'maps-button';
         mapsButton.textContent = 'Ouvrir dans Google Maps';
-        mapsButton.addEventListener('click', () => {
-          openInGoogleMaps(party);
+        mapsButton.addEventListener('click', async () => {
+          await openInGoogleMaps(party);
         });
         buttonsContainer.appendChild(mapsButton);
         const copyButton = document.createElement('button');
@@ -2387,8 +2424,8 @@ function App() {
             const mapsButton = document.createElement('button');
             mapsButton.className = 'maps-button';
             mapsButton.textContent = 'Ouvrir dans Google Maps';
-            mapsButton.addEventListener('click', () => {
-              openInGoogleMaps(hotel);
+            mapsButton.addEventListener('click', async () => {
+              await openInGoogleMaps(hotel);
             });
             buttonsContainer.appendChild(mapsButton);
             const copyButton = document.createElement('button');
@@ -2437,8 +2474,8 @@ function App() {
             const mapsButton = document.createElement('button');
             mapsButton.className = 'maps-button';
             mapsButton.textContent = 'Ouvrir dans Google Maps';
-            mapsButton.addEventListener('click', () => {
-              openInGoogleMaps(restaurant);
+            mapsButton.addEventListener('click', async () => {
+              await openInGoogleMaps(restaurant);
             });
             buttonsContainer.appendChild(mapsButton);
             const copyButton = document.createElement('button');
@@ -2741,6 +2778,9 @@ function App() {
         return restaurant;
       })
     );
+
+    // Déclencher la mise à jour des marqueurs pour refléter les changements
+    triggerMarkerUpdate();
   };
 
   // Fonction pour initialiser la branche editableData sur Firebase
