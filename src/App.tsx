@@ -1810,9 +1810,6 @@ function App() {
             case 'Centre Prouvé':
               partyId = 'centre-prouve';
               break;
-            case 'Parc des Expositions':
-              partyId = 'parc-expo';
-              break;
             case 'Zénith':
               partyId = 'zenith';
               break;
@@ -1885,7 +1882,13 @@ function App() {
         if (matchesScrollContainer) {
           const firstNonPassedMatch = matchesScrollContainer.querySelector('.match-item:not(.match-passed)');
           if (firstNonPassedMatch) {
-            firstNonPassedMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Calculer la position avec un offset pour laisser de l'espace en haut
+            const containerRect = matchesScrollContainer.getBoundingClientRect();
+            const elementRect = firstNonPassedMatch.getBoundingClientRect();
+            const offset = 35; // 40px d'espace en haut
+            
+            const scrollTop = matchesScrollContainer.scrollTop + (elementRect.top - containerRect.top) - offset;
+            matchesScrollContainer.scrollTo({ top: scrollTop, behavior: 'smooth' });
           }
         }
       }
@@ -2282,9 +2285,25 @@ function App() {
 
       // PARTIES
       parties.forEach(party => {
+        // Calculer l'ID du lieu pour la correspondance avec le filtre
+        let partyVenueId = '';
+        switch (party.name) {
+          case 'Place Stanislas':
+            partyVenueId = 'place-stanislas';
+            break;
+          case 'Centre Prouvé':
+            partyVenueId = 'centre-prouve';
+            break;
+          case 'Zénith':
+            partyVenueId = 'zenith';
+            break;
+          default:
+            partyVenueId = party.name.toLowerCase().replace(/\s+/g, '-');
+        }
+
         const shouldShow = 
           (eventFilter === 'all' || eventFilter === 'party') &&
-          (venueFilter === 'Tous' || party.id === venueFilter);
+          (venueFilter === 'Tous' || partyVenueId === venueFilter);
 
         if (!shouldShow) return;
 
@@ -2964,12 +2983,8 @@ function App() {
     });
   };
 
-  // Mettre à jour les marqueurs lorsque le filtre change ou qu'une action est effectuée
-  useEffect(() => {
-    if (mapRef.current) {
-      updateMapMarkers();
-    }
-  }, [eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed, venues, appAction]);
+  // Les marqueurs sont maintenant créés avec la logique correcte dans le premier useEffect
+  // Pas besoin de les mettre à jour séparément
 
   const handleCalendarClose = () => {
     setActiveTab(previousTab);
@@ -3020,7 +3035,13 @@ function App() {
     if (eventsList) {
       const firstNonPassedEvent = eventsList.querySelector('.event-item:not(.passed)');
       if (firstNonPassedEvent) {
-        firstNonPassedEvent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Calculer la position avec un offset pour laisser de l'espace en haut
+        const containerRect = eventsList.getBoundingClientRect();
+        const elementRect = firstNonPassedEvent.getBoundingClientRect();
+        const offset = 15; // 40px d'espace en haut
+        
+        const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
+        eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
       }
     }
   };
@@ -3226,9 +3247,18 @@ function App() {
       // Déclencher l'auto-scroll si on revient à l'onglet événements
       if (chatOriginTab === 'events') {
         setTimeout(() => {
-          const firstNonPassedEvent = document.querySelector('.event-item:not(.passed)');
-          if (firstNonPassedEvent) {
-            firstNonPassedEvent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const eventsList = document.querySelector('.events-list');
+          if (eventsList) {
+            const firstNonPassedEvent = eventsList.querySelector('.event-item:not(.passed)');
+            if (firstNonPassedEvent) {
+              // Calculer la position avec un offset pour laisser de l'espace en haut
+              const containerRect = eventsList.getBoundingClientRect();
+              const elementRect = firstNonPassedEvent.getBoundingClientRect();
+              const offset = 15; // 40px d'espace en haut
+              
+              const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
+              eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
+            }
           }
         }, 100);
       }
@@ -3368,9 +3398,18 @@ function App() {
     }
     if (tab === 'events') {
       setTimeout(() => {
-        const firstNonPassedEvent = document.querySelector('.event-item:not(.passed)');
-        if (firstNonPassedEvent) {
-          firstNonPassedEvent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const eventsList = document.querySelector('.events-list');
+        if (eventsList) {
+          const firstNonPassedEvent = eventsList.querySelector('.event-item:not(.passed)');
+          if (firstNonPassedEvent) {
+            // Calculer la position avec un offset pour laisser de l'espace en haut
+            const containerRect = eventsList.getBoundingClientRect();
+            const elementRect = firstNonPassedEvent.getBoundingClientRect();
+            const offset = 15; // 40px d'espace en haut
+            
+            const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
+            eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
+          }
         }
       }, 100);
     }
@@ -3456,9 +3495,18 @@ function App() {
     // Détecte le retour de 'planning' ou 'calendar' vers 'events' et déclenche le scroll
     if ((previousTabRef.current === 'planning' || previousTabRef.current === 'calendar') && activeTab === 'events') {
       setTimeout(() => {
-        const firstNonPassedEvent = document.querySelector('.event-item:not(.passed)');
-        if (firstNonPassedEvent) {
-          firstNonPassedEvent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const eventsList = document.querySelector('.events-list');
+        if (eventsList) {
+          const firstNonPassedEvent = eventsList.querySelector('.event-item:not(.passed)');
+          if (firstNonPassedEvent) {
+            // Calculer la position avec un offset pour laisser de l'espace en haut
+            const containerRect = eventsList.getBoundingClientRect();
+            const elementRect = firstNonPassedEvent.getBoundingClientRect();
+            const offset = 15; // 40px d'espace en haut
+            
+            const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
+            eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
+          }
         }
       }, 100);
     }

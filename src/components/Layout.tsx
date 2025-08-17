@@ -195,7 +195,6 @@ const Layout: React.FC = () => {
   const handleAdminClick = async () => {
     // Cette fonction est maintenant utilisée uniquement pour la déconnexion
     // La connexion se fait directement dans le Header via le modal
-    console.log('Admin click - déconnexion uniquement');
   };
 
   const handleEditClick = () => {
@@ -552,7 +551,7 @@ const Layout: React.FC = () => {
           <div className="chat-panel-header">
             <h3>Messages de l'orga</h3>
             <div style={{ display: 'flex', alignItems: 'center'}}>
-              {isAdmin && (
+              {isAdmin && isEditing && (
                 <button
                   className="add-message-button"
                   onClick={() => setShowAddMessage((v) => !v)}
@@ -664,7 +663,7 @@ const Layout: React.FC = () => {
                 <div className="chat-message-content" style={{ paddingBottom: isAdmin ? 28 : 0, textAlign: 'left' }}>
                   {message.content}
                 </div>
-                {isAdmin && (
+                {isAdmin && isEditing && (
                   <div style={{ position: 'absolute', right: 0, bottom: 6, display: 'flex', gap: 0 }}>
                     <button
                       className="edit-message-button"

@@ -65,8 +65,8 @@
 }
 
 .home-event-item {
-  width: 320px;
-  flex: 0 0 320px;
+  width: 350px;
+  flex: 0 0 350px;
 }
 
 .event-item:hover {
@@ -76,6 +76,27 @@
 
 .event-item:active {
   transform: translateY(0);
+}
+
+.event-item:focus {
+  outline: none !important;
+}
+
+.event-item:focus-visible {
+  outline: none !important;
+}
+
+.event-item {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.event-item::-moz-focus-inner {
+  border: 0;
 }
 
 .event-item.match-passed {
@@ -155,8 +176,8 @@
 
 .event-date {
   color: var(--danger-color);
-  font-weight: 500;
-  font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+  font-weight: 600;
+  font-size: clamp(0.8rem, 3vw, 1.1rem);
   white-space: nowrap;
 }
 
@@ -243,8 +264,8 @@
   }
 
   .home-event-item {
-    width: 260px;
-    flex: 0 0 260px;
+    width: 300px;
+    flex: 0 0 300px;
   }
 
   .event-header {
@@ -298,8 +319,8 @@
   }
 
   .home-event-item {
-    width: 240px;
-    flex: 0 0 240px;
+    width: 300px;
+    flex: 0 0 300px;
   }
 
   .event-type-badge {
@@ -671,8 +692,8 @@ body.ios .welcome-title {
   }
   
   .home-event-item {
-    width: 180px;
-    flex: 0 0 180px;
+    width: 240px;
+    flex: 0 0 240px;
   }
   
   .event-item {
@@ -734,8 +755,8 @@ body.ios .welcome-title {
   }
   
   .home-event-item {
-    width: 160px;
-    flex: 0 0 160px;
+    width: 200px;
+    flex: 0 0 200px;
   }
   
   .event-item {
