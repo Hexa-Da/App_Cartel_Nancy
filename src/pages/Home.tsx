@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import EventDetails, { Event } from '../components/EventDetails';
 import { Match, Venue } from '../types';
 import './Home.css';
 import '../components/EventDetails.css';
+import { useApp } from '../AppContext';
 
 type Place = Venue;
-
-interface OutletContext {
-  getFilteredEvents: () => Place[];
-  getAllDelegations: () => string[];
-}
 
 interface ExtendedMatch extends Match {
   venue?: string;
 }
 
 const Home: React.FC = () => {
-  const { getFilteredEvents, getAllDelegations } = useOutletContext<OutletContext>();
+  const { getFilteredEvents, getAllDelegations } = useApp();
   const [events, setEvents] = useState<Place[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const navigate = useNavigate();

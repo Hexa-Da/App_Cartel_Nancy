@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginWithGoogle } from '../firebase';
 import SettingsMenu from './SettingsMenu';
+import AdminLoginModal from './AdminLoginModal';
+import { verifyAdminCode } from '../firebase';
+import { useApp } from '../AppContext';
 
 interface HeaderProps {
   onChat?: () => void;
   onEmergency?: () => void;
   onAdmin?: () => void;
-  isAdmin?: boolean;
-  user?: any;
   showChat?: boolean;
   unreadCount?: number;
   onBack?: () => void;
   onEditModeToggle?: () => void;
   isEditing?: boolean;
-  getAllDelegations: () => string[];
-  hasGenderMatches: (sport: string) => { hasFemale: boolean, hasMale: boolean, hasMixed: boolean };
   isBackDisabled?: boolean;
 }
 
@@ -23,25 +21,32 @@ const Header: React.FC<HeaderProps> = ({
   onChat,
   onEmergency,
   onAdmin,
-  isAdmin,
-  user,
   showChat,
   unreadCount,
   onBack,
   onEditModeToggle,
   isEditing,
-  getAllDelegations,
-  hasGenderMatches,
   isBackDisabled
 }) => {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const { isAdmin, user, setIsAdmin, setUser } = useApp();
 
-  const handleLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      console.error('Erreur de connexion:', error);
+  const handleAdminLogin = (code: string) => {
+    if (verifyAdminCode(code)) {
+      // Stocker l'état admin dans localStorage
+      localStorage.setItem('isAdmin', 'true');
+      // Mettre à jour l'état global directement
+      setUser({ isAdmin: true });
+      setIsAdmin(true);
+      // Appeler la fonction onAdmin pour indiquer la connexion
+      if (onAdmin) {
+        onAdmin();
+      }
+      setShowAdminModal(false);
+    } else {
+      alert('Code d\'accès incorrect');
     }
   };
 
@@ -159,7 +164,13 @@ const Header: React.FC<HeaderProps> = ({
             <button
               className="admin-button"
               style={{ right: '15px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              onClick={onAdmin}
+              onClick={user ? () => {
+                // Déconnexion directe
+                localStorage.removeItem('isAdmin');
+                setUser(null);
+                setIsAdmin(false);
+                if (onAdmin) onAdmin();
+              } : () => setShowAdminModal(true)}
               title={user ? "Se déconnecter" : "Se connecter"}
             >
               {user ? (
@@ -217,8 +228,11 @@ const Header: React.FC<HeaderProps> = ({
       <SettingsMenu 
         isOpen={showSettings} 
         onClose={() => setShowSettings(false)} 
-        getAllDelegations={getAllDelegations}
-        hasGenderMatches={hasGenderMatches}
+      />
+      <AdminLoginModal
+        isOpen={showAdminModal}
+        onClose={() => setShowAdminModal(false)}
+        onLogin={handleAdminLogin}
       />
     </>
   );

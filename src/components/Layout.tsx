@@ -3,11 +3,11 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import './Layout.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { database, auth, loginWithGoogle } from '../firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { database } from '../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import { useAppPanels } from '../AppPanelsContext';
+import { useApp } from '../AppContext';
 import VSSForm from './VSSForm';
 import EmergencyPopup from './EmergencyPopup';
 import { Capacitor } from '@capacitor/core';
@@ -78,11 +78,8 @@ const Layout: React.FC = () => {
   const [showEmergency, setShowEmergency] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showVSSForm, setShowVSSForm] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [user, setUser] = useState<any>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [venues, setVenues] = useState<Venue[]>([]);
   const { isEditing, setIsEditing, activeTab, setActiveTab } = useAppPanels();
+  const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [newVenueName, setNewVenueName] = useState('');
   const [newVenueDescription, setNewVenueDescription] = useState('');
@@ -113,54 +110,12 @@ const Layout: React.FC = () => {
     document.body.classList.add(platform);
   }, []);
 
-  // Gestion de l'authentification
+  // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        
-        // Vérifier si l'utilisateur est admin
-        const adminsRef = ref(database, 'admins');
-        onValue(adminsRef, (snapshot) => {
-          const admins = snapshot.val();
-          setIsAdmin(admins && admins[user.uid]);
-        });
-      } else {
-        setUser(null);
-        setIsAdmin(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Lecture en temps réel des messages depuis Firebase
-  useEffect(() => {
-    const messagesRef = ref(database, 'chatMessages');
-    const unsubscribe = onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      // Transforme l'objet en tableau [{id, ...}]
-      const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
-      
-      // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
-      if (!localStorage.getItem('lastSeenChatTimestamp')) {
-        const now = Date.now();
-        localStorage.setItem('lastSeenChatTimestamp', String(now));
-      }
-      
-      setMessages(messagesArray);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Lecture en temps réel des venues depuis Firebase
-  useEffect(() => {
-    const venuesRef = ref(database, 'venues');
-    const unsubscribe = onValue(venuesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      const venuesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
-      setVenues(venuesArray);
-    });
-    return () => unsubscribe();
+    if (!localStorage.getItem('lastSeenChatTimestamp')) {
+      const now = Date.now();
+      localStorage.setItem('lastSeenChatTimestamp', String(now));
+    }
   }, []);
 
   // Gestion du bouton physique retour des téléphones
@@ -238,21 +193,9 @@ const Layout: React.FC = () => {
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
 
   const handleAdminClick = async () => {
-    if (!user) {
-      try {
-        await loginWithGoogle();
-      } catch (error) {
-        console.error("Erreur de connexion:", error);
-        alert("Erreur lors de la connexion. Veuillez réessayer.");
-      }
-    } else {
-      try {
-        await signOut(auth);
-      } catch (error) {
-        console.error("Erreur de déconnexion:", error);
-        alert("Erreur lors de la déconnexion. Veuillez réessayer.");
-      }
-    }
+    // Cette fonction est maintenant utilisée uniquement pour la déconnexion
+    // La connexion se fait directement dans le Header via le modal
+    console.log('Admin click - déconnexion uniquement');
   };
 
   const handleEditClick = () => {
@@ -582,41 +525,7 @@ const Layout: React.FC = () => {
     }
   };
 
-  // Fonction pour obtenir toutes les délégations uniques
-  const getAllDelegations = () => {
-    const delegations = new Set<string>();
-    venues.forEach(venue => {
-      if (venue.matches) {
-        venue.matches.forEach(match => {
-          const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map(team => team.trim());
-          teams.forEach(team => {
-            // Exclure les "..." et les chaînes vides
-            if (team && team !== "..." && team !== "…") delegations.add(team);
-          });
-        });
-      }
-    });
-    return Array.from(delegations).sort();
-  };
 
-  // Fonction pour vérifier les championnats disponibles pour un sport
-  const hasGenderMatches = (sport: string): { hasFemale: boolean, hasMale: boolean, hasMixed: boolean } => {
-    let hasFemale = false;
-    let hasMale = false;
-    let hasMixed = false;
-
-    venues.forEach(venue => {
-      if (venue.sport === sport && venue.matches) {
-        venue.matches.forEach(match => {
-          if (match.description?.toLowerCase().includes('féminin')) hasFemale = true;
-          if (match.description?.toLowerCase().includes('masculin')) hasMale = true;
-          if (match.description?.toLowerCase().includes('mixte')) hasMixed = true;
-        });
-      }
-    });
-
-    return { hasFemale, hasMale, hasMixed };
-  };
 
   return (
     <div className="layout">
@@ -624,27 +533,17 @@ const Layout: React.FC = () => {
         onChat={handleChatToggle}
         onEmergency={() => setShowEmergency(true)}
         onAdmin={handleAdminClick}
-        isAdmin={isAdmin}
-        user={user}
         showChat={showChat}
         unreadCount={unreadCount}
         onBack={handleBack}
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
-        getAllDelegations={getAllDelegations}
-        hasGenderMatches={hasGenderMatches}
         isBackDisabled={(location.pathname === '/' || location.pathname === '/info') && !showChat}
       />
       <main className="app-main">
-        <Outlet context={{ 
-          getFilteredEvents: () => venues,
-          getAllDelegations,
-          userPreferences: {
-            favoriteSports:  localStorage.getItem('preferredSport') || 'all',
-            delegation: localStorage.getItem('preferredDelegation') || 'all'
-          } 
-        }} />
+        <Outlet />
       </main>
+      {/* Footer supprimé - remplacé par un bouton dans Info.tsx */}
       <BottomNav closeLayoutPanels={closeLayoutPanels} />
 
       {/* Fenêtre modale pour le chat */}
@@ -823,7 +722,11 @@ const Layout: React.FC = () => {
               isAdmin ? (
                 <div>
                   <p>Bienvenue, administrateur !</p>
-                  <button onClick={() => signOut(auth)}>Se déconnecter</button>
+                  <button onClick={() => {
+                    localStorage.removeItem('isAdmin');
+                    setUser(null);
+                    setIsAdmin(false);
+                  }}>Se déconnecter</button>
                 </div>
               ) : (
                 <p>Vous n'avez pas les droits d'administrateur.</p>

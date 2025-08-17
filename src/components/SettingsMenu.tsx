@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import './SettingsMenu.css';
 import NotificationService from '../services/NotificationService';
+import { useApp } from '../AppContext';
 
 interface SettingsMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onLocationChange?: (enabled: boolean) => void;
-  getAllDelegations: () => string[];
-  hasGenderMatches: (sport: string) => { hasFemale: boolean, hasMale: boolean, hasMixed: boolean };
 }
 
 // Fonction utilitaire pour obtenir la valeur initiale depuis localStorage
@@ -51,7 +50,8 @@ const restaurantOptions = [
   { value: '2', label: 'Parc Saint-Marie' }
 ];
 
-const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange, getAllDelegations, hasGenderMatches }) => {
+const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
+  const { getAllDelegations, hasGenderMatches } = useApp();
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const stored = localStorage.getItem('theme');

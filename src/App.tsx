@@ -4,11 +4,10 @@ import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
-import { auth, database, loginWithGoogle, handleGoogleRedirect } from './firebase';
+import { database } from './firebase';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
-import { onAuthStateChanged} from 'firebase/auth';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import PlanningFiles from './components/PlanningFiles';
@@ -516,35 +515,15 @@ function App() {
   }, [location.pathname]);
   
   const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Gestion de la redirection Google au chargement
+  // Vérification des droits admin depuis localStorage
   useEffect(() => {
-    handleGoogleRedirect().then(user => {
-      if (user) {
-        setUser(user);
-      }
-    }).catch(error => {
-      console.error('Erreur lors de la redirection Google:', error);
-    });
-  }, []);
-
-  // Listener d'authentification Firebase
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (user) {
-        const adminsRef = ref(database, 'admins');
-        onValue(adminsRef, (snapshot) => {
-          const admins = snapshot.val();
-          setIsAdmin(admins && admins[user.uid]);
-        });
-      } else {
-        setIsAdmin(false);
-      }
-      setIsLoading(false);
-    });
-    return () => unsubscribe();
+    const adminStatus = localStorage.getItem('isAdmin') === 'true';
+    setIsAdmin(adminStatus);
+    if (adminStatus) {
+      setUser({ isAdmin: true });
+    }
   }, []);
 
   // Lecture en temps réel des messages depuis Firebase
@@ -3335,28 +3314,16 @@ function App() {
     if (user) {
       // Si l'utilisateur est connecté, on le déconnecte
       try {
-        await auth.signOut();
+        localStorage.removeItem('isAdmin');
         setUser(null);
         setIsAdmin(false);
       } catch (error) {
         console.error('Erreur lors de la déconnexion:', error);
       }
     } else {
-      // Sinon on tente de se connecter
-      try {
-        console.log('=== DÉBUT PROCESSUS DE CONNEXION ADMIN ===');
-        
-        console.log('1. Tentative de connexion Google Auth...');
-        const user = await loginWithGoogle();
-        console.log('Utilisateur connecté:', user);
-        
-      } catch (error) {
-        console.error('❌ ERREUR LORS DE LA CONNEXION:', error);
-        console.error('Type d\'erreur:', typeof error);
-        console.error('Message d\'erreur:', error instanceof Error ? error.message : 'Erreur inconnue');
-        console.error('Stack trace:', error instanceof Error ? error.stack : 'Pas de stack trace');
-        alert(`Erreur de connexion: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
-      }
+      // La connexion se fait maintenant via le modal AdminLoginModal
+      // Cette fonction n'est plus utilisée pour la connexion
+      console.log('Connexion admin via modal');
     }
   };
 
@@ -4037,7 +4004,7 @@ function App() {
                   flexDirection: 'column',
                   alignItems: 'center'
                 }}>
-                  <PlanningFiles />
+                  <PlanningFiles isAdmin={isAdmin} />
                 </div>
               </div>
             )}

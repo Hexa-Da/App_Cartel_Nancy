@@ -85,6 +85,8 @@ const Info: React.FC = () => {
         />
       </div>
 
+
+
       <style>{`
         .info-page {
           padding: 20px;
@@ -174,6 +176,8 @@ const Info: React.FC = () => {
             grid-template-columns: repeat(3, 1fr);
           }
         }
+
+
       `}</style>
     </div>
   );

@@ -2,14 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 import { ref, onValue, push, remove, set } from 'firebase/database';
 import { database, storage } from '../firebase';
 import { PlanningFile } from '../types';
-import { auth } from '../firebase';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
 
-export default function PlanningFiles() {
+interface PlanningFilesProps {
+  isAdmin?: boolean;
+}
+
+export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
   const [files, setFiles] = useState<PlanningFile[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<PlanningFile[]>([]);
   const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
-  const [isAdmin, setIsAdmin] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newFile, setNewFile] = useState({
     name: '',
@@ -56,19 +58,6 @@ export default function PlanningFiles() {
   const isMobile = window.innerWidth < 600;
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est admin
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        const adminsRef = ref(database, 'admins');
-        onValue(adminsRef, (snapshot) => {
-          const admins = snapshot.val();
-          setIsAdmin(admins && admins[user.uid]);
-        });
-      } else {
-        setIsAdmin(false);
-      }
-    });
-
     // Charger les fichiers
     const filesRef = ref(database, 'planningFiles');
     const filesUnsubscribe = onValue(filesRef, (snapshot) => {
@@ -85,7 +74,6 @@ export default function PlanningFiles() {
     });
 
     return () => {
-      unsubscribe();
       filesUnsubscribe();
     };
   }, []);
