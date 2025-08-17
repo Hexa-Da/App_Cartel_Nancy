@@ -24,11 +24,6 @@ dist-ssr
 *.sw?
 .env
 
-# Local Netlify folder
-.netlify
-
-public/favicon.png
-
-# Configuration admin - NE PAS COMMITER
+# Configuration admin
 src/config/admin.ts
-src/config/admin.example.ts
+

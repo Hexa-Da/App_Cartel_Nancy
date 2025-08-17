@@ -45,6 +45,9 @@ const Header: React.FC<HeaderProps> = ({
         onAdmin();
       }
       setShowAdminModal(false);
+      
+      // Déclencher un rafraîchissement global de l'application
+      window.dispatchEvent(new CustomEvent('adminLoginSuccess'));
     } else {
       alert('Code d\'accès incorrect');
     }
@@ -80,19 +83,33 @@ const Header: React.FC<HeaderProps> = ({
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
           </button>
-        </div>
-        
-        <div className="header-right">
+          
           {isAdmin && onEditModeToggle && (
             <button
               className={`edit-button${isEditing ? ' active' : ''}`}
-              style={{ right: '175px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: isEditing ? 'var(--danger-color)' : 'var(--warning-color)', padding: '0.2rem 0.5rem', color: 'white' }}
+              style={{ 
+                marginTop: '2px',
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                backgroundColor: isEditing ? 'var(--danger-color)' : 'var(--warning-color)', 
+                padding: '0.2rem 0.5rem', 
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: '500'
+              }}
               onClick={onEditModeToggle}
               title={isEditing ? 'Quitter le mode édition' : 'Activer le mode édition'}
             >
               {isEditing ? 'Terminer' : 'Editer'}
             </button>
           )}
+        </div>
+        
+        <div className="header-right">
           {onChat && (
             <button
               className={`chat-button${showChat ? ' active' : ''}`}

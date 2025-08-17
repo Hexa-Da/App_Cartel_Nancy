@@ -390,16 +390,9 @@ interface OutletContext {
   finishEditingMatch: () => void;
 }
 
-// Déclaration du type pour window.handleGoogleRedirect
-declare global {
-  interface Window {
-    handleGoogleRedirect?: () => void;
-  }
-}
+
 
 import VSSForm from './components/VSSForm';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { App as CapacitorApp } from '@capacitor/app';
 
 function App() {
   const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
@@ -524,6 +517,21 @@ function App() {
     if (adminStatus) {
       setUser({ isAdmin: true });
     }
+  }, []);
+
+  // Écouter la connexion admin réussie pour rafraîchir l'application
+  useEffect(() => {
+    const handleAdminLoginSuccess = () => {
+      // Forcer la mise à jour des marqueurs et de l'interface
+      triggerMarkerUpdate();
+      updateMapMarkers();
+      // Mettre à jour l'état admin
+      setIsAdmin(true);
+      setUser({ isAdmin: true });
+    };
+
+    window.addEventListener('adminLoginSuccess', handleAdminLoginSuccess);
+    return () => window.removeEventListener('adminLoginSuccess', handleAdminLoginSuccess);
   }, []);
 
   // Lecture en temps réel des messages depuis Firebase
@@ -3320,10 +3328,6 @@ function App() {
       } catch (error) {
         console.error('Erreur lors de la déconnexion:', error);
       }
-    } else {
-      // La connexion se fait maintenant via le modal AdminLoginModal
-      // Cette fonction n'est plus utilisée pour la connexion
-      console.log('Connexion admin via modal');
     }
   };
 
@@ -3494,14 +3498,7 @@ function App() {
     localStorage.setItem('mapShowMixed', JSON.stringify(value));
   };
 
-  const signIn = async () => {
-    try {
-      const user = await GoogleAuth.signIn();
-      // Utilise user pour Firebase ou autre
-    } catch (err) {
-      console.error('Erreur Google Auth:', err);
-    }
-  };
+
 
   return (
     <div className="app">
@@ -3529,8 +3526,6 @@ function App() {
         onChat={handleOpenChat}
         onEmergency={() => setShowEmergency(true)}
         onAdmin={handleAdminClick}
-        isAdmin={isAdmin}
-        user={user}
         showChat={activeTab === 'chat'}
         unreadCount={unreadCount}
         onBack={handleBack}
@@ -3545,8 +3540,7 @@ function App() {
           }
         }}
         isEditing={isEditing}
-        getAllDelegations={getAllDelegations}
-        hasGenderMatches={hasGenderMatches}
+
         isBackDisabled={activeTab === 'map' || activeTab === 'home' || activeTab === 'info'}
       />
       <main className="app-main">
@@ -4013,7 +4007,7 @@ function App() {
                 <div className="chat-panel-header">
                   <h3>Messages de l'orga</h3>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {isAdmin && (
+                    {isAdmin && isEditing && (
                       <button
                         className="add-message-button"
                         onClick={() => setShowAddMessage((v) => !v)}
@@ -4156,7 +4150,7 @@ function App() {
                         )}
                       </div>
                       {/* Boutons admin en bas à droite */}
-                      {isAdmin && editingMessageIndex !== index && (
+                      {isAdmin && isEditing && editingMessageIndex !== index && (
                         <div style={{ position: 'absolute', right: 0, bottom: 6, display: 'flex', gap: 0 }}>
                           <button
                             className="edit-message-button"
@@ -4315,8 +4309,6 @@ function App() {
         onChat={handleOpenChat}
         onEmergency={() => setShowEmergency(true)}
         onAdmin={handleAdminClick}
-        isAdmin={isAdmin}
-        user={user}
         showChat={activeTab === 'chat'}
         unreadCount={unreadCount}
         onEditModeToggle={() => {

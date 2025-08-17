@@ -105,13 +105,20 @@ const Home: React.FC = () => {
       updateEvents();
     };
 
+    const handleAdminLoginSuccess = () => {
+      // Rafraîchir les événements après connexion admin
+      updateEvents();
+    };
+
     updateEvents();
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('preferenceChange', handlePreferenceChange as EventListener);
+    window.addEventListener('adminLoginSuccess', handleAdminLoginSuccess);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('preferenceChange', handlePreferenceChange as EventListener);
+      window.removeEventListener('adminLoginSuccess', handleAdminLoginSuccess);
     };
   }, [getFilteredEvents]);
 

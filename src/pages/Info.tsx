@@ -23,6 +23,17 @@ const InfoCard: React.FC<InfoCardProps> = ({ icon, title, onClick }) => {
 const Info: React.FC = () => {
   const navigate = useNavigate();
 
+  // Écouter la connexion admin réussie pour rafraîchir la page
+  React.useEffect(() => {
+    const handleAdminLoginSuccess = () => {
+      // Forcer le rafraîchissement de la page
+      window.location.reload();
+    };
+
+    window.addEventListener('adminLoginSuccess', handleAdminLoginSuccess);
+    return () => window.removeEventListener('adminLoginSuccess', handleAdminLoginSuccess);
+  }, []);
+
   const handleCardClick = (section: string) => {
     if (section === 'map') {
       navigate('/map');

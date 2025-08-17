@@ -5,11 +5,10 @@ import App from './App';
 import Home from './pages/Home';
 import Info from './pages/Info';
 import InfoSection from './pages/InfoSection';
-import TestRoutes from './components/TestRoutes';
+
 import AllPages from './components/AllPages';
 
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
+
 import Layout from './components/Layout';
 import './index.css';
 import { AppPanelsProvider } from './AppPanelsContext';
@@ -26,10 +25,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="/map" element={<App />} />
               <Route path="/info" element={<Info />} />
               <Route path="info/:sectionName" element={<InfoSection />} />
-              <Route path="/test" element={<TestRoutes />} />
+
               
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
+
               <Route path="classement" element={<div>Classement</div>} />
               <Route path="profil" element={<div>Profil</div>} />
               <Route path="*" element={<Navigate to="/" replace />} />
