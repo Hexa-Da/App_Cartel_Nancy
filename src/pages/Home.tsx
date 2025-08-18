@@ -351,6 +351,7 @@ const Home: React.FC = () => {
                       </div>
                       <h3 className="event-name">{match.teams}</h3>
                       <p className="event-description">{match.description}</p>
+                      <p className="event-venue">{match.venue}</p>
                       {match.result && (
                         <div className="event-result">{match.result}</div>
                       )}
@@ -391,6 +392,7 @@ const Home: React.FC = () => {
                     </div>
                     <h3 className="event-name">{match.teams}</h3>
                     <p className="event-description">{match.description}</p>
+                    <p className="event-venue">{match.venue}</p>
                     {match.result && (
                       <div className="event-result">{match.result}</div>
                     )}
@@ -460,6 +462,7 @@ const Home: React.FC = () => {
                     <h3 className="event-name">{match.teams}</h3>
                   </div>
                   <p className="event-description">{match.description}</p>
+                  <p className="event-venue">{match.venue}</p>
                   {match.result && <p className="event-result">Résultat : {match.result}</p>}
                 </div>
               ))

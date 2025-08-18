@@ -81,6 +81,35 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
     }
   };
 
+  const getSportIcon = (sport: string) => {
+    const icons: { [key: string]: string } = {
+      'Football': '⚽',
+      'Basketball': '🏀',
+      'Handball': '🤾',
+      'Rugby': '🏉',
+      'Volleyball': '🏐',
+      'Tennis': '🎾',
+      'Badminton': '🏸',
+      'Ping-pong': '🏓',
+      'Ultimate': '🥏',
+      'Natation': '🏊',
+      'Cross': '🏃',
+      'Boxe': '🥊',
+      'Athlétisme': '🏃‍♂️',
+      'Pétanque': '🍹',
+      'Escalade': '🧗‍♂️',
+      'Jeux de société': '🎲',
+      'Soirée': '🎉',
+      'Défilé': '🎺'
+    };
+    return icons[sport] || '🏆';
+  };
+
+  const formatTime = (timeString: string) => {
+    const time = timeString.split(':');
+    return `${time[0]}:${time[1]}`;
+  };
+
   const handleViewOnMap = () => {
     if (event.type === 'match') {
       const venue = venues.find(v => v.name === event.venue);
@@ -100,27 +129,95 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
   return (
     <div className="event-details-overlay" onClick={onClose}>
       <div className="event-details-content" onClick={e => e.stopPropagation()}>
-        <div className="match-event-details">
-          <h3>{event.name}</h3>
-          <p>Horaire: {event.time} {event.endTime ? `- ${event.endTime}` : ''}</p>
-          {event.type === 'match' ? (
-            <>
-              {event.sport && <p>Sport: {event.sport}</p>}
-              {event.venue && <p>Lieu: {event.venue}</p>}
-              {event.teams && <p>Équipes: {event.teams}</p>}
-              {event.description && <p>Description: {event.description}</p>}
-              {event.result && <p className="match-result"><strong>Résultat :</strong> {event.result}</p>}
-            </>
-          ) : (
-            <>
-              {event.description && <p>Description: {event.description}</p>}
-              {event.venue && <p>Adresse: {event.venue}</p>}
-            </>
-          )}
-          <div className="match-event-buttons">
-            <button onClick={handleViewOnMap}>Voir sur la carte</button>
-            <button onClick={onClose}>Fermer</button>
+        <div className="event-details-main">
+          {/* Badge de type d'événement */}
+          <div className={`event-type-badge-large ${event.type === 'match' ? 'match-badge' : 'party-badge'}`}>
+            <span className="sport-icon">{getSportIcon(event.sport || '')}</span>
+            <span className="sport-name">{event.sport || 'Événement'}</span>
           </div>
+
+          {/* Titre principal */}
+          <h2 className="event-title">{event.name}</h2>
+
+          {/* Horaires */}
+          <div className="event-time-section">
+            <div className="time-item">
+              <span className="time-label">Début</span>
+              <span className="time-value">{formatTime(event.time)}</span>
+            </div>
+            {event.endTime && (
+              <div className="time-item">
+                <span className="time-label">Fin</span>
+                <span className="time-value">{formatTime(event.endTime)}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Informations spécifiques selon le type */}
+          {event.type === 'match' ? (
+            <div className="match-details">
+              {event.teams && (
+                <div className="detail-item">
+                  <span className="detail-label">Équipes</span>
+                  <span className="detail-value">{event.teams}</span>
+                </div>
+              )}
+              {event.venue && (
+                <div className="detail-item">
+                  <span className="detail-label">Lieu</span>
+                  <span className="detail-value venue-value">
+                    📍 {event.venue}
+                  </span>
+                </div>
+              )}
+              {event.description && (
+                <div className="detail-item">
+                  <span className="detail-label">Description</span>
+                  <span className="detail-value">{event.description}</span>
+                </div>
+              )}
+              {event.result && (
+                <div className="detail-item result-item">
+                  <span className="detail-label">Résultat</span>
+                  <span className="detail-value result-value">{event.result}</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="party-details">
+              {event.description && (
+                <div className="detail-item">
+                  <span className="detail-label">Description</span>
+                  <span className="detail-value">{event.description}</span>
+                </div>
+              )}
+              {event.venue && (
+                <div className="detail-item">
+                  <span className="detail-label">Adresse</span>
+                  <span className="detail-value venue-value">
+                    📍 {event.venue}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Boutons d'action */}
+          <div className="event-actions">
+            <button className="action-button primary" onClick={handleViewOnMap}>
+              <span className="button-icon"></span>
+              Voir sur la carte
+            </button>
+            <button className="action-button secondary" onClick={onClose}>
+              <span className="button-icon"></span>
+              Fermer
+            </button>
+          </div>
+          
+          {/* Bouton de fermeture en bas à droite */}
+          <button className="close-button-bottom" onClick={onClose}>
+            <span>×</span>
+          </button>
         </div>
       </div>
     </div>

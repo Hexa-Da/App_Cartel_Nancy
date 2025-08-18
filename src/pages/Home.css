@@ -5,6 +5,10 @@
   color: var(--text-color);
   min-height: 100vh;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 80px;
 }
 
 .welcome-title {
@@ -19,12 +23,12 @@
 }
 
 .matches-section {
-  margin: 18px 0;
+  margin: 15px 0;    
   width: 100%;
 }
 
 .matches-section:first-of-type {
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .matches-section:last-of-type {
@@ -107,8 +111,32 @@
 
 .event-item.match-passed .event-name,
 .event-item.match-passed .event-description,
-.event-item.match-passed .event-result {
+.event-item.match-passed .event-result,
+.event-item.match-passed .event-venue {
   opacity: 0.5;
+}
+
+.event-item.match-passed .event-date {
+  color: var(--text-color-light);
+  opacity: 0.7;
+}
+
+.event-item.match-passed .event-type-badge {
+  opacity: 0.6;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.event-item.match-passed.match-event .event-type-badge {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(76, 175, 80, 0.04));
+  border-color: rgba(76, 175, 80, 0.15);
+  color: rgba(76, 175, 80, 0.7);
+}
+
+.event-item.match-passed.party-event .event-type-badge {
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.08), rgba(156, 39, 176, 0.04));
+  border-color: rgba(156, 39, 176, 0.15);
+  color: rgba(156, 39, 176, 0.7);
 }
 
 .event-header {
@@ -223,6 +251,19 @@
   word-break: break-word;
 }
 
+.event-venue {
+  color: var(--text-color-light);
+  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  margin: 6px 0;
+  line-height: 1.3;
+  text-align: center;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
 .no-matches {
   color: var(--text-color-light);
   width: 100%;
@@ -240,6 +281,8 @@
   .home-page {
     padding: 8px;
     margin-top: 35px;
+    justify-content: flex-start;
+    padding-top: 70px;
   }
 
   .welcome-title {
@@ -249,7 +292,7 @@
   }
 
   .matches-section {
-    margin: 12px 0;
+    margin: 8px 0;
   }
 
   .matches-section h2 {
@@ -290,6 +333,10 @@
     font-size: clamp(0.7rem, 3vw, 0.85rem);
   }
   
+  .event-venue {
+    font-size: clamp(0.7rem, 3vw, 0.85rem);
+  }
+  
   .no-matches {
     font-size: clamp(0.8rem, 3.5vw, 1rem);
     padding: 15px;
@@ -300,6 +347,8 @@
   .home-page {
     padding: 6px;
     margin-top: 30px;
+    justify-content: flex-start;
+    padding-top: 65px;
   }
 
   .welcome-title {
@@ -344,6 +393,10 @@
     font-size: clamp(0.6rem, 2.8vw, 0.8rem);
   }
   
+  .event-venue {
+    font-size: clamp(0.6rem, 2.8vw, 0.8rem);
+  }
+  
   .no-matches {
     font-size: clamp(0.7rem, 3.2vw, 0.9rem);
     padding: 12px;
@@ -353,6 +406,8 @@
 @media (min-height: 700px) {
   .home-page {
     margin-top: 40px;
+    justify-content: flex-start;
+    padding-top: 90px;
   }
 
   .welcome-title {
@@ -374,6 +429,8 @@
 @media (min-height: 800px) {
   .home-page {
     margin-top: 45px;
+    justify-content: flex-start;
+    padding-top: 100px;
   }
 
   .welcome-title {
@@ -384,7 +441,7 @@
   }
 
   .matches-section {
-    margin: 25px 0;
+    margin: 18px 0;
   }
 
   .matches-section h2 {
@@ -395,6 +452,8 @@
 @media (min-height: 900px) {
   .home-page {
     margin-top: 50px;
+    justify-content: flex-start;
+    padding-top: 110px;
   }
 
   .welcome-title {
@@ -405,7 +464,7 @@
   }
 
   .matches-section {
-    margin: 30px 0;
+    margin: 20px 0;
   }
 
   .matches-section h2 {
@@ -413,9 +472,11 @@
   }
 }
 
-@media (min-height: 1000px) {
+@media (min-height: 900px) {
   .home-page {
-    margin-top: 55px;
+    margin-top: 50px;
+    justify-content: flex-start;
+    padding-top: 110px;
   }
 
   .welcome-title {
@@ -426,7 +487,7 @@
   }
 
   .matches-section {
-    margin: 35px 0;
+    margin: 22px 0;
   }
 
   .matches-section h2 {
@@ -437,6 +498,7 @@
 @media (min-height: 1100px) {
   .home-page {
     margin-top: 35px;
+    justify-content: center;
   }
 
   .welcome-title {
@@ -447,7 +509,7 @@
   }
 
   .matches-section {
-    margin: 35px 0;
+    margin: 25px 0;
   }
 
   .matches-section h2 {
@@ -459,6 +521,8 @@
   .home-page {
     padding: 6px;
     margin-top: 30px;
+    justify-content: flex-start;
+    padding-top: 60px;
   }
 
   .welcome-title {
@@ -469,7 +533,7 @@
   }
 
   .matches-section {
-    margin: 10px 0;
+    margin: 6px 0;
   }
 
   .horizontal-scroll {
@@ -485,6 +549,8 @@
   .home-page {
     padding: 4px;
     margin-top: 25px;
+    justify-content: flex-start;
+    padding-top: 55px;
   }
 
   .welcome-title {
@@ -518,6 +584,8 @@
   .home-page {
     padding: 15px;
     margin-top: 45px;
+    justify-content: flex-start;
+    padding-top: 75px;
   }
   
   .welcome-title {
@@ -528,7 +596,7 @@
   }
   
   .matches-section {
-    margin: 18px 0;
+    margin: 12px 0;
   }
   
   .matches-section h2 {
@@ -558,6 +626,10 @@
   .event-type-badge, .event-date {
     font-size: clamp(0.7rem, 3vw, 0.9rem);
   }
+  
+  .event-venue {
+    font-size: clamp(0.8rem, 3vw, 1rem);
+  }
 }
 
 @media (min-width: 701px) {
@@ -567,6 +639,8 @@
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
+    justify-content: flex-start;
+    padding-top: 85px;
   }
   
   .welcome-title {
@@ -606,6 +680,10 @@
   
   .event-type-badge, .event-date {
     font-size: clamp(0.8rem, 3.5vw, 1rem);
+  }
+  
+  .event-venue {
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
   }
 }
 
@@ -656,6 +734,9 @@
 .event-item:not(.home-event-item) .event-result {
   font-size: 1.05rem;
 }
+.event-item:not(.home-event-item) .event-venue {
+  font-size: 1rem;
+}
 
 body.ios .welcome-title {
   margin-top: -20px !important;
@@ -668,6 +749,8 @@ body.ios .welcome-title {
   .home-page {
     padding: 4px;
     margin-top: 25px;
+    justify-content: flex-start;
+    padding-top: 60px;
   }
   
   .welcome-title {
@@ -721,6 +804,10 @@ body.ios .welcome-title {
     font-size: clamp(0.5rem, 2.8vw, 0.7rem);
   }
   
+  .event-venue {
+    font-size: clamp(0.5rem, 2.8vw, 0.7rem);
+  }
+  
   .no-matches {
     font-size: clamp(0.6rem, 3vw, 0.8rem);
     padding: 10px;
@@ -732,6 +819,8 @@ body.ios .welcome-title {
   .home-page {
     padding: 4px;
     margin-top: 20px;
+    justify-content: flex-start;
+    padding-top: 50px;
   }
   
   .welcome-title {
@@ -741,7 +830,7 @@ body.ios .welcome-title {
   }
   
   .matches-section {
-    margin: 6px 0;
+    margin: 4px 0;
   }
   
   .matches-section h2 {
@@ -781,6 +870,10 @@ body.ios .welcome-title {
   }
   
   .event-result {
+    font-size: clamp(0.4rem, 2.2vw, 0.6rem);
+  }
+  
+  .event-venue {
     font-size: clamp(0.4rem, 2.2vw, 0.6rem);
   }
 } 

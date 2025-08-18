@@ -88,7 +88,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         id, 
         ...(value as any) 
       }));
-      setMessages(messagesArray);
+      
+      // Trier les messages par timestamp décroissant (plus récents en premier)
+      const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
+      
+      setMessages(sortedMessages);
     });
     return () => unsubscribe();
   }, []);
@@ -105,7 +109,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       if (venue.matches) {
         venue.matches.forEach((match: any) => {
           const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-          teams.forEach(team => {
+          teams.forEach((team: string) => {
             if (team && team !== "..." && team !== "…") delegations.add(team);
           });
         });

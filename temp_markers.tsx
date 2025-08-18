@@ -416,13 +416,16 @@ function App() {
       // Transforme l'objet en tableau [{id, ...}]
       const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
       
+      // Trier les messages par timestamp décroissant (plus récents en premier)
+      const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
+      
       // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
       if (!localStorage.getItem('lastSeenChatTimestamp')) {
         const now = Date.now();
         localStorage.setItem('lastSeenChatTimestamp', String(now));
       }
       
-      setMessages(messagesArray);
+      setMessages(sortedMessages);
     });
     return () => unsubscribe();
   }, []);
@@ -464,6 +467,42 @@ function App() {
   // Suppression d'un message dans Firebase
   const handleDeleteMessage = (id: string) => {
     remove(ref(database, `chatMessages/${id}`));
+  };
+
+  // État pour gérer les traductions des messages
+  const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
+
+  // Fonction pour traduire un message en anglais
+  const translateMessage = async (messageId: string, text: string) => {
+    try {
+      // Si le message est déjà traduit, on revient au français
+      if (translatedMessages[messageId]) {
+        setTranslatedMessages(prev => {
+          const newState = { ...prev };
+          delete newState[messageId];
+          return newState;
+        });
+        return;
+      }
+
+      // Utilisation de l'API de traduction gratuite
+      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`);
+      const data = await response.json();
+      
+      if (data && data[0] && data[0][0]) {
+        const translatedText = data[0][0][0];
+        // Stocker la traduction dans l'état
+        setTranslatedMessages(prev => ({
+          ...prev,
+          [messageId]: translatedText
+        }));
+      } else {
+        alert('Erreur lors de la traduction');
+      }
+    } catch (error) {
+      console.error('Erreur de traduction:', error);
+      alert('Erreur lors de la traduction. Veuillez réessayer.');
+    }
   };
 
   // Fonction pour vérifier les droits d'administration avant d'exécuter une action
@@ -2362,8 +2401,9 @@ function App() {
       setPreviousTab(activeTab);
       setActiveTab('chat');
       if (messages.length > 0) {
-        const lastMsg = messages[messages.length - 1];
-        const newTimestamp = lastMsg.timestamp;
+        // Maintenant que les messages sont triés par ordre décroissant, le premier est le plus récent
+        const mostRecentMsg = messages[0];
+        const newTimestamp = mostRecentMsg.timestamp;
         localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
         console.log('App - Updated lastSeenChatTimestamp:', newTimestamp);
       }
@@ -2814,40 +2854,66 @@ function App() {
                             <button type="button" className="close-chat-button" onClick={() => { setEditingMessageIndex(null); setEditingMessageValue(''); }}>Annuler</button>
                           </form>
                         ) : (
-                          <>{message.content}</>
+                          <>
+                            {translatedMessages[message.id || `msg-${index}`] || message.content}
+                          </>
                         )}
+                        {/* Bouton de traduction en bas à droite */}
+                        <button
+                          className="translate-button"
+                          onClick={() => translateMessage(message.id || `msg-${index}`, message.content)}
+                          title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
+                          style={{
+                            position: 'absolute',
+                            bottom: '6px',
+                            right: '8px',
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: '4px',
+                            padding: '4px 8px',
+                            cursor: 'pointer',
+                            fontSize: '0.8rem',
+                            color: 'var(--text-color)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            zIndex: 1
+                          }}
+                        >
+                          {translatedMessages[message.id || `msg-${index}`] ? "🇫🇷 Français" : "🌐 Traduire"}
+                        </button>
                       </div>
-                      {/* Boutons admin en bas à droite */}
-                      {isAdmin && editingMessageIndex !== index && (
-                        <div style={{ position: 'absolute', right: 0, bottom: 6, display: 'flex', gap: 0 }}>
-                          <button
-                            className="edit-message-button"
-                            title="Modifier"
-                            onClick={() => {
-                              // Ouvre le formulaire d'ajout en haut, pré-rempli
-                              setShowAddMessage(true);
-                              setNewMessage(message.content);
-                              setNewMessageSender(message.sender || 'Organisation');
-                              setEditingMessageId(message.id || null);
-                            }}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            className="delete-message-button"
-                            title="Supprimer"
-                            onClick={() => {
-                              if (window.confirm('Supprimer ce message ?') && message.id) {
-                                handleDeleteMessage(message.id);
-                              }
-                            }}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: 16 }}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      )}
+                                             {/* Boutons admin en bas à droite */}
+                       {isAdmin && editingMessageIndex !== index && (
+                         <div style={{ position: 'absolute', right: '60px', bottom: '6px', display: 'flex', gap: '4px' }}>
+                           <button
+                             className="edit-message-button"
+                             title="Modifier"
+                             onClick={() => {
+                               // Ouvre le formulaire d'ajout en haut, pré-rempli
+                               setShowAddMessage(true);
+                               setNewMessage(message.content);
+                               setNewMessageSender(message.sender || 'Organisation');
+                               setEditingMessageId(message.id || null);
+                             }}
+                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}
+                           >
+                             ✏️
+                           </button>
+                           <button
+                             className="delete-message-button"
+                             title="Supprimer"
+                             onClick={() => {
+                               if (window.confirm('Supprimer ce message ?') && message.id) {
+                                 handleDeleteMessage(message.id);
+                               }
+                             }}
+                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: 16 }}
+                           >
+                             🗑️
+                           </button>
+                         </div>
+                       )}
                     </div>
                   ))}
                 </div>

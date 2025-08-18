@@ -128,6 +128,8 @@ const Layout: React.FC = () => {
 
       // Si le chat est ouvert, le fermer
       if (showChat) {
+        // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
+        updateLastSeenTimestamp();
         setShowChat(false);
         // Empêcher la navigation en ajoutant une nouvelle entrée
         window.history.pushState({ path: location.pathname, chat: false }, '', location.pathname);
@@ -186,7 +188,63 @@ const Layout: React.FC = () => {
       window.addEventListener('popstate', preventBack);
       return () => window.removeEventListener('popstate', preventBack);
     }
-  }, [location.pathname]);
+    }, [location.pathname]);
+  
+  // Effet pour mettre à jour le timestamp de dernière lecture lors de la navigation
+  useEffect(() => {
+    // Si le chat était ouvert et qu'on navigue vers une autre page, mettre à jour le timestamp
+    if (showChat && messages.length > 0) {
+      updateLastSeenTimestamp();
+    }
+  }, [location.pathname, showChat, messages]);
+  
+  // Fonction utilitaire pour mettre à jour le timestamp de dernière lecture
+  // Cette fonction est appelée à chaque fois que le chat est fermé pour s'assurer
+  // que le macaron de notification n'apparaît que quand il y a de nouveaux messages
+  const updateLastSeenTimestamp = () => {
+    if (messages.length > 0) {
+      // Maintenant que les messages sont triés par ordre décroissant, le premier est le plus récent
+      const mostRecentMsg = messages[0];
+      const newTimestamp = mostRecentMsg.timestamp;
+      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
+    }
+  };
+
+  // État pour gérer les traductions des messages
+  const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
+
+  // Fonction pour traduire un message en anglais
+  const translateMessage = async (messageId: string, text: string) => {
+    try {
+      // Si le message est déjà traduit, on revient au français
+      if (translatedMessages[messageId]) {
+        setTranslatedMessages(prev => {
+          const newState = { ...prev };
+          delete newState[messageId];
+          return newState;
+        });
+        return;
+      }
+
+      // Utilisation de l'API de traduction gratuite
+      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`);
+      const data = await response.json();
+      
+      if (data && data[0] && data[0][0]) {
+        const translatedText = data[0][0][0];
+        // Stocker la traduction dans l'état
+        setTranslatedMessages(prev => ({
+          ...prev,
+          [messageId]: translatedText
+        }));
+      } else {
+        alert('Erreur lors de la traduction');
+      }
+    } catch (error) {
+      console.error('Erreur de traduction:', error);
+      alert('Erreur lors de la traduction. Veuillez réessayer.');
+    }
+  };
 
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
@@ -491,6 +549,11 @@ const Layout: React.FC = () => {
 
   // Fonction pour fermer les panneaux locaux (chat, urgence, admin)
   const closeLayoutPanels = () => {
+    // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
+    if (showChat) {
+      updateLastSeenTimestamp();
+    }
+    
     setShowChat(false);
     setShowEmergency(false);
     setShowAdmin(false);
@@ -498,6 +561,8 @@ const Layout: React.FC = () => {
 
   const handleBack = () => {
     if (showChat) {
+      // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
+      updateLastSeenTimestamp();
       setShowChat(false);
       return;
     }
@@ -508,7 +573,7 @@ const Layout: React.FC = () => {
     }
   };
 
-  // Mise à jour du timestamp de dernière lecture lors de l'ouverture du chat
+  // Mise à jour du timestamp de dernière lecture lors de l'ouverture/fermeture du chat
   const handleChatToggle = () => {
     if (!showChat) {
       // Ajouter une entrée dans l'historique quand on ouvre le chat
@@ -516,12 +581,9 @@ const Layout: React.FC = () => {
     }
     
     setShowChat(!showChat);
-    if (!showChat && messages.length > 0) {
-      const lastMsg = messages[messages.length - 1];
-      const newTimestamp = lastMsg.timestamp;
-      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
-      console.log('Layout - Updated lastSeenChatTimestamp:', newTimestamp);
-    }
+    
+    // Mettre à jour le timestamp de dernière lecture à l'ouverture ET à la fermeture
+    updateLastSeenTimestamp();
   };
 
 
@@ -661,37 +723,61 @@ const Layout: React.FC = () => {
                   <span>{new Date(message.timestamp).toLocaleString()}</span>
                 </div>
                 <div className="chat-message-content" style={{ paddingBottom: isAdmin ? 28 : 0, textAlign: 'left' }}>
-                  {message.content}
+                  {translatedMessages[message.id || `msg-${index}`] || message.content}
                 </div>
-                {isAdmin && isEditing && (
-                  <div style={{ position: 'absolute', right: 0, bottom: 6, display: 'flex', gap: 0 }}>
-                    <button
-                      className="edit-message-button"
-                      title="Modifier"
-                      onClick={() => {
-                        setShowAddMessage(true);
-                        setNewMessage(message.content);
-                        setNewMessageSender(message.sender);
-                        setEditingMessageId(message.id || null);
-                      }}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="delete-message-button"
-                      title="Supprimer"
-                      onClick={() => {
-                        if (window.confirm('Supprimer ce message ?') && message.id) {
-                          handleDeleteMessage(message.id);
-                        }
-                      }}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: 16 }}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                )}
+                {/* Bouton de traduction en bas à droite */}
+                <button
+                  className="translate-button"
+                  onClick={() => translateMessage(message.id || `msg-${index}`, message.content)}
+                  title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
+                  style={{
+                    position: 'absolute',
+                    bottom: '6px',
+                    right: '8px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem',
+                    color: 'var(--text-color)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    zIndex: 1
+                  }}
+                >
+                  {translatedMessages[message.id || `msg-${index}`] ? "Original" : "🌐 Translate"}
+                </button>
+                                 {isAdmin && isEditing && (
+                   <div style={{ position: 'absolute', right: '100px', bottom: '0px', display: 'flex'}}>
+                     <button
+                       className="edit-message-button"
+                       title="Modifier"
+                       onClick={() => {
+                         setShowAddMessage(true);
+                         setNewMessage(message.content);
+                         setNewMessageSender(message.sender);
+                         setEditingMessageId(message.id || null);
+                       }}
+                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}
+                     >
+                       ✏️
+                     </button>
+                     <button
+                       className="delete-message-button"
+                       title="Supprimer"
+                       onClick={() => {
+                         if (window.confirm('Supprimer ce message ?') && message.id) {
+                           handleDeleteMessage(message.id);
+                         }
+                       }}
+                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: 16, marginLeft: '-20px' }}
+                     >
+                       🗑️
+                     </button>
+                   </div>
+                 )}
               </div>
             ))}
           </div>

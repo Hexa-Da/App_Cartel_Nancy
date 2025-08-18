@@ -69,8 +69,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   const [notifications, setNotifications] = React.useState(() => getInitial('notifications', true));
   // Localisation
   const [shareLocation, setShareLocation] = React.useState(() => getInitial('location', true));
-  // Langue
-  const [language, setLanguage] = React.useState(() => getInitial('language', 'fr'));
+
   // Sport préféré
   const [favoriteSports, setFavoriteSports] = React.useState<string[]>(() => {
     const stored = localStorage.getItem('preferredSport');
@@ -147,11 +146,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     }
   };
 
-  // Gérer le changement de langue
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
-    handlePreferenceChange('language', lang);
-  };
+
 
   // Gérer le changement de sport
   const handleSportChange = (sport: string) => {
@@ -230,9 +225,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
           onLocationChange(e.newValue === 'true');
         }
       }
-      if (e.key === 'language' && e.newValue !== null) {
-        setLanguage(e.newValue);
-      }
+
       if (e.key === 'preferredSport' && e.newValue !== null) {
         setFavoriteSports(JSON.parse(e.newValue));
       }
@@ -275,9 +268,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
           onLocationChange(e.detail.value === 'true');
         }
       }
-      if (e.detail.key === 'language') {
-        setLanguage(e.detail.value);
-      }
+
       if (e.detail.key === 'preferredSport') {
         setFavoriteSports(JSON.parse(e.detail.value));
       }
@@ -355,18 +346,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
               <span className="slider round"></span>
             </label>
           </div>
-          <div className="settings-item">
-            <label htmlFor="language">Langue</label>
-            <select 
-              id="language" 
-              className="settings-select" 
-              value={language} 
-              onChange={(e) => handleLanguageChange(e.target.value)}
-            >
-              <option value="fr">Français</option>
-              <option value="en">English</option>
-            </select>
-          </div>
+
           <div className="settings-item">
             <label htmlFor="preferred-sport">Votre Sport</label>
             <select 
