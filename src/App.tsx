@@ -20,6 +20,8 @@ import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import EmergencyPopup from './components/EmergencyPopup';
+import BusLines from './components/BusLines';
+import BusLinesControl from './components/BusLinesControl';
 import './components/ModalForm.css';
 
 // Fix for default marker icons in Leaflet with React
@@ -122,6 +124,18 @@ function LocationMarker() {
 
   // Écouter les changements de l'état de localisation
   useEffect(() => {
+    // Initialiser le service de notifications au démarrage
+    const initNotifications = async () => {
+      try {
+        const notificationService = NotificationService.getInstance();
+        await notificationService.initialize();
+      } catch (error) {
+        console.error('Erreur lors de l\'initialisation des notifications:', error);
+      }
+    };
+    
+    initNotifications();
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'location') {
         const newValue = e.newValue === 'true';
@@ -566,15 +580,46 @@ function App() {
       isAdmin: true
     });
 
-    // Envoyer une notification
+    // Envoyer une notification locale à l'expéditeur
     const notificationService = NotificationService.getInstance();
     const hasPermission = await notificationService.checkPermission();
     
     if (hasPermission) {
       await notificationService.sendLocalNotification(
-        'Nouveau message de l\'organisation',
-        msg
+        'Message envoyé',
+        'Votre message a été envoyé avec succès'
       );
+    }
+
+    // Ici vous devriez implémenter l'envoi de notifications push à tous les utilisateurs
+    // via Firebase Cloud Messaging (FCM) ou votre serveur
+    await sendPushNotificationToAllUsers(msg, sender);
+  };
+
+  // Fonction pour envoyer des notifications push à tous les utilisateurs
+  const sendPushNotificationToAllUsers = async (message: string, sender: string) => {
+    try {
+      // Pour l'instant, on utilise des notifications locales
+      // TODO: Implémenter FCM plus tard
+      console.log('Envoi de notification à tous les utilisateurs:', message);
+      
+      // Notification locale pour l'expéditeur
+      const notificationService = NotificationService.getInstance();
+      await notificationService.sendLocalNotification(
+        'Message envoyé',
+        'Votre message a été envoyé avec succès'
+      );
+      
+      // TODO: Remplacer par l'envoi FCM quand ce sera configuré
+      // Exemple avec Firebase Functions :
+      // const response = await fetch('/api/send-notification', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ message, sender })
+      // });
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi des notifications:', error);
     }
   };
 
@@ -3554,6 +3599,7 @@ function App() {
   }, [activeTab]);
 
   const [showVSSForm, setShowVSSForm] = useState(false);
+  const [visibleBusLines, setVisibleBusLines] = useState<string[]>(['T1']); // Par défaut, afficher la ligne T1
 
   // Fonctions wrapper pour sauvegarder les filtres dans le localStorage
   const setEventFilterWithSave = (value: string) => {
@@ -3681,6 +3727,7 @@ function App() {
           />
           <LocationMarker />
           <MapEvents onMapClick={handleMapClick} />
+          <BusLines visibleLines={visibleBusLines} />
           {/* Pinne temporaire supprimée pour éviter l'affichage de la pinne orange
           {tempMarker && (
             <Marker
@@ -3723,6 +3770,12 @@ function App() {
                 </div>
               </div>
             </MapContainer>
+            
+            {/* Contrôle des lignes de bus */}
+            <BusLinesControl 
+              visibleLines={visibleBusLines}
+              onLinesChange={setVisibleBusLines}
+            />
             
             {/* Bouton flottant pour afficher les événements */}
             <button 

@@ -1,0 +1,59 @@
+/* Styles pour les lignes de tramway */
+
+/* Icône des arrêts de tram */
+.tram-stop-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+/* Popup des arrêts de bus - Style copié-collé exact des venues */
+.bus-stop-popup {
+  min-width: min(250px, 90vw);
+  padding: 1rem;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.bus-stop-popup h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-color);
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  font-weight: 600;
+}
+
+.line-info {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-color-light);
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+}
+
+.line-name {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.line-info small {
+  color: var(--text-color-light);
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+}
+
+/* Bouton "Voir les horaires" - Style copié-collé exact des boutons maps des venues */
+.schedule-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  transition: all 0.3s ease;
+}
+
+/* Media queries pour les petits écrans - Copié-collé exact des venues */
+@media (max-width: 600px) {
+  .bus-stop-popup {
+    max-width: 85vw;
+  }
+}

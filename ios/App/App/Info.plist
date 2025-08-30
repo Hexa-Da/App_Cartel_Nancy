@@ -64,6 +64,11 @@
 	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	
+	<!-- Permissions pour les notifications push -->
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Cette application nécessite l'autorisation d'envoyer des notifications pour vous informer des nouveaux messages dans le chat.</string>
+	
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

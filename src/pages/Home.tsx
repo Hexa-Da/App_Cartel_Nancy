@@ -362,12 +362,12 @@ const Home: React.FC = () => {
                 <p key={sport} className="no-matches">
                   {userPreferences.delegation 
                     ? `Aucun match de ${sport} trouvé pour la délégation de ${userPreferences.delegation}`
-                    : `Aucun match de ${sport} trouvé. Veuillez sélectionner une délégation.`}
+                    : `Aucun match de ${sport} trouvé. Veuillez sélectionner votre délégation.`}
                 </p>
               );
             })
           ) : (
-            <p className="no-matches">Veuillez sélectionner vos sports favoris dans les préférences</p>
+            <p className="no-matches">Veuillez sélectionner votre sports dans les préférences</p>
           )}
         </section>
 
@@ -400,10 +400,10 @@ const Home: React.FC = () => {
                 ))
               ) : (
                 <p className="no-matches">Aucun match trouvé pour la délégation {userPreferences.delegation} <br />
-                Veuillez sélectionner une délégation dans les préférences</p>
+                Veuillez sélectionner votre délégation dans les préférences</p>
               )
             ) : (
-              <p className="no-matches">Veuillez sélectionner une délégation dans les préférences</p>
+              <p className="no-matches">Veuillez sélectionner votre délégation dans les préférences</p>
             )}
           </div>
         </section>
