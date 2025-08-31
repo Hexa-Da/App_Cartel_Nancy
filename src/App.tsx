@@ -21,7 +21,6 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import EmergencyPopup from './components/EmergencyPopup';
 import BusLines from './components/BusLines';
-import BusLinesControl from './components/BusLinesControl';
 import './components/ModalForm.css';
 
 // Fix for default marker icons in Leaflet with React
@@ -3599,7 +3598,7 @@ function App() {
   }, [activeTab]);
 
   const [showVSSForm, setShowVSSForm] = useState(false);
-  const [visibleBusLines, setVisibleBusLines] = useState<string[]>(['T1']); // Par défaut, afficher la ligne T1
+
 
   // Fonctions wrapper pour sauvegarder les filtres dans le localStorage
   const setEventFilterWithSave = (value: string) => {
@@ -3727,7 +3726,7 @@ function App() {
           />
           <LocationMarker />
           <MapEvents onMapClick={handleMapClick} />
-          <BusLines visibleLines={visibleBusLines} />
+                          <BusLines visibleLines={['T1', 'T5']} />
           {/* Pinne temporaire supprimée pour éviter l'affichage de la pinne orange
           {tempMarker && (
             <Marker
@@ -3771,11 +3770,7 @@ function App() {
               </div>
             </MapContainer>
             
-            {/* Contrôle des lignes de bus */}
-            <BusLinesControl 
-              visibleLines={visibleBusLines}
-              onLinesChange={setVisibleBusLines}
-            />
+
             
             {/* Bouton flottant pour afficher les événements */}
             <button 
