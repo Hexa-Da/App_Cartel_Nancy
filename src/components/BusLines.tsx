@@ -36,7 +36,7 @@ const ZoomController: React.FC<{ onZoomChange: (zoom: number) => void }> = ({ on
 // Données de la ligne T1 (Tramway) de Nancy avec les vraies coordonnées
 const tramLine: TramLine = {
   id: 'T1',
-  name: 'T1',
+  name: 'Ligne T1',
   description: 'Essey Mouzimpré ↔ Vandeouvre CHU Brabois',
   color: '#FF0000', // Rouge
   coordinates: [
@@ -98,7 +98,7 @@ const tramLine: TramLine = {
       googleMapsUrl: 'https://www.google.fr/maps/place/Parc+de+Brabois/@48.6538678,6.152215,21z/data=!4m8!3m7!1s0x4794a20c95b24b09:0xf3e69129a22176!6m1!1v4!8m2!3d48.653887!4d6.152348!16s%2Fg%2F11x65kj0fb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
     },
     { 
-      name: 'Notre-Dame-des-Pauvres Direction Vandeouvre', 
+      name: 'Notre-Dame-des-Pauvres Direction Sud', 
       coords: [48.657364, 6.155514] as [number, number],
       googleMapsUrl: 'https://www.google.fr/maps/place/Notre-Dame-des-Pauvres/@48.6569281,6.1546025,17.86z/data=!4m8!3m7!1s0x4794a2748fa4eff3:0xe48f24141f628937!6m1!1v4!8m2!3d48.657397!4d6.155494!16s%2Fg%2F11x65jkk5f?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
     },
@@ -213,7 +213,7 @@ const tramLine: TramLine = {
 // Nouvelle ligne T5 (violet)
 const tramLineT5: TramLine = {
   id: 'T5',
-  name: 'T5',
+  name: 'Ligne T5',
   description: 'Vandeouvre Roberval ↔ Maxéville Meurthe-Canal',
   color: '#8B00FF', // Violet
   coordinates: [
@@ -241,24 +241,24 @@ const tramLineT5: TramLine = {
     [48.671964, 6.172453], // ARTEM - Blandan - Thermal (partagé avec T1)
     [48.675217, 6.176070], // Exelmans (partagé avec T1)
     [48.678672, 6.179993], // Point intermédiaire
+    [48.678827, 6.180074], // Point intermédiaire
     [48.679197, 6.180481], // Jean Jaurès (nouveau point T5)
-    [48.681695, 6.183273], // Garenne - Saurupt
-    [48.683524, 6.185382], // Pichon Direction Vandeouvre
-    [48.684524, 6.186486], // Pichon Direction Maxéville
   ] as [number, number][],
   // Tracé direction Vandeouvre Roberval (gauche)
   coordinatesVandeouvre: [
-    [48.683524, 6.185382], // Pichon Direction Vandeouvre
+    [48.679197, 6.180481], // Jean Jaurès (partagé avec T1)
+    [48.681798, 6.183409], // Garenne - Saurupt
+    [48.683524, 6.185382], // Pichon Direction Sud
     [48.684081, 6.185994], // Point intermédiaire
-    [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Vandeouvre
-    [48.689066, 6.182293], // Place Charles III - Point Central Direction Vandeouvre
-    [48.690898, 6.180990], // Place Stanislas - Dom Calmet Direction Vandeouvre
+    [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
+    [48.689066, 6.182293], // Place Charles III - Point Central Direction Sud
+    [48.690898, 6.180990], // Place Stanislas - Dom Calmet Direction Sud
     [48.692093, 6.180120], // Point intermédiaire
     [48.691505, 6.178297], // Point intermédiaire
     [48.691577, 6.178123], // Point intermédiaire
     [48.692224, 6.177389], // Point intermédiaire
-    [48.692857, 6.177022], // Place Carnot Direction Vandeouvre
-    [48.696276, 6.174582], // Baron Louis Direction Vandeouvre
+    [48.692857, 6.177022], // Place Carnot Direction Sud
+    [48.696276, 6.174582], // Baron Louis Direction Sud
     [48.697377, 6.173828], // Point intermédiaire
     [48.697532, 6.174247], // Point intermédiaire
     [48.698127, 6.173850], // Point intermédiaire
@@ -278,21 +278,23 @@ const tramLineT5: TramLine = {
   ] as [number, number][],
   // Tracé direction Maxéville Meurthe-Canal (droite)
   coordinatesMaxeville: [
-    [48.684524, 6.186486], // Pichon Direction Maxéville
+    [48.684081, 6.185994], // Point intermédiaire
+    [48.684524, 6.186486], // Pichon Direction Nord
     [48.685037, 6.187112], // Point intermédiaire
     [48.685269, 6.186691], // Point intermédiaire
     [48.685322, 6.186466], // Point intermédiaire
     [48.685567, 6.186148], // Point intermédiaire
     [48.685809, 6.186139], // Point intermédiaire
-    [48.687646, 6.184797], // Quartier Saint-Nicolas Direction Maxéville
-    [48.689725, 6.183256], // Place Charles III - Point Central Direction Maxéville
-    [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Maxéville
-    [48.693032, 6.180786], // Amerval Direction Maxéville
+    [48.687646, 6.184797], // Quartier Saint-Nicolas Direction Nord
+    [48.689725, 6.183256], // Place Charles III - Point Central Direction Nord
+    [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
+    [48.692823, 6.180935], // Point intermédiaire
+    [48.693032, 6.180786], // Amerval Direction Nord
     [48.693647, 6.180346], // Point intermédiaire
     [48.694244, 6.180079], // Point intermédiaire
     [48.693691, 6.178054], // Point intermédiaire
-    [48.694287, 6.177591], // Place Carnot Direction Maxéville
-    [48.695966, 6.176390], // Cours Léopold Direction Maxéville
+    [48.694287, 6.177591], // Place Carnot Direction Nord
+    [48.695966, 6.176390], // Cours Léopold Direction Nord
     [48.697777, 6.175085], // Point intermédiaire
     [48.697639, 6.174600], // Point intermédiaire
     [48.698233, 6.174172], // Point intermédiaire
@@ -460,7 +462,7 @@ const tramLineT5: TramLine = {
     },
     { 
       name: 'Garenne - Saurupt', 
-      coords: [48.681695, 6.183273] as [number, number],
+      coords: [48.681798, 6.183409] as [number, number],
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Vandeouvre',
@@ -473,64 +475,134 @@ const tramLineT5: TramLine = {
       ]
     },
     { 
-      name: 'Pichon Direction Vandeouvre', 
+      name: 'Pichon Direction Sud', 
       coords: [48.683524, 6.185382] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Pichon/@48.6836145,6.1848552,18.94z/data=!4m8!3m7!1s0x479498661c6127ad:0x628714adcce75c9d!6m1!1v5!8m2!3d48.6835659!4d6.1853214!16s%2Fg%2F11c5_sp57d?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Pichon/@48.6836145,6.1848552,18.94z/data=!4m8!3m7!1s0x479498661c6127ad:0x628714adcce75c9d!6m1!1v5!8m2!3d48.6835659!4d6.1853214!16s%2Fg%2F11c5_sp57d?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Pichon Direction Maxéville', 
+      name: 'Pichon Direction Nord', 
       coords: [48.684524, 6.186486] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Pichon/@48.6846137,6.1866506,20.04z/data=!4m8!3m7!1s0x479498689926ac21:0x9323d9ffe1f60327!6m1!1v5!8m2!3d48.684528!4d6.186583!16s%2Fg%2F11ddxfv337?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Pichon/@48.6846137,6.1866506,20.04z/data=!4m8!3m7!1s0x479498689926ac21:0x9323d9ffe1f60327!6m1!1v5!8m2!3d48.684528!4d6.186583!16s%2Fg%2F11ddxfv337?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Quartier Saint-Nicolas Direction Vandeouvre', 
+      name: 'Quartier Saint-Nicolas Direction Sud', 
       coords: [48.686100, 6.184457] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.6862201,6.1841763,19.56z/data=!4m8!3m7!1s0x4794986f2f073daf:0x2ab9dc3c891c1237!6m1!1v5!8m2!3d48.686092!4d6.184456!16s%2Fg%2F11c2p8c3vt?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.6862201,6.1841763,19.56z/data=!4m8!3m7!1s0x4794986f2f073daf:0x2ab9dc3c891c1237!6m1!1v5!8m2!3d48.686092!4d6.184456!16s%2Fg%2F11c2p8c3vt?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Quartier Saint-Nicolas Direction Maxéville', 
+      name: 'Quartier Saint-Nicolas Direction Nord', 
       coords: [48.687646, 6.184797] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.6866564,6.1842266,17.42z/data=!4m8!3m7!1s0x4794986ec96758e7:0xfa2c06d1f65cceb6!6m1!1v5!8m2!3d48.6876289!4d6.1848987!16s%2Fg%2F11ddxjzmlr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.6866564,6.1842266,17.42z/data=!4m8!3m7!1s0x4794986ec96758e7:0xfa2c06d1f65cceb6!6m1!1v5!8m2!3d48.6876289!4d6.1848987!16s%2Fg%2F11ddxjzmlr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Place Charles III - Point Central Direction Vandeouvre', 
+      name: 'Place Charles III - Point Central Direction Sud', 
       coords: [48.689066, 6.182293] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.6891846,6.1821947,19.78z/data=!4m8!3m7!1s0x4794986e7eb595e9:0xda0c16e2a93099a7!6m1!1v5!8m2!3d48.688946!4d6.182275!16s%2Fg%2F11fn25wfc0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.6891846,6.1821947,19.78z/data=!4m8!3m7!1s0x4794986e7eb595e9:0xda0c16e2a93099a7!6m1!1v5!8m2!3d48.688946!4d6.182275!16s%2Fg%2F11fn25wfc0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Place Charles III - Point Central Direction Maxéville', 
+      name: 'Place Charles III - Point Central Direction Nord', 
       coords: [48.689725, 6.183256] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.689738,6.1830833,19.97z/data=!4m8!3m7!1s0x4794986c2fa416d3:0x6ce0accf3d312599!6m1!1v5!8m2!3d48.6897402!4d6.1833435!16s%2Fg%2F11c2p3qxvd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.689738,6.1830833,19.97z/data=!4m8!3m7!1s0x4794986c2fa416d3:0x6ce0accf3d312599!6m1!1v5!8m2!3d48.6897402!4d6.1833435!16s%2Fg%2F11c2p3qxvd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Place Stanislas - Dom Calmet Direction Vandeouvre', 
+      name: 'Place Stanislas - Dom Calmet Direction Sud', 
       coords: [48.690898, 6.180990] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6912296,6.1809476,18.58z/data=!4m8!3m7!1s0x4794986d91c5c17f:0xc037e67b6cef6764!6m1!1v5!8m2!3d48.690914!4d6.180878!16s%2Fg%2F11ddxp_qxw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6912296,6.1809476,18.58z/data=!4m8!3m7!1s0x4794986d91c5c17f:0xc037e67b6cef6764!6m1!1v5!8m2!3d48.690914!4d6.180878!16s%2Fg%2F11ddxp_qxw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Place Stanislas - Dom Calmet Direction Maxéville', 
+      name: 'Place Stanislas - Dom Calmet Direction Nord', 
       coords: [48.692003, 6.181538] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6918028,6.1814784,19.26z/data=!4m8!3m7!1s0x4794986d748e8975:0xbf7155ff4d7abc40!6m1!1v5!8m2!3d48.6920566!4d6.1816469!16s%2Fg%2F11c5_sr0nc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6918028,6.1814784,19.26z/data=!4m8!3m7!1s0x4794986d748e8975:0xbf7155ff4d7abc40!6m1!1v5!8m2!3d48.6920566!4d6.1816469!16s%2Fg%2F11c5_sr0nc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Amerval Direction Maxéville', 
+      name: 'Amerval Direction Nord', 
       coords: [48.693032, 6.180786] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Amerval/@48.6932385,6.1801501,18.58z/data=!4m8!3m7!1s0x47949872a7fb8c3d:0x2fc05741d9b87456!6m1!1v5!8m2!3d48.693569!4d6.180514!16s%2Fg%2F11xd8npp76?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Amerval/@48.6932385,6.1801501,18.58z/data=!4m8!3m7!1s0x47949872a7fb8c3d:0x2fc05741d9b87456!6m1!1v5!8m2!3d48.693569!4d6.180514!16s%2Fg%2F11xd8npp76?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Place Carnot Direction Vandeouvre', 
+      name: 'Place Carnot Direction Sud', 
       coords: [48.692857, 6.177022] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Place+Carnot/@48.6928988,6.1767242,106m/data=!3m1!1e3!4m8!3m7!1s0x479498731a2a9961:0xbcdffd07b687597a!6m1!1v5!8m2!3d48.692944!4d6.176891!16s%2Fg%2F11ddxk93s2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Place+Carnot/@48.6928988,6.1767242,106m/data=!3m1!1e3!4m8!3m7!1s0x479498731a2a9961:0xbcdffd07b687597a!6m1!1v5!8m2!3d48.692944!4d6.176891!16s%2Fg%2F11ddxk93s2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Place Carnot Direction Maxéville', 
+      name: 'Baron Louis Direction Sud', 
+      coords: [48.696276, 6.174582] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Baron+Louis/@48.6962601,6.1744511,251m/data=!3m1!1e3!4m8!3m7!1s0x4794980b658091e7:0x41e997b3f2f8a4d8!6m1!1v5!8m2!3d48.6962533!4d6.174538!16s%2Fg%2F11ddxph474?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Carnot Direction Nord', 
       coords: [48.694287, 6.177591] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Place+Carnot/@48.6941543,6.1775592,108m/data=!3m1!1e3!4m8!3m7!1s0x479498732b08c373:0x3ff782a04d555c15!6m1!1v5!8m2!3d48.694336!4d6.177522!16s%2Fg%2F11h_1l5qx0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Place+Carnot/@48.6941543,6.1775592,108m/data=!3m1!1e3!4m8!3m7!1s0x479498732b08c373:0x3ff782a04d555c15!6m1!1v5!8m2!3d48.694336!4d6.177522!16s%2Fg%2F11h_1l5qx0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Cours Léopold Direction Maxéville', 
+      name: 'Cours Léopold Direction Nord', 
       coords: [48.695966, 6.176390] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Cours+L%C3%A9opold/@48.6957998,6.1763331,117m/data=!3m1!1e3!4m8!3m7!1s0x4794980c94e54fdd:0x5577aac67f547917!6m1!1v5!8m2!3d48.6960099!4d6.1764502!16s%2Fg%2F11ddxfh9gg?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Cours+L%C3%A9opold/@48.6957998,6.1763331,117m/data=!3m1!1e3!4m8!3m7!1s0x4794980c94e54fdd:0x5577aac67f547917!6m1!1v5!8m2!3d48.6960099!4d6.1764502!16s%2Fg%2F11ddxfh9gg?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Désilles', 
@@ -634,6 +706,808 @@ const tramLineT5: TramLine = {
   ]
 };
 
+const tramLineT4: TramLine = {
+  id: 'T4',
+  name: 'Ligne T4',
+  description: 'Houdemont Porte Sud ↔ Laxou Champ-le-Beouf',
+  color: '#FFD700', // Jaune
+  coordinates: [
+    [48.637413, 6.185020], // Houdemont Porte Sud
+    [48.637257, 6.185154], // Point intermédiaire
+    [48.636934, 6.185235], // Point intermédiaire
+    [48.636805, 6.182854], // Point intermédiaire
+    [48.642456, 6.182125], // Erables
+    [48.645024, 6.181874], // Houdemont Gare
+    [48.646451, 6.181955], // Point intermédiaire
+    [48.650075, 6.183543], // Les Mûriers
+    [48.652407, 6.184764], // Route d'Heillecourt
+    [48.654087, 6.185719], // Point intermédiaire
+    [48.654615, 6.185892], // Point intermédiaire
+    [48.655356, 6.186037], // Mermoz
+    [48.657900, 6.186093], // Point intermédiaire
+    [48.659245, 6.186586], // Point intermédiaire
+    [48.660026, 6.187042], // Point intermédiaire
+    [48.660398, 6.187331], // Point intermédiaire
+    [48.661021, 6.187689], // Point intermédiaire
+    [48.660879, 6.186745], // Point intermédiaire
+    [48.660502, 6.185499], // Place de Londres
+    [48.659644, 6.182601], // Amsterdam
+    [48.659117, 6.180849], // Angleterre
+    [48.658979, 6.180400], // Point intermédiaire
+    [48.660280, 6.179623], // Goethe
+    [48.661006, 6.179295], // Point intermédiaire
+    [48.662562, 6.176685], // Parc des Sports - Nations
+    [48.663842, 6.174714], // Point intermédiaire
+    [48.664239, 6.174252], // Point intermédiaire
+    [48.664913, 6.174753], // Vandeouvre - Marché
+    [48.666435, 6.176516], // Point intermédiaire
+    [48.667045, 6.177019], // Norvège
+    [48.668390, 6.178028], // Point intermédiaire
+    [48.669132, 6.178059], // Point intermédiaire
+    [48.670003, 6.178592], // Wilson
+    [48.670519, 6.178936], // Point intermédiaire
+    [48.671257, 6.180159], // Point intermédiaire
+    [48.672438, 6.181751], // Briand
+    [48.673603, 6.183290], // Point intermédiaire
+    [48.673861, 6.183327], // Point intermédiaire
+    [48.674719, 6.182698], // Sainte-Colette
+    [48.676077, 6.181796], // Oudinot
+    [48.678827, 6.180074], // Point intermédiaire
+    [48.679197, 6.180481], // Jean Jaurès (partagé avec T5)
+  ] as [number, number][],
+  // Tracé direction Laxou Champ-le-Beouf (gauche)
+  coordinatesLaxou: [
+    [48.679197, 6.180481], // Jean Jaurès (partagé avec T5)
+    [48.681798, 6.183409], // Garenne - Saurupt (partagé avec T5)
+    [48.683524, 6.185382], // Pichon Direction Sud
+    [48.684081, 6.185994], // Point intermédiaire
+    [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
+    [48.689066, 6.182293], // Place Charles III - Point Central Direction Sud
+    [48.690898, 6.180990], // Place Stanislas - Dom Calmet Direction Sud
+    [48.692093, 6.180120], // Point intermédiaire
+    [48.691505, 6.178297], // Point intermédiaire
+    [48.690622, 6.175509], // Point intermédiaire
+    [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
+    [48.689414, 6.176331], // Point intermédiaire
+    [48.688326, 6.173023], // Saint-Léon Direction Sud
+    [48.686733, 6.168055], // Point intermédiaire
+    [48.686566, 6.167868], // Commanderie Direction Sud
+    [48.686058, 6.167258], // Point intermédiaire
+    [48.686012, 6.166898], // Point intermédiaire
+    [48.687561, 6.166235], // Préville Direction Sud
+    [48.688303, 6.165892], // Point intermédiaire
+    [48.688917, 6.162981], // Saintifontaine
+    [48.689584, 6.159877], // Messier
+    [48.690433, 6.155906], // Chemin Blanc
+    [48.691116, 6.152686], // Marquette
+    [48.691805, 6.149374], // La Côte
+    [48.692534, 6.145934], // Viray
+    [48.692731, 6.145027], // Point intermédiaire
+    [48.692928, 6.143324], // Point intermédiaire
+    [48.693259, 6.140156], // Beauregard Sainte-Anne
+    [48.693497, 6.138098], // Point intermédiaire
+    [48.693037, 6.138168], // Boufflers
+    [48.691318, 6.138464], // Georges de la Tour
+    [48.690670, 6.138560], // Point intermédiaire
+    [48.690284, 6.137243], // Point intermédiaire
+    [48.689416, 6.135194], // Observatoire
+    [48.688937, 6.134220], // Point intermédiaire
+    [48.689204, 6.132839], // Croix Saint-Claude
+    [48.689783, 6.130048], // Point intermédiaire
+    [48.690321, 6.128707], // Point intermédiaire
+    [48.690981, 6.128387], // Laxou Sapinière
+    [48.692532, 6.128162], // Point intermédiaire
+    [48.694612, 6.128002], // Point intermédiaire
+    [48.694649, 6.127576], // Point intermédiaire
+    [48.694974, 6.124373], // Point intermédiaire
+    [48.695672, 6.124361], // Vair Direction Sud
+    [48.695998, 6.124373], // Point intermédiaire
+    [48.696033, 6.125262], // Point intermédiaire
+    [48.697247, 6.125168], // Moselotte
+    [48.698202, 6.125090], // Point intermédiaire
+    [48.698156, 6.123322], // Laxou Champ-le-Beouf
+  ] as [number, number][],
+  // Tracé direction Houdemont Porte Sud (droite)
+  coordinatesHoudemont: [
+    [48.684081, 6.185994], // Point intermédiaire
+    [48.684524, 6.186486], // Pichon Direction Nord
+    [48.685037, 6.187112], // Point intermédiaire
+    [48.685269, 6.186691], // Point intermédiaire
+    [48.685322, 6.186466], // Point intermédiaire
+    [48.685567, 6.186148], // Point intermédiaire
+    [48.685809, 6.186139], // Point intermédiaire
+    [48.687646, 6.184797], // Quartier Saint-Nicolas Direction Nord
+    [48.689725, 6.183256], // Place Charles III - Point Central Direction Nord
+    [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
+    [48.692823, 6.180935], // Point intermédiaire
+    [48.692137, 6.178665], // Bibliothèque Direction Nord
+    [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+    [48.689870, 6.171286], // Gare - Raymond Poincaré Direction Nord
+    [48.689266, 6.169294], // Bégonias Direction Nord
+    [48.688424, 6.166499], // Préville Direction Nord
+    [48.688305, 6.165897], // Point intermédiaire
+    [48.688917, 6.162981], // Saintifontaine
+    [48.689584, 6.159877], // Messier
+    [48.690433, 6.155906], // Chemin Blanc
+    [48.691116, 6.152686], // Marquette
+    [48.691805, 6.149374], // La Côte
+    [48.692534, 6.145934], // Viray
+    [48.692731, 6.145027], // Point intermédiaire
+    [48.692928, 6.143324], // Point intermédiaire
+    [48.693259, 6.140156], // Beauregard Sainte-Anne
+    [48.693497, 6.138098], // Point intermédiaire
+    [48.693037, 6.138168], // Boufflers
+    [48.691318, 6.138464], // Georges de la Tour
+    [48.690670, 6.138560], // Point intermédiaire
+    [48.690284, 6.137243], // Point intermédiaire
+    [48.689416, 6.135194], // Observatoire
+    [48.688937, 6.134220], // Point intermédiaire
+    [48.689204, 6.132839], // Croix Saint-Claude
+    [48.689783, 6.130048], // Point intermédiaire
+    [48.690321, 6.128707], // Point intermédiaire
+    [48.690981, 6.128387], // Laxou Sapinière
+    [48.692532, 6.128162], // Point intermédiaire
+    [48.694612, 6.128002], // Point intermédiaire
+    [48.694649, 6.127576], // Point intermédiaire
+    [48.694907, 6.127233], // Point intermédiaire
+    [48.696086, 6.126997], // Point intermédiaire
+    [48.696039, 6.125463], // Saône
+    [48.695998, 6.124373], // Point intermédiaire
+    [48.696037, 6.123708], // Vair Direction Nord
+    [48.696100, 6.123089], // Point intermédiaire
+    [48.698137, 6.122952], // Point intermédiaire
+    [48.698156, 6.123322], // Laxou Champ-le-Beouf
+  ] as [number, number][],
+  stops: [
+    { 
+      name: 'Houdemont Porte Sud', 
+      coords: [48.637413, 6.185020] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Houdemont+Porte+Sud/@48.6374452,6.1844724,107m/data=!3m1!1e3!4m8!3m7!1s0x479498cbdb5a2da3:0x76537508e8a3a703!6m1!1v5!8m2!3d48.6374127!4d6.1851892!16s%2Fg%2F11h_1kwbf6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Erables', 
+      coords: [48.642456, 6.182125] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Erables/@48.6426592,6.1822878,151m/data=!3m1!1e3!4m8!3m7!1s0x479498c818aa2103:0xad089dddabdea68!6m1!1v5!8m2!3d48.642738!4d6.182048!16s%2Fg%2F11ddxk17lc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Erables/@48.6426592,6.1822878,151m/data=!3m1!1e3!4m8!3m7!1s0x479498b80a515eb7:0x5598cd7882b6f58c!6m1!1v5!8m2!3d48.64233!4d6.182185!16s%2Fg%2F11c6_g7fsg?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Houdemont Gare', 
+      coords: [48.645024, 6.181874] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Houdemont+Gare/@48.6450939,6.182644,432m/data=!3m1!1e3!4m8!3m7!1s0x479498b80b7b8a35:0x7e607167a3c702ff!6m1!1v5!8m2!3d48.645088!4d6.181778!16s%2Fg%2F11c5_rgy4c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Houdemont+Gare/@48.6448595,6.1822148,104m/data=!3m1!1e3!4m8!3m7!1s0x479498b80a683a91:0x676a8d3432367367!6m1!1v5!8m2!3d48.644962!4d6.181986!16s%2Fg%2F11ddxmy9cs?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Les Mûriers', 
+      coords: [48.650075, 6.183543] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Les+M%C3%BBriers/@48.6500098,6.1835294,399m/data=!3m1!1e3!4m8!3m7!1s0x479498c098964f5b:0x978c767eaa6ab3e9!6m1!1v5!8m2!3d48.650139!4d6.183645!16s%2Fg%2F11ddxntzmd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Les+M%C3%BBriers/@48.6500098,6.1835294,399m/data=!3m1!1e3!4m8!3m7!1s0x479498c0a04add01:0x4d2b97cad1a16680!6m1!1v5!8m2!3d48.650082!4d6.183437!16s%2Fg%2F11c5_h3hc8?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Route d\'Heillecourt', 
+      coords: [48.652407, 6.184764] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Route+d\'Heillecourt/@48.6522768,6.1846669,73m/data=!3m1!1e3!4m8!3m7!1s0x479498c06b7a04e1:0x9d0494fde890a97d!6m1!1v5!8m2!3d48.652478!4d6.184869!16s%2Fg%2F11c2p3_1zr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Route+d\'Heillecourt/@48.6522768,6.1846669,73m/data=!3m1!1e3!4m8!3m7!1s0x479498c06e762f6d:0x3634a54b53371229!6m1!1v5!8m2!3d48.652294!4d6.184633!16s%2Fg%2F11ddxkt1kx?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Mermoz', 
+      coords: [48.655356, 6.186037] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Mermoz/@48.6549793,6.1861035,154m/data=!3m1!1e3!4m8!3m7!1s0x479498ea948921bf:0xdbed752a5ef9e1a1!6m1!1v5!8m2!3d48.654865!4d6.186032!16s%2Fg%2F11ddxfh9gd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Mermoz/@48.6555173,6.1860602,155m/data=!3m1!1e3!4m8!3m7!1s0x479498eadd75c209:0x29cd2c929668e1fb!6m1!1v5!8m2!3d48.655823!4d6.18594!16s%2Fg%2F11c5_r6d09?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place de Londres', 
+      coords: [48.660502, 6.185499] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+de+Londres/@48.6606573,6.1858438,76a,35y,1.58t/data=!3m1!1e3!4m8!3m7!1s0x479498ecd202b2db:0x4000a914838a7352!6m1!1v5!8m2!3d48.660715!4d6.186009!16s%2Fg%2F11h_1kwm7y?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Place+de+Londres/@48.6606573,6.1858438,76a,35y,1.58t/data=!3m1!1e3!4m8!3m7!1s0x479498ecd1fecd91:0x7f83968b05399bb2!6m1!1v5!8m2!3d48.6607362!4d6.18592!16s%2Fg%2F11hdsft_p5?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Amsterdam', 
+      coords: [48.659644, 6.182601] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Amsterdam/@48.6598174,6.1824476,333a,35y,1.57t/data=!3m1!1e3!4m8!3m7!1s0x47949893712f35c5:0x27e59488b3fb1f5a!6m1!1v5!8m2!3d48.6597833!4d6.1827267!16s%2Fg%2F11ddxnhv09?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Amsterdam/@48.6598174,6.1824476,333a,35y,1.57t/data=!3m1!1e3!4m8!3m7!1s0x4794989379b719f3:0x69c1b881ff776673!6m1!1v5!8m2!3d48.659542!4d6.182472!16s%2Fg%2F11c2p8c3vp?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Angleterre', 
+      coords: [48.659117, 6.180849] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Angleterre/@48.6592539,6.1804018,330a,35y,1.57t/data=!3m1!1e3!4m8!3m7!1s0x479498938afb27e1:0x1916c9684f117149!6m1!1v5!8m2!3d48.659073!4d6.181001!16s%2Fg%2F11ddxpjvtm?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Angleterre/@48.6592539,6.1804018,330a,35y,1.57t/data=!3m1!1e3!4m8!3m7!1s0x47949893e6b0f0b3:0x7d2cfbc12172bf29!6m1!1v5!8m2!3d48.6592043!4d6.1808152!16s%2Fg%2F11fn269jzn?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Goethe', 
+      coords: [48.660280, 6.179623] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Goethe/@48.6590835,6.1798409,406a,35y,1.57t/data=!3m1!1e3!4m8!3m7!1s0x47949893f084034f:0x95131ca0432ef558!6m1!1v5!8m2!3d48.659554!4d6.180021!16s%2Fg%2F11h_1ldvzq?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Goethe/@48.6598137,6.1797357,215a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x47949893e0c41097:0x47a78d26c2e5b02f!6m1!1v5!8m2!3d48.660289!4d6.1797269!16s%2Fg%2F11ddxn9ccf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Parc des Sports - Nations', 
+      coords: [48.662562, 6.176685] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Parc+des+Sports+-+Nations/@48.6617055,6.1762712,784a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x4794989175344c7b:0x888184a4b2133360!6m1!1v5!8m2!3d48.661628!4d6.178198!16s%2Fg%2F11yjk1k9g0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Parc+des+Sports+-+Nations/@48.6617055,6.1762712,784a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x47949891a0093a5f:0xcbd07ce60966c5da!6m1!1v5!8m2!3d48.6633097!4d6.175676!16s%2Fg%2F11hdsfz1fj?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Vandeouvre - Marché', 
+      coords: [48.664913, 6.174753] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Vandoeuvre+-+March%C3%A9/@48.6649675,6.1742409,336a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x4794988ffbc7e121:0xa2efa8262fcb9ffa!6m1!1v5!8m2!3d48.664879!4d6.174809!16s%2Fg%2F11c2p8c3vd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Vandoeuvre+-+March%C3%A9/@48.6647828,6.1746001,117a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x4794988ff8c99d4b:0x9f2af1834882510a!6m1!1v5!8m2!3d48.664993!4d6.174791!16s%2Fg%2F11hdsfygsb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Norvège', 
+      coords: [48.667045, 6.177019] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Norv%C3%A8ge/@48.6667117,6.1766414,228a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x4794988f0870a30f:0xcbbd2b1728308975!6m1!1v5!8m2!3d48.666896!4d6.1770157!16s%2Fg%2F11ddxp7ydk?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Norv%C3%A8ge/@48.6667117,6.1766414,228a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x4794988f0f251d2b:0xce5b06645cb7bd43!6m1!1v5!8m2!3d48.667183!4d6.176998!16s%2Fg%2F11c2pf1gmr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Wilson', 
+      coords: [48.670003, 6.178592] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Wilson/@48.6696109,6.1784986,383a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949889274314eb:0x7d4ec8f661a7d395!6m1!1v5!8m2!3d48.6701057!4d6.1785565!16s%2Fg%2F11c5_rmjzy?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Wilson/@48.6697926,6.1785675,210a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794988926913ffd:0x22e044724c4350f0!6m1!1v5!8m2!3d48.670017!4d6.178627!16s%2Fg%2F11hdsgcfs8?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Briand', 
+      coords: [48.672438, 6.181751] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Briand/@48.6715283,6.1804878,690a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x479498898f82ba6b:0x8bec4538d0f61950!6m1!1v5!8m2!3d48.672279!4d6.181315!16s%2Fg%2F11c2p7fxg7?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Briand/@48.6715283,6.1804878,690a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x479498899cf1640f:0xbe59824419666654!6m1!1v5!8m2!3d48.672679!4d6.1821586!16s%2Fg%2F11fn25rmp4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Sainte-Colette', 
+      coords: [48.674719, 6.182698] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Sainte-Colette/@48.6738786,6.1830212,525a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x47949861f765eabf:0x14238a12291f6267!6m1!1v5!8m2!3d48.674753!4d6.182792!16s%2Fg%2F11c2p82099?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Sainte-Colette/@48.6743444,6.1828508,201a,35y,1.38t/data=!3m1!1e3!4m8!3m7!1s0x479498621d7be6eb:0x2d85ea0947d2d009!6m1!1v5!8m2!3d48.6748329!4d6.1825476!16s%2Fg%2F11l1yfwq_p?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Oudinot Direction Nord', 
+      coords: [48.676077, 6.181796] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Oudinot/@48.6762844,6.1816058,102a,35y,1.21t/data=!3m1!1e3!4m8!3m7!1s0x4799486230f4f269:0xe0d3f6f81f90ff49!6m1!1v5!8m2!3d48.676327!4d6.181712!16s%2Fg%2F11c5_skn92?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Jean Jaurès', 
+      coords: [48.679197, 6.180481] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Jean+Jaur%C3%A8s/@48.6790966,6.1800858,198a,35y,1.06t/data=!3m1!1e3!4m8!3m7!1s0x47949864801a0e1f:0x6d03f5aa4d69713e!6m1!1v5!8m2!3d48.67925!4d6.1804525!16s%2Fg%2F11c5_yj7tw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Jean+Jaur%C3%A8s/@48.6790966,6.1800858,198a,35y,1.06t/data=!3m1!1e3!4m8!3m7!1s0x479498647934541f:0x851eea5afebeccf3!6m1!1v5!8m2!3d48.6793098!4d6.1807367!16s%2Fg%2F11fn260x1b?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Garenne - Saurupt', 
+      coords: [48.681798, 6.183409] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Garenne+-+Saurupt/@48.6812843,6.1824441,202a,35y,1.06t/data=!3m1!1e3!4m8!3m7!1s0x4794986434723653:0x37da1e112ef68043!6m1!1v5!8m2!3d48.681383!4d6.182836!16s%2Fg%2F11xvpz62zl?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Garenne+-+Saurupt/@48.6819225,6.1832675,199a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x47949865d836f3a3:0x7befcee7ca8de6ad!6m1!1v5!8m2!3d48.682236!4d6.184035!16s%2Fg%2F11xd8rqp26?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Pichon Direction Sud', 
+      coords: [48.683524, 6.185382] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Pichon/@48.683432,6.1850023,201a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x479498661c6127ad:0x628714adcce75c9d!6m1!1v5!8m2!3d48.6835659!4d6.1853214!16s%2Fg%2F11c5_sp57d?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]      
+    },
+    { 
+      name: 'Pichon Direction Nord', 
+      coords: [48.684524, 6.186486] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Pichon/@48.6843464,6.1862196,287a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498689926ac21:0x9323d9ffe1f60327!6m1!1v5!8m2!3d48.684528!4d6.186583!16s%2Fg%2F11ddxfv337?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Quartier Saint-Nicolas Direction Sud', 
+      coords: [48.686100, 6.184457] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.685147,6.1851115,520a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986f2f073daf:0x2ab9dc3c891c1237!6m1!1v5!8m2!3d48.686092!4d6.184456!16s%2Fg%2F11c2p8c3vt?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Quartier Saint-Nicolas Direction Nord', 
+      coords: [48.687646, 6.184797] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.6870927,6.1839972,657a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986ec96758e7:0xfa2c06d1f65cceb6!6m1!1v5!8m2!3d48.6876289!4d6.1848987!16s%2Fg%2F11ddxjzmlr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3DD'
+        }
+      ]
+    },
+    { 
+      name: 'Place Charles III - Point Central Direction Sud', 
+      coords: [48.689066, 6.182293] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.689044,6.1822009,171a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986e7eb595e9:0xda0c16e2a93099a7!6m1!1v5!8m2!3d48.688946!4d6.182275!16s%2Fg%2F11fn25wfc0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Charles III - Point Central Direction Nord', 
+      coords: [48.689725, 6.183256] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.6890148,6.1823061,659a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986c2fa416d3:0x6ce0accf3d312599!6m1!1v5!8m2!3d48.6897402!4d6.1833435!16s%2Fg%2F11c2p3qxvd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Stanislas - Dom Calmet Direction Sud', 
+      coords: [48.690898, 6.180990] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6908554,6.1808107,347a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986d91c5c17f:0xc037e67b6cef6764!6m1!1v5!8m2!3d48.690914!4d6.180878!16s%2Fg%2F11ddxp_qxw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gare Thiers Poirel Direction Sud', 
+      coords: [48.690365, 6.175653] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Gare+Thiers+Poirel/@48.6903806,6.1755869,79a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x47949873c41361d1:0xc06ebe819d4291ac!6m1!1v5!8m2!3d48.6904283!4d6.1757069!16s%2Fg%2F11hdsgcfs6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Stanislas - Dom Calmet Direction Nord', 
+      coords: [48.692003, 6.181538] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6910745,6.1802457,999a,35y,0.96t/data=!3m1!1e3!4m18!1m9!3m8!1s0x4794986d91c5c17f:0xc037e67b6cef6764!2sPlace+Stanislas+-+Dom+Calmet!6m1!1v5!8m2!3d48.690914!4d6.180878!16s%2Fg%2F11ddxp_qxw!3m7!1s0x4794986d748e8975:0xbf7155ff4d7abc40!6m1!1v5!8m2!3d48.6920566!4d6.1816469!16s%2Fg%2F11c5_sr0nc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Bibliothèque Direction Nord', 
+      coords: [48.692137, 6.178665] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Biblioth%C3%A8que/@48.6917621,6.1781087,375a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x47949872f4a1e39d:0xbdc547c881c0289f!6m1!1v5!8m2!3d48.692165!4d6.178653!16s%2Fg%2F11c5_s3w3h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Tour Thiers Gare Direction Nord', 
+      coords: [48.690849, 6.174509] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Tour+Thiers+Gare/@48.690536,6.1745642,369a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x479498738d12f2fd:0x315ce76bd5931941!6m1!1v5!8m2!3d48.6908987!4d6.1744956!16s%2Fg%2F11c5_lc19l?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gare - Raymond Poincaré Direction Nord', 
+      coords: [48.689870, 6.171286] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Gare+-+Raymond+Poincar%C3%A9/@48.6896349,6.1717141,331a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794987429a3b4d3:0xbc15e919aabd107f!6m1!1v5!8m2!3d48.689922!4d6.171256!16s%2Fg%2F11ddxq3mmb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Bégonias Direction Nord', 
+      coords: [48.689266, 6.169294] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/B%C3%A9gonias/@48.6891205,6.1691298,197a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x479498760d576787:0xcfddef7c7375c27e!6m1!1v5!8m2!3d48.689281!4d6.169061!16s%2Fg%2F11fn2659ch?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saint-Léon Direction Sud', 
+      coords: [48.688326, 6.173023] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Saint+L%C3%A9on/@48.6882737,6.1729299,222a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x47949876ca29f0e3:0xbf9db145abce3e1c!6m1!1v5!8m2!3d48.6882784!4d6.1730729!16s%2Fg%2F11c5_sg2br?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Commanderie Direction Sud', 
+      coords: [48.686566, 6.167868] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Commanderie/@48.6864962,6.1677529,200a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x47949877c462fe41:0x7279fb4150900fc0!6m1!1v5!8m2!3d48.68679!4d6.168016!16s%2Fg%2F11c5_s5jv6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Préville Direction Sud', 
+      coords: [48.687561, 6.166235] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Pr%C3%A9ville/@48.6876171,6.1660423,197a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29d9df53b7f:0xd225b43d33a4d920!6m1!1v5!8m2!3d48.687504!4d6.1661898!16s%2Fg%2F11c5_gb8kg?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Préville Direction Nord', 
+      coords: [48.688424, 6.166499] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Pr%C3%A9ville/@48.688417,6.1662961,197a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29d922c5189:0x4804bc6460815986!6m1!1v5!8m2!3d48.688462!4d6.166494!16s%2Fg%2F11c2p8kdnm?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saintifontaine', 
+      coords: [48.688917, 6.162981] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Santifontaine/@48.6888042,6.1625765,191a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29c40d47fab:0xe54738bc2f069c48!6m1!1v5!8m2!3d48.688866!4d6.163308!16s%2Fg%2F11c5_t6046?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Santifontaine/@48.6888042,6.1625765,191a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29c135fafab:0x3fa052ba2a05db58!6m1!1v5!8m2!3d48.68903!4d6.162654!16s%2Fg%2F11ddxmq4c3?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Messier', 
+      coords: [48.689584, 6.159877] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Messier/@48.6891534,6.1593759,333a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29be9ef33bb:0x6ea3354482dcfa74!6m1!1v5!8m2!3d48.689533!4d6.160122!16s%2Fg%2F11c5_lltf5?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Messier/@48.6891534,6.1593759,333a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29bc4ea2959:0x4adadb5a7d993aaf!6m1!1v5!8m2!3d48.689674!4d6.159643!16s%2Fg%2F11c2p6wbgf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Chemin Blanc', 
+      coords: [48.690433, 6.155906] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Chemin+Blanc/@48.6900996,6.1558,313a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29a016a5843:0x11f45dac0eee0e77!6m1!1v5!8m2!3d48.6903601!4d6.1560431!16s%2Fg%2F11c2p4795h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Chemin+Blanc/@48.6900996,6.1558,313a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a290aa9fc621:0xb354bd487e9244d7!6m1!1v5!8m2!3d48.690502!4d6.155789!16s%2Fg%2F11c2p7y04c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Marquette', 
+      coords: [48.691116, 6.152686] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Marquette/@48.6908219,6.1521686,292a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a296d6f5c5b5:0xc7947ff8b9516b88!6m1!1v5!8m2!3d48.6911971!4d6.1527104!16s%2Fg%2F11c5_jmfq5?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Marquette/@48.6908219,6.1521686,292a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a296d5d6e8e9:0x2dae6f0ba1f5acf2!6m1!1v5!8m2!3d48.6910987!4d6.1526044!16s%2Fg%2F11ddxn1rjh?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'La Côte', 
+      coords: [48.691805, 6.149374] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/La+C%C3%B4te/@48.6915449,6.1488626,259a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a294172c8019:0x7ecc7e784bea6afc!6m1!1v5!8m2!3d48.6917355!4d6.1495358!16s%2Fg%2F11ddxfv338?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/La+C%C3%B4te/@48.6915449,6.1488626,259a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a29411110339:0x5d3a58bf71fd2074!6m1!1v5!8m2!3d48.691807!4d6.149007!16s%2Fg%2F11xfzndrz_?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Viray', 
+      coords: [48.692534, 6.145934] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Viray/@48.6923057,6.1455523,244a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a294eb689337:0x7f5da17d35f8e919!6m1!1v5!8m2!3d48.6924873!4d6.1459848!16s%2Fg%2F11c5_gb8km?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Viray/@48.6923057,6.1455523,244a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a294ea154117:0x9c429c59929ca99d!6m1!1v5!8m2!3d48.6926045!4d6.1459355!16s%2Fg%2F11c5_hmknx?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Beauregard Sainte-Anne', 
+      coords: [48.693259, 6.140156] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Beauregard+Sainte-Anne/@48.6929688,6.1402547,240a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a2eba4f89091:0x842431fd7cb9f138!6m1!1v5!8m2!3d48.693119!4d6.140662!16s%2Fg%2F11h_1lf68q?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Beauregard+Sainte-Anne/@48.6929688,6.1402547,240a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a2ebb095cf85:0xaac8ed3c62511ec7!6m1!1v5!8m2!3d48.693386!4d6.14026!16s%2Fg%2F11h_1lf68r?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Boufflers', 
+      coords: [48.693037, 6.138168] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Boufflers/@48.6927782,6.1377427,244a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a2ebdf694cb5:0xf5921451e358eae2!6m1!1v5!8m2!3d48.693172!4d6.138232!16s%2Fg%2F11c5_rgy4j?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Boufflers/@48.6927782,6.1377427,244a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e96032a393:0xf9b71858eb31122e!6m1!1v5!8m2!3d48.692965!4d6.1381318!16s%2Fg%2F11ddxng4kd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Georges de la Tour', 
+      coords: [48.691318, 6.138464] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Georges+de+la+Tour/@48.6911191,6.1379732,242a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a2ec0601150b:0x3975ec78377d516e!6m1!1v5!8m2!3d48.691393!4d6.138478!16s%2Fg%2F11hdsg92qp?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Georges+de+la+Tour/@48.6904082,6.1375979,243a,35y,1.11t/data=!3m1!1e3!4m8!3m7!1s0x4794a2eea0b06987:0xf17ce4c4004de183!6m1!1v5!8m2!3d48.690598!4d6.137609!16s%2Fg%2F11xd8pxvfc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Observatoire', 
+      coords: [48.689416, 6.135194] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Observatoire/@48.6892531,6.1343448,369a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2eef9a55787:0xbe431c5fbb2dbc5c!6m1!1v5!8m2!3d48.689396!4d6.134993!16s%2Fg%2F11h_1l02jm?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Observatoire/@48.6892531,6.1343448,369a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2eef9ae0ec3:0x4421dc23e30207f2!6m1!1v5!8m2!3d48.6893769!4d6.1351859!16s%2Fg%2F11c5_r24fv?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Croix Saint-Claude', 
+      coords: [48.689204, 6.132839] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Croix+St-Claude/@48.6891882,6.1332114,370a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2efa7c421a9:0x7203877908adf837!6m1!1v5!8m2!3d48.6891833!4d6.1334205!16s%2Fg%2F11c5_qz1nb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Croix+Saint-Claude/@48.6891855,6.1324152,363a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2ef828e7cb1:0x900c4d1c564d9692!6m1!1v5!8m2!3d48.6892937!4d6.1319705!16s%2Fg%2F11c2p83qbq?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Laxou Sapinière', 
+      coords: [48.690981, 6.128387] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Laxou+Sapini%C3%A8re/@48.6905765,6.1283264,344a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e43675b307:0x8c9da9864ac7d027!6m1!1v5!8m2!3d48.690872!4d6.128344!16s%2Fg%2F11ddxflx__?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Laxou+Sapini%C3%A8re/@48.6905765,6.1283264,344a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e436919661:0x86447570e5f905c0!6m1!1v5!8m2!3d48.691143!4d6.128542!16s%2Fg%2F11c2p7twf2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Vair Direction Sud', 
+      coords: [48.695672, 6.124361] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Vair/@48.6960387,6.1237223,281a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e0f195a159:0x820ca36c670cbb1a!6m1!1v5!8m2!3d48.695711!4d6.124376!16s%2Fg%2F11c2p8hl0c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Vair Direction Nord', 
+      coords: [48.696037, 6.123708] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Vair/@48.6960387,6.1237223,281a,35y,0.97t/data=!3m1!1e3!4m18!1m9!3m8!1s0x4794a2e0f195a159:0x820ca36c670cbb1a!2sVair!6m1!1v5!8m2!3d48.695711!4d6.124376!16s%2Fg%2F11c2p8hl0c!3m7!1s0x4794a2e0f4e7184b:0xd01906ed9cc34ffa!6m1!1v5!8m2!3d48.696017!4d6.12373!16s%2Fg%2F11fn263jzx?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Moselotte Direction Sud', 
+      coords: [48.697247, 6.125168] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Moselotte/@48.6971043,6.1249539,281a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2de272335e5:0x1f6c90c5cfe4992!6m1!1v5!8m2!3d48.697285!4d6.125163!16s%2Fg%2F11c2p7mv91?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ] 
+    },
+    { 
+      name: 'Saône Direction Nord', 
+      coords: [48.696039, 6.125463] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Sa%C3%B4ne/@48.6955444,6.1261759,301a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e0b8c8bde9:0x745573280594f239!6m1!1v5!8m2!3d48.696083!4d6.125679!16s%2Fg%2F11xt2knlr2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Laxou Champ-le-Beouf', 
+      coords: [48.698156, 6.123322] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Houdemont',
+          url: 'https://www.google.fr/maps/place/Champ-le-B%C5%93uf/@48.6972339,6.1242613,797a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2de32d3f609:0xb7d8560e3c22b73c!6m1!1v5!8m2!3d48.6981639!4d6.1239701!16s%2Fg%2F11ddxnm31t?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ] 
+    }
+  ]
+};
+
 interface TramLine {
   id: string;
   name: string;
@@ -651,6 +1525,8 @@ interface TramLine {
   }[];
   coordinatesVandeouvre?: [number, number][];
   coordinatesMaxeville?: [number, number][];
+  coordinatesLaxou?: [number, number][];
+  coordinatesHoudemont?: [number, number][];
 }
 
 interface BusLinesProps {
@@ -659,11 +1535,11 @@ interface BusLinesProps {
 
 const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
-  const [currentZoom, setCurrentZoom] = useState<number>(14); // Initial zoom level
+  const [currentZoom, setCurrentZoom] = useState<number>(15); // Initial zoom level
 
-  const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') ? 
-    [tramLineT5, tramLine].filter(line => visibleLines.includes(line.id)) : [];
-  const shouldShowMarkers = currentZoom >= 14; // Markers visible from zoom level 14
+  const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') ? 
+    [tramLineT5, tramLine, tramLineT4].filter(line => visibleLines.includes(line.id)) : [];
+  const shouldShowMarkers = currentZoom >= 15; // Markers visible from zoom level 14
 
   return (
     <>
@@ -696,7 +1572,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                 opacity={0.8}
               />
               
-              {/* Section élargie de la ligne T5 entre Vélodrome et Garenne - Saurupt */}
+              {/* Section élargie de la ligne T5 entre Vélodrome et Garenne - Saurupt + section droite */}
               {line.id === 'T5' && (
                 <Polyline
                   positions={[
@@ -705,12 +1581,63 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                     [48.671964, 6.172453], // ARTEM - Blandan - Thermal (partagé avec T1)
                     [48.675217, 6.176070], // Exelmans (partagé avec T1)
                     [48.678672, 6.179993], // Point intermédiaire
+                    [48.678827, 6.180074], // Point intermédiaire
+                    [48.679197, 6.180481], // Jean Jaurès (nouveau point T5)
+                    [48.681798, 6.183409], // Garenne - Saurupt
+                    [48.683524, 6.185382], // Pichon Direction Sud
+                    [48.684081, 6.185994], // Point intermédiaire
+                    [48.684524, 6.186486], // Pichon Direction Nord
+                    [48.685037, 6.187112], // Point intermédiaire
+                    [48.685269, 6.186691], // Point intermédiaire
+                    [48.685322, 6.186466], // Point intermédiaire
+                    [48.685567, 6.186148], // Point intermédiaire
+                    [48.685809, 6.186139], // Point intermédiaire
+                    [48.687646, 6.184797], // Quartier Saint-Nicolas Direction Nord
+                    [48.689725, 6.183256], // Place Charles III - Point Central Direction Nord
+                    [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
+                    [48.692823, 6.180935], // Point intermédiaire
                   ]}
                   color={line.color}
                   weight={6}
                   opacity={0.8}
                 />
               )}
+              {/* Tracé direction Vandeouvre Roberval (droite) */}
+              {line.id === 'T5' && (
+                <Polyline
+                  positions={[
+                    [48.684081, 6.185994], // Point intermédiaire
+                    [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
+                    [48.689066, 6.182293], // Place Charles III - Point Central Direction Sud
+                    [48.690898, 6.180990], // Place Stanislas - Dom Calmet Direction Sud
+                    [48.692093, 6.180120], // Point intermédiaire
+                    [48.691505, 6.178297], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={6}
+                  opacity={0.8}
+                />
+              )}
+            </>
+          )}
+          
+          {/* Tracés séparés pour T4 */}
+          {(line as any).id === 'T4' && (line as any).coordinatesLaxou && (line as any).coordinatesHoudemont && (
+            <>
+              {/* Tracé direction Laxou Champ-le-Beouf */}
+              <Polyline
+                positions={(line as any).coordinatesLaxou}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction Houdemont Porte Sud */}
+              <Polyline
+                positions={(line as any).coordinatesHoudemont}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
             </>
           )}
         </React.Fragment>
