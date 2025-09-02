@@ -85,7 +85,12 @@ const tramLine: TramLine = {
     { 
       name: 'Vandeouvre CHU Brabois', 
       coords: [48.649118, 6.145746] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Vandoeuvre+Brabois+-+H./@48.6493121,6.1463284,19.94z/data=!4m8!3m7!1s0x4794a211dc51595d:0xdefafe326cca9ba!6m1!1v4!8m2!3d48.64947!4d6.1464475!16s%2Fg%2F11mcbbvy0n?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Essey',
+          url: 'https://www.google.fr/maps/place/Vandoeuvre+Brabois+-+H./@48.6493121,6.1463284,19.94z/data=!4m8!3m7!1s0x4794a211dc51595d:0xdefafe326cca9ba!6m1!1v4!8m2!3d48.64947!4d6.1464475!16s%2Fg%2F11mcbbvy0n?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Technopôle', 
@@ -100,7 +105,12 @@ const tramLine: TramLine = {
     { 
       name: 'Notre-Dame-des-Pauvres Direction Sud', 
       coords: [48.657364, 6.155514] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Notre-Dame-des-Pauvres/@48.6569281,6.1546025,17.86z/data=!4m8!3m7!1s0x4794a2748fa4eff3:0xe48f24141f628937!6m1!1v4!8m2!3d48.657397!4d6.155494!16s%2Fg%2F11x65jkk5f?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Notre-Dame-des-Pauvres/@48.6569281,6.1546025,17.86z/data=!4m8!3m7!1s0x4794a2748fa4eff3:0xe48f24141f628937!6m1!1v4!8m2!3d48.657397!4d6.155494!16s%2Fg%2F11x65jkk5f?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Saint-André - Jardin Botanique', 
@@ -205,7 +215,12 @@ const tramLine: TramLine = {
     { 
       name: 'ESSEY Mouzimpré', 
       coords: [48.702193, 6.224752] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Essey+Mouzimpr%C3%A9/@48.7020763,6.2218731,17.3z/data=!4m8!3m7!1s0x479499ce0675cf13:0x75f863b2e639a540!6m1!1v4!8m2!3d48.7017348!4d6.2248642!16s%2Fg%2F1tfcgpx6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre',
+          url: 'https://www.google.fr/maps/place/Essey+Mouzimpr%C3%A9/@48.7020763,6.2218731,17.3z/data=!4m8!3m7!1s0x479499ce0675cf13:0x75f863b2e639a540!6m1!1v4!8m2!3d48.7017348!4d6.2248642!16s%2Fg%2F1tfcgpx6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     }
   ]
 };
@@ -770,6 +785,7 @@ const tramLineT4: TramLine = {
     [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
     [48.689414, 6.176331], // Point intermédiaire
     [48.688326, 6.173023], // Saint-Léon Direction Sud
+    [48.687599, 6.170741], // Point intermédiaire
     [48.686733, 6.168055], // Point intermédiaire
     [48.686566, 6.167868], // Commanderie Direction Sud
     [48.686058, 6.167258], // Point intermédiaire
@@ -851,7 +867,7 @@ const tramLineT4: TramLine = {
     [48.694649, 6.127576], // Point intermédiaire
     [48.694907, 6.127233], // Point intermédiaire
     [48.696086, 6.126997], // Point intermédiaire
-    [48.696039, 6.125463], // Saône
+    [48.696039, 6.125463], // Saône Direction Nord
     [48.695998, 6.124373], // Point intermédiaire
     [48.696037, 6.123708], // Vair Direction Nord
     [48.696100, 6.123089], // Point intermédiaire
@@ -1508,6 +1524,857 @@ const tramLineT4: TramLine = {
   ]
 };
 
+// Nouvelle ligne T2 (bleu)
+const tramLineT2: TramLine = {
+  id: 'T2',
+  name: 'Ligne T2',
+  description: 'Laneuville Centre ↔ Laxou Sapinière',
+  color: '#0000FF', // Bleu
+  coordinates: [
+    [48.659154, 6.230062], // Laneuville Centre
+    [48.659023, 6.230272], // Point intermédiaire
+    [48.658538, 6.229864], // Point intermédiaire
+    [48.658610, 6.229508], // Point intermédiaire
+    [48.658698, 6.229190], // Point intermédiaire
+    [48.659197, 6.227741], // Laneuville Piscine
+    [48.659706, 6.226246], // Point intermédiaire
+    [48.660621, 6.223757], // Point intermédiaire
+    [48.660962, 6.223102], // Point intermédiaire
+    [48.661454, 6.222312], // Sainte-Valdrée
+    [48.663470, 6.219121], // Point intermédiaire
+    [48.664344, 6.217911], // Point intermédiaire
+    [48.664908, 6.217205], // Point intermédiaire
+    [48.665202, 6.216744], // Château de Montaigu
+    [48.665589, 6.216069], // Point intermédiaire
+    [48.665809, 6.215614], // Point intermédiaire
+    [48.665968, 6.215227], // Point intermédiaire
+    [48.666427, 6.213544], // Gabriel Faure
+    [48.667314, 6.210127], // Point intermédiaire
+    [48.667460, 6.209730], // Point intermédiaire
+    [48.667945, 6.208733], // Point intermédiaire
+    [48.668345, 6.208225], // Point intermédiaire
+    [48.668739, 6.207839], // L'Atelier
+    [48.669090, 6.207544], // Point intermédiaire
+    [48.669493, 6.207140], // Point intermédiaire
+    [48.669879, 6.206965], // Point intermédiaire
+    [48.670456, 6.206361], // Point intermédiaire
+    [48.670807, 6.206179], // Jarville République
+    [48.671087, 6.205966], // Point intermédiaire
+    [48.671456, 6.205574], // Point intermédiaire
+    [48.672200, 6.204412], // Point intermédiaire
+    [48.672757, 6.203092], // Point intermédiaire
+    [48.672910, 6.202814], // Point intermédiaire
+    [48.673289, 6.202401], // Jarville Mairie
+    [48.673795, 6.201968], // Point intermédiaire
+    [48.674227, 6.201738], // Point intermédiaire
+    [48.674582, 6.201465], // Point intermédiaire
+    [48.674981, 6.201034], // Point intermédiaire
+    [48.675639, 6.200165], // Alsace-Bonsecours
+    [48.676147, 6.199804], // Point intermédiaire
+    [48.676407, 6.199660], // Point intermédiaire
+    [48.676848, 6.199485], // Point intermédiaire
+    [48.677582, 6.198788], // Point intermédiaire
+    [48.677968, 6.198322], // Achille Lévy
+    [48.678603, 6.197508], // Point intermédiaire
+    [48.680103, 6.195395], // Point intermédiaire
+    [48.680501, 6.194755], // Vic
+    [48.682143, 6.192133], // Hôpital Central - Maternité
+    [48.683678, 6.189662], // Point intermédiaire
+    [48.684769, 6.187656], // Place des Vosges
+  ] as [number, number][],
+  // Tracé direction Laxou Sapinière (droite)
+  coordinatesLaxou: [
+    [48.684769, 6.187656], // Place des Vosges
+    [48.685037, 6.187112], // Point intermédiaire
+    [48.685269, 6.186691], // Point intermédiaire
+    [48.685322, 6.186466], // Point intermédiaire
+    [48.685567, 6.186148], // Point intermédiaire
+    [48.685809, 6.186139], // Point intermédiaire
+    [48.687646, 6.184797], // Quartier Saint-Nicolas Direction Nord
+    [48.689725, 6.183256], // Place Charles III - Point Central Direction Nord
+    [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
+    [48.692823, 6.180935], // Point intermédiaire
+    [48.692137, 6.178665], // Bibliothèque Direction Nord
+    [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+    [48.690030, 6.171810], // Point intermédiaire
+    [48.690763, 6.171185], // Patton Direction Nord
+    [48.691307, 6.170695], // Point intermédiaire
+    [48.691729, 6.170207], // Point intermédiaire
+    [48.692175, 6.168523], // Point intermédiaire
+    [48.692550, 6.168428], // Point intermédiaire
+    [48.692897, 6.168254], // Place Godefroy de Bouillon Direction Nord
+    [48.693167, 6.167957], // Point de jonction
+    [48.695591, 6.167420], // Campus Lettres
+    [48.697403, 6.167058], // Point intermédiaire
+    [48.698520, 6.166788], // Point intermédiaire
+    [48.699183, 6.166190], // Point intermédiaire
+    [48.699402, 6.165707], // Place Aimé Mort
+    [48.699505, 6.165498], // Point intermédiaire
+    [48.700696, 6.164505], // Point intermédiaire
+    [48.701676, 6.164090], // Alix Le Clerc
+    [48.704323, 6.162999], // Jean Lamour
+    [48.705201, 6.162638], // Point intermédiaire
+    [48.707037, 6.161787], // Montée de Pinchard
+    [48.707161, 6.161006], // Point intermédiaire
+    [48.707285, 6.160808], // Point intermédiaire
+    [48.707430, 6.160759], // Point intermédiaire
+    [48.708810, 6.161143], // Point intermédiaire
+    [48.708983, 6.161051], // Point intermédiaire
+    [48.709100, 6.160676], // Point intermédiaire
+    [48.708969, 6.160311], // Point intermédiaire
+    [48.706327, 6.159675], // Point intermédiaire
+    [48.706037, 6.159428], // Point intermédiaire
+    [48.705877, 6.158752], // Point intermédiaire
+    [48.706036, 6.158098], // Point intermédiaire
+    [48.706189, 6.157637], // Point intermédiaire
+    [48.706051, 6.157149], // Point intermédiaire
+    [48.705815, 6.156865], // Point intermédiaire
+    [48.705581, 6.156914], // Point intermédiaire
+    [48.705245, 6.157485], // Point intermédiaire
+    [48.705064, 6.157625], // Point intermédiaire
+    [48.704791, 6.157668], // Point intermédiaire
+    [48.703873, 6.157520], // Point intermédiaire
+    [48.703212, 6.155147], // Tilleul Argenté
+    [48.702184, 6.151628], // Cèdre Bleu
+    [48.701137, 6.148103], // Point intermédiaire
+    [48.700964, 6.147243], // Les Ombelles
+    [48.700160, 6.143717], // Cliniques
+    [48.699964, 6.142850], // Point intermédiaire
+    [48.699708, 6.139329], // Palais des Sports - Gentilly
+    [48.699065, 6.135140], // Cascade - La Fontaine
+    [48.698884, 6.133915], // Point intermédiaire
+    [48.700563, 6.133311], // Poste - Champ-le-Beouf
+    [48.701211, 6.133096], // Point intermédiaire
+    [48.701472, 6.133186], // Point intermédiaire
+    [48.702203, 6.133847], // Point intermédiaire
+    [48.702352, 6.133847], // Point intermédiaire
+    [48.702525, 6.133750], // Point intermédiaire
+    [48.702695, 6.133509], // Point intermédiaire
+    [48.703017, 6.132359], // Point intermédiaire
+    [48.702992, 6.132102], // Point intermédiaire
+    [48.702574, 6.130838], // Saint-Jacques II
+    [48.702395, 6.130462], // Point intermédiaire
+    [48.700377, 6.129944], // Point intermédiaire
+    [48.700296, 6.130568], // Point intermédiaire
+    [48.699963, 6.130504], // Point intermédiaire
+    [48.699985, 6.130321], // Saint-Exupéry
+    [48.699964, 6.129830], // Point intermédiaire
+    [48.699833, 6.129337], // Point intermédiaire
+    [48.699103, 6.127778], // Madine
+    [48.698482, 6.126476], // Point intermédiaire
+    [48.698309, 6.125923], // Point intermédiaire
+    [48.698219, 6.125361], // Point intermédiaire
+    [48.698156, 6.123322], // Laxou Champ-le-Beouf
+    [48.698137, 6.122952], // Point intermédiaire
+    [48.698119, 6.121751], // Point intermédiaire
+    [48.698308, 6.121042], // Point intermédiaire
+    [48.697630, 6.120190], // Laxou Plateau de Haye Direction Nord
+    [48.697303, 6.119962], // Point intermédiaire
+    [48.697084, 6.119902], // Point intermédiaire
+    [48.696754, 6.119993], // Point intermédiaire
+    [48.696418, 6.120347], // Point intermédiaire
+    [48.696227, 6.121046], // Mouzon Direction Nord
+    [48.696100, 6.123089], // Point intermédiaire
+    [48.695998, 6.124373], // Point intermédiaire
+    [48.695672, 6.124361], // Vair Direction Sud
+    [48.694974, 6.124373], // Point intermédiaire
+    [48.694649, 6.127576], // Point intermédiaire
+    [48.694612, 6.128002], // Point intermédiaire
+    [48.692532, 6.128162], // Point de jonction
+    [48.690981, 6.128387], // Laxou Sapinière
+  ] as [number, number][],
+  // Tracé direction Laneuville Centre (gauche)
+  coordinatesLaneuville: [
+    [48.684769, 6.187656], // Place des Vosges
+    [48.685037, 6.187112], // Point intermédiaire
+    [48.684524, 6.186486], // Pichon Direction Nord
+    [48.684081, 6.185994], // Point intermédiaire
+    [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
+    [48.689066, 6.182293], // Place Charles III - Point Central Direction Sud
+    [48.690898, 6.180990], // Place Stanislas - Dom Calmet Direction Sud
+    [48.692093, 6.180120], // Point intermédiaire
+    [48.691505, 6.178297], // Point intermédiaire
+    [48.690622, 6.175509], // Point intermédiaire
+    [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
+    [48.689414, 6.176331], // Point intermédiaire
+    [48.688326, 6.173023], // Saint-Léon Direction Sud
+    [48.687599, 6.170741], // Point intermédiaire
+    [48.688383, 6.170310], // Domrémy Direction Sud
+    [48.691897, 6.168328], // Place Godefroy de Bouillon Direction Sud
+    [48.692312, 6.168028], // Point intermédiaire
+    [48.692637, 6.167749], // Point intermédiaire
+    [48.693167, 6.167957], // Point de jonction
+    [48.695591, 6.167420], // Campus Lettres
+    [48.697403, 6.167058], // Point intermédiaire
+    [48.698520, 6.166788], // Point intermédiaire
+    [48.699183, 6.166190], // Point intermédiaire
+    [48.699402, 6.165707], // Place Aimé Mort
+    [48.699505, 6.165498], // Point intermédiaire
+    [48.700696, 6.164505], // Point intermédiaire
+    [48.701676, 6.164090], // Alix Le Clerc
+    [48.704323, 6.162999], // Jean Lamour
+    [48.705201, 6.162638], // Point intermédiaire
+    [48.707037, 6.161787], // Montée de Pinchard
+    [48.707161, 6.161006], // Point intermédiaire
+    [48.707285, 6.160808], // Point intermédiaire
+    [48.707430, 6.160759], // Point intermédiaire
+    [48.708810, 6.161143], // Point intermédiaire
+    [48.708983, 6.161051], // Point intermédiaire
+    [48.709100, 6.160676], // Point intermédiaire
+    [48.708969, 6.160311], // Point intermédiaire
+    [48.706327, 6.159675], // Point intermédiaire
+    [48.706037, 6.159428], // Point intermédiaire
+    [48.705877, 6.158752], // Point intermédiaire
+    [48.706036, 6.158098], // Point intermédiaire
+    [48.706189, 6.157637], // Point intermédiaire
+    [48.706051, 6.157149], // Point intermédiaire
+    [48.705815, 6.156865], // Point intermédiaire
+    [48.705581, 6.156914], // Point intermédiaire
+    [48.705245, 6.157485], // Point intermédiaire
+    [48.705064, 6.157625], // Point intermédiaire
+    [48.704791, 6.157668], // Point intermédiaire
+    [48.703873, 6.157520], // Point intermédiaire
+    [48.703212, 6.155147], // Tilleul Argenté
+    [48.702184, 6.151628], // Cèdre Bleu
+    [48.701137, 6.148103], // Point intermédiaire
+    [48.700964, 6.147243], // Les Ombelles
+    [48.700160, 6.143717], // Cliniques
+    [48.699964, 6.142850], // Point intermédiaire
+    [48.699708, 6.139329], // Palais des Sports - Gentilly
+    [48.699065, 6.135140], // Cascade - La Fontaine
+    [48.698884, 6.133915], // Point intermédiaire
+    [48.700563, 6.133311], // Poste - Champ-le-Beouf
+    [48.701211, 6.133096], // Point intermédiaire
+    [48.701472, 6.133186], // Point intermédiaire
+    [48.702203, 6.133847], // Point intermédiaire
+    [48.702352, 6.133847], // Point intermédiaire
+    [48.702525, 6.133750], // Point intermédiaire
+    [48.702695, 6.133509], // Point intermédiaire
+    [48.703017, 6.132359], // Point intermédiaire
+    [48.702992, 6.132102], // Point intermédiaire
+    [48.702574, 6.130838], // Saint-Jacques II
+    [48.702395, 6.130462], // Point intermédiaire
+    [48.700377, 6.129944], // Point intermédiaire
+    [48.700296, 6.130568], // Point intermédiaire
+    [48.699963, 6.130504], // Point intermédiaire
+    [48.699985, 6.130321], // Saint-Exupéry
+    [48.699964, 6.129830], // Point intermédiaire
+    [48.699833, 6.129337], // Point intermédiaire
+    [48.699103, 6.127778], // Madine
+    [48.698482, 6.126476], // Point intermédiaire
+    [48.698309, 6.125923], // Point intermédiaire
+    [48.698219, 6.125361], // Point intermédiaire
+    [48.698156, 6.123322], // Laxou Champ-le-Beouf
+    [48.698137, 6.122952], // Point intermédiaire
+    [48.696100, 6.123089], // Point intermédiaire
+    [48.696037, 6.123708], // Vair Direction Nord
+    [48.695998, 6.124373], // Point intermédiaire
+    [48.696039, 6.125463], // Saône Direction Nord
+    [48.696086, 6.126997], // Point intermédiaire
+    [48.694907, 6.127233], // Point intermédiaire
+    [48.694649, 6.127576], // Point intermédiaire
+    [48.694612, 6.128002], // Point de jonction
+    [48.692532, 6.128162], // Point intermédiaire
+    [48.690981, 6.128387], // Laxou Sapinière
+  ] as [number, number][],
+  stops: [
+    { 
+      name: 'Laneuville Centre', 
+      coords: [48.659154, 6.230062] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Laneuveville+Centre/@48.6586224,6.2300653,285a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479499125393c3e7:0x79596655c75c5d53!6m1!1v5!8m2!3d48.6591926!4d6.2300465!16s%2Fg%2F11c2p79ng3?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Laneuville Piscine', 
+      coords: [48.659197, 6.227741] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Laneuveville+Piscine/@48.658713,6.2278307,417a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479499122ae4eba3:0x1846c138db0d7780!6m1!1v5!8m2!3d48.659164!4d6.227811!16s%2Fg%2F11c5_sst7f?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Laneuveville+Piscine/@48.6591627,6.2277202,77a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479499122a523c07:0x88b1779ca69370c5!6m1!1v5!8m2!3d48.65934!4d6.22771!16s%2Fg%2F11jzxjw36c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Sainte-Valdrée', 
+      coords: [48.661454, 6.222312] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Voir les Horaires Ligne T2',
+          url: 'https://www.google.fr/maps/place/Sainte-Valdr%C3%A9e/@48.6612137,6.2219658,328a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949910041c82f9:0xce6019e985fa68a7!6m1!1v5!8m2!3d48.661476!4d6.222332!16s%2Fg%2F11c2p7whks?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Château de Montaigu', 
+      coords: [48.665202, 6.216744] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Ch%C3%A2teau+de+Montaigu/@48.6648747,6.2169189,370a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949904797421fb:0xdf06680f9ee706c2!6m1!1v5!8m2!3d48.665096!4d6.217005!16s%2Fg%2F11c5_j0gnr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Ch%C3%A2teau+de+Montaigu/@48.6648747,6.2169189,370a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794990388aad2d7:0xfbc6b2c1fc801c79!6m1!1v5!8m2!3d48.66534!4d6.216466!16s%2Fg%2F11ddxp4fs4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gabriel Faure', 
+      coords: [48.666427, 6.213544] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Gabriel+Faur%C3%A9/@48.6658004,6.2142663,618a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794990236a11b5d:0x958a7e65d47a8c86!6m1!1v5!8m2!3d48.6663998!4d6.2134108!16s%2Fg%2F11c2p3x9p4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Jarville+Gabriel+Faur%C3%A9/@48.6662383,6.2136283,213a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794990233fae547:0x9adcde5c05598c9c!6m1!1v5!8m2!3d48.666431!4d6.213627!16s%2Fg%2F11c2p9dw5h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'L\'Atelier', 
+      coords: [48.668739, 6.207839] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/L\'Atelier/@48.6683498,6.2080899,212a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498fe8cfbde85:0x7def051c3a836107!6m1!1v5!8m2!3d48.668743!4d6.207866!16s%2Fg%2F11c2p9dw5f?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/L\'Atelier/@48.6683498,6.2080899,212a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498fe8e83ed55:0xca5d3adc4ec0eb69!6m1!1v5!8m2!3d48.668873!4d6.207696!16s%2Fg%2F11ddxmq4bw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Jarville République', 
+      coords: [48.670807, 6.206179] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Jarville+R%C3%A9publique/@48.6706659,6.2064306,218a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498ff2c30165f:0x2df2c360342f243e!6m1!1v5!8m2!3d48.670704!4d6.206282!16s%2Fg%2F11c5_gvd_y?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Jarville+R%C3%A9publique/@48.6706659,6.2064306,218a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498ff3273c19f:0x7a1aac004ccef94!6m1!1v5!8m2!3d48.670872!4d6.206144!16s%2Fg%2F11c2p7twf1?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Jarville Mairie', 
+      coords: [48.673289, 6.202401] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Voir les Horaires Ligne T2',
+          url: 'https://www.google.fr/maps/place/Jarville+Mairie/@48.6731645,6.2025117,124a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949857d98ea893:0xa582a361fcc2e43!6m1!1v5!8m2!3d48.673294!4d6.202479!16s%2Fg%2F11c5_s0jh4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Alsace-Bonsecours', 
+      coords: [48.675639, 6.200165] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Alsace-Bonsecours/@48.6748303,6.2008986,255a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498582a219c19:0xce5a5da1cc2f2779!6m1!1v5!8m2!3d48.675266!4d6.200723!16s%2Fg%2F11c2p8kdng?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Alsace-Bonsecours/@48.6760157,6.1999864,187a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949859c858f86d:0x7674b1aa00c39e3a!6m1!1v5!8m2!3d48.6761952!4d6.1996858!16s%2Fg%2F11ddxn4t4r?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Achille Lévy', 
+      coords: [48.677968, 6.198322] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Achille+L%C3%A9vy/@48.6782174,6.197428,186a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498597db64c55:0xe70b12d7baa09305!6m1!1v5!8m2!3d48.6782174!4d6.1978278!16s%2Fg%2F11ddxn7vgm?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Achille+L%C3%A9vy/@48.6777876,6.1981825,186a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794985983c520b9:0x76f19758762b66d2!6m1!1v5!8m2!3d48.67767!4d6.198822!16s%2Fg%2F11c2p70wyf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Vic', 
+      coords: [48.680501, 6.194755] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Voir les Horaires Ligne T2',
+          url: 'https://www.google.fr/maps/place/Vic/@48.6803366,6.1945504,185a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794985c66b0f249:0x785ff4b968e70aa3!6m1!1v5!8m2!3d48.6805616!4d6.1948898!16s%2Fg%2F11ddxfv33h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Hôpital Central - Maternité', 
+      coords: [48.682143, 6.192133] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/H%C3%B4pital+Central+-+Maternit%C3%A9/@48.681822,6.1923236,187a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794985d10faace1:0x9b1e80f2e91d994!6m1!1v5!8m2!3d48.681988!4d6.192293!16s%2Fg%2F11ddxplpk5?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/H%C3%B4pital+Central+-+Maternit%C3%A9/@48.681822,6.1923236,187a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794985d15edb9ab:0x16db3bba14ede921!6m1!1v5!8m2!3d48.682289!4d6.192085!16s%2Fg%2F11g8b5qgrr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place des Vosges', 
+      coords: [48.684769, 6.187656] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+des+Vosges/@48.6846406,6.1876632,182a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986889b6900b:0x41efb960e8788e9!6m1!1v5!8m2!3d48.6848679!4d6.1876299!16s%2Fg%2F11c2pbvtr1?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Place+des+Vosges/@48.6846406,6.1876632,182a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986889c5dfc3:0xe78efd73565e7523!6m1!1v5!8m2!3d48.684692!4d6.187683!16s%2Fg%2F11xd8rcbdx?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Quartier Saint-Nicolas Direction Nord', 
+      coords: [48.687646, 6.184797] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.6869822,6.1853205,503a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986ec96758e7:0xfa2c06d1f65cceb6!6m1!1v5!8m2!3d48.6876289!4d6.1848987!16s%2Fg%2F11ddxjzmlr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Quartier Saint-Nicolas Direction Sud', 
+      coords: [48.686100, 6.184457] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Quartier+Saint-Nicolas/@48.6855837,6.1848998,345a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986f2f073daf:0x2ab9dc3c891c1237!6m1!1v5!8m2!3d48.686092!4d6.184456!16s%2Fg%2F11c2p8c3vt?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Charles III - Point Central Direction Nord', 
+      coords: [48.689725, 6.183256] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.6891446,6.1837986,499a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986c2fa416d3:0x6ce0accf3d312599!6m1!1v5!8m2!3d48.6897402!4d6.1833435!16s%2Fg%2F11c2p3qxvd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Charles III - Point Central Direction Sud', 
+      coords: [48.689066, 6.182293] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Place+Charles+III+-+Point+Central/@48.6890228,6.1823719,308a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986e7eb595e9:0xda0c16e2a93099a7!6m1!1v5!8m2!3d48.688946!4d6.182275!16s%2Fg%2F11fn25wfc0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Stanislas - Dom Calmet Direction Nord', 
+      coords: [48.692003, 6.181538] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6913867,6.1823128,500a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986d748e8975:0xbf7155ff4d7abc40!6m1!1v5!8m2!3d48.6920566!4d6.1816469!16s%2Fg%2F11c5_sr0nc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Stanislas - Dom Calmet Direction Sud', 
+      coords: [48.690898, 6.180990] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Dom+Calmet/@48.6908804,6.1807299,306a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794986d91c5c17f:0xc037e67b6cef6764!6m1!1v5!8m2!3d48.690914!4d6.180878!16s%2Fg%2F11ddxp_qxw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Bibliothèque Direction Nord', 
+      coords: [48.692137, 6.178665] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Biblioth%C3%A8que/@48.6915922,6.1798098,492a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949872f4a1e39d:0xbdc547c881c0289f!6m1!1v5!8m2!3d48.692165!4d6.178653!16s%2Fg%2F11c5_s3w3h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Tour Thiers Gare Direction Nord', 
+      coords: [48.690849, 6.174509] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Tour+Thiers+Gare/@48.690785,6.1749661,483a,35y,0.97t/data=!3m1!1e3!4m6!3m5!1s0x479498738d12f2fd:0x315ce76bd5931941!8m2!3d48.6908987!4d6.1744956!16s%2Fg%2F11c5_lc19l?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Patton Direction Nord', 
+      coords: [48.690763, 6.171185] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Patton/@48.6903451,6.1716649,483a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794987433e597ab:0x4904a84610b0eb3!6m1!1v5!8m2!3d48.69067!4d6.171256!16s%2Fg%2F11fn25scrc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Godefroy de Bouillon Direction Nord', 
+      coords: [48.692897, 6.168254] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+Godefroy+de+Bouillon/@48.6919127,6.1687023,481a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x479498757d862f09:0x454793c728bf3ae6!6m1!1v5!8m2!3d48.6929092!4d6.1683442!16s%2Fg%2F11c2p7p93q?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gare Thiers Poirel Direction Sud', 
+      coords: [48.6904283, 6.1757069] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Gare+Thiers+Poirel/@48.6903865,6.1756843,49a,55.3y,4.75t/data=!3m1!1e3!4m8!3m7!1s0x47949873c41361d1:0xc06ebe819d4291ac!6m1!1v5!8m2!3d48.6904283!4d6.1757069!16s%2Fg%2F11hdsgcfs6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saint Léon Direction Sud', 
+      coords: [48.6882784, 6.1730729] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Saint+L%C3%A9on/@48.6883243,6.1725635,234a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949876ca29f0e3:0xbf9db145abce3e1c!6m1!1v5!8m2!3d48.6882784!4d6.1730729!16s%2Fg%2F11c5_sg2br?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Domrémy Direction Sud', 
+      coords: [48.688383, 6.170310] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Domr%C3%A9my/@48.6881355,6.1702565,234a,35y,0.97t/data=!3m1!1e3!4m6!3m5!1s0x4794987659316d3f:0x5c4f16462835bf8f!8m2!3d48.6882764!4d6.170347!16s%2Fg%2F11h_1lhwm2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Godefroy de Bouillon Direction Sud', 
+      coords: [48.691897, 6.168328] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Place+Godefroy+de+Bouillon/@48.6918335,6.1682846,233a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949875879518c7:0xf4b7e075cd083929!6m1!1v5!8m2!3d48.691902!4d6.168407!16s%2Fg%2F11c5_r4zc0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Campus Lettres', 
+      coords: [48.695591, 6.167420] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Campus+Lettres/@48.6954459,6.1675617,233a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a01f369c51:0x2230336530091347!6m1!1v5!8m2!3d48.695309!4d6.167507!16s%2Fg%2F11ycrnym1j?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Campus+Lettres/@48.6954459,6.1675617,233a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a022dd4d2b:0x340dbb4cd3bba91a!6m1!1v5!8m2!3d48.6955799!4d6.16729!16s%2Fg%2F11c5_ry7lf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place Aimé Mort', 
+      coords: [48.699402, 6.165707] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+Aim%C3%A9+Morot/@48.6994889,6.1651534,233a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a1373fad01:0xa6364eeb4ab12b67!6m1!1v5!8m2!3d48.6995403!4d6.1657152!16s%2Fg%2F11ddxntzmm?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Place+Aim%C3%A9+Morot/@48.6994889,6.1651534,233a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a13beac84f:0x5a73645c7cc58173!6m1!1v5!8m2!3d48.699257!4d6.165813!16s%2Fg%2F11c5_s3w3x?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Alix Le Clerc', 
+      coords: [48.701676, 6.164090] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Alix+Le+Clerc/@48.7021825,6.1638884,214a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a4261b1075:0xf2d2f73615be519e!6m1!1v5!8m2!3d48.7020367!4d6.1640872!16s%2Fg%2F11c5_rjf0k?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Alix+Le+Clerc/@48.7014871,6.1639001,347a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a41fbeefa9:0x729911d37de16331!6m1!1v5!8m2!3d48.7013588!4d6.164115!16s%2Fg%2F11c5_t06y3?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Jean Lamour', 
+      coords: [48.704323, 6.162999] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Jean+Lamour/@48.7035914,6.1632455,94a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a5b8a31c6b:0x8a06b4df639ebd69!6m1!1v5!8m2!3d48.7036702!4d6.163149!16s%2Fg%2F11c5_jbjr6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Nancy+Coll%C3%A8ge+Jean+Lamour/@48.7044821,6.1629959,349a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a58f282cfd:0x7f179eaa463a2939!6m1!1v5!8m2!3d48.7049518!4d6.1628674!16s%2Fg%2F11ddxmwrn6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Montée de Pinchard', 
+      coords: [48.707037, 6.161787] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Mont%C3%A9e+de+Pinchard/@48.7072001,6.1614681,347a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2afbb6d0deb:0x3039df6a8af26579!6m1!1v5!8m2!3d48.707054!4d6.161506!16s%2Fg%2F11fn25t46y?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Mont%C3%A9e+de+Pinchard/@48.7072001,6.1614681,347a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2afaca691cf:0x1c9e986ecfd6705a!6m1!1v5!8m2!3d48.707844!4d6.162176!16s%2Fg%2F11c5_sxfw3?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Tilleul Argenté', 
+      coords: [48.703212, 6.155147] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Tilleul+Argent%C3%A9/@48.7030135,6.1546773,318a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2bbab32e4a9:0x1925eb65f6059dd9!6m1!1v5!8m2!3d48.703217!4d6.155268!16s%2Fg%2F11h_1l38p6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Tilleul+Argent%C3%A9/@48.7030632,6.1548129,217a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2bbacbe2393:0xe310d3fc0acebce4!6m1!1v5!8m2!3d48.703159!4d6.155046!16s%2Fg%2F11h_1lbvz5?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Cèdre Bleu', 
+      coords: [48.702184, 6.151628] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/C%C3%A8dre+Bleu/@48.7022076,6.1516899,215a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2b961d4b179:0x507ddf55bf8d7be4!6m1!1v5!8m2!3d48.7022904!4d6.1521571!16s%2Fg%2F11c5_gvf02?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/C%C3%A8dre+Bleu/@48.7020682,6.1512245,215a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2b941069773:0x54c8263606b986!6m1!1v5!8m2!3d48.7020112!4d6.15085!16s%2Fg%2F11c5_sp57b?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Les Ombelles', 
+      coords: [48.700964, 6.147243] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Les+Ombelles/@48.7009319,6.1469,218a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2bf4a8e15db:0xf2aa63375a12c48e!6m1!1v5!8m2!3d48.701004!4d6.147411!16s%2Fg%2F11xfzkrgfv?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Les+Ombelles/@48.7009319,6.1469,218a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2bf4a6dcfe7:0xdad618a1468cac31!6m1!1v5!8m2!3d48.7009336!4d6.1473249!16s%2Fg%2F11ddxpnhpy?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Cliniques', 
+      coords: [48.700160, 6.143717] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Cliniques/@48.7001633,6.1435536,204a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2c0c0f8e229:0xd19821255c3da064!6m1!1v5!8m2!3d48.7001711!4d6.1440669!16s%2Fg%2F11ddxn08lj?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Cliniques/@48.7001633,6.1435536,204a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2c0dd948419:0xf23286f07920c9ad!6m1!1v5!8m2!3d48.7001584!4d6.1433908!16s%2Fg%2F11c5_k0wbf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Palais des Sports - Gentilly', 
+      coords: [48.699708, 6.139329] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Palais+des+Sports+-+Gentilly/@48.6994554,6.1387073,196a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2c3c8ed859b:0xfab8c161cebdfcbd!6m1!1v5!8m2!3d48.6996331!4d6.1384335!16s%2Fg%2F11g65gjstg?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Palais+des+Sports+-+Gentilly/@48.6995298,6.1398778,195a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2c164e2c451:0x614d7fcb09a3eff4!6m1!1v5!8m2!3d48.6997499!4d6.1405712!16s%2Fg%2F11c20sk6n0?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Cascade - La Fontaine', 
+      coords: [48.699065, 6.135140] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Cascade+-+La+Fontaine/@48.6988742,6.1347414,194a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2c2e0bdd8bb:0x779f1dd5dca81ee5!6m1!1v5!8m2!3d48.6989882!4d6.1350567!16s%2Fg%2F11c2p8x_19?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Cascade+-+La+Fontaine/@48.6989358,6.1349914,106a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2c2d944dd37:0xa9f13af909ed3aea!6m1!1v5!8m2!3d48.6991368!4d6.1352739!16s%2Fg%2F11c2pcrdwf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Poste - Champ-le-Beouf', 
+      coords: [48.700563, 6.133311] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Poste+-+Champ-le-Boeuf/@48.7001795,6.1332877,104a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2dccea78567:0x3cdd3e6008a102d!6m1!1v5!8m2!3d48.7002231!4d6.1333303!16s%2Fg%2F11c5__hlh1?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/La+Poste+-+Champ-le-Boeuf/@48.7007971,6.1331255,103a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2dcb0ce7761:0xf5780ee1f04eb63f!6m1!1v5!8m2!3d48.700909!4d6.13317!16s%2Fg%2F11c5_s5jtq?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saint-Jacques II', 
+      coords: [48.702574, 6.130838] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Saint-Jacques+II/@48.7024293,6.1306973,147a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2db9b4b2013:0x4342bb17c2b81e13!6m1!1v5!8m2!3d48.7026501!4d6.1307102!16s%2Fg%2F11c5_yj7v6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Saint-Jacques+II/@48.7024477,6.130708,131a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2db82fd4045:0x3238bf63bd9707f1!6m1!1v5!8m2!3d48.702553!4d6.131019!16s%2Fg%2F11ddxkcr16?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saint-Exupéry', 
+      coords: [48.699985, 6.130321] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Saint-Exup%C3%A9ry/@48.6999858,6.1300399,140a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2dc572b2b1b:0x812347cb23d2266e!6m1!1v5!8m2!3d48.699978!4d6.130438!16s%2Fg%2F11fd4rn294?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Saint-Exup%C3%A9ry/@48.699948,6.1301267,68a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2dc567749af:0xbe266675306b8158!6m1!1v5!8m2!3d48.699933!4d6.1302238!16s%2Fg%2F11gtz6_l4r?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Madine', 
+      coords: [48.699103, 6.127778] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Madine/@48.6991651,6.1278152,64a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2ddd8866b3d:0x8e22ed5b5deb0ef6!6m1!1v5!8m2!3d48.6991397!4d6.1280294!16s%2Fg%2F11c5_s77x6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Madine/@48.6991651,6.1278152,64a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2de73c4a479:0xe2ff56a87093f2d5!6m1!1v5!8m2!3d48.699248!4d6.1279533!16s%2Fg%2F11c5_t41jl?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Laxou Champ-le-Beouf', 
+      coords: [48.698156, 6.123322] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Champ-le-B%C5%93uf/@48.6980282,6.1234592,101a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2de32d3f609:0xb7d8560e3c22b73c!6m1!1v5!8m2!3d48.6981639!4d6.1239701!16s%2Fg%2F11ddxnm31t?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Laxou+Champ-le-boeuf/@48.6980144,6.1221308,104a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2dff05dffcf:0xce2b8d0b37775680!6m1!1v5!8m2!3d48.698164!4d6.122347!16s%2Fg%2F11c2p9jn2k?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Laxou Plateau de Haye Direction Nord', 
+      coords: [48.697630, 6.120190] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Laxou+Plateau+de+Haye/@48.6976367,6.1203211,122a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a3201da7ed55:0xd6df4f18d6189590!6m1!1v5!8m2!3d48.6977036!4d6.1201687!16s%2Fg%2F11c5_gb8kq?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Mouzon Direction Nord', 
+      coords: [48.696227, 6.121046] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Mouzon/@48.6957751,6.1226646,429a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e042f2cf85:0xfba1f750d25d4baa!6m1!1v5!8m2!3d48.696096!4d6.122799!16s%2Fg%2F11c2p7s8jr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Vair Direction Sud', 
+      coords: [48.695672, 6.124361] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Vair/@48.6957334,6.1235408,289a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e0f195a159:0x820ca36c670cbb1a!6m1!1v5!8m2!3d48.695711!4d6.124376!16s%2Fg%2F11c2p8hl0c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Vair Direction Nord', 
+      coords: [48.696037, 6.123708] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Vair/@48.6962682,6.1233909,324a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e0f4e7184b:0xd01906ed9cc34ffa!6m1!1v5!8m2!3d48.696017!4d6.12373!16s%2Fg%2F11fn263jzx?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saône Direction Nord', 
+      coords: [48.696039, 6.125463] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Sa%C3%B4ne/@48.695871,6.1251326,185a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e0b8c8bde9:0x745573280594f239!6m1!1v5!8m2!3d48.696083!4d6.125679!16s%2Fg%2F11xt2knlr2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Laxou Sapinière', 
+      coords: [48.690981, 6.128387] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Laxou+Sapini%C3%A8re/@48.6911286,6.128164,168a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e431967513:0x20496e9b37d61370!6m1!1v5!8m2!3d48.691345!4d6.128298!16s%2Fg%2F11h_1l965z?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
+          url: 'https://www.google.fr/maps/place/Laxou+Sapini%C3%A8re/@48.6911286,6.128164,168a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e436919661:0x86447570e5f905c0!6m1!1v5!8m2!3d48.691143!4d6.128542!16s%2Fg%2F11c2p7twf2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    }
+  ]
+};
+
 interface TramLine {
   id: string;
   name: string;
@@ -1527,6 +2394,7 @@ interface TramLine {
   coordinatesMaxeville?: [number, number][];
   coordinatesLaxou?: [number, number][];
   coordinatesHoudemont?: [number, number][];
+  coordinatesLaneuville?: [number, number][];
 }
 
 interface BusLinesProps {
@@ -1537,9 +2405,9 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(15); // Initial zoom level
 
-  const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') ? 
-    [tramLineT5, tramLine, tramLineT4].filter(line => visibleLines.includes(line.id)) : [];
-  const shouldShowMarkers = currentZoom >= 15; // Markers visible from zoom level 14
+  const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') || visibleLines.includes('T2') ? 
+    [tramLineT5, tramLine, tramLineT4, tramLineT2].filter(line => visibleLines.includes(line.id)) : [];
+  const shouldShowMarkers = currentZoom >= 15; // Markers visible from zoom level 1548.669879, 6.206965
 
   return (
     <>
@@ -1638,6 +2506,49 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                 weight={4}
                 opacity={0.8}
               />
+            </>
+          )}
+          
+          {/* Tracés séparés pour T2 */}
+          {(line as any).id === 'T2' && (line as any).coordinatesLaxou && (line as any).coordinatesLaneuville && (
+            <>
+              {/* Tracé direction Laxou Sapinière */}
+              <Polyline
+                positions={(line as any).coordinatesLaxou}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction Laneuville Centre */}
+              <Polyline
+                positions={(line as any).coordinatesLaneuville}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+
+              {/* Section reduite de la ligne T2 section droite */}
+              {line.id === 'T2' && (
+                <Polyline
+                  positions={[
+                    [48.685037, 6.187112], // Point intermédiaire
+                    [48.685269, 6.186691], // Point intermédiaire
+                    [48.685322, 6.186466], // Point intermédiaire
+                    [48.685567, 6.186148], // Point intermédiaire
+                    [48.685809, 6.186139], // Point intermédiaire
+                    [48.687646, 6.184797], // Quartier Saint-Nicolas Direction Nord
+                    [48.689725, 6.183256], // Place Charles III - Point Central Direction Nord
+                    [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
+                    [48.692823, 6.180935], // Point intermédiaire
+                    [48.692137, 6.178665], // Bibliothèque Direction Nord
+                    [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+                    [48.690030, 6.171810], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={2}
+                  opacity={0.8}
+                />
+              )}
             </>
           )}
         </React.Fragment>
