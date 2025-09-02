@@ -327,8 +327,7 @@ function LocationMarker() {
     <>
       {position === null ? null : (
         <>
-          <Marker position={position} icon={UserIcon}>
-            <Popup>Vous êtes ici</Popup>
+          <Marker position={position} icon={UserIcon} interactive={false}>
           </Marker>
           <button className="recenter-button" onClick={handleRecenter} title="Me localiser">
             <svg 

@@ -814,14 +814,6 @@ const tramLineT4: TramLine = {
     [48.690981, 6.128387], // Laxou Sapinière
     [48.692532, 6.128162], // Point intermédiaire
     [48.694612, 6.128002], // Point intermédiaire
-    [48.694649, 6.127576], // Point intermédiaire
-    [48.694974, 6.124373], // Point intermédiaire
-    [48.695672, 6.124361], // Vair Direction Sud
-    [48.695998, 6.124373], // Point intermédiaire
-    [48.696033, 6.125262], // Point intermédiaire
-    [48.697247, 6.125168], // Moselotte
-    [48.698202, 6.125090], // Point intermédiaire
-    [48.698156, 6.123322], // Laxou Champ-le-Beouf
   ] as [number, number][],
   // Tracé direction Houdemont Porte Sud (droite)
   coordinatesHoudemont: [
@@ -861,18 +853,6 @@ const tramLineT4: TramLine = {
     [48.689204, 6.132839], // Croix Saint-Claude
     [48.689783, 6.130048], // Point intermédiaire
     [48.690321, 6.128707], // Point intermédiaire
-    [48.690981, 6.128387], // Laxou Sapinière
-    [48.692532, 6.128162], // Point intermédiaire
-    [48.694612, 6.128002], // Point intermédiaire
-    [48.694649, 6.127576], // Point intermédiaire
-    [48.694907, 6.127233], // Point intermédiaire
-    [48.696086, 6.126997], // Point intermédiaire
-    [48.696039, 6.125463], // Saône Direction Nord
-    [48.695998, 6.124373], // Point intermédiaire
-    [48.696037, 6.123708], // Vair Direction Nord
-    [48.696100, 6.123089], // Point intermédiaire
-    [48.698137, 6.122952], // Point intermédiaire
-    [48.698156, 6.123322], // Laxou Champ-le-Beouf
   ] as [number, number][],
   stops: [
     { 
@@ -1528,7 +1508,7 @@ const tramLineT4: TramLine = {
 const tramLineT2: TramLine = {
   id: 'T2',
   name: 'Ligne T2',
-  description: 'Laneuville Centre ↔ Laxou Sapinière',
+  description: 'Ligne T2 - Laneuville Centre ↔ Laxou Sapinière',
   color: '#0000FF', // Bleu
   coordinates: [
     [48.659154, 6.230062], // Laneuville Centre
@@ -1548,7 +1528,7 @@ const tramLineT2: TramLine = {
     [48.665589, 6.216069], // Point intermédiaire
     [48.665809, 6.215614], // Point intermédiaire
     [48.665968, 6.215227], // Point intermédiaire
-    [48.666427, 6.213544], // Gabriel Faure
+    [48.666427, 6.213544], // Gabriel Fauré
     [48.667314, 6.210127], // Point intermédiaire
     [48.667460, 6.209730], // Point intermédiaire
     [48.667945, 6.208733], // Point intermédiaire
@@ -1581,21 +1561,10 @@ const tramLineT2: TramLine = {
     [48.682143, 6.192133], // Hôpital Central - Maternité
     [48.683678, 6.189662], // Point intermédiaire
     [48.684769, 6.187656], // Place des Vosges
+    [48.685037, 6.187112], // Point intermédiaire
   ] as [number, number][],
   // Tracé direction Laxou Sapinière (droite)
   coordinatesLaxou: [
-    [48.684769, 6.187656], // Place des Vosges
-    [48.685037, 6.187112], // Point intermédiaire
-    [48.685269, 6.186691], // Point intermédiaire
-    [48.685322, 6.186466], // Point intermédiaire
-    [48.685567, 6.186148], // Point intermédiaire
-    [48.685809, 6.186139], // Point intermédiaire
-    [48.687646, 6.184797], // Quartier Saint-Nicolas Direction Nord
-    [48.689725, 6.183256], // Place Charles III - Point Central Direction Nord
-    [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
-    [48.692823, 6.180935], // Point intermédiaire
-    [48.692137, 6.178665], // Bibliothèque Direction Nord
-    [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
     [48.690030, 6.171810], // Point intermédiaire
     [48.690763, 6.171185], // Patton Direction Nord
     [48.691307, 6.170695], // Point intermédiaire
@@ -1664,6 +1633,7 @@ const tramLineT2: TramLine = {
     [48.698482, 6.126476], // Point intermédiaire
     [48.698309, 6.125923], // Point intermédiaire
     [48.698219, 6.125361], // Point intermédiaire
+    [48.698202, 6.125090], // Point intermédiaire
     [48.698156, 6.123322], // Laxou Champ-le-Beouf
     [48.698137, 6.122952], // Point intermédiaire
     [48.698119, 6.121751], // Point intermédiaire
@@ -1675,29 +1645,17 @@ const tramLineT2: TramLine = {
     [48.696418, 6.120347], // Point intermédiaire
     [48.696227, 6.121046], // Mouzon Direction Nord
     [48.696100, 6.123089], // Point intermédiaire
+    [48.696037, 6.123708], // Vair Direction Nord
     [48.695998, 6.124373], // Point intermédiaire
     [48.695672, 6.124361], // Vair Direction Sud
     [48.694974, 6.124373], // Point intermédiaire
-    [48.694649, 6.127576], // Point intermédiaire
-    [48.694612, 6.128002], // Point intermédiaire
-    [48.692532, 6.128162], // Point de jonction
+    [48.694657, 6.127549], // Point intermédiaire
+    [48.694612, 6.128002], // Point de jonction
+    [48.692532, 6.128162], // Point intermédiaire
     [48.690981, 6.128387], // Laxou Sapinière
   ] as [number, number][],
   // Tracé direction Laneuville Centre (gauche)
   coordinatesLaneuville: [
-    [48.684769, 6.187656], // Place des Vosges
-    [48.685037, 6.187112], // Point intermédiaire
-    [48.684524, 6.186486], // Pichon Direction Nord
-    [48.684081, 6.185994], // Point intermédiaire
-    [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
-    [48.689066, 6.182293], // Place Charles III - Point Central Direction Sud
-    [48.690898, 6.180990], // Place Stanislas - Dom Calmet Direction Sud
-    [48.692093, 6.180120], // Point intermédiaire
-    [48.691505, 6.178297], // Point intermédiaire
-    [48.690622, 6.175509], // Point intermédiaire
-    [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
-    [48.689414, 6.176331], // Point intermédiaire
-    [48.688326, 6.173023], // Saint-Léon Direction Sud
     [48.687599, 6.170741], // Point intermédiaire
     [48.688383, 6.170310], // Domrémy Direction Sud
     [48.691897, 6.168328], // Place Godefroy de Bouillon Direction Sud
@@ -1764,18 +1722,7 @@ const tramLineT2: TramLine = {
     [48.698482, 6.126476], // Point intermédiaire
     [48.698309, 6.125923], // Point intermédiaire
     [48.698219, 6.125361], // Point intermédiaire
-    [48.698156, 6.123322], // Laxou Champ-le-Beouf
-    [48.698137, 6.122952], // Point intermédiaire
-    [48.696100, 6.123089], // Point intermédiaire
-    [48.696037, 6.123708], // Vair Direction Nord
-    [48.695998, 6.124373], // Point intermédiaire
-    [48.696039, 6.125463], // Saône Direction Nord
-    [48.696086, 6.126997], // Point intermédiaire
-    [48.694907, 6.127233], // Point intermédiaire
-    [48.694649, 6.127576], // Point intermédiaire
-    [48.694612, 6.128002], // Point de jonction
-    [48.692532, 6.128162], // Point intermédiaire
-    [48.690981, 6.128387], // Laxou Sapinière
+    [48.698202, 6.125090], // Point intermédiaire    
   ] as [number, number][],
   stops: [
     { 
@@ -1827,7 +1774,7 @@ const tramLineT2: TramLine = {
       ]
     },
     { 
-      name: 'Gabriel Faure', 
+      name: 'é', 
       coords: [48.666427, 6.213544] as [number, number],
       googleMapsUrls: [
         {
@@ -2488,27 +2435,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
               )}
             </>
           )}
-          
-          {/* Tracés séparés pour T4 */}
-          {(line as any).id === 'T4' && (line as any).coordinatesLaxou && (line as any).coordinatesHoudemont && (
-            <>
-              {/* Tracé direction Laxou Champ-le-Beouf */}
-              <Polyline
-                positions={(line as any).coordinatesLaxou}
-                color={line.color}
-                weight={4}
-                opacity={0.8}
-              />
-              {/* Tracé direction Houdemont Porte Sud */}
-              <Polyline
-                positions={(line as any).coordinatesHoudemont}
-                color={line.color}
-                weight={4}
-                opacity={0.8}
-              />
-            </>
-          )}
-          
+
           {/* Tracés séparés pour T2 */}
           {(line as any).id === 'T2' && (line as any).coordinatesLaxou && (line as any).coordinatesLaneuville && (
             <>
@@ -2546,6 +2473,123 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                   ]}
                   color={line.color}
                   weight={2}
+                  opacity={0.8}
+                />
+              )}
+              {/* Section reduite de la ligne T2 section gauche */}
+              {line.id === 'T2' && (
+                <Polyline
+                  positions={[
+                    [48.685037, 6.187112], // Point intermédiaire
+                    [48.684524, 6.186486], // Pichon Direction Nord
+                    [48.684081, 6.185994], // Point intermédiaire
+                    [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
+                    [48.689066, 6.182293], // Place Charles III - Point Central Direction Sud
+                    [48.690898, 6.180990], // Place Stanislas - Dom Calmet Direction Sud
+                    [48.692093, 6.180120], // Point intermédiaire
+                    [48.691505, 6.178297], // Point intermédiaire
+                    [48.690622, 6.175509], // Point intermédiaire
+                    [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
+                    [48.689414, 6.176331], // Point intermédiaire
+                    [48.688326, 6.173023], // Saint-Léon Direction Sud
+                    [48.687599, 6.170741], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={2}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T2' && (
+                <Polyline
+                  positions={[
+                    [48.698137, 6.122952], // Point intermédiaire
+                    [48.696100, 6.123089], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={4}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T2' && (
+                <Polyline
+                  positions={[
+                    [48.695998, 6.124373], // Point intermédiaire
+                    [48.696039, 6.125463], // Saône Direction Nord
+                    [48.696086, 6.126997], // Point intermédiaire
+                    [48.694907, 6.127233], // Point intermédiaire
+                    [48.694657, 6.127549], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={4}
+                  opacity={0.8}
+                />
+              )}
+            </>
+          )}
+          
+          {/* Tracés séparés pour T4 */}
+          {(line as any).id === 'T4' && (line as any).coordinatesLaxou && (line as any).coordinatesHoudemont && (
+            <>
+              {/* Tracé direction Laxou Champ-le-Beouf */}
+              <Polyline
+                positions={(line as any).coordinatesLaxou}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction Houdemont Porte Sud */}
+              <Polyline
+                positions={(line as any).coordinatesHoudemont}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction ligne T4 fin) */}
+              {line.id === 'T4' && (
+                <Polyline
+                  positions={[
+                    [48.698202, 6.125090], // Point intermédiaire
+                    [48.698156, 6.123322], // Laxou Champ-le-Beouf
+                    [48.698137, 6.122952], // Point intermédiaire
+                    [48.696100, 6.123089], // Point intermédiaire
+                    [48.696037, 6.123708], // Vair Direction Nord
+                    [48.695998, 6.124373], // Point intermédiaire
+                    [48.696039, 6.125463], // Saône Direction Nord
+                    [48.696086, 6.126997], // Point intermédiaire
+                    [48.694907, 6.127233], // Point intermédiaire
+                    [48.694657, 6.127549], // Point intermédiaire
+                    [48.694612, 6.128002], // Point intermédiaire
+                    [48.692532, 6.128162], // Point intermédiaire
+                    [48.690981, 6.128387], // Laxou Sapinière
+                  ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T4' && (
+                <Polyline
+                  positions={[
+                    [48.695998, 6.124373], // Point intermédiaire
+                    [48.695672, 6.124361], // Vair Direction Sud
+                    [48.694974, 6.124373], // Point intermédiaire
+                    [48.694657, 6.127549], // Point intermédiaire
+                    [48.694612, 6.128002], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T4' && (
+                <Polyline
+                  positions={[
+                    [48.698202, 6.125090], // Point intermédiaire
+                    [48.697247, 6.125168], // Moselotte
+                    [48.696033, 6.125262], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={4}
                   opacity={0.8}
                 />
               )}
