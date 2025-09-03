@@ -263,6 +263,7 @@ const tramLineT5: TramLine = {
   coordinatesVandeouvre: [
     [48.679197, 6.180481], // Jean Jaurès (partagé avec T1)
     [48.681798, 6.183409], // Garenne - Saurupt
+    [48.683003, 6.184788], // Point intermédiaire
     [48.683524, 6.185382], // Pichon Direction Sud
     [48.684081, 6.185994], // Point intermédiaire
     [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
@@ -774,6 +775,7 @@ const tramLineT4: TramLine = {
   coordinatesLaxou: [
     [48.679197, 6.180481], // Jean Jaurès (partagé avec T5)
     [48.681798, 6.183409], // Garenne - Saurupt (partagé avec T5)
+    [48.683003, 6.184788], // Point intermédiaire
     [48.683524, 6.185382], // Pichon Direction Sud
     [48.684081, 6.185994], // Point intermédiaire
     [48.686100, 6.184457], // Quartier Saint-Nicolas Direction Sud
@@ -789,9 +791,11 @@ const tramLineT4: TramLine = {
     [48.686733, 6.168055], // Point intermédiaire
     [48.686566, 6.167868], // Commanderie Direction Sud
     [48.686058, 6.167258], // Point intermédiaire
+    [48.686013, 6.167089], // Point intermédiaire
     [48.686012, 6.166898], // Point intermédiaire
     [48.687561, 6.166235], // Préville Direction Sud
-    [48.688303, 6.165892], // Point intermédiaire
+    [48.688145, 6.165968], // Point intermédiaire
+    [48.688372, 6.165614], // Point intermédiaire
     [48.688917, 6.162981], // Saintifontaine
     [48.689584, 6.159877], // Messier
     [48.690433, 6.155906], // Chemin Blanc
@@ -833,7 +837,9 @@ const tramLineT4: TramLine = {
     [48.689870, 6.171286], // Gare - Raymond Poincaré Direction Nord
     [48.689266, 6.169294], // Bégonias Direction Nord
     [48.688424, 6.166499], // Préville Direction Nord
-    [48.688305, 6.165897], // Point intermédiaire
+    [48.688337, 6.166199], // Point intermédiaire
+    [48.688347, 6.165914], // Point intermédiaire
+    [48.688372, 6.165614], // Point intermédiaire
     [48.688917, 6.162981], // Saintifontaine
     [48.689584, 6.159877], // Messier
     [48.690433, 6.155906], // Chemin Blanc
@@ -1508,7 +1514,7 @@ const tramLineT4: TramLine = {
 const tramLineT2: TramLine = {
   id: 'T2',
   name: 'Ligne T2',
-  description: 'Ligne T2 - Laneuville Centre ↔ Laxou Sapinière',
+  description: 'Laneuville Centre ↔ Laxou Sapinière',
   color: '#0000FF', // Bleu
   coordinates: [
     [48.659154, 6.230062], // Laneuville Centre
@@ -2322,6 +2328,916 @@ const tramLineT2: TramLine = {
   ]
 };
 
+// Ligne T3 (verte) - Seichamps Haie Cerlin ↔ Villers Campus Sciences
+const tramLineT3: TramLine = {
+  id: 'T3',
+  name: 'Ligne T3',
+  description: 'Seichamps Haie Cerlin ↔ Villers Campus Sciences',
+  color: '#008000', // Vert foncé
+  coordinates: [
+    [48.719416, 6.265903], // Seichamps Haie Cerlin
+    [48.719586, 6.265737], // Point intermédiaire
+    [48.719615, 6.265367], // Point intermédiaire
+    [48.718871, 6.263494], // Point intermédiaire
+    [48.718754, 6.263596], // Point intermédiaire
+    [48.717942, 6.264040], // Point intermédiaire
+    [48.717472, 6.264410], // Point intermédiaire
+    [48.717166, 6.264840], // Point intermédiaire
+    [48.716947, 6.265448], // Seichamps - Église
+    [48.716830, 6.265819], // Point intermédiaire
+    [48.716404, 6.266424], // Point intermédiaire
+    [48.715781, 6.267399], // Point intermédiaire
+    [48.715756, 6.267565], // Point intermédiaire
+    [48.715805, 6.267981], // Point intermédiaire
+    [48.715763, 6.268255], // Point intermédiaire
+    [48.715540, 6.268661], // Point intermédiaire
+    [48.715396, 6.268974], // Point intermédiaire
+    [48.715281, 6.269117], // Point intermédiaire
+    [48.714836, 6.269211], // Donon
+    [48.714511, 6.269294], // Point intermédiaire
+    [48.714182, 6.269493], // Point intermédiaire
+    [48.713934, 6.269643], // Point intermédiaire
+    [48.713701, 6.269329], // Point intermédiaire
+    [48.712368, 6.267253], // Jardin Roussel
+    [48.711935, 6.266626], // Point intermédiaire
+    [48.711267, 6.265750], // Point intermédiaire
+    [48.710511, 6.264864], // Point intermédiaire
+    [48.710235, 6.264611], // Point intermédiaire
+    [48.709976, 6.264467], // Point intermédiaire
+    [48.709476, 6.264276], // Semoir
+    [48.708870, 6.263981], // Point intermédiaire
+    [48.708057, 6.263435], // Point intermédiaire
+    [48.707692, 6.263034], // Point intermédiaire
+    [48.706916, 6.261596], // Point intermédiaire
+    [48.706633, 6.261322], // Point intermédiaire
+    [48.706371, 6.261147], // Collège Goncourt
+    [48.705645, 6.260750], // Point intermédiaire
+    [48.705637, 6.260304], // Point intermédiaire
+    [48.705545, 6.259478], // Point intermédiaire
+    [48.705356, 6.258569], // Blés d'Or
+    [48.704504, 6.254986], // Point intermédiaire
+    [48.704427, 6.254507], // Charles de Gaulle
+    [48.704344, 6.253505], // Point intermédiaire
+    [48.704386, 6.252734], // Point intermédiaire
+    [48.704502, 6.252008], // Point intermédiaire
+    [48.704783, 6.250740], // Point intermédiaire
+    [48.704803, 6.250150], // Point intermédiaire
+    [48.704671, 6.248867], // Renaissance
+    [48.704389, 6.246287], // Point intermédiaire
+    [48.704534, 6.245943], // Point intermédiaire
+    [48.706252, 6.245210], // Porte Verte
+    [48.707493, 6.244672], // Point intermédiaire
+    [48.707780, 6.244463], // Point intermédiaire
+    [48.708114, 6.244005], // Point intermédiaire
+    [48.708965, 6.243950], // Point intermédiaire
+    [48.709559, 6.243831], // Tronc qui fume
+    [48.710062, 6.243736], // Point intermédiaire
+    [48.710807, 6.243393], // Point intermédiaire
+    [48.710182, 6.241903], // Point intermédiaire
+    [48.710163, 6.241872], // Point intermédiaire
+    [48.709559, 6.240423], // Point intermédiaire
+    [48.709002, 6.239019], // Edith Piaf
+    [48.707232, 6.234604], // Colonies
+    [48.706714, 6.233291], // Point intermédiaire
+    [48.706494, 6.232841], // Point intermédiaire
+    [48.705964, 6.231457], // 69ème RI
+    [48.705268, 6.229768], // Point intermédiaire
+    [48.703894, 6.231039], // Point intermédiaire
+    [48.703692, 6.230423], // Point intermédiaire
+    [48.703596, 6.230085], // Quartier Kléber
+    [48.702905, 6.227629], // Point intermédiaire
+    [48.702711, 6.227082], // Point intermédiaire
+    [48.702390, 6.226485], // Point intermédiaire
+    [48.701979, 6.225975], // Point intermédiaire
+    [48.701688, 6.225716], // Mouzimpré
+    [48.701268, 6.225324], // Point intermédiaire
+    [48.700676, 6.224576], // Point intermédiaire
+    [48.700051, 6.223887], // Point intermédiaire
+    [48.698631, 6.222268], // Point intermédiaire
+    [48.696858, 6.220316], // Point intermédiaire
+    [48.696162, 6.219293], // Point intermédiaire
+    [48.695543, 6.218075], // Point intermédiaire
+    [48.695208, 6.217209], // Point intermédiaire
+    [48.694413, 6.214968], // Fraternité
+    [48.693292, 6.211806], // Point intermédiaire
+    [48.690837, 6.210784], // Voltaire
+    [48.690064, 6.210484], // Point intermédiaire
+    [48.688339, 6.209763], // Point intermédiaire
+    [48.688375, 6.209328], // Point intermédiaire
+    [48.688338, 6.208803], // Point intermédiaire
+    [48.688196, 6.208162], // La Meurthe
+    [48.687398, 6.204354], // Austrasie
+    [48.686571, 6.200243], // Victor
+    [48.686414, 6.199481], // Point intermédiaire
+    [48.685876, 6.196886], // Loritz Direction Nord
+    [48.685604, 6.195592], // Point intermédiaire
+    [48.685617, 6.194447], // Point intermédiaire
+    [48.685941, 6.193058], // Point intermédiaire
+    [48.686163, 6.191963], // Point intermédiaire
+    [48.685944, 6.191178], // Saint-Julien
+    [48.685821, 6.190873], // Point intermédiaire
+    [48.684963, 6.189839], // Point intermédiaire
+    [48.684836, 6.189635], // Point intermédiaire
+    [48.684584, 6.188964], // Point intermédiaire
+    [48.684283, 6.188551], // Point intermédiaire
+    [48.684769, 6.187656], // Place des Vosges (partagé)
+    [48.685037, 6.187112], // Point intermédiaire
+    [48.684524, 6.186486], // Pichon Direction Nord
+    [48.684081, 6.185994], // Point intermédiaire
+    [48.683524, 6.185382], // Pichon Direction Sud
+    [48.683003, 6.184788], // Point intermédiaire
+    [48.683298, 6.184280], // Varsovie
+    [48.684359, 6.182455], // Point intermédiaire
+    [48.684497, 6.182294], // Point intermédiaire
+    [48.685810, 6.181332], // Place des justes
+    [48.686555, 6.180789], // Point intermédiaire
+    [48.686623, 6.180676], // Point intermédiaire
+    [48.688255, 6.179488], // Saint-Sébastien
+    [48.688572, 6.179270], // Point intermédiaire
+    [48.688649, 6.179130], // Point intermédiaire
+    [48.688586, 6.179018], // Point intermédiaire
+    [48.688247, 6.177907], // Point intermédiaire
+    [48.688163, 6.177780], // Point intermédiaire
+    [48.688499, 6.177309], // Gare Joffre
+    [48.688853, 6.176869], // Point intermédiaire
+    [48.689016, 6.176756], // Point intermédiaire
+    [48.689285, 6.176450], // Point intermédiaire
+    [48.689414, 6.176331], // Point de bifurcation
+    // Bifurcation vers Villers (première trace)
+    [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
+    [48.690622, 6.175510], // Point intermédiaire
+    [48.691047, 6.175161], // Point intermédiaire
+    [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+    [48.689870, 6.171286], // Gare - Raymond Poincaré Direction Nord
+    [48.689266, 6.169294], // Bégonias Direction Nord
+    [48.688424, 6.166499], // Préville Direction Nord
+    [48.688337, 6.166199], // Point intermédiaire
+    [48.688090, 6.165418], // Préville Direction Nord T2
+    [48.686661, 6.160751], // Gridel Direction Nord
+    [48.685739, 6.157734], // Méderville Direction Nord
+    [48.685078, 6.155555], // Domaine Sainte-Anne Direction Nord
+    [48.684684, 6.154282], // Point de regroupement
+    // Fusion vers Seichamps (deuxième trace)
+    [48.684766, 6.155145], // Point intermédiaire
+    [48.684783, 6.155963], // Point intermédiaire
+    [48.684757, 6.156183], // Domaine Sainte-Anne Direction Sud
+    [48.684487, 6.157660], // Point intermédiaire
+    [48.684497, 6.157923], // Point intermédiaire
+    [48.684632, 6.158454], // Point intermédiaire
+    [48.684869, 6.159138], // Point intermédiaire
+    [48.685321, 6.160280], // Méderville Direction Sud
+    [48.686092, 6.162130], // Point intermédiaire
+    [48.686258, 6.162846], // Sacré Coeur Direction Sud
+    [48.686443, 6.163734], // Point intermédiaire
+    [48.686512, 6.164796], // Point intermédiaire
+    [48.686012, 6.166898], // Point intermédiaire
+    [48.686013, 6.167089], // Point intermédiaire
+    [48.686058, 6.167258], // Point intermédiaire
+    [48.686566, 6.167868], // Commanderie Direction Sud
+    [48.686733, 6.168055], // Point intermédiaire
+    [48.687599, 6.170741], // Point intermédiaire
+    [48.688326, 6.173023], // Saint-Léon Direction Sud
+    [48.689414, 6.176331], // Point de bifurcation
+  ] as [number, number][],
+  // Tracé direction Villers bifurcation Loritz (droite)
+  coordinatesVillers: [
+    [48.686414, 6.199481], // Point intermédiaire
+    [48.686471, 6.199428], // Point intermédiaire
+    [48.687420, 6.198974], // Point intermédiaire
+    [48.687731, 6.198564], // Point intermédiaire
+    [48.687678, 6.198269], // Point intermédiaire
+    [48.687176, 6.195959], // Point intermédiaire
+    [48.687066, 6.195519], // Loritz Direction Sud
+    [48.686934, 6.194930], // Point intermédiaire
+    [48.685941, 6.193058], // Point intermédiaire
+  ] as [number, number][],
+  // Tracé direction Seichamps Haie Cerlin (droite)
+  coordinatesSeichamps: [
+    [48.663495, 6.155502], // Villers Campus Sciences
+    [48.663968, 6.155556], // Point intermédiaire
+    [48.664422, 6.155645], // Point intermédiaire
+    [48.665093, 6.155904], // Grande Corvée
+    [48.665507, 6.156151], // Point intermédiaire
+    [48.665937, 6.156501], // Point intermédiaire
+    [48.666414, 6.156980], // Point intermédiaire
+    [48.666750, 6.157444], // Point intermédiaire
+    [48.667024, 6.157880], // Point intermédiaire
+    [48.667211, 6.158228], // UFR Staps
+    [48.667346, 6.158587], // Point intermédiaire
+    [48.667591, 6.159450], // Point intermédiaire
+    [48.667719, 6.159792], // Point intermédiaire
+    [48.667904, 6.160060], // Point intermédiaire
+    [48.668185, 6.160359], // Joseph Laurent
+    [48.668843, 6.161083], // Point intermédiaire
+    [48.670268, 6.158228], // Point intermédiaire
+    [48.670675, 6.157520], // Paul Muller
+    [48.672442, 6.154544], // Villers Mairie
+    [48.675042, 6.150276], // Rodin
+    [48.676870, 6.147238], // Point intermédiaire
+    [48.677286, 6.146496], // Point intermédiaire
+    [48.678044, 6.144837], // Maréville
+    [48.678655, 6.143541], // Point intermédiaire
+    [48.678967, 6.142996], // Point intermédiaire
+    [48.679304, 6.142533], // Point intermédiaire
+    [48.679758, 6.143380], // Point intermédiaire
+    [48.679495, 6.143535], // Point intermédiaire
+    [48.679435, 6.143659], // Point intermédiaire
+    [48.679400, 6.144271], // Point intermédiaire
+    [48.679397, 6.144741], // Point intermédiaire
+    [48.679403, 6.145145], // Point intermédiaire
+    [48.679446, 6.145540], // Point intermédiaire
+    [48.679726, 6.148092], // Provinces
+    [48.680113, 6.151511], // Europe
+    [48.680339, 6.153583], // Point intermédiaire
+    [48.681173, 6.152761], // Hardeval
+    [48.681911, 6.152040], // Point intermédiaire
+    [48.682402, 6.151671], // Point intermédiaire
+    [48.682871, 6.151383], // Point intermédiaire
+    [48.683950, 6.150875], // Victoire
+    [48.683996, 6.150998], // Point intermédiaire
+    [48.684510, 6.153109], // Point intermédiaire
+    [48.684684, 6.154282], // Point de regroupement
+    
+    
+  ] as [number, number][],
+  stops: [
+    { 
+      name: 'Seichamps Haie Cerlin', 
+      coords: [48.719416, 6.265903] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Seichamps+Haie+Cerlin/@48.7193628,6.2657057,230a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x479497520f5ac031:0x28d826258960b8ca!6m1!1v5!8m2!3d48.7194215!4d6.2660532!16s%2Fg%2F11ddxns756?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Seichamps - Église', 
+      coords: [48.716947, 6.265448] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Seichamps+-+Eglise/@48.7169896,6.265208,191a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x47949753cbfafb75:0x4d773dbc0396df4c!6m1!1v5!8m2!3d48.717027!4d6.265309!16s%2Fg%2F11ycrnbjk7?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Seichamps+-+Eglise/@48.7169896,6.265208,191a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x47949753cf37b65d:0xa83f2793c0f0646e!6m1!1v5!8m2!3d48.716923!4d6.265538!16s%2Fg%2F11c5_r4zbr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Donon', 
+      coords: [48.714836, 6.269211] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Donon/@48.7146561,6.2689283,182a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x4794975358212883:0x3a5232ce39cb1105!6m1!1v5!8m2!3d48.714794!4d6.269253!16s%2Fg%2F11c5_gb8k6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Donon/@48.7147861,6.2689289,182a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479497535853ebdf:0x170315c5900315b2!6m1!1v5!8m2!3d48.714901!4d6.269193!16s%2Fg%2F11c5_sd8bf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Jardin Roussel', 
+      coords: [48.712368, 6.267253] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Jardin+Roussel/@48.7124251,6.2669839,362a,35y,0.88t/data=!3m1!1e3!4m8!3m7!1s0x4794975506f2813b:0x87473a5fb212c0e1!6m1!1v5!8m2!3d48.711918!4d6.266603!16s%2Fg%2F11c2p8yqy_?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Jardin+Roussel/@48.7124251,6.2669839,362a,35y,0.88t/data=!3m1!1e3!4m8!3m7!1s0x47949754e638fec9:0xec8c4ba2717f1ab3!6m1!1v5!8m2!3d48.712868!4d6.267829!16s%2Fg%2F11ddxmrhp7?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Semoir', 
+      coords: [48.709476, 6.264276] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Semoir/@48.7098816,6.2643214,365a,35y,0.88t/data=!3m1!1e3!4m8!3m7!1s0x479499fe1f6c864b:0x32b706fda0f48c04!6m1!1v5!8m2!3d48.709763!4d6.264385!16s%2Fg%2F11c2p9dw5c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Semoir/@48.7093901,6.2643374,167a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499fe17e8cf25:0x767fea68bfb6ae8c!6m1!1v5!8m2!3d48.709251!4d6.264195!16s%2Fg%2F11c2p9sc87?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Collège Goncourt', 
+      coords: [48.706371, 6.261147] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Coll%C3%A8ge+Goncourt/@48.7065032,6.2611927,172a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499fc24ac39cf:0x68978aa3ee94aa51!6m1!1v5!8m2!3d48.706642!4d6.261406!16s%2Fg%2F11c2p9bxp9?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Coll%C3%A8ge+Goncourt/@48.7065032,6.2611927,172a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499fc237331ef:0xce85871369737257!6m1!1v5!8m2!3d48.706193!4d6.260966!16s%2Fg%2F11h_1l5qxh?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Blés d\'Or', 
+      coords: [48.705356, 6.258569] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Bl%C3%A9s+d\'Or/@48.7053974,6.25888,174a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499fc80a84303:0x37245fca94be6586!6m1!1v5!8m2!3d48.705448!4d6.258974!16s%2Fg%2F11c2p6y_t7?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Bl%C3%A9s+d\'Or/@48.7050948,6.2583557,175a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499fc827e7ddf:0x3c30b0d92b0edeb!6m1!1v5!8m2!3d48.705254!4d6.25834!16s%2Fg%2F11ddxmrhpk?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Charles de Gaulle', 
+      coords: [48.704427, 6.254507] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Charles+de+Gaulle/@48.7043024,6.2545034,181a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499e4bbf8c495:0x8fe8c6009b0555b8!6m1!1v5!8m2!3d48.704487!4d6.254586!16s%2Fg%2F11c2p91gg6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Charles+de+Gaulle/@48.7043024,6.2545034,181a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499e4bed021c7:0x53413479d52f292b!6m1!1v5!8m2!3d48.704395!4d6.25447!16s%2Fg%2F11c5_rwlp2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Renaissance', 
+      coords: [48.704671, 6.248867] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Renaissance/@48.7046155,6.248389,186a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499e46b63cb7b:0x6b32a7c9c05f4486!6m1!1v5!8m2!3d48.7046192!4d6.2489475!16s%2Fg%2F11hdsg21t6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Renaissance/@48.7046155,6.248389,186a,35y,0.89t/data=!3m1!1e3!4m8!3m7!1s0x479499e6bccfb06d:0xf3fd61c344649b36!6m1!1v5!8m2!3d48.704681!4d6.248847!16s%2Fg%2F11c2p4795p?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Porte Verte', 
+      coords: [48.706252, 6.245210] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Porte+Verte/@48.7065026,6.2451005,231a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499e0bc899371:0xa868646c27bb9197!6m1!1v5!8m2!3d48.7069585!4d6.2450413!16s%2Fg%2F11c5_sst7h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Essey+Porte+Verte/@48.7056914,6.2451505,229a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499e737026873:0x6be512a108fc2def!6m1!1v5!8m2!3d48.705471!4d6.245525!16s%2Fg%2F11pz4psjyc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Tronc qui fume', 
+      coords: [48.709559, 6.243831] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Tronc+qui+fume/@48.709414,6.2435691,457a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499dfd25cea3b:0x2eca4593886c28b2!6m1!1v5!8m2!3d48.7089721!4d6.2437867!16s%2Fg%2F11c2p6wbg4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Tronc+qui+fume/@48.709414,6.2435691,457a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499dfee09d769:0x80ca7470789dc!6m1!1v5!8m2!3d48.710373!4d6.243706!16s%2Fg%2F11hdsg5vzh?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Edith Piaf', 
+      coords: [48.709002, 6.239019] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Edith+Piaf/@48.708898,6.2393869,293a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499df242d0db5:0xf6ba3b6cf7c6ea08!6m1!1v5!8m2!3d48.709198!4d6.239519!16s%2Fg%2F11c5_rp29b?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Edith+Piaf/@48.708981,6.2388936,163a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499df2af6ab97:0x611a68489197584a!6m1!1v5!8m2!3d48.7089473!4d6.23867!16s%2Fg%2F11c2p8yqz9?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Colonies', 
+      coords: [48.707232, 6.234604] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Colonies/@48.7073325,6.23452,164a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499d99b906e69:0x3c99c7482e5eceb5!6m1!1v5!8m2!3d48.7074181!4d6.2348107!16s%2Fg%2F11c2p6wbfz?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Colonies/@48.7073325,6.23452,164a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499d912f1b5db:0x50eba39fdfa1aa85!6m1!1v5!8m2!3d48.7071187!4d6.2344507!16s%2Fg%2F11hdsft4gr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: '69ème RI', 
+      coords: [48.705964, 6.231457] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/69%C3%A8me+RI/@48.7054716,6.2305227,167a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499d0bcc61f39:0x29087ca10ef7afc5!6m1!1v5!8m2!3d48.705673!4d6.230885!16s%2Fg%2F11xd8n554k?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/69%C3%A8me+RI/@48.7054482,6.2303495,167a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499d0be63278f:0xf065d610f1b172d5!6m1!1v5!8m2!3d48.70549!4d6.230207!16s%2Fg%2F11ddxjhl6w?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Quartier Kléber', 
+      coords: [48.703596, 6.230085] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Quartier+Kl%C3%A9ber/@48.7034304,6.229998,169a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499d068c52165:0x585e55f4a005494d!6m1!1v5!8m2!3d48.7034963!4d6.230022!16s%2Fg%2F11ddxmv92y?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/ESSEY-LES-NANCY+-+Quartier+Kl%C3%A9ber/@48.7034304,6.229998,169a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499d065deed1b:0x8baec6887ffc9b71!6m1!1v5!8m2!3d48.703711!4d6.230219!16s%2Fg%2F11c2p9yy95?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Mouzimpré', 
+      coords: [48.701688, 6.225716] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Mouzimpr%C3%A9/@48.7014985,6.2253719,170a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499ce1c18aa91:0x81301ab6928efdee!6m1!1v5!8m2!3d48.701683!4d6.22582!16s%2Fg%2F11ddxjzmln?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Essey+Mouzimpr%C3%A9/@48.7014985,6.2253719,170a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479499ce1ceef311:0x622f2d8176f4fa04!6m1!1v5!8m2!3d48.701672!4d6.225606!16s%2Fg%2F11spsqmxqd?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Fraternité', 
+      coords: [48.694413, 6.214968] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Fraternit%C3%A9/@48.6947156,6.2159932,74a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949835a0543285:0xa4d5bf77a9cdc58f!6m1!1v5!8m2!3d48.693951!4d6.21381!16s%2Fg%2F11c2p7twf4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Fraternit%C3%A9/@48.6947156,6.2159932,74a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794983520b8b8f5:0x6e882d36771fb68e!6m1!1v5!8m2!3d48.694836!4d6.21603!16s%2Fg%2F11g8b6gjm_?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Voltaire', 
+      coords: [48.690837, 6.210784] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Voltaire/@48.6909305,6.2108463,211a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794984a2440c615:0x321a643a14fa0c49!6m1!1v5!8m2!3d48.691032!4d6.210847!16s%2Fg%2F11c2p7l8fz?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Voltaire/@48.6909305,6.2108463,211a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794984a2f08e091:0x5a69a78010122891!6m1!1v5!8m2!3d48.690693!4d6.210731!16s%2Fg%2F11c5_ndqq4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'La Meurthe', 
+      coords: [48.688196, 6.208162] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/La+Meurthe/@48.6880224,6.2079973,217a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794984935d4a80d:0x61cf365aeea04c77!6m1!1v5!8m2!3d48.688262!4d6.208362!16s%2Fg%2F11fn2671lt?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/La+Meurthe/@48.6880224,6.2079973,217a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794984935d781d1:0x33aa1affea9be531!6m1!1v5!8m2!3d48.68808!4d6.207677!16s%2Fg%2F11c2p3x9pj?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Austrasie', 
+      coords: [48.687398, 6.204354] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Austrasie/@48.6873974,6.2045108,218a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794984f4851d841:0x804e742ce9702935!6m1!1v5!8m2!3d48.687473!4d6.204852!16s%2Fg%2F11h_1l5d6b?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Austrasie/@48.6873974,6.2045108,218a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794984f48d6961b:0xe2e8e4eb08a12500!6m1!1v5!8m2!3d48.687496!4d6.204649!16s%2Fg%2F11xfzmvvq6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Victor', 
+      coords: [48.686571, 6.200243] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Victor/@48.6867929,6.2013394,218a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949845eb478dd5:0xffaab25716eb54ae!6m1!1v5!8m2!3d48.686905!4d6.202131!16s%2Fg%2F11hdsg5vyw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Victor/@48.6865893,6.199407,218a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479498444c8d8ab7:0xe13d8ff169fbaba!6m1!1v5!8m2!3d48.686545!4d6.199849!16s%2Fg%2F11ddxp9p2m?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Loritz Direction Nord', 
+      coords: [48.685876, 6.196886] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Loritz/@48.6863971,6.1958577,472a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479498437f97333b:0x155e05c36f4fdddc!6m1!1v5!8m2!3d48.6858252!4d6.1969334!16s%2Fg%2F11c5_t230k?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Loritz Direction Sud', 
+      coords: [48.687066, 6.195519] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Loritz/@48.6863971,6.1958577,472a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949843bf49193b:0xac17590e15d07f6d!6m1!1v5!8m2!3d48.687119!4d6.195542!16s%2Fg%2F11c5_nb3fw?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saint-Julien', 
+      coords: [48.685944, 6.191178] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Saint-Julien/@48.6858043,6.1907649,471a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479498428179f505:0x6da8fa471c07ffec!6m1!1v5!8m2!3d48.685993!4d6.191367!16s%2Fg%2F11c2p8yqz7?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Saint-Julien/@48.6858043,6.1907649,471a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794984281de99cd:0x2b3e3a1564b1f3f2!6m1!1v5!8m2!3d48.686012!4d6.191137!16s%2Fg%2F11ddxp4fsb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Varsovie', 
+      coords: [48.683298, 6.184280] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Varsovie/@48.6834788,6.1836727,190a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949865fa93e7cf:0xb039e461907afdf!6m1!1v5!8m2!3d48.683418!4d6.183891!16s%2Fg%2F11c2p8sjrj?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Varsovie/@48.6834788,6.1836727,190a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949865f0d0fd29:0x19871b4a4174c399!6m1!1v5!8m2!3d48.683735!4d6.183609!16s%2Fg%2F11xd8nsdsy?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Place des justes', 
+      coords: [48.685810, 6.181332] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Place+des+justes/@48.6857362,6.1812329,192a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794986fa4fd337d:0x1b73de6ff78f205c!6m1!1v5!8m2!3d48.6858237!4d6.1814069!16s%2Fg%2F11ddxn_519?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Place+des+Justes/@48.6857362,6.1812329,192a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794986fbb8e6e2b:0x5e64e21ac66fe752!6m1!1v5!8m2!3d48.6858113!4d6.1812086!16s%2Fg%2F11fn25y0b9?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saint-Sébastien', 
+      coords: [48.688255, 6.179488] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Saint-S%C3%A9bastien/@48.6880113,6.179611,197a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949871dc5cd23b:0x16ea0ce8ebae3120!6m1!1v5!8m2!3d48.6881757!4d6.1796435!16s%2Fg%2F11j8glszlh?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Saint-S%C3%A9bastien/@48.6880113,6.179611,197a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949871e1c8c8c1:0x6394e768b09a9696!6m1!1v5!8m2!3d48.6882434!4d6.1794254!16s%2Fg%2F11hdsfrjt3?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gare Joffre', 
+      coords: [48.688499, 6.177309] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Gare+-+Joffre/@48.6882309,6.1762544,412a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479498719ae84395:0xdc0b51f848a1fe67!6m1!1v5!8m2!3d48.6887463!4d6.1771675!16s%2Fg%2F11x8j0f77z?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Gare+-+Joffre/@48.6882309,6.1762544,412a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479498719b630059:0x508ccb5468ee7a09!6m1!1v5!8m2!3d48.6887354!4d6.1769344!16s%2Fg%2F11x65klwl8?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Victoire', 
+      coords: [48.683950, 6.150875] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Victoire/@48.6845533,6.1511147,938a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a28fb90a0569:0xfb9d5ece53ad6ac0!6m1!1v5!8m2!3d48.684322!4d6.152345!16s%2Fg%2F11c2p6y_t3?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Victoire/@48.6839011,6.1513776,592a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a28effdca707:0x84dd0b808cb2423b!6m1!1v5!8m2!3d48.683208!4d6.151135!16s%2Fg%2F11c2p7mv9b?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Hardeval', 
+      coords: [48.681173, 6.152761] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Hardeval/@48.6808827,6.1525168,587a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a28f46695101:0xf289eecb5298a285!6m1!1v5!8m2!3d48.681408!4d6.152553!16s%2Fg%2F11c2p83qby?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Hardeval/@48.6808827,6.1525168,587a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a28f4d8c018b:0x376bc4d3a248d29f!6m1!1v5!8m2!3d48.680962!4d6.152968!16s%2Fg%2F11c2pcrdw5?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Europe', 
+      coords: [48.680113, 6.151511] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Europe/@48.6801564,6.1514996,379a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a288c8bb64fb:0x2ef0ccf9ed4a5b1f!6m1!1v5!8m2!3d48.6803227!4d6.1522992!16s%2Fg%2F11c2p7l8fh?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Europe/@48.6802227,6.1513348,154a,35y,0.79t/data=!3m1!1e3!4m8!3m7!1s0x4794a288c5122619:0xbb34fe6f1b73e08c!6m1!1v5!8m2!3d48.680054!4d6.151325!16s%2Fg%2F11ddxnbxld?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Provinces', 
+      coords: [48.679726, 6.148092] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Provinces/@48.6801809,6.1476637,802a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a2895d6ca931:0xd145cd86435d8036!6m1!1v5!8m2!3d48.679707!4d6.148133!16s%2Fg%2F11c5_rmj_f?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Provinces/@48.6796982,6.147705,176a,35y,0.79t/data=!3m1!1e3!4m8!3m7!1s0x4794a2895cbe22f9:0xfb801ebe2783abfc!6m1!1v5!8m2!3d48.679939!4d6.148096!16s%2Fg%2F11xd8rmmwj?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Maréville', 
+      coords: [48.678044, 6.144837] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Mar%C3%A9ville/@48.6783522,6.1434995,526a,35y,0.69t/data=!3m1!1e3!4m8!3m7!1s0x4794a28a56a50a55:0xe18ea7fc1f6a44e0!6m1!1v5!8m2!3d48.6781568!4d6.1444084!16s%2Fg%2F11fn25t46v?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Mar%C3%A9ville/@48.6781458,6.1439745,371a,35y,0.69t/data=!3m1!1e3!4m8!3m7!1s0x4794a28a4f4da22b:0x76dfdb169ec7c416!6m1!1v5!8m2!3d48.678005!4d6.145112!16s%2Fg%2F11xd8nsdh_?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Rodin', 
+      coords: [48.675042, 6.150276] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Rodin/@48.6746414,6.1499267,372a,35y,0.69t/data=!3m1!1e3!4m8!3m7!1s0x4794a262902f39bf:0xfa71874effbb4d47!6m1!1v5!8m2!3d48.675049!4d6.150173!16s%2Fg%2F11fn25_584?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Rodin/@48.6749864,6.1500778,111a,35y,0.69t/data=!3m1!1e3!4m8!3m7!1s0x4794a27d67b72583:0xdfa6651d9d3743be!6m1!1v5!8m2!3d48.6751606!4d6.1502062!16s%2Fg%2F11fn25zndb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Villers Mairie', 
+      coords: [48.672442, 6.154544] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Villers+Mairie/@48.6730552,6.1532533,409a,35y,0.69t/data=!3m1!1e3!4m8!3m7!1s0x4794a27cf9b7018f:0xb941da473a3204bf!6m1!1v5!8m2!3d48.672806!4d6.154018!16s%2Fg%2F11c5_t604m?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Villers+Mairie/@48.6735796,6.1522231,953a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a27c58a1092d:0x1da4b939ca240586!6m1!1v5!8m2!3d48.672214!4d6.154906!16s%2Fg%2F11ddxq5mfg?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Paul Muller', 
+      coords: [48.670675, 6.157520] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Paul+Muller/@48.6707938,6.1569407,462a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a27ea9ea55f7:0x3eb1d1a637db4e5e!6m1!1v5!8m2!3d48.670773!4d6.157561!16s%2Fg%2F11c5_rbk47?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Paul+Muller/@48.6707938,6.1569407,462a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a27eab3c1c37:0x37cea0d85dc28980!6m1!1v5!8m2!3d48.670406!4d6.157778!16s%2Fg%2F11c5_s3w3q?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Joseph Laurent', 
+      coords: [48.668185, 6.160359] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Joseph+Laurent/@48.6682398,6.160307,190a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a278fba041f9:0x42ba3227096bb811!6m1!1v5!8m2!3d48.668274!4d6.160502!16s%2Fg%2F11c5_s5jv7?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Joseph+Laurent/@48.6682398,6.160307,190a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a278fc8a5da7:0x4c1bb2fda96e908e!6m1!1v5!8m2!3d48.668194!4d6.160238!16s%2Fg%2F11c2p99064?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'UFR Staps', 
+      coords: [48.667211, 6.158228] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/UFR+Staps/@48.6672836,6.1573239,982a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a279bd53eb8d:0xde3aed0318aa4904!6m1!1v5!8m2!3d48.667229!4d6.158279!16s%2Fg%2F11ddxmv92t?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/UFR+Staps/@48.666957,6.1580453,169a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a279981a08cb:0x63a2c2c632f8b0bc!6m1!1v5!8m2!3d48.66724!4d6.158198!16s%2Fg%2F11c5_r0r_z?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Grande Corvée', 
+      coords: [48.665093, 6.155904] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Grande+Corv%C3%A9e/@48.6653924,6.1557634,406a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a27a01c0cf99:0x2ed9a2167d331d40!6m1!1v5!8m2!3d48.665657!4d6.156302!16s%2Fg%2F11c2p7whky?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Grande+Corv%C3%A9e/@48.6653725,6.1556966,453a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a270b1c3f1e9:0xf1ad2e660bbec248!6m1!1v5!8m2!3d48.664738!4d6.155718!16s%2Fg%2F11c2p8_kwc?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Villers Campus Sciences', 
+      coords: [48.663495, 6.155502] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Villers+Campus+Sciences/@48.6630686,6.1556539,395a,35y,0.68t/data=!3m1!1e3!4m8!3m7!1s0x4794a270d3a0b3c1:0x1b7c277b634acd6f!6m1!1v5!8m2!3d48.663364!4d6.155698!16s%2Fg%2F11h_1ld5vh?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gare Thiers Poirel Direction Sud', 
+      coords: [48.690365, 6.175653] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Gare+Thiers+Poirel/@48.690384,6.1756471,75a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949873c41361d1:0xc06ebe819d4291ac!6m1!1v5!8m2!3d48.6904283!4d6.1757069!16s%2Fg%2F11hdsgcfs6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Tour Thiers Gare Direction Nord', 
+      coords: [48.690849, 6.174509] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Tour+Thiers+Gare/@48.6908545,6.174427,59a,37.7y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x479498738d12f2fd:0x315ce76bd5931941!6m1!1v5!8m2!3d48.6908987!4d6.1744956!16s%2Fg%2F11c5_lc19l?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gare - Raymond Poincaré Direction Nord', 
+      coords: [48.689870, 6.171286] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Gare+-+Raymond+Poincar%C3%A9/@48.6899637,6.1711729,166a,35y,0.79t/data=!3m1!1e3!4m8!3m7!1s0x4794987429a3b4d3:0xbc15e919aabd107f!6m1!1v5!8m2!3d48.689922!4d6.171256!16s%2Fg%2F11ddxq3mmb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Bégonias Direction Nord', 
+      coords: [48.689266, 6.169294] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/B%C3%A9gonias/@48.6892939,6.1692026,165a,35y,0.79t/data=!3m1!1e3!4m8!3m7!1s0x479498760d576787:0xcfddef7c7375c27e!6m1!1v5!8m2!3d48.689281!4d6.169061!16s%2Fg%2F11fn2659ch?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Préville Direction Nord T2', 
+      coords: [48.688090, 6.165418] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Pr%C3%A9ville/@48.6879439,6.1652353,274a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a29da4a221c1:0xffbac6125e9cd536!6m1!1v5!8m2!3d48.6881241!4d6.1654258!16s%2Fg%2F11ddxq1p9t?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Gridel Direction Nord', 
+      coords: [48.686661, 6.160751] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Gridel/@48.6862317,6.159695,269a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a29b60e403c3:0x947e6e4f55941ee9!6m1!1v5!8m2!3d48.686689!4d6.1607588!16s%2Fg%2F11c5_ndqqf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Méderville Direction Nord', 
+      coords: [48.685739, 6.157734] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/M%C3%A9dreville/@48.6857062,6.1575571,271a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a29ad5e23f61:0x1d01d59223706a7b!6m1!1v5!8m2!3d48.685848!4d6.157499!16s%2Fg%2F11c5_yj7ty?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Domaine Sainte-Anne Direction Nord', 
+      coords: [48.685078, 6.155555] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Domaine+Sainte-Anne/@48.6848121,6.1544241,169a,35y,0.79t/data=!3m1!1e3!4m8!3m7!1s0x4794a2855a113ccd:0x2f3b7d00368eb0f8!6m1!1v5!8m2!3d48.684811!4d6.154581!16s%2Fg%2F11hdsfvwbz?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Saint-Léon Direction Sud', 
+      coords: [48.688326, 6.173023] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Saint+L%C3%A9on/@48.6865248,6.1676707,947a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949876ca29f0e3:0xbf9db145abce3e1c!6m1!1v5!8m2!3d48.6882784!4d6.1730729!16s%2Fg%2F11c5_sg2br?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Commanderie Direction Sud', 
+      coords: [48.686566, 6.167868] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Commanderie/@48.6865179,6.1673555,946a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x47949877c462fe41:0x7279fb4150900fc0!6m1!1v5!8m2!3d48.68679!4d6.168016!16s%2Fg%2F11c5_s5jv6?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Sacré Coeur Direction Sud', 
+      coords: [48.686258, 6.162846] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Sacr%C3%A9+Coeur/@48.6864698,6.1642554,948a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a29cc3e89cad:0xce4f00e58a8a8525!6m1!1v5!8m2!3d48.686279!4d6.162846!16s%2Fg%2F11ddxnkf_x?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Méderville Direction Sud', 
+      coords: [48.685321, 6.160280] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/M%C3%A9dreville/@48.6855392,6.1597235,942a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a284aca3bb07:0x9dc46e527e2f61a0!6m1!1v5!8m2!3d48.685299!4d6.160245!16s%2Fg%2F11c2p7qy9y?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
+      name: 'Domaine Sainte-Anne Direction Sud', 
+      coords: [48.684757, 6.156183] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Domaine+Sainte-Anne/@48.6855324,6.1571003,941a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794a28538f844a9:0x9d0f18fd973f0a00!6m1!1v5!8m2!3d48.684757!4d6.156183!16s%2Fg%2F11fn25sx84?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    }
+  ]
+};
+
 interface TramLine {
   id: string;
   name: string;
@@ -2342,6 +3258,8 @@ interface TramLine {
   coordinatesLaxou?: [number, number][];
   coordinatesHoudemont?: [number, number][];
   coordinatesLaneuville?: [number, number][];
+  coordinatesVillers?: [number, number][];
+  coordinatesSeichamps?: [number, number][];
 }
 
 interface BusLinesProps {
@@ -2352,8 +3270,8 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(15); // Initial zoom level
 
-  const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') || visibleLines.includes('T2') ? 
-    [tramLineT5, tramLine, tramLineT4, tramLineT2].filter(line => visibleLines.includes(line.id)) : [];
+  const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') || visibleLines.includes('T2') || visibleLines.includes('T3') ? 
+    [tramLineT5, tramLine, tramLineT4, tramLineT2, tramLineT3].filter(line => visibleLines.includes(line.id)) : [];
   const shouldShowMarkers = currentZoom >= 15; // Markers visible from zoom level 1548.669879, 6.206965
 
   return (
@@ -2399,6 +3317,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                     [48.678827, 6.180074], // Point intermédiaire
                     [48.679197, 6.180481], // Jean Jaurès (nouveau point T5)
                     [48.681798, 6.183409], // Garenne - Saurupt
+                    [48.683003, 6.184788], // Point intermédiaire
                     [48.683524, 6.185382], // Pichon Direction Sud
                     [48.684081, 6.185994], // Point intermédiaire
                     [48.684524, 6.186486], // Pichon Direction Nord
@@ -2524,6 +3443,26 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                   opacity={0.8}
                 />
               )}
+            </>
+          )}
+          
+          {/* Tracés séparés pour T3 */}
+          {(line as any).id === 'T3' && (line as any).coordinatesVillers && (line as any).coordinatesSeichamps && (
+            <>
+              {/* Tracé direction Villers Campus Sciences */}
+              <Polyline
+                positions={(line as any).coordinatesVillers}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction Seichamps Haie Cerlin */}
+              <Polyline
+                positions={(line as any).coordinatesSeichamps}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
             </>
           )}
           

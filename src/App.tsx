@@ -3725,7 +3725,7 @@ function App() {
           />
           <LocationMarker />
           <MapEvents onMapClick={handleMapClick} />
-                          <BusLines visibleLines={['T1', 'T5', 'T4', 'T2']} />
+                          <BusLines visibleLines={['T1', 'T5', 'T4', 'T2', 'T3']} />
           {/* Pinne temporaire supprimée pour éviter l'affichage de la pinne orange
           {tempMarker && (
             <Marker
