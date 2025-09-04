@@ -55,7 +55,7 @@ const tramLine: TramLine = {
     [48.671964, 6.172453],   // ARTEM - Blandant - Thermal
     [48.675217, 6.176070],   // Exelmans (modifié)
     [48.678673, 6.179990],   // Point intermédiaire
-    [48.679043, 6.179830],   // Jean Jaurès
+    [48.679043, 6.179830],   // Jean Jaurès T1
     [48.681119, 6.178509],   // Garenne - Rose Wild
     [48.684268, 6.176490],   // Mont Désert - Thermal (modifié)
     [48.685171, 6.175799],   // Point intermédiaire
@@ -252,17 +252,9 @@ const tramLineT5: TramLine = {
     [48.661970, 6.173655], // Nations
     [48.666233, 6.166676], // Vélodrome
     [48.666478, 6.166306], // Point intermédiaire
-    [48.668397, 6.168561], // Montet Octroi (partagé avec T1)
-    [48.671964, 6.172453], // ARTEM - Blandan - Thermal (partagé avec T1)
-    [48.675217, 6.176070], // Exelmans (partagé avec T1)
-    [48.678672, 6.179993], // Point intermédiaire
-    [48.678827, 6.180074], // Point intermédiaire
-    [48.679197, 6.180481], // Jean Jaurès (nouveau point T5)
   ] as [number, number][],
   // Tracé direction Vandeouvre Roberval (gauche)
   coordinatesVandeouvre: [
-    [48.679197, 6.180481], // Jean Jaurès (partagé avec T1)
-    [48.681798, 6.183409], // Garenne - Saurupt
     [48.683003, 6.184788], // Point intermédiaire
     [48.683524, 6.185382], // Pichon Direction Sud
     [48.684081, 6.185994], // Point intermédiaire
@@ -464,7 +456,7 @@ const tramLineT5: TramLine = {
     },
     { 
       name: 'Jean Jaurès', 
-      coords: [48.679197, 6.180481] as [number, number],
+      coords: [48.679128, 6.180410] as [number, number],
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Vandeouvre',
@@ -768,12 +760,13 @@ const tramLineT4: TramLine = {
     [48.673861, 6.183327], // Point intermédiaire
     [48.674719, 6.182698], // Sainte-Colette
     [48.676077, 6.181796], // Oudinot
-    [48.678827, 6.180074], // Point intermédiaire
-    [48.679197, 6.180481], // Jean Jaurès (partagé avec T5)
   ] as [number, number][],
   // Tracé direction Laxou Champ-le-Beouf (gauche)
   coordinatesLaxou: [
-    [48.679197, 6.180481], // Jean Jaurès (partagé avec T5)
+    [48.676077, 6.181796], // Oudinot
+    [48.678344, 6.180329], // Point intermédiaire
+    [48.678827, 6.180072], // Point intermédiaire
+    [48.679128, 6.180410], // Jean Jaurès (partagé avec T5)
     [48.681798, 6.183409], // Garenne - Saurupt (partagé avec T5)
     [48.683003, 6.184788], // Point intermédiaire
     [48.683524, 6.185382], // Pichon Direction Sud
@@ -833,7 +826,9 @@ const tramLineT4: TramLine = {
     [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
     [48.692823, 6.180935], // Point intermédiaire
     [48.692137, 6.178665], // Bibliothèque Direction Nord
+    [48.691047, 6.175161], // Point intermédiaire
     [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+
     [48.689870, 6.171286], // Gare - Raymond Poincaré Direction Nord
     [48.689266, 6.169294], // Bégonias Direction Nord
     [48.688424, 6.166499], // Préville Direction Nord
@@ -1093,7 +1088,7 @@ const tramLineT4: TramLine = {
     },
     { 
       name: 'Jean Jaurès', 
-      coords: [48.679197, 6.180481] as [number, number],
+      coords: [48.679128, 6.180410] as [number, number],
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Houdemont',
@@ -2465,9 +2460,10 @@ const tramLineT3: TramLine = {
     [48.689414, 6.176331], // Point de bifurcation
     // Bifurcation vers Villers (première trace)
     [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
-    [48.690622, 6.175510], // Point intermédiaire
+    [48.690622, 6.175509], // Point intermédiaire
     [48.691047, 6.175161], // Point intermédiaire
     [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+    [48.690030, 6.171810], // Point intermédiaire
     [48.689870, 6.171286], // Gare - Raymond Poincaré Direction Nord
     [48.689266, 6.169294], // Bégonias Direction Nord
     [48.688424, 6.166499], // Préville Direction Nord
@@ -2886,6 +2882,20 @@ const tramLineT3: TramLine = {
       ]
     },
     { 
+      name: 'Place des Vosges', 
+      coords: [48.684769, 6.187656] as [number, number],
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Seichamps',
+          url: 'https://www.google.fr/maps/place/Place+des+Vosges/@48.684769,6.187656,190a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794986889c5dfc3:0xe78efd73565e7523!6m1!1v5!8m2!3d48.684692!4d6.187683!16s%2Fg%2F11xd8rcbdx?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Villers',
+          url: 'https://www.google.fr/maps/place/Place+des+Vosges/@48.684769,6.187656,190a,35y,0.78t/data=!3m1!1e3!4m8!3m7!1s0x4794986889b6900b:0x41efb960e8788e9!6m1!1v5!8m2!3d48.6848679!4d6.1876299!16s%2Fg%2F11c2pbvtr1?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
+    },
+    { 
       name: 'Varsovie', 
       coords: [48.683298, 6.184280] as [number, number],
       googleMapsUrls: [
@@ -3271,7 +3281,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
   const [currentZoom, setCurrentZoom] = useState<number>(15); // Initial zoom level
 
   const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') || visibleLines.includes('T2') || visibleLines.includes('T3') ? 
-    [tramLineT5, tramLine, tramLineT4, tramLineT2, tramLineT3].filter(line => visibleLines.includes(line.id)) : [];
+    [tramLineT5, tramLineT4, tramLineT3, tramLineT2, tramLine].filter(line => visibleLines.includes(line.id)) : [];
   const shouldShowMarkers = currentZoom >= 15; // Markers visible from zoom level 1548.669879, 6.206965
 
   return (
@@ -3305,7 +3315,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                 opacity={0.8}
               />
               
-              {/* Section élargie de la ligne T5 entre Vélodrome et Garenne - Saurupt + section droite */}
+              {/* Section élargie de la ligne T5 entre Vélodrome et Garenne - Saurupt */}
               {line.id === 'T5' && (
                 <Polyline
                   positions={[
@@ -3314,13 +3324,35 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                     [48.671964, 6.172453], // ARTEM - Blandan - Thermal (partagé avec T1)
                     [48.675217, 6.176070], // Exelmans (partagé avec T1)
                     [48.678672, 6.179993], // Point intermédiaire
-                    [48.678827, 6.180074], // Point intermédiaire
-                    [48.679197, 6.180481], // Jean Jaurès (nouveau point T5)
+                    [48.678827, 6.180072], // Point intermédiaire
+                    [48.679128, 6.180410], // Jean Jaurès (nouveau point T5)
                     [48.681798, 6.183409], // Garenne - Saurupt
+                    [48.683003, 6.184788], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={6}
+                  opacity={0.8}
+                />
+              )}
+              {/* Section élargie de la ligne T5 Pichon */}
+              {line.id === 'T5' && (
+                <Polyline
+                  positions={[
                     [48.683003, 6.184788], // Point intermédiaire
                     [48.683524, 6.185382], // Pichon Direction Sud
                     [48.684081, 6.185994], // Point intermédiaire
                     [48.684524, 6.186486], // Pichon Direction Nord
+                    [48.685037, 6.187112], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+              {/* Section élargie de la ligne T5 section doite */}
+              {line.id === 'T5' && (
+                <Polyline
+                  positions={[
                     [48.685037, 6.187112], // Point intermédiaire
                     [48.685269, 6.186691], // Point intermédiaire
                     [48.685322, 6.186466], // Point intermédiaire
@@ -3347,6 +3379,182 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                     [48.692093, 6.180120], // Point intermédiaire
                     [48.691505, 6.178297], // Point intermédiaire
                   ]}
+                  color={line.color}
+                  weight={6}
+                  opacity={0.8}
+                />
+              )}
+            </>
+          )}
+
+          {/* Tracés séparés pour T4 */}
+          {(line as any).id === 'T4' && (line as any).coordinatesLaxou && (line as any).coordinatesHoudemont && (
+            <>
+              {/* Tracé direction Laxou Champ-le-Beouf */}
+              <Polyline
+                positions={(line as any).coordinatesLaxou}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction Houdemont Porte Sud */}
+              <Polyline
+                positions={(line as any).coordinatesHoudemont}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction ligne T4 fin) */}
+              {line.id === 'T4' && (
+                <Polyline
+                  positions={[
+                    [48.698202, 6.125090], // Point intermédiaire
+                    [48.698156, 6.123322], // Laxou Champ-le-Beouf
+                    [48.698137, 6.122952], // Point intermédiaire
+                    [48.696100, 6.123089], // Point intermédiaire
+                    [48.696037, 6.123708], // Vair Direction Nord
+                    [48.695998, 6.124373], // Point intermédiaire
+                    [48.696039, 6.125463], // Saône Direction Nord
+                    [48.696086, 6.126997], // Point intermédiaire
+                    [48.694907, 6.127233], // Point intermédiaire
+                    [48.694657, 6.127549], // Point intermédiaire
+                    [48.694612, 6.128002], // Point intermédiaire
+                    [48.692532, 6.128162], // Point intermédiaire
+                    [48.690981, 6.128387], // Laxou Sapinière
+                  ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T4' && (
+                <Polyline
+                  positions={[
+                    [48.695998, 6.124373], // Point intermédiaire
+                    [48.695672, 6.124361], // Vair Direction Sud
+                    [48.694974, 6.124373], // Point intermédiaire
+                    [48.694657, 6.127549], // Point intermédiaire
+                    [48.694612, 6.128002], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T4' && (
+                <Polyline
+                  positions={[
+                    [48.698202, 6.125090], // Point intermédiaire
+                    [48.697247, 6.125168], // Moselotte
+                    [48.696033, 6.125262], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={4}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T4' && (
+                <Polyline
+                  positions={[
+                    [48.683003, 6.184788], // Point intermédiaire
+                    [48.683524, 6.185382], // Pichon Direction Sud
+                    [48.684081, 6.185994], // Point intermédiaire
+                    [48.684524, 6.186486], // Pichon Direction Nord
+                    [48.685037, 6.187112], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={6}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T4' && (
+                <Polyline
+                positions={[
+                  [48.690622, 6.175509], // Point intermédiaire
+                  [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
+                  [48.689414, 6.176331], // Point intermédiaire
+                  [48.688326, 6.173023], // Saint-Léon Direction Sud
+                  [48.687599, 6.170741], // Point intermédiaire
+                  [48.686733, 6.168055], // Point intermédiaire
+                  [48.686566, 6.167868], // Commanderie Direction Sud
+                  [48.686058, 6.167258], // Point intermédiaire
+                  [48.686013, 6.167089], // Point intermédiaire
+                  [48.686012, 6.166898], // Point intermédiaire
+                ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T4' && (
+                <Polyline
+                positions={[
+                  [48.691047, 6.175161], // Point intermédiaire
+                  [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+                  [48.690030, 6.171810], // Point intermédiaire
+                  [48.689870, 6.171286], // Gare - Raymond Poincaré Direction Nord
+                  [48.689266, 6.169294], // Bégonias Direction Nord
+                  [48.688424, 6.166499], // Préville Direction Nord
+                  [48.688337, 6.166199], // Point intermédiaire
+                ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+            </>
+          )}
+
+          {/* Tracés séparés pour T3 */}
+          {(line as any).id === 'T3' && (line as any).coordinatesVillers && (line as any).coordinatesSeichamps && (
+            <>
+              {/* Tracé direction Villers Campus Sciences */}
+              <Polyline
+                positions={(line as any).coordinatesVillers}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {/* Tracé direction Seichamps Haie Cerlin */}
+              <Polyline
+                positions={(line as any).coordinatesSeichamps}
+                color={line.color}
+                weight={4}
+                opacity={0.8}
+              />
+              {line.id === 'T3' && (
+                <Polyline
+                  positions={[
+                    [48.684283, 6.188551], // Point intermédiaire
+                    [48.684769, 6.187656], // Place des Vosges (partagé)
+                    [48.685037, 6.187112], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={8}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T3' && (
+                <Polyline
+                  positions={[
+                    [48.690622, 6.175509], // Point intermédiaire
+                    [48.690365, 6.175653], // Gare Thiers Poirel Direction Sud
+                    [48.689414, 6.176331], // Point intermédiaire
+                    [48.688326, 6.173023], // Saint-Léon Direction Sud
+                    [48.687599, 6.170741], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={6}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T3' && (
+                <Polyline
+                positions={[
+                  [48.691047, 6.175161], // Point intermédiaire
+                  [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
+                  [48.690030, 6.171810], // Point intermédiaire
+                ]}
                   color={line.color}
                   weight={6}
                   opacity={0.8}
@@ -3387,6 +3595,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                     [48.692003, 6.181538], // Place Stanislas - Dom Calmet Direction Nord
                     [48.692823, 6.180935], // Point intermédiaire
                     [48.692137, 6.178665], // Bibliothèque Direction Nord
+                    [48.691047, 6.175161], // Point intermédiaire
                     [48.690849, 6.174509], // Tour Thiers Gare Direction Nord
                     [48.690030, 6.171810], // Point intermédiaire
                   ]}
@@ -3440,6 +3649,18 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                   ]}
                   color={line.color}
                   weight={4}
+                  opacity={0.8}
+                />
+              )}
+              {line.id === 'T2' && (
+                <Polyline
+                  positions={[
+                    [48.684081, 6.185994], // Point intermédiaire
+                    [48.684524, 6.186486], // Pichon Direction Nord
+                    [48.685037, 6.187112], // Point intermédiaire
+                  ]}
+                  color={line.color}
+                  weight={2}
                   opacity={0.8}
                 />
               )}
@@ -3534,6 +3755,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
               )}
             </>
           )}
+
         </React.Fragment>
       ))}
 
