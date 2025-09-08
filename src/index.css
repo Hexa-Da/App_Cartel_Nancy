@@ -201,6 +201,45 @@ body.ios .planning-files::-webkit-scrollbar-track {
   display: none;
 }
 
+/* Gestion du clavier spécifique pour Android */
+body.android.keyboard-open {
+  height: 100vh !important;
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+}
+
+body.android.keyboard-open .app-main {
+  height: calc(100vh - 120px) !important;
+  overflow-y: auto !important;
+  position: relative !important;
+}
+
+body.android.keyboard-open .home-page {
+  min-height: calc(100vh - 180px) !important;
+  height: auto !important;
+  overflow-y: auto !important;
+}
+
+body.android.keyboard-open .bottom-nav {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+}
+
+body.android.keyboard-open .map-container {
+  height: calc(100vh - 180px) !important;
+  position: relative !important;
+}
+
+/* Empêcher le zoom automatique sur Android */
+body.android input,
+body.android textarea {
+  font-size: 16px !important;
+}
+
 /* Toutes les scrollbars sont maintenant masquées sur tous les supports */
 
 html, body, #root {

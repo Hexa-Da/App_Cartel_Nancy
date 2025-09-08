@@ -25,11 +25,23 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
     navigate(path, { replace: false });
   };
 
+  const handleTouchEnd = (e: React.TouchEvent, path: string) => {
+    e.stopPropagation();
+    handleNavClick(path);
+  };
+
+  const handleClick = (e: React.MouseEvent, path: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleNavClick(path);
+  };
+
   return (
     <nav className={`bottom-nav ${platformClass}`}>
       <button 
         className={`nav-button ${location.pathname === '/' ? 'active' : ''}`}
-        onClick={() => handleNavClick('/')}
+        onClick={(e) => handleClick(e, '/')}
+        onTouchEnd={(e) => handleTouchEnd(e, '/')}
       >
         <svg 
           className="nav-icon"
@@ -49,7 +61,8 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
       
       <button 
         className={`nav-button ${location.pathname === '/map' ? 'active' : ''}`}
-        onClick={() => handleNavClick('/map')}
+        onClick={(e) => handleClick(e, '/map')}
+        onTouchEnd={(e) => handleTouchEnd(e, '/map')}
       >
         <svg 
           className="nav-icon"
@@ -70,7 +83,8 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
       
       <button 
         className={`nav-button ${location.pathname === '/info' ? 'active' : ''}`}
-        onClick={() => handleNavClick('/info')}
+        onClick={(e) => handleClick(e, '/info')}
+        onTouchEnd={(e) => handleTouchEnd(e, '/info')}
       >
         <svg 
           className="nav-icon"

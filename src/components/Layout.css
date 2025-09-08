@@ -142,7 +142,7 @@ body.ios .edit-button {
   flex: 1;
   position: relative;
   overflow: hidden;
-  height: calc(100vh - 120px); /* Ajuster selon la hauteur de votre header et bottom nav */
+  height: calc(100vh - 120px);
   margin: 0;
   padding: 0;
   padding-top: env(safe-area-inset-top);
@@ -171,12 +171,13 @@ body.ios .edit-button {
   z-index: 1000;
 }
 
-/* Empêcher le défilement de la page */
+/* Gestion simplifiée du body */
 body {
-  overflow: hidden;
-  position: fixed;
+  margin: 0;
+  padding: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* Styles pour les boutons du header */

@@ -732,7 +732,7 @@ const Layout: React.FC = () => {
                   title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
                   style={{
                     position: 'absolute',
-                    bottom: '6px',
+                    bottom: '80px', /* Au-dessus de la barre de navigation */
                     right: '8px',
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -750,7 +750,7 @@ const Layout: React.FC = () => {
                   {translatedMessages[message.id || `msg-${index}`] ? "Original" : "🌐 Translate"}
                 </button>
                                  {isAdmin && isEditing && (
-                   <div style={{ position: 'absolute', right: '100px', bottom: '0px', display: 'flex'}}>
+                   <div style={{ position: 'absolute', right: '100px', bottom: '80px', display: 'flex'}}> {/* Au-dessus de la barre de navigation */}
                      <button
                        className="edit-message-button"
                        title="Modifier"

@@ -257,7 +257,7 @@ body.ios .calendar-panel-header {
 .close-button {
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  bottom: 80px; /* Au-dessus de la barre de navigation */
   background-color: var(--danger-color);
   color: white;
   border: none;

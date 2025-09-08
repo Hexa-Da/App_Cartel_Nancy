@@ -3,7 +3,7 @@
   margin-top: 0;
   background-color: var(--bg-color);
   color: var(--text-color);
-  min-height: 100vh;
+  min-height: calc(100vh - 120px);
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -876,4 +876,17 @@ body.ios .welcome-title {
   .event-venue {
     font-size: clamp(0.4rem, 2.2vw, 0.6rem);
   }
+}
+
+/* Gestion du clavier sur Android */
+body.android .home-page {
+  min-height: calc(100vh - 120px);
+  height: auto;
+  overflow-y: auto;
+}
+
+/* Empêcher le zoom automatique sur les inputs Android */
+body.android input,
+body.android textarea {
+  font-size: 16px;
 } 

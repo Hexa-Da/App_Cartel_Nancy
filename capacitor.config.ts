@@ -10,6 +10,23 @@ const config: CapacitorConfig = {
     hostname: 'localhost',
     allowNavigation: ['*']
   },
+  ios: {
+    scheme: 'Cartel Nancy',
+    contentInset: 'automatic',
+    scrollEnabled: true,
+    backgroundColor: '#000000',
+    allowsLinkPreview: false,
+    handleApplicationURL: true,
+    keyboardResize: 'ionic',
+    scrollPadding: true
+  },
+  android: {
+    keyboardResize: 'none',
+    scrollPadding: false,
+    backgroundColor: '#000000',
+    allowMixedContent: true,
+    captureInput: true
+  },
   plugins: {
     GoogleAuth: {
       scopes: ['profile', 'email'],

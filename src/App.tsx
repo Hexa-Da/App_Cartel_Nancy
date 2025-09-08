@@ -412,8 +412,153 @@ function App() {
 
   // Ajoute la classe 'ios' au body si la plateforme est iOS
   useEffect(() => {
-    if (Capacitor.getPlatform() === 'ios') {
-      document.body.classList.add('ios');
+    const platform = Capacitor.getPlatform();
+    document.body.classList.add(platform);
+    
+    if (platform === 'ios') {
+      // Détecter si on est dans un simulateur
+      const isSimulator = window.navigator.userAgent.includes('Simulator') || 
+                         window.navigator.userAgent.includes('iPhone Simulator') ||
+                         window.navigator.userAgent.includes('iPad Simulator');
+      
+      if (isSimulator) {
+        document.body.classList.add('ios-simulator');
+      }
+      // Désactiver le zoom sur iOS pour éviter les problèmes de double-tap
+      document.addEventListener('touchstart', function(event) {
+        // Ne pas bloquer les clics sur la barre de navigation
+        if (event.target && (event.target as Element).closest('.bottom-nav')) {
+          return;
+        }
+        if (event.touches.length > 1) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Prévenir le zoom sur double-tap
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(event) {
+        // Ne pas bloquer les clics sur la barre de navigation
+        if (event.target && (event.target as Element).closest('.bottom-nav')) {
+          return;
+        }
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+    }
+  }, []);
+
+  // Gestion ultra-agressive du clavier pour Android
+  useEffect(() => {
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+      let initialHeight = window.innerHeight;
+      let keyboardVisible = false;
+
+      // Forcer le body à une hauteur fixe dès le début
+      document.body.style.height = '100vh';
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+
+      const handleResize = () => {
+        const currentHeight = window.innerHeight;
+        const heightDiff = initialHeight - currentHeight;
+        
+        console.log('Android resize:', { currentHeight, initialHeight, heightDiff });
+        
+        // Détecter l'ouverture du clavier (seuil très sensible)
+        if (heightDiff > 50 && !keyboardVisible) {
+          keyboardVisible = true;
+          document.body.classList.add('keyboard-open');
+          document.body.style.height = `${currentHeight}px`;
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+          console.log('Clavier Android détecté - layout forcé');
+        }
+        // Détecter la fermeture du clavier
+        else if (heightDiff < 30 && keyboardVisible) {
+          keyboardVisible = false;
+          document.body.classList.remove('keyboard-open');
+          document.body.style.height = '100vh';
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+          console.log('Clavier Android fermé - layout restauré');
+        }
+      };
+
+      // Détection par focus/blur ultra-agressive
+      const handleInputFocus = () => {
+        console.log('Input focus Android');
+        setTimeout(() => {
+          const currentHeight = window.innerHeight;
+          const heightDiff = initialHeight - currentHeight;
+          console.log('Focus check:', { currentHeight, heightDiff });
+          if (heightDiff > 50) {
+            keyboardVisible = true;
+            document.body.classList.add('keyboard-open');
+            document.body.style.height = `${currentHeight}px`;
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            console.log('Clavier forcé par focus');
+          }
+        }, 100);
+      };
+
+      const handleInputBlur = () => {
+        console.log('Input blur Android');
+        setTimeout(() => {
+          keyboardVisible = false;
+          document.body.classList.remove('keyboard-open');
+          document.body.style.height = '100vh';
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+          console.log('Clavier fermé par blur');
+        }, 100);
+      };
+
+      // Attacher les événements aux inputs
+      const inputs = document.querySelectorAll('input, textarea');
+      inputs.forEach(input => {
+        input.addEventListener('focus', handleInputFocus);
+        input.addEventListener('blur', handleInputBlur);
+      });
+
+      // Observer pour les nouveaux inputs
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node as Element;
+              const newInputs = element.querySelectorAll ? element.querySelectorAll('input, textarea') : [];
+              newInputs.forEach(input => {
+                input.addEventListener('focus', handleInputFocus);
+                input.addEventListener('blur', handleInputBlur);
+              });
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+      
+      // Écouter les changements de viewport
+      window.addEventListener('resize', handleResize);
+      
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        inputs.forEach(input => {
+          input.removeEventListener('focus', handleInputFocus);
+          input.removeEventListener('blur', handleInputBlur);
+        });
+        observer.disconnect();
+      };
     }
   }, []);
 
@@ -3897,7 +4042,7 @@ function App() {
                     <>
                       <button
                         className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
-                        style={{ right: '80px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ right: '80px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
                         onClick={handleStarFilterClick}
                         title="Appliquer vos préférences"
                       >
@@ -3907,7 +4052,7 @@ function App() {
                       </button>
                       <button
                         className="filter-reset-button"
-                        style={{ right: '45px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ right: '45px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
                         onClick={() => {
                           setEventFilterWithSave('all');
                           setDelegationFilterWithSave('all');
@@ -4292,7 +4437,7 @@ function App() {
                           title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
                           style={{
                             position: 'absolute',
-                            bottom: '6px',
+                            bottom: '80px', /* Au-dessus de la barre de navigation */
                             right: '8px',
                             background: 'rgba(255, 255, 255, 0.1)',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -4312,7 +4457,7 @@ function App() {
                       </div>
                                              {/* Boutons admin en bas à droite */}
                        {isAdmin && isEditing && editingMessageIndex !== index && (
-                         <div style={{ position: 'absolute', right: '100px', bottom: '0px', display: 'flex'}}>
+                         <div style={{ position: 'absolute', right: '100px', bottom: '80px', display: 'flex'}}> {/* Au-dessus de la barre de navigation */}
                            <button
                              className="edit-message-button"
                              title="Modifier"

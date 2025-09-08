@@ -1,10 +1,10 @@
 #root {
-  height: 100%; 
+  height: 100vh; 
   width: 100%;
-  margin-top: 0rem;
+  margin: 0;
+  padding: 0;
   text-align: center;
   overflow: hidden;
-  position: fixed;
 }
 
 .logo {
@@ -145,8 +145,10 @@ body {
 }
 
 html, body, #root {
-  height: 100%;
+  height: 100vh;
   width: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -743,7 +745,7 @@ html, body, #root {
 
 .location-error {
   position: fixed;
-  bottom: 55px;
+  bottom: 120px; /* Au-dessus de la barre de navigation */
   left: 20px;
   background-color: var(--danger-color);
   color: white;
@@ -759,7 +761,7 @@ html, body, #root {
 }
 
 body.ios .location-error {
-  bottom: 80px;
+  bottom: 150px; /* Au-dessus de la barre de navigation iOS */
 }
 
 .location-error-buttons {
@@ -1759,6 +1761,7 @@ body.ios .leaflet-control-zoom{
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  pointer-events: auto;
 }
 
 body.ios .chat-panel {
@@ -2388,7 +2391,7 @@ body.ios .planning-panel {
 
 .add-venue-button {
   position: fixed;  
-  bottom: 55px;
+  bottom: 60px; /* Au-dessus de la barre de navigation */
   left: 20px;
   width: 48px;
   height: 48px;
@@ -2409,7 +2412,7 @@ body.ios .planning-panel {
 }
 
 body.ios .add-venue-button {
-  bottom: 80px;
+  bottom: 80px; /* Au-dessus de la barre de navigation iOS */
 }
 
 /* Styles pour les popups de la carte */
@@ -2443,7 +2446,7 @@ body.ios .add-venue-button {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 60px; /* Laisser de l'espace pour la barre de navigation */
   z-index: 1;
 }
 
@@ -2479,12 +2482,17 @@ body.ios .add-venue-button {
 .location-loading {
   position: fixed;
   right: 20px;
-  bottom: 55px;
+  bottom: 60px; /* Plus bas */
   z-index: 1000;
 }
 
 body.ios .location-loading {
-  bottom: 80px;
+  bottom: 80px; /* Plus bas sur iOS */
+}
+
+/* S'assurer que la carte ne couvre pas la barre de navigation sur iOS */
+body.ios .leaflet-container {
+  bottom: 80px; /* Plus d'espace sur iOS */
 }
 
 .location-loading-spinner {
@@ -2561,7 +2569,7 @@ body.ios .location-loading {
 
 .recenter-button {
   position: fixed;
-  bottom: 55px;
+  bottom: 60px; /* Plus bas */
   right: 20px;
   width: 48px;
   height: 48px;
@@ -2590,7 +2598,7 @@ body.ios .location-loading {
 }
 
 body.ios .recenter-button {
-  bottom: 80px;
+  bottom: 80px; /* Plus bas sur iOS */
 }
 
 /* Suppression des effets de focus par défaut */
