@@ -106,37 +106,47 @@
 .event-item.match-passed {
   background-color: rgba(255, 255, 255, 0.05);
   opacity: 0.6;
+  filter: grayscale(0.7);
   border-left: none;
 }
 
-.event-item.match-passed .event-name,
-.event-item.match-passed .event-description,
-.event-item.match-passed .event-result,
+.event-item.match-passed .event-name {
+  color: var(--text-color);
+}
+
+.event-item.match-passed .event-description {
+  color: var(--warning-color);
+}
+
+.event-item.match-passed .event-result {
+  color: var(--success-color);
+}
+
 .event-item.match-passed .event-venue {
-  opacity: 0.5;
+  color: var(--text-color-light);
 }
 
 .event-item.match-passed .event-date {
-  color: var(--text-color-light);
-  opacity: 0.7;
+  color: var(--danger-color);
 }
 
 .event-item.match-passed .event-type-badge {
-  opacity: 0.6;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-  border-color: rgba(255, 255, 255, 0.1);
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-color);
 }
 
 .event-item.match-passed.match-event .event-type-badge {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(76, 175, 80, 0.04));
-  border-color: rgba(76, 175, 80, 0.15);
-  color: rgba(76, 175, 80, 0.7);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08));
+  border-color: rgba(76, 175, 80, 0.3);
+  color: #4CAF50;
 }
 
 .event-item.match-passed.party-event .event-type-badge {
-  background: linear-gradient(135deg, rgba(156, 39, 176, 0.08), rgba(156, 39, 176, 0.04));
-  border-color: rgba(156, 39, 176, 0.15);
-  color: rgba(156, 39, 176, 0.7);
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(156, 39, 176, 0.08));
+  border-color: rgba(156, 39, 176, 0.3);
+  color: #9C27B0;
 }
 
 .event-header {

@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
-import { useState, useEffect, useRef, createContext, useContext } from 'react';
+import { useState, useEffect, useRef, createContext, useContext, useCallback, useMemo } from 'react';
 import './App.css';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { database } from './firebase';
@@ -982,28 +982,39 @@ function App() {
     };
   }, [isVenuesLoading]);
 
-  // Charger les lieux depuis Firebase au démarrage
+  // Charger les lieux depuis Firebase au démarrage avec optimisation
   useEffect(() => {
     setIsVenuesLoading(true);
     const venuesRef = ref(database, 'venues');
     const unsubscribe = onValue(venuesRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const venuesArray = Object.entries(data).map(([key, value]: [string, any]) => ({
-          ...value,
-          id: key,
-          matches: value.matches || [],  // Assurer que matches est toujours un tableau
-          sport: value.sport || '',
-          date: value.date || '',
-          latitude: value.position ? value.position[0] : 0,
-          longitude: value.position ? value.position[1] : 0,
-          emoji: value.emoji || ''
-        }));
-        setVenues(venuesArray);
+        // Utiliser requestIdleCallback pour différer le traitement lourd
+        const processData = () => {
+          const venuesArray = Object.entries(data).map(([key, value]: [string, any]) => ({
+            ...value,
+            id: key,
+            matches: value.matches || [],  // Assurer que matches est toujours un tableau
+            sport: value.sport || '',
+            date: value.date || '',
+            latitude: value.position ? value.position[0] : 0,
+            longitude: value.position ? value.position[1] : 0,
+            emoji: value.emoji || ''
+          }));
+          setVenues(venuesArray);
+          setIsVenuesLoading(false);
+        };
+
+        // Utiliser requestIdleCallback si disponible, sinon setTimeout
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(processData, { timeout: 100 });
+        } else {
+          setTimeout(processData, 0);
+        }
       } else {
         setVenues([]); // Si pas de données, initialiser avec un tableau vide
+        setIsVenuesLoading(false);
       }
-      setIsVenuesLoading(false);
     });
 
     // Cleanup function
@@ -1940,8 +1951,8 @@ function App() {
     return end < now;
   };
 
-  // Fonction pour récupérer tous les événements (matchs et soirées)
-  const getAllEvents = () => {
+  // Fonction optimisée pour récupérer tous les événements (matchs et soirées)
+  const getAllEvents = useMemo(() => {
     const events: Array<{
       id: string;
       name: string;
@@ -1983,40 +1994,42 @@ function App() {
       }
     });
 
-    // Ajouter les soirées
-    parties.forEach(party => {
-      // Calculer l'heure de fin par défaut (6h après le début)
-      const startDate = new Date(party.date);
-      const endDate = new Date(startDate);
-      endDate.setHours(startDate.getHours() + 6);
-      
-      events.push({
-        id: `party-${party.id || party.name}`,
-        name: party.name,
-        date: party.date,
-        endTime: endDate.toISOString(), // Ajouter l'heure de fin calculée
-        description: party.description,
-        address: party.address || `${party.latitude}, ${party.longitude}`,
-        location: [party.latitude, party.longitude],
-        type: 'party',
-        isPassed: isMatchPassed(party.date, endDate.toISOString(), 'party'),
-        sport: party.sport
+    // Ajouter les soirées (seulement pour les admins)
+    if (isAdmin) {
+      parties.forEach(party => {
+        // Calculer l'heure de fin par défaut (6h après le début)
+        const startDate = new Date(party.date);
+        const endDate = new Date(startDate);
+        endDate.setHours(startDate.getHours() + 6);
+        
+        events.push({
+          id: `party-${party.id || party.name}`,
+          name: party.name,
+          date: party.date,
+          endTime: endDate.toISOString(), // Ajouter l'heure de fin calculée
+          description: party.description,
+          address: party.address || `${party.latitude}, ${party.longitude}`,
+          location: [party.latitude, party.longitude],
+          type: 'party',
+          isPassed: isMatchPassed(party.date, endDate.toISOString(), 'party'),
+          sport: party.sport
+        });
       });
-    });
+    }
 
     // Trier par date (du plus récent au plus ancien)
     return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  };
+  }, [venues, parties]);
 
-  // Fonction pour filtrer les événements
-  const getFilteredEvents = () => {
-    const allEvents = getAllEvents();
+  // Fonction optimisée pour filtrer les événements
+  const getFilteredEvents = useMemo(() => {
+    const allEvents = getAllEvents;
     
     return allEvents.filter(event => {
       // Filtre par type d'événement
       const typeMatch = eventFilter === 'all' || 
         (eventFilter === 'none' ? false :
-          (eventFilter === 'party' && event.type === 'party') ||
+          (eventFilter === 'party' && event.type === 'party' && isAdmin) ||
           (eventFilter === 'match' && event.type === 'match') ||
           (event.type === 'match' && event.sport === eventFilter && eventFilter !== 'match'));
 
@@ -2029,21 +2042,26 @@ function App() {
       let venueMatch = true;
       if (venueFilter !== 'Tous') {
         if (event.type === 'party') {
-          let partyId = '';
-          switch (event.name) {
-            case 'Place Stanislas':
-              partyId = 'place-stanislas';
-              break;
-            case 'Centre Prouvé':
-              partyId = 'centre-prouve';
-              break;
-            case 'Zénith':
-              partyId = 'zenith';
-              break;
-            default:
-              partyId = event.name.toLowerCase().replace(/\s+/g, '-');
+          // Les parties ne sont visibles que pour les admins
+          if (!isAdmin) {
+            venueMatch = false;
+          } else {
+            let partyId = '';
+            switch (event.name) {
+              case 'Place Stanislas':
+                partyId = 'place-stanislas';
+                break;
+              case 'Centre Prouvé':
+                partyId = 'centre-prouve';
+                break;
+              case 'Zénith':
+                partyId = 'zenith';
+                break;
+              default:
+                partyId = event.name.toLowerCase().replace(/\s+/g, '-');
+            }
+            venueMatch = partyId === venueFilter;
           }
-          venueMatch = partyId === venueFilter;
         } else {
           venueMatch = event.venueId === venueFilter;
         }
@@ -2060,7 +2078,7 @@ function App() {
 
       return typeMatch && delegationMatch && venueMatch && genderMatch;
     });
-  };
+  }, [getAllEvents, eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed]);
 
   // Fonction pour formater la date et l'heure
   const formatDateTime = (dateString: string, endTimeString?: string) => {
@@ -2510,8 +2528,9 @@ function App() {
         }
       });
 
-      // PARTIES
-      parties.forEach(party => {
+      // PARTIES (seulement pour les admins)
+      if (isAdmin) {
+        parties.forEach(party => {
         // Calculer l'ID du lieu pour la correspondance avec le filtre
         let partyVenueId = '';
         switch (party.name) {
@@ -2608,6 +2627,7 @@ function App() {
           markersRef.current.push(marker);
         }
       });
+      }
     }
   }, [venues, hotels, restaurants, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed]);
 
@@ -3123,92 +3143,85 @@ function App() {
     };
   }, []);
 
-  // Fonction pour mettre à jour les marqueurs sur la carte
-  const updateMapMarkers = () => {
+  // Fonction optimisée pour mettre à jour les marqueurs sur la carte
+  const updateMapMarkers = useCallback(() => {
     if (!mapRef.current) return;
 
     // Récupérer tous les marqueurs existants
     const allMarkers = markersRef.current;
 
+    // Créer des maps pour des recherches plus rapides O(1) au lieu de O(n)
+    const venuesMap = new Map(venues.map(v => [`${v.latitude},${v.longitude}`, v]));
+    const partiesMap = new Map(parties.map(p => [`${p.latitude},${p.longitude}`, p]));
+    const hotelsMap = new Map(hotels.map(h => [`${h.latitude},${h.longitude}`, h]));
+    const restaurantsMap = new Map(restaurants.map(r => [`${r.latitude},${r.longitude}`, r]));
+
     // Mettre à jour la visibilité de chaque marqueur
     allMarkers.forEach(marker => {
       const markerElement = marker.getElement();
       if (markerElement) {
-        // Trouver le lieu correspondant au marqueur
-        const venue = venues.find(v => {
-          const markerLatLng = marker.getLatLng();
-          return v.latitude === markerLatLng.lat && v.longitude === markerLatLng.lng;
-        });
+        const markerLatLng = marker.getLatLng();
+        const key = `${markerLatLng.lat},${markerLatLng.lng}`;
+        
+        let shouldShow = false;
 
-        // Trouver la soirée correspondante au marqueur
-        const party = parties.find(p => {
-          const markerLatLng = marker.getLatLng();
-          return p.latitude === markerLatLng.lat && p.longitude === markerLatLng.lng;
-        });
-
-        // Trouver l'hôtel correspondant au marqueur
-        const hotel = hotels.find(h => {
-          const markerLatLng = marker.getLatLng();
-          return h.latitude === markerLatLng.lat && h.longitude === markerLatLng.lng;
-        });
-
-        // Trouver le restaurant correspondant au marqueur
-        const restaurant = restaurants.find(r => {
-          const markerLatLng = marker.getLatLng();
-          return r.latitude === markerLatLng.lat && r.longitude === markerLatLng.lng;
-        });
-
+        // Vérifier dans l'ordre de priorité avec des recherches O(1)
+        const venue = venuesMap.get(key);
         if (venue) {
-          // Afficher le marqueur si :
-          // 1. Le filtre est sur "all", "match" (tous les sports) ou correspond au sport
-          // 2. Le filtre de lieu est sur "Tous" ou correspond au lieu
-          const shouldShow = 
+          shouldShow = 
             (eventFilter === 'all' || eventFilter === 'match' || eventFilter === venue.sport) &&
             (venueFilter === 'Tous' || venue.id === venueFilter);
+        } else {
+          const party = partiesMap.get(key);
+          if (party) {
+            let partyId = '';
+            switch (party.name) {
+              case 'Place Stanislas':
+                partyId = 'place-stanislas';
+                break;
+              case 'Centre Prouvé':
+                partyId = 'centre-prouve';
+                break;
+              case 'Zénith':
+                partyId = 'zenith';
+                break;
+              default:
+                partyId = party.name.toLowerCase().replace(/\s+/g, '-');
+            }
 
-          markerElement.style.display = shouldShow ? 'block' : 'none';
-          markerElement.style.opacity = shouldShow ? '1' : '0';
-        } else if (party) {
-          // Afficher le marqueur de soirée si :
-          // 1. Le filtre est sur "all" ou "party"
-          // 2. Le filtre de lieu correspond
-          let partyId = '';
-          switch (party.name) {
-            case 'Place Stanislas':
-              partyId = 'place-stanislas';
-              break;
-            case 'Centre Prouvé':
-              partyId = 'centre-prouve';
-              break;
-            case 'Zénith':
-              partyId = 'zenith';
-              break;
-            default:
-              partyId = party.name.toLowerCase().replace(/\s+/g, '-');
+            shouldShow = 
+              (eventFilter === 'all' || eventFilter === 'party') &&
+              (venueFilter === 'Tous' || partyId === venueFilter);
+          } else {
+            const hotel = hotelsMap.get(key);
+            if (hotel) {
+              const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
+              shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
+            } else {
+              const restaurant = restaurantsMap.get(key);
+              if (restaurant) {
+                const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
+                shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
+              }
+            }
           }
+        }
 
-          const shouldShow = 
-            (eventFilter === 'all' || eventFilter === 'party') &&
-            (venueFilter === 'Tous' || partyId === venueFilter);
+        // Appliquer les changements seulement si nécessaire pour éviter les reflows
+        const currentDisplay = markerElement.style.display;
+        const currentOpacity = markerElement.style.opacity;
+        const newDisplay = shouldShow ? 'block' : 'none';
+        const newOpacity = shouldShow ? '1' : '0';
 
-          markerElement.style.display = shouldShow ? 'block' : 'none';
-          markerElement.style.opacity = shouldShow ? '1' : '0';
-        } else if (hotel) {
-          // Gérer les hôtels indépendamment des filtres
-          const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
-          const shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
-          markerElement.style.display = shouldShow ? 'block' : 'none';
-          markerElement.style.opacity = shouldShow ? '1' : '0';
-        } else if (restaurant) {
-          // Gérer les restaurants indépendamment des filtres
-          const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
-          const shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
-          markerElement.style.display = shouldShow ? 'block' : 'none';
-          markerElement.style.opacity = shouldShow ? '1' : '0';
+        if (currentDisplay !== newDisplay) {
+          markerElement.style.display = newDisplay;
+        }
+        if (currentOpacity !== newOpacity) {
+          markerElement.style.opacity = newOpacity;
         }
       }
     });
-  };
+  }, [venues, parties, hotels, restaurants, eventFilter, venueFilter]);
 
   // Les marqueurs sont maintenant créés avec la logique correcte dans le premier useEffect
   // Pas besoin de les mettre à jour séparément
@@ -3541,7 +3554,7 @@ function App() {
     setActiveTab('map'); // Fermer le panneau en revenant à l'onglet map
     triggerMarkerUpdate();
     
-    if (event.type === 'party') {
+    if (event.type === 'party' && isAdmin) {
       const partyId = event.id.split('-')[1];
       const party = parties.find(p => p.id === partyId || p.name === partyId);
       if (party) {
@@ -3806,6 +3819,7 @@ function App() {
         showChat={activeTab === 'chat'}
         unreadCount={unreadCount}
         onBack={handleBack}
+        hideBackButton={(activeTab === 'home' || activeTab === 'map' || activeTab === 'info') && activeTab !== 'chat'}
         onEditModeToggle={() => {
           setIsEditing(!isEditing);
           if (isEditing) {
@@ -4079,7 +4093,7 @@ function App() {
                         <option value="none">Aucun</option>
                         <option value="all">Tous les événements</option>
                         <option value="match">Tous les sports</option>
-                        <option value="party">Soirées et Défilé 🎉</option>
+                        {isAdmin && <option value="party">Soirées et Défilé 🎉</option>}
                         <option value="Football">Football ⚽</option>
                         <option value="Basketball">Basketball 🏀</option>
                         <option value="Handball">Handball 🤾</option>
@@ -4161,7 +4175,7 @@ function App() {
                   )}
                 </div>
                 <div className="events-list">
-                  {getFilteredEvents().map(event => (
+                  {getFilteredEvents.map(event => (
                     <div 
                       key={event.id} 
                       className={`event-item ${event.isPassed ? 'passed' : ''} ${event.type === 'match' ? 'match-event' : 'party-event'} ${selectedEvent?.id === event.id ? 'selected' : ''}`}
@@ -4401,7 +4415,7 @@ function App() {
                         <span>{new Date(message.timestamp).toLocaleString()}</span>
                       </div>
                       {/* Contenu du message */}
-                      <div className="chat-message-content" style={{ paddingBottom: isAdmin ? 28 : 0, textAlign: 'left' }}>
+                      <div className="chat-message-content" style={{ textAlign: 'left' }}>
                         {/* Si ce message est en cours d'édition, affiche un input */}
                         {isAdmin && editingMessageIndex === index ? (
                           <form
@@ -4435,29 +4449,13 @@ function App() {
                           className="translate-button"
                           onClick={() => translateMessage(message.id || `msg-${index}`, message.content)}
                           title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
-                          style={{
-                            position: 'absolute',
-                            bottom: '80px', /* Au-dessus de la barre de navigation */
-                            right: '8px',
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            border: '1px solid rgba(255, 255, 255, 0.2)',
-                            borderRadius: '4px',
-                            padding: '4px 8px',
-                            cursor: 'pointer',
-                            fontSize: '0.8rem',
-                            color: 'var(--text-color)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            zIndex: 1
-                          }}
                         >
                           {translatedMessages[message.id || `msg-${index}`] ? "Original" : "🌐 Translate"}
                         </button>
                       </div>
                                              {/* Boutons admin en bas à droite */}
                        {isAdmin && isEditing && editingMessageIndex !== index && (
-                         <div style={{ position: 'absolute', right: '100px', bottom: '80px', display: 'flex'}}> {/* Au-dessus de la barre de navigation */}
+                         <div className="chat-admin-buttons">
                            <button
                              className="edit-message-button"
                              title="Modifier"
@@ -4468,7 +4466,6 @@ function App() {
                                setNewMessageSender(message.sender);
                                setEditingMessageId(message.id || null);
                              }}
-                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}
                            >
                              ✏️
                            </button>
@@ -4480,7 +4477,6 @@ function App() {
                                  handleDeleteMessage(message.id);
                                }
                              }}
-                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: 16, marginLeft: '-20px' }}
                            >
                              🗑️
                            </button>
@@ -4596,6 +4592,7 @@ function App() {
         showFemale={showFemale}
         showMale={showMale}
         showMixed={showMixed}
+        isAdmin={isAdmin}
         onEventFilterChange={setEventFilterWithSave}
         onDelegationFilterChange={setDelegationFilterWithSave}
         onVenueFilterChange={setVenueFilterWithSave}

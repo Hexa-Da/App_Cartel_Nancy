@@ -600,6 +600,7 @@ const Layout: React.FC = () => {
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
         isBackDisabled={(location.pathname === '/' || location.pathname === '/info') && !showChat}
+        hideBackButton={(location.pathname === '/' || location.pathname === '/map' || location.pathname === '/info') && !showChat}
       />
       <main className="app-main">
         <Outlet />
@@ -722,7 +723,7 @@ const Layout: React.FC = () => {
                   <span>{message.sender}</span>
                   <span>{new Date(message.timestamp).toLocaleString()}</span>
                 </div>
-                <div className="chat-message-content" style={{ paddingBottom: isAdmin ? 28 : 0, textAlign: 'left' }}>
+                <div className="chat-message-content" style={{ textAlign: 'left' }}>
                   {translatedMessages[message.id || `msg-${index}`] || message.content}
                 </div>
                 {/* Bouton de traduction en bas à droite */}
@@ -730,27 +731,11 @@ const Layout: React.FC = () => {
                   className="translate-button"
                   onClick={() => translateMessage(message.id || `msg-${index}`, message.content)}
                   title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
-                  style={{
-                    position: 'absolute',
-                    bottom: '80px', /* Au-dessus de la barre de navigation */
-                    right: '8px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '4px',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    color: 'var(--text-color)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    zIndex: 1
-                  }}
                 >
                   {translatedMessages[message.id || `msg-${index}`] ? "Original" : "🌐 Translate"}
                 </button>
                                  {isAdmin && isEditing && (
-                   <div style={{ position: 'absolute', right: '100px', bottom: '80px', display: 'flex'}}> {/* Au-dessus de la barre de navigation */}
+                   <div className="chat-admin-buttons">
                      <button
                        className="edit-message-button"
                        title="Modifier"
@@ -760,7 +745,6 @@ const Layout: React.FC = () => {
                          setNewMessageSender(message.sender);
                          setEditingMessageId(message.id || null);
                        }}
-                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3498db', fontSize: 16 }}
                      >
                        ✏️
                      </button>
@@ -772,7 +756,6 @@ const Layout: React.FC = () => {
                            handleDeleteMessage(message.id);
                          }
                        }}
-                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: 16, marginLeft: '-20px' }}
                      >
                        🗑️
                      </button>

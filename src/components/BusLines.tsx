@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Polyline, Marker, Popup, useMap } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import { useZoomBasedLoading } from '../hooks/useLazyData';
 import './BusLines.css';
 
 // Icône pour les arrêts de tram (point blanc)
@@ -3280,13 +3281,56 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(15); // Initial zoom level
 
-  const filteredLines = visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') || visibleLines.includes('T2') || visibleLines.includes('T3') ? 
-    [tramLineT5, tramLineT4, tramLineT3, tramLineT2, tramLine].filter(line => visibleLines.includes(line.id)) : [];
-  const shouldShowMarkers = currentZoom >= 15; // Markers visible from zoom level 1548.669879, 6.206965
+  const filteredLines = useMemo(() => {
+    return visibleLines.includes('T1') || visibleLines.includes('T5') || visibleLines.includes('T4') || visibleLines.includes('T2') || visibleLines.includes('T3') ? 
+      [tramLineT5, tramLineT4, tramLineT3, tramLineT2, tramLine].filter(line => visibleLines.includes(line.id)) : [];
+  }, [visibleLines]);
+
+  // Simuler le chargement des arrêts (dans un vrai projet, ce serait une requête API)
+  const loadStopsData = useCallback(async () => {
+    // Simuler un délai de chargement
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return { stops: 'loaded' };
+  }, []);
+
+  // Utiliser le hook de chargement basé sur le zoom
+  const { data: stopsData, isLoading: isLoadingStops, loadData: loadStops } = useZoomBasedLoading(
+    loadStopsData,
+    currentZoom,
+    15, // Seuil de zoom
+    { delay: 300 } // Délai avant chargement
+  );
+
+  // Charger les arrêts quand le zoom devient suffisant
+  useEffect(() => {
+    if (currentZoom >= 15) {
+      loadStops();
+    }
+  }, [currentZoom, loadStops]);
+
+  const shouldShowMarkers = currentZoom >= 15 && stopsData !== null;48.669879, 6.206965
 
   return (
     <>
       <ZoomController onZoomChange={setCurrentZoom} />
+      
+      {/* Indicateur de chargement des arrêts - Supprimé */}
+      {false && (
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          background: 'rgba(255, 255, 255, 0.9)',
+          padding: '8px 12px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          zIndex: 1000,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+        }}>
+          Chargement des arrêts...
+        </div>
+      )}
+      
       {/* Afficher les tracés des lignes */}
       {filteredLines.map(line => (
         <React.Fragment key={line.id}>

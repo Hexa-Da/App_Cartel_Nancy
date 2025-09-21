@@ -132,7 +132,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   const sportOptions = [
     { value: 'none', label: 'Aucun' },
     { value: 'all', label: 'Tous les événements' },
-    { value: 'party', label: 'Soirées et Défilé 🎉' },
+    ...(isAdmin ? [{ value: 'party', label: 'Soirées et Défilé 🎉' }] : []),
     { value: 'match', label: 'Tous les sports' },
     { value: 'Football', label: 'Football ⚽' },
     { value: 'Basketball', label: 'Basketball 🏀' },
@@ -168,8 +168,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
       return [{ value: 'Tous', label: 'Tous les lieux' }];
     }
 
-    // Pour les soirées et défilés, retourner les lieux fixes
-    if (eventFilter === 'party') {
+    // Pour les soirées et défilés, retourner les lieux fixes (seulement pour les admins)
+    if (eventFilter === 'party' && isAdmin) {
       return [
         { value: 'Tous', label: 'Tous les lieux' },
         { value: 'place-stanislas', label: 'Place Stanislas' },
@@ -289,8 +289,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
         });
       }
 
-      // Pour les soirées et défilés
-      if (eventFilter === 'all' || eventFilter === 'party') {
+      // Pour les soirées et défilés (seulement pour les admins)
+      if (isAdmin && (eventFilter === 'all' || eventFilter === 'party')) {
         const parties = [
           {
             id: 'place-stanislas',

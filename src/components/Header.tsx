@@ -15,6 +15,7 @@ interface HeaderProps {
   onEditModeToggle?: () => void;
   isEditing?: boolean;
   isBackDisabled?: boolean;
+  hideBackButton?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -26,7 +27,8 @@ const Header: React.FC<HeaderProps> = ({
   onBack,
   onEditModeToggle,
   isEditing,
-  isBackDisabled
+  isBackDisabled,
+  hideBackButton
 }) => {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
@@ -57,32 +59,49 @@ const Header: React.FC<HeaderProps> = ({
     <>
       <div className="app-header">
         <div className="header-left">
-          <button
-            className="header-back-button"
-            onClick={isBackDisabled ? undefined : (onBack || (() => navigate(-1)))}
-            title={isBackDisabled ? "Retour non disponible" : "Retour"}
-            disabled={isBackDisabled}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '32px',
-              height: '32px'
-            }}
-          >
-            <svg 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
+          {!hideBackButton && (
+            <button
+              className="header-back-button"
+              onClick={isBackDisabled ? undefined : (onBack || (() => navigate(-1)))}
+              title={isBackDisabled ? "Retour non disponible" : "Retour"}
+              disabled={isBackDisabled}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px'
+              }}
             >
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-          </button>
+              <svg 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+          )}
+          
+          {hideBackButton && !isAdmin && (
+            <div className="header-logo">
+              <img 
+                src="/logo-Photoroom.png" 
+                alt="Cartel Nancy Logo" 
+                style={{
+                  height: '32px',
+                  width: 'auto',
+                  objectFit: 'contain'
+                }}
+              />
+              <span className="header-logo-text">Cartel Nancy</span>
+            </div>
+          )}
           
           {isAdmin && onEditModeToggle && (
             <button
