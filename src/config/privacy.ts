@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Configuration de la politique de confidentialité et conformité RGPD
+ * 
+ * Ce fichier définit la configuration de confidentialité avec :
+ * - Informations de contact et URLs légales
+ * - Services tiers utilisés (Firebase, Google, EmailJS)
+ * - Types de données collectées et leur utilisation
+ * - Conformité réglementaire (RGPD, loi française)
+ * 
+ * Nécessaire car :
+ * - Assure la conformité RGPD obligatoire
+ * - Centralise la configuration des services tiers
+ * - Définit clairement l'utilisation des données
+ * - Facilite la mise à jour de la politique
+ */
+
 // Configuration de la politique de confidentialité
 export const PRIVACY_CONFIG = {
   // Informations de contact

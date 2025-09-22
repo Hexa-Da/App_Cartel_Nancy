@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Configuration Firebase Cloud Messaging (FCM) pour les notifications push
+ * 
+ * Ce fichier configure les notifications push avec :
+ * - Initialisation du service de messaging Firebase
+ * - Gestion des permissions de notifications
+ * - Récupération et sauvegarde des tokens FCM
+ * - Écoute des messages en temps réel
+ * 
+ * Nécessaire car :
+ * - Active les notifications push natives (Android/iOS)
+ * - Gère les permissions utilisateur
+ * - Synchronise les tokens pour l'envoi de notifications
+ * - Écoute les messages au premier plan
+ */
+
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { app } from '../firebase';
 

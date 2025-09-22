@@ -1,3 +1,21 @@
+/**
+ * @fileoverview En-tête de l'application avec navigation et authentification admin
+ * 
+ * Ce composant gère :
+ * - Affichage conditionnel du bouton retour selon la page
+ * - Logo et titre "Cartel Nancy" (masqués pour les admins)
+ * - Boutons d'action (paramètres, urgence)
+ * - Modal d'authentification administrateur
+ * - Gestion de l'état admin avec localStorage
+ * - Navigation contextuelle selon la page active
+ * 
+ * Nécessaire car :
+ * - Interface de navigation principale de l'application
+ * - Point d'accès pour l'authentification administrateur
+ * - Gère l'affichage conditionnel des éléments selon le contexte
+ * - Assure la cohérence de la navigation entre les pages
+ */
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SettingsMenu from './SettingsMenu';

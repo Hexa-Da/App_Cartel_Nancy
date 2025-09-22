@@ -1,3 +1,21 @@
+/**
+ * @fileoverview Formulaire de signalement VSS (Violences Sexuelles et Sexistes)
+ * 
+ * Ce composant gère :
+ * - Formulaire de signalement avec champs obligatoires et optionnels
+ * - Envoi d'emails via EmailJS sans client email externe
+ * - Option d'anonymat pour les signalements
+ * - Validation des données et feedback utilisateur
+ * - Interface sécurisée et confidentielle
+ * - Fallback vers mailto en cas d'échec EmailJS
+ * 
+ * Nécessaire car :
+ * - Obligation légale de fournir un moyen de signalement VSS
+ * - Interface sécurisée pour les signalements sensibles
+ * - Envoi direct sans exposer l'utilisateur à des clients email
+ * - Conformité avec les exigences de protection des victimes
+ */
+
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import './VSSForm.css';

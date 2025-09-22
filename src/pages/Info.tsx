@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Page des informations pratiques de l'application Cartel Nancy
+ * 
+ * Cette page fournit :
+ * - Menu de navigation vers les sections d'information
+ * - Cartes cliquables pour chaque catégorie (restauration, sport, soirées, etc.)
+ * - Navigation vers les sous-sections détaillées
+ * - Accès aux mentions légales (politique de confidentialité, CGU)
+ * - Design responsive avec grille adaptative
+ * 
+ * Nécessaire car :
+ * - Centralise l'accès aux informations pratiques
+ * - Interface intuitive pour naviguer entre les sections
+ * - Conformité légale avec les mentions obligatoires
+ * - Point d'entrée pour toutes les informations non-événementielles
+ */
+
 import React from 'react';
 import './Info.css';
 import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel } from 'react-icons/fa';

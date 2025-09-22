@@ -1,3 +1,18 @@
+/**
+ * @fileoverview Point d'entrée principal de l'application Cartel Nancy
+ * 
+ * Ce fichier configure et démarre l'application React avec :
+ * - Le routing principal (React Router)
+ * - Les contextes globaux (AppProvider, AppPanelsProvider)
+ * - La structure des routes et pages
+ * 
+ * Nécessaire car :
+ * - Centralise la configuration de l'application
+ * - Définit la hiérarchie des routes
+ * - Initialise les contextes partagés
+ * - Point d'entrée unique pour React DOM
+ */
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';

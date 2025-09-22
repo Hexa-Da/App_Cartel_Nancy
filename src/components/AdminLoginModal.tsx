@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Modal d'authentification administrateur sécurisée
+ * 
+ * Ce composant gère :
+ * - Interface de connexion sécurisée pour les administrateurs
+ * - Saisie du code d'accès avec validation
+ * - Feedback utilisateur (erreurs, succès)
+ * - Fermeture automatique après authentification réussie
+ * - Design modal avec overlay et gestion des clics
+ * 
+ * Nécessaire car :
+ * - Sécurise l'accès aux fonctionnalités d'administration
+ * - Interface dédiée pour l'authentification admin
+ * - Validation centralisée du code d'accès
+ * - UX claire pour la connexion administrateur
+ */
+
 import React, { useState } from 'react';
 import './AdminLoginModal.css';
 

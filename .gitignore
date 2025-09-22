@@ -27,8 +27,6 @@ dist-ssr
 # Configuration admin
 src/config/admin.ts
 
-# Configuration EmailJS
-src/config/emailjs.ts
 
 
 

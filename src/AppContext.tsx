@@ -1,3 +1,18 @@
+/**
+ * @fileoverview Contexte global de l'application Cartel Nancy
+ * 
+ * Ce fichier gère l'état global de l'application avec :
+ * - Authentification administrateur (localStorage + état React)
+ * - Données Firebase (venues, messages) en temps réel
+ * - Fonctions utilitaires (filtres, délégations, genres)
+ * 
+ * Nécessaire car :
+ * - Évite le prop drilling dans toute l'application
+ * - Centralise la gestion des données Firebase
+ * - Synchronise l'état admin entre les composants
+ * - Fournit des fonctions partagées pour les données
+ */
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ref, onValue } from 'firebase/database';
 import { database } from './firebase';

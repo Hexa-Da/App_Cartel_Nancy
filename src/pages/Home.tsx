@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Page d'accueil principale de l'application Cartel Nancy
+ * 
+ * Cette page affiche :
+ * - Événements récents et à venir avec filtres
+ * - Navigation vers les autres sections (map, info, etc.)
+ * - Affichage des matchs avec détails (équipes, horaires, résultats)
+ * - Gestion des événements passés avec styles différenciés
+ * - Filtres par sport, délégation et statut temporel
+ * 
+ * Nécessaire car :
+ * - Point d'entrée principal pour les utilisateurs
+ * - Vue d'ensemble des événements du jour
+ * - Navigation centrale vers toutes les fonctionnalités
+ * - Interface responsive pour mobile et desktop
+ */
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EventDetails, { Event } from '../components/EventDetails';

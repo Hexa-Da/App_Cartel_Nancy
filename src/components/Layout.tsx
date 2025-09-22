@@ -1,3 +1,21 @@
+/**
+ * @fileoverview Layout principal de l'application avec header, navigation et chat intégré
+ * 
+ * Ce composant fournit :
+ * - Structure générale de l'application (header + contenu + navigation)
+ * - Chat en temps réel intégré avec gestion des messages
+ * - Header avec logo conditionnel et boutons de navigation
+ * - Navigation inférieure avec onglets
+ * - Gestion des états de l'application (admin, panels, etc.)
+ * - Intégration Firebase pour le chat temps réel
+ * 
+ * Nécessaire car :
+ * - Définit la structure commune à toutes les pages
+ * - Centralise la logique du chat intégré
+ * - Gère la navigation entre les sections
+ * - Assure la cohérence de l'interface utilisateur
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';

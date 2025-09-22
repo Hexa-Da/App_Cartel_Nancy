@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Hook personnalisé pour le chargement paresseux des données
+ * 
+ * Ce hook gère :
+ * - Chargement différé des données basé sur des conditions
+ * - Optimisation des performances en évitant les chargements inutiles
+ * - Gestion des états de chargement et d'erreur
+ * - Rechargement conditionnel selon les dépendances
+ * 
+ * Nécessaire car :
+ * - Optimise les performances de l'application
+ * - Évite les requêtes inutiles à Firebase
+ * - Centralise la logique de chargement paresseux
+ * - Réutilisable dans différents composants
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseLazyDataOptions {

@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Service centralisé pour la gestion des notifications et permissions
+ * 
+ * Ce service gère toutes les notifications avec :
+ * - Notifications push natives (Android/iOS) via Capacitor
+ * - Notifications locales pour les événements in-app
+ * - Gestion des permissions (notifications, géolocalisation)
+ * - Abonnement aux topics FCM pour le chat
+ * - Pattern Singleton pour une instance unique
+ * 
+ * Nécessaire car :
+ * - Centralise la logique de notifications complexe
+ * - Gère les différences entre plateformes (web/mobile)
+ * - Assure la cohérence des permissions
+ * - Évite la duplication de code de notifications
+ */
+
 import { PushNotifications } from '@capacitor/push-notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';

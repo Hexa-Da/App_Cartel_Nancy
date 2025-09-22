@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Navigation inférieure de l'application avec onglets principaux
+ * 
+ * Ce composant gère :
+ * - Navigation entre les sections principales (map, events, chat, planning, calendar)
+ * - Affichage de l'onglet actif avec styles différenciés
+ * - Icônes représentatives pour chaque section
+ * - Navigation contextuelle selon la page courante
+ * - Design mobile-first avec responsive
+ * 
+ * Nécessaire car :
+ * - Navigation principale de l'application mobile
+ * - Accès rapide aux fonctionnalités essentielles
+ * - Indication visuelle de la section active
+ * - Interface cohérente sur toutes les pages
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './BottomNav.css';

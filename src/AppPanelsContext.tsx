@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Contexte de gestion des panneaux et navigation de l'application
+ * 
+ * Ce fichier gère l'état des panneaux et la navigation avec :
+ * - Onglet actif (map, events, chat, planning, calendar)
+ * - État des modales (ajout message, urgence)
+ * - Mode édition pour les administrateurs
+ * - Fonctions de fermeture des panneaux
+ * 
+ * Nécessaire car :
+ * - Centralise la logique de navigation entre onglets
+ * - Gère l'état des modales et popups
+ * - Coordonne l'affichage des panneaux
+ * - Évite les conflits d'état entre composants
+ */
+
 import React, { createContext, useContext, useState } from 'react';
 
 export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info';

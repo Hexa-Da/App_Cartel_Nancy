@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Configuration et initialisation Firebase pour Cartel Nancy
+ * 
+ * Ce fichier configure Firebase avec :
+ * - Initialisation de l'application Firebase
+ * - Configuration de la base de données temps réel
+ * - Configuration du stockage de fichiers
+ * - Fonction d'authentification administrateur
+ * 
+ * Nécessaire car :
+ * - Centralise la configuration Firebase
+ * - Fournit les instances partagées (database, storage)
+ * - Gère l'authentification admin sécurisée
+ * - Évite la duplication de configuration
+ */
+
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getStorage } from 'firebase/storage';

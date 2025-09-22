@@ -1,3 +1,22 @@
+/**
+ * @fileoverview Composant principal de l'application Cartel Nancy - Page Map
+ * 
+ * Ce composant gère :
+ * - Carte interactive avec Leaflet et géolocalisation
+ * - Affichage des événements et lieux avec marqueurs
+ * - Chat en temps réel intégré avec Firebase
+ * - Mode administrateur avec édition des messages
+ * - Filtres d'événements par sport, lieu et délégation
+ * - Gestion des événements passés avec styles différenciés
+ * - Intégration Google Analytics pour le suivi
+ * 
+ * Nécessaire car :
+ * - Composant central de l'application avec la carte
+ * - Gère l'état complexe de l'application (événements, chat, admin)
+ * - Interface principale pour la navigation et la consultation
+ * - Centralise la logique métier de l'application
+ */
+
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';

@@ -1,3 +1,20 @@
+/**
+ * @fileoverview Composant pour l'affichage des sections détaillées d'informations
+ * 
+ * Ce composant gère :
+ * - Affichage dynamique des sections selon l'URL (restauration, sport, soirées, etc.)
+ * - Navigation vers les sous-éléments de chaque section
+ * - Gestion spéciale des mentions légales avec liens externes
+ * - Interface cohérente pour toutes les sections d'information
+ * - Gestion des clics pour les documents légaux (politique, CGU)
+ * 
+ * Nécessaire car :
+ * - Centralise la logique d'affichage des sections
+ * - Évite la duplication de code entre sections
+ * - Gère la navigation dynamique basée sur l'URL
+ * - Assure l'accès aux documents légaux obligatoires
+ */
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { 
