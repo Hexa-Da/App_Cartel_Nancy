@@ -1,6 +1,6 @@
 import React from 'react';
 import './Info.css';
-import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard } from 'react-icons/fa';
+import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel } from 'react-icons/fa';
 import { GiPartyPopper } from 'react-icons/gi';
 import { MdLeaderboard, MdEventNote } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -78,9 +78,9 @@ const Info: React.FC = () => {
         />
         
         <InfoCard
-          icon={<FaMapMarkedAlt />}
-          title="Carte Interactive"
-          onClick={() => handleCardClick('map')}
+          icon={<FaGavel />}
+          title="Mentions Légales"
+          onClick={() => handleCardClick('legal')}
         />
         
         <InfoCard
@@ -136,6 +136,12 @@ const Info: React.FC = () => {
           justify-content: center;
           min-height: 120px;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          -webkit-tap-highlight-color: transparent;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
         }
 
         .info-card:hover {

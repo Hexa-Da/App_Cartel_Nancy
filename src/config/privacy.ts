@@ -4,7 +4,8 @@ export const PRIVACY_CONFIG = {
   contact: {
     email: 'pap71530@outlook.com',
     phone: '0767786330',
-    privacyPolicyUrl: 'https://www.privacypolicies.com/live/ad3c6917-cbdb-47fe-ae4d-2c55040fdfbe'
+    privacyPolicyUrl: '/privacy-policy.html',
+    termsOfServiceUrl: '/terms-of-service.html'
   },
 
   // Services tiers utilisés
@@ -32,6 +33,12 @@ export const PRIVACY_CONFIG = {
       purpose: 'Géocodage des adresses',
       dataType: 'Adresses pour conversion en coordonnées GPS',
       privacyPolicy: 'https://operations.osmfoundation.org/policies/nominatim/'
+    },
+    {
+      name: 'EmailJS',
+      purpose: 'Envoi d\'emails pour les signalements VSS',
+      dataType: 'Contenu des signalements VSS',
+      privacyPolicy: 'https://www.emailjs.com/privacy-policy/'
     }
   ],
 
@@ -65,6 +72,14 @@ export const PRIVACY_CONFIG = {
       storage: 'local_encrypted',
       shared: false,
       consentRequired: true
+    },
+    vssReports: {
+      collected: true,
+      purpose: 'Transmission des signalements aux autorités compétentes',
+      storage: 'email_transmission',
+      shared: true,
+      sharedWith: 'Destinataires des signalements VSS',
+      consentRequired: true
     }
   },
 
@@ -93,7 +108,14 @@ export const PRIVACY_CONFIG = {
 
 // Fonction pour obtenir l'URL de la politique de confidentialité
 export const getPrivacyPolicyUrl = (): string => {
-  return 'https://www.privacypolicies.com/live/ad3c6917-cbdb-47fe-ae4d-2c55040fdfbe';
+  // Politique de confidentialité personnalisée
+  return '/privacy-policy.html';
+};
+
+// Fonction pour obtenir l'URL des conditions générales d'utilisation
+export const getTermsOfServiceUrl = (): string => {
+  // Conditions générales d'utilisation personnalisées
+  return '/terms-of-service.html';
 };
 
 // Note: Pas de bannière de consentement dans l'application

@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import { 
   FaCoffee, FaBreadSlice, FaUtensils, FaCalendarAlt, FaPizzaSlice, 
   FaBullhorn, FaMapMarkerAlt, FaBook, FaTrophy, FaMusic, FaGlassCheers, FaUsers, 
-  FaBus, FaQuestionCircle, FaCreditCard, FaWallet, FaWrench, FaTshirt, FaGift, FaClock, FaMedal, FaMoon 
+  FaBus, FaQuestionCircle, FaCreditCard, FaWallet, FaWrench, FaTshirt, FaGift, FaClock, FaMedal, FaMoon,
+  FaFileAlt, FaShieldAlt
 } from 'react-icons/fa';
 import './InfoSection.css';
 
@@ -78,12 +79,30 @@ const sectionsData: { [key: string]: SectionData } = {
       { icon: <FaMoon />, text: 'Planning des soirées' },
       { icon: <FaUtensils />, text: 'Planning restauration' },
     ]
+  },
+  legal: {
+    title: 'MENTIONS LÉGALES',
+    items: [
+      { icon: <FaShieldAlt />, text: 'Politique de Confidentialité' },
+      { icon: <FaFileAlt />, text: 'Conditions Générales d\'Utilisation' },
+    ]
   }
 };
 
 const InfoSection: React.FC = () => {
   const { sectionName } = useParams<{ sectionName: string }>();
   const section = sectionsData[sectionName || ''];
+
+  const handleItemClick = (item: SectionItem) => {
+    // Gestion spéciale pour les mentions légales
+    if (sectionName === 'legal') {
+      if (item.text === 'Politique de Confidentialité') {
+        window.open('/privacy-policy.html', '_blank');
+      } else if (item.text === 'Conditions Générales d\'Utilisation') {
+        window.open('/terms-of-service.html', '_blank');
+      }
+    }
+  };
 
   if (!section) {
     return (
@@ -103,7 +122,7 @@ const InfoSection: React.FC = () => {
       </div>
       <ul className="info-section-list">
         {section.items.map((item, index) => (
-          <li key={index} className="info-section-list-item">
+          <li key={index} className="info-section-list-item" onClick={() => handleItemClick(item)}>
             <span className="item-icon">{item.icon}</span>
             <span className="item-text">{item.text}</span>
           </li>

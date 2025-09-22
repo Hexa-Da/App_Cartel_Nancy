@@ -25,6 +25,7 @@
 
 body.ios .app-header {
   padding-top: 65px;
+  height: 100px;
 }
 
 .header-left,

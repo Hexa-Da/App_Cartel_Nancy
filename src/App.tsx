@@ -905,7 +905,7 @@ function App() {
     const savedDescription1 = localStorage.getItem('party-description-1') || "Rendez vous 12h puis départ du Défilé à 13h";
     const savedDescription2 = localStorage.getItem('party-description-2') || "Soirée Pompoms du 16 avril, 21h-3h";
     const savedDescription3 = localStorage.getItem('party-description-3') || "Soirée DJ contest 17 avril, 20h-4h";
-    const savedDescription4 = localStorage.getItem('party-description-4') || "Soirée du 17 avril, 20h-4h";
+    const savedDescription4 = localStorage.getItem('party-description-4') || "Soirée du 18 avril, 20h-4h";
     
     return [
       {
@@ -942,7 +942,7 @@ function App() {
         description: savedDescription3,
         address: "Rue du Zénith, 54320 Maxéville",
         type: 'party',
-        date: '2026-04-18T20:00:00',
+        date: '2026-04-17T20:00:00',
         latitude: 48.710498,
         longitude: 6.137549,
         emoji: '🎧',
@@ -4518,7 +4518,7 @@ function App() {
               </div>
               <div className="modal-form-group">
                 <label htmlFor="match-result">Résultat</label>
-                <input id="match-result" type="text" value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, result: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, result: e.target.value }); } }} placeholder="Ex: 2-1" className="modal-form-input" />
+                <input id="match-result" type="text" value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, result: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, result: e.target.value }); } }} placeholder="Ex: 2-1 (à saisir si disponible)" className="modal-form-input" />
               </div>
               <div className="modal-form-actions">
                 <button className="modal-form-submit" onClick={() => { if (editingMatch.match) { handleUpdateMatch(editingMatch.venueId!, editingMatch.match.id, { date: editingMatch.match.date, endTime: editingMatch.match.endTime || '', teams: editingMatch.match.teams, description: editingMatch.match.description, result: editingMatch.match.result }); finishEditingMatch(); } else { handleAddMatch(editingMatch.venueId!); } }} disabled={editingMatch.match ? !editingMatch.match.date || !editingMatch.match.teams || !editingMatch.match.description : !newMatch.date || !newMatch.teams || !newMatch.description}>{editingMatch.match ? 'Mettre à jour' : 'Ajouter'}</button>
