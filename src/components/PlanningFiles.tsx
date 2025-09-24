@@ -6,9 +6,23 @@ import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject }
 
 interface PlanningFilesProps {
   isAdmin?: boolean;
+  filter?: string;
+  showFilterSelector?: boolean;
+  uploading?: boolean;
+  setUploading?: (uploading: boolean) => void;
+  uploadProgress?: number;
+  setUploadProgress?: (progress: number) => void;
 }
 
-export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
+export default function PlanningFiles({ 
+  isAdmin = false, 
+  filter, 
+  showFilterSelector = true,
+  uploading: externalUploading,
+  setUploading: externalSetUploading,
+  uploadProgress: externalUploadProgress,
+  setUploadProgress: externalSetUploadProgress
+}: PlanningFilesProps) {
   const [files, setFiles] = useState<PlanningFile[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<PlanningFile[]>([]);
   const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
@@ -19,14 +33,17 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
     url: '',
     eventType: ''
   });
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [internalUploading, setInternalUploading] = useState(false);
+  const [internalUploadProgress, setInternalUploadProgress] = useState(0);
+  
+  // Utiliser les props externes si fournies, sinon les états internes
+  const uploading = externalUploading !== undefined ? externalUploading : internalUploading;
+  const uploadProgress = externalUploadProgress !== undefined ? externalUploadProgress : internalUploadProgress;
+  const setUploading = externalSetUploading || setInternalUploading;
+  const setUploadProgress = externalSetUploadProgress || setInternalUploadProgress;
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageModalRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [zoom, setZoom] = useState(1);
-  const [imgOffset, setImgOffset] = useState({ x: 0, y: 0 });
+
 
   // Liste des types d'événements disponibles
   const eventTypes = [
@@ -57,6 +74,22 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
   // Helper pour détecter mobile
   const isMobile = window.innerWidth < 600;
 
+  // Initialiser le filtre basé sur la prop
+  useEffect(() => {
+    if (filter) {
+      if (filter === 'sports') {
+        // Afficher tous les sports (exclure restaurants, hôtels, soirées)
+        setEventTypeFilter('sports');
+      } else if (filter === 'restaurants') {
+        setEventTypeFilter('Restaurant');
+      } else if (filter === 'bus') {
+        setEventTypeFilter('party'); // Les bus sont liés aux soirées
+      } else if (filter === 'all') {
+        setEventTypeFilter('all');
+      }
+    }
+  }, [filter]);
+
   useEffect(() => {
     // Charger les fichiers
     const filesRef = ref(database, 'planningFiles');
@@ -82,8 +115,51 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
   useEffect(() => {
     let filtered = files;
 
+
     // Filtre par type d'événement
-    if (eventTypeFilter !== 'all') {
+    if (eventTypeFilter === 'sports') {
+      // Afficher tous les sports
+      const sportsTypes = [
+        'Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
+        'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Boxe',
+        'Athlétisme', 'Pétanque', 'Escalade', 'Jeux de société', 'Pompom', 'Defile'
+      ];
+      filtered = filtered.filter(file => 
+        sportsTypes.includes(file.eventType)
+      );
+    } else if (eventTypeFilter === 'party') {
+      // Afficher les soirées et événements liés
+      filtered = filtered.filter(file => 
+        file.eventType === 'party' || 
+        file.eventType.toLowerCase().includes('soirée') ||
+        file.eventType.toLowerCase().includes('gala') ||
+        file.eventType.toLowerCase().includes('navette')
+      );
+    } else if (eventTypeFilter === 'restaurants') {
+      // Afficher les restaurants
+      filtered = filtered.filter(file => 
+        file.eventType === 'Restaurant' ||
+        file.eventType.toLowerCase().includes('restaurant') ||
+        file.eventType.toLowerCase().includes('crous') ||
+        file.eventType.toLowerCase().includes('artem')
+      );
+    } else if (eventTypeFilter === 'bus') {
+      // Afficher les transports
+      filtered = filtered.filter(file => 
+        file.eventType.toLowerCase().includes('bus') ||
+        file.eventType.toLowerCase().includes('transport') ||
+        file.eventType.toLowerCase().includes('navette') ||
+        file.eventType.toLowerCase().includes('zenith')
+      );
+    } else if (eventTypeFilter === 'hotel') {
+      // Afficher les hôtels
+      filtered = filtered.filter(file => 
+        file.eventType === 'Hotel' ||
+        file.eventType.toLowerCase().includes('hôtel') ||
+        file.eventType.toLowerCase().includes('hotel')
+      );
+    } else if (eventTypeFilter !== 'all') {
+      // Filtre exact par type d'événement (pour les filtres spécifiques)
       filtered = filtered.filter(file => 
         file.eventType === eventTypeFilter
       );
@@ -109,20 +185,25 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
             // fallback: essayer de retrouver le chemin à partir du nom
             storagePath = `planningFiles/${fileToDelete.name}`;
           }
-          // Supprimer du storage (mais ignorer l'erreur 404)
+          // Supprimer du storage (ignorer les erreurs de permissions ou 404)
           try {
             await deleteObject(storageRef(storage, storagePath));
+            console.log('Fichier supprimé du storage avec succès');
           } catch (error: any) {
             if (error.code === 'storage/object-not-found') {
               console.info('Fichier déjà supprimé ou inexistant dans Firebase Storage.');
+            } else if (error.code === 'storage/unauthorized' || error.code === 'storage/forbidden') {
+              console.warn('Permissions insuffisantes pour supprimer le fichier du storage, suppression de la base de données uniquement.');
             } else {
-              throw error;
+              console.warn('Erreur lors de la suppression du fichier du storage:', error.message);
             }
           }
         }
         // Supprimer de la base (toujours)
         await remove(ref(database, `planningFiles/${fileId}`));
+        console.log('Fichier supprimé de la base de données avec succès');
       } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
         alert('Une erreur est survenue lors de la suppression du fichier.');
       }
     }
@@ -171,6 +252,11 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
         },
         (error) => {
           console.error('Erreur lors de l\'upload:', error);
+          if (error.code === 'storage/unauthorized' || error.code === 'storage/forbidden') {
+            console.warn('Permissions insuffisantes pour l\'upload. Vérifiez les règles de sécurité Firebase Storage.');
+          }
+          setUploading(false);
+          setUploadProgress(0);
           throw error;
         },
         async () => {
@@ -184,7 +270,7 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
         ...newFile,
         url: downloadURL,
         uploadDate: Date.now(),
-        uploadedBy: auth.currentUser?.uid || 'unknown'
+        uploadedBy: 'admin'
       });
 
       setNewFile({
@@ -199,8 +285,14 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
             if (fileInputRef.current) {
               fileInputRef.current.value = '';
             }
+            
+            // Upload terminé avec succès
+            setUploading(false);
+            setUploadProgress(0);
           } catch (error) {
             console.error('Erreur lors de la sauvegarde des informations:', error);
+            setUploading(false);
+            setUploadProgress(0);
             throw error;
           }
         }
@@ -218,230 +310,25 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
       }
       
       alert(errorMessage);
-    } finally {
       setUploading(false);
       setUploadProgress(0);
     }
   };
 
-  const closeImageModal = () => {
-    setSelectedImage(null);
-  };
 
-  // Nouvelle barre de chargement globale
-  const uploadBar = uploading ? (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      zIndex: 3000,
-      background: 'rgba(20,20,20,0.98)',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-      padding: '0.5rem 0',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      transition: 'all 0.2s',
-      maxWidth: '100vw',
-    }}>
-      <div style={{
-        width: '92vw',
-        maxWidth: 500,
-        height: '12px',
-        background: '#333',
-        borderRadius: '6px',
-        overflow: 'hidden',
-        marginBottom: '0.3rem',
-      }}>
-        <div style={{
-          width: `${uploadProgress}%`,
-          height: '100%',
-          background: 'linear-gradient(90deg, var(--accent-color), #4CAF50)',
-          transition: 'width 0.3s',
-          borderRadius: '6px',
-        }}></div>
-      </div>
-      <div style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '1.1rem', wordBreak: 'break-word' }}>{Math.round(uploadProgress)}%</div>
-      <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: 2, wordBreak: 'break-word' }}>{uploadProgress < 100 ? 'Upload en cours...' : 'Finalisation...'}</div>
-    </div>
-  ) : null;
+  // Barre de chargement gérée par le composant parent
+  // Variables uploadProgress et uploading utilisées par le composant parent
 
-  // Gérer le mode plein écran natif pour l'image
-  useEffect(() => {
-    if (selectedImage && imageModalRef.current) {
-      const el = imageModalRef.current;
-      if (el.requestFullscreen) {
-        el.requestFullscreen();
-      } else if ((el as any).webkitRequestFullscreen) {
-        (el as any).webkitRequestFullscreen();
-      } else if ((el as any).msRequestFullscreen) {
-        (el as any).msRequestFullscreen();
-      }
-    } else if (!selectedImage && document.fullscreenElement) {
-      document.exitFullscreen?.();
-    }
-    // Sortir du fullscreen si on ferme la modale
-    return () => {
-      if (document.fullscreenElement) {
-        document.exitFullscreen?.();
-      }
-    };
-  }, [selectedImage]);
 
-  // Reset zoom à chaque nouvelle image
-  useEffect(() => {
-    setZoom(1);
-    setImgOffset({ x: 0, y: 0 });
-  }, [selectedImage]);
 
-  // Gestion du zoom/pan façon Leaflet (mobile & desktop)
-  useEffect(() => {
-    const img = imgRef.current;
-    if (!img) return;
-    // On ne gère plus le tactile ici
-    // On garde seulement la gestion souris et molette
-    function onMouseDown(e: MouseEvent) {
-      if (zoom === 1) return;
-      let mode: 'none' | 'pan' = 'pan';
-      let start = { x: e.clientX, y: e.clientY };
-      let panInitial = { ...imgOffset };
-      function onMouseMove(ev: MouseEvent) {
-        if (mode !== 'pan') return;
-        const dx = ev.clientX - start.x;
-        const dy = ev.clientY - start.y;
-        setImgOffset(clampPan(panInitial.x + dx, panInitial.y + dy, zoom));
-      }
-      function onMouseUp() {
-        mode = 'none';
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseup', onMouseUp);
-      }
-      window.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('mouseup', onMouseUp);
-    }
-    function onWheel(e: WheelEvent) {
-      e.preventDefault();
-      let newZoom = zoom - e.deltaY * 0.1;
-      newZoom = Math.max(1, Math.min(5, newZoom));
-      setZoom(newZoom);
-    }
-    function clampPan(x: number, y: number, zoom: number) {
-      if (!img) return { x, y };
-      const rect = img.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const imgW = rect.width * zoom;
-      const imgH = rect.height * zoom;
-      const maxX = Math.max(0, (imgW - vw) / 2);
-      const maxY = Math.max(0, (imgH - vh) / 2);
-      return {
-        x: Math.max(-maxX, Math.min(maxX, x)),
-        y: Math.max(-maxY, Math.min(maxY, y))
-      };
-    }
-    if (selectedImage) {
-      img.addEventListener('mousedown', onMouseDown);
-      img.addEventListener('wheel', onWheel, { passive: false });
-    }
-    return () => {
-      img.removeEventListener('mousedown', onMouseDown);
-      img.removeEventListener('wheel', onWheel);
-      window.removeEventListener('mousemove', () => {});
-      window.removeEventListener('mouseup', () => {});
-    };
-    // eslint-disable-next-line
-  }, [selectedImage, zoom, imgOffset]);
 
-  // Ajoute la navigation par flèches
-  const handleArrowPan = (dx: number, dy: number) => {
-    setImgOffset(prev => {
-      const clamp = (x: number, y: number) => {
-        const img = imgRef.current;
-        if (!img) return { x, y };
-        const rect = img.getBoundingClientRect();
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const imgW = rect.width * zoom;
-        const imgH = rect.height * zoom;
-        const maxX = Math.max(0, (imgW - vw) / 2);
-        const maxY = Math.max(0, (imgH - vh) / 2);
-        return {
-          x: Math.max(-maxX, Math.min(maxX, x)),
-          y: Math.max(-maxY, Math.min(maxY, y))
-        };
-      };
-      // Inversion du déplacement : ← = +x, → = -x, ↑ = +y, ↓ = -y
-      return clamp(prev.x - dx, prev.y - dy);
-    });
-  };
-
-  if (uploading) {
-    return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: 'rgba(10,10,10,0.92)',
-        zIndex: 5000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(30,30,30,0.98)',
-          borderRadius: '16px',
-          padding: '2.5rem 2rem',
-          minWidth: 220,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
-          border: '2px solid var(--accent-color)'
-        }}>
-          {/* Spinner animé */}
-          <div style={{ marginBottom: '1.2rem' }}>
-            <span style={{
-              display: 'inline-block',
-              width: 48,
-              height: 48,
-              border: '6px solid #fff',
-              borderTop: '6px solid var(--accent-color)',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-            }} />
-          </div>
-          <div style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '0.7rem' }}>
-            Upload en cours...
-          </div>
-          <div style={{ width: 180, height: 12, background: '#333', borderRadius: 6, overflow: 'hidden', marginBottom: '0.7rem' }}>
-            <div style={{
-              width: `${uploadProgress}%`,
-              height: '100%',
-              background: 'linear-gradient(90deg, var(--accent-color), #4CAF50)',
-              transition: 'width 0.3s',
-              borderRadius: 6,
-            }}></div>
-          </div>
-          <div style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.2rem' }}>{Math.round(uploadProgress)}%</div>
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
-        </div>
-      </div>
-    );
-  }
+  // Supprimé l'écran de chargement complet pour laisser place à la barre améliorée
 
   return (
     <div className="planning-files">
-      <h2>Plannings</h2>
+      <h2 style={{ marginTop: 0, marginBottom: '10px' }}>Plannings</h2>
       
+      {showFilterSelector && (
       <div className="filters">
         <div className="filter-group">
           <select
@@ -458,6 +345,7 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
           </select>
         </div>
       </div>
+      )}
 
       <div className="planning-content">
       {isAdmin && (
@@ -478,60 +366,58 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(12px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(5px)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            zIndex: 1000
+            zIndex: 2000
           }}>
             <div className="modal-content" style={{
-              padding: isMobile ? '1rem 0.5rem' : '2rem 1rem',
+              background: 'var(--bg-color)',
               borderRadius: '12px',
-              width: '100%',
-              maxWidth: isMobile ? '85vw' : '400px',
-              minWidth: 0,
-              maxHeight: '90vh',
-              overflowY: 'auto',
+              width: '90%',
+              maxWidth: '400px',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+              overflow: 'hidden',
               position: 'relative',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.65)',
-              background: 'rgba(15, 15, 15, 0.95)',
-              color: 'var(--text-primary)',
-              margin: '0 auto',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'stretch',
-              boxSizing: 'border-box',
+              border: '1px solid var(--border-color)',
             }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '1rem',
+                borderBottom: '1px solid var(--border-color)',
+                position: 'relative'
+              }}>
+                <h3 style={{ margin: 0, color: 'var(--text-color)', fontSize: '1.2rem' }}>
+                  Ajouter un planning
+                </h3>
               <button 
                 onClick={() => setShowAddForm(false)}
                 style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
                   background: 'none',
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: 'var(--text-primary)',
+                    color: 'var(--text-color)',
+                    position: 'absolute',
+                    right: '0.5rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
                   padding: '0.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '2rem',
-                  height: '2rem',
-                  borderRadius: '50%',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    lineHeight: 1
+                  }}
               >
                 ×
               </button>
+              </div>
 
-              <h2 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center' }}>Ajouter un planning</h2>
-
-              {uploadBar}
+              <div style={{
+                padding: '1rem',
+                backgroundColor: 'var(--bg-color)'
+              }}>
 
               <form onSubmit={handleAddFile} style={{ 
                 display: 'flex',
@@ -657,6 +543,7 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
           </button>
                 </div>
         </form>
+              </div>
             </div>
           </div>
       )}
@@ -709,7 +596,7 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
                 }}>
                   {isImage ? (
                 <button
-                      onClick={() => setSelectedImage(file.url)}
+                      onClick={() => window.open(file.url, '_blank')}
                       style={{
                         padding: isMobile ? '0.35rem 0.7rem' : '0.4rem 0.9rem',
                         borderRadius: '4px',
@@ -733,15 +620,14 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
                       Voir
                     </button>
                   ) : (
-                    <a 
-                      href={file.url} 
-                      download 
-                      className="download-button"
+                    <button
+                      onClick={() => window.open(file.url, '_blank')}
                       style={{
                         padding: isMobile ? '0.35rem 0.7rem' : '0.4rem 0.9rem',
                         borderRadius: '4px',
                         background: 'var(--accent-color)',
                         color: 'white',
+                        border: 'none',
                         textDecoration: 'none',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -752,15 +638,12 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
                         minWidth: 0,
                         maxWidth: '100%',
                         flex: '1 1 auto',
+                        cursor: 'pointer',
                       }}
-                >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                      Télécharger
-                    </a>
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                      Voir
+                    </button>
                   )}
                 {isAdmin && (
                   <button
@@ -800,107 +683,6 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
       )}
       </div>
 
-      {selectedImage && (
-        <div ref={imageModalRef} className="image-modal" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 4000,
-          background: 'rgba(10,10,10,0.98)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          {/* Bouton fermer en haut à droite de la page */}
-          <button className="close-button" onClick={closeImageModal} style={{
-            background: 'rgba(0, 0, 0, 0.5)',
-            border: 'none',
-            fontSize: '2.2rem',
-            cursor: 'pointer',
-            position: 'fixed',
-            right: '2vw',
-            top: '3vh',
-            color: 'white',
-            zIndex: 4100,
-            padding: 0,
-            lineHeight: 1,
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease'
-          }}>×</button>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{
-            background: 'transparent',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 0,
-            borderRadius: '12px',
-            maxWidth: '95vw',
-            maxHeight: '90vh',
-            boxShadow: 'none',
-            position: 'relative',
-          }}>
-            <img
-              ref={imgRef}
-              src={selectedImage}
-              alt="Planning en plein écran"
-              style={{
-                maxWidth: '90vw',
-                maxHeight: '80vh',
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-                display: 'block',
-                margin: '0 auto',
-                cursor: zoom > 1 ? 'grab' : 'zoom-in',
-                transform: `scale(${zoom}) translate(${imgOffset.x / zoom}px, ${imgOffset.y / zoom}px)`,
-                transition: 'transform 0.2s',
-                touchAction: 'none',
-              }}
-              onDoubleClick={() => setZoom(z => (z === 1 ? 2 : 1))}
-            />
-            {/* Barre de navigation minimaliste en bas */}
-            <div style={{
-              position: 'absolute',
-              bottom: 8,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              zIndex: 4200,
-              background: 'transparent',
-              borderRadius: 0,
-              boxShadow: 'none',
-              padding: 0,
-              minWidth: 0,
-              maxWidth: '100vw',
-              border: 'none',
-              backdropFilter: 'none',
-            }}>
-              <button aria-label="Gauche" style={{...arrowBtnMinimal}} onClick={() => handleArrowPan(-40, 0)}>&larr;</button>
-              <button aria-label="Haut" style={{...arrowBtnMinimal}} onClick={() => handleArrowPan(0, -40)}>&uarr;</button>
-              <button aria-label="Zoom out" style={{...arrowBtnMinimal}} onClick={() => {
-                setZoom(z => {
-                  const newZoom = Math.max(1, z - 0.5);
-                  if (newZoom === 1) setImgOffset({ x: 0, y: 0 });
-                  return newZoom;
-                });
-              }}>−</button>
-              <button aria-label="Zoom in" style={{...arrowBtnMinimal}} onClick={() => setZoom(z => Math.min(5, z + 0.5))}>+</button>
-              <button aria-label="Bas" style={{...arrowBtnMinimal}} onClick={() => handleArrowPan(0, 40)}>&darr;</button>
-              <button aria-label="Droite" style={{...arrowBtnMinimal}} onClick={() => handleArrowPan(40, 0)}>&rarr;</button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
@@ -910,22 +692,3 @@ export default function PlanningFiles({ isAdmin = false }: PlanningFilesProps) {
     </div>
   );
 } 
-
-// Ajoute ce style en haut du composant
-const arrowBtnMinimal = {
-  background: '#fff',
-  border: '1px solid #ddd',
-  borderRadius: '50%',
-  width: 32,
-  height: 32,
-  color: '#111',
-  fontSize: 18,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  boxShadow: 'none',
-  transition: 'background 0.18s',
-  outline: 'none',
-  padding: 0,
-}; 

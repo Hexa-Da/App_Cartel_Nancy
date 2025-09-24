@@ -22,6 +22,7 @@ import SettingsMenu from './SettingsMenu';
 import AdminLoginModal from './AdminLoginModal';
 import { verifyAdminCode } from '../firebase';
 import { useApp } from '../AppContext';
+import { useAppPanels } from '../AppPanelsContext';
 
 interface HeaderProps {
   onChat?: () => void;
@@ -52,6 +53,7 @@ const Header: React.FC<HeaderProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const { isAdmin, user, setIsAdmin, setUser } = useApp();
+  const { setIsEditing } = useAppPanels();
 
   const handleAdminLogin = (code: string) => {
     if (verifyAdminCode(code)) {
@@ -223,6 +225,7 @@ const Header: React.FC<HeaderProps> = ({
                 localStorage.removeItem('isAdmin');
                 setUser(null);
                 setIsAdmin(false);
+                setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
                 if (onAdmin) onAdmin();
               } : () => setShowAdminModal(true)}
               title={user ? "Se déconnecter" : "Se connecter"}

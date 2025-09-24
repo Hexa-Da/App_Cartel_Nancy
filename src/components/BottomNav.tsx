@@ -99,7 +99,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
       </button>
       
       <button 
-        className={`nav-button ${location.pathname === '/info' ? 'active' : ''}`}
+        className={`nav-button ${location.pathname.startsWith('/info') || location.pathname === '/planning-files' ? 'active' : ''}`}
         onClick={(e) => handleClick(e, '/info')}
         onTouchEnd={(e) => handleTouchEnd(e, '/info')}
       >

@@ -15,12 +15,14 @@
  * - Assure l'accès aux documents légaux obligatoires
  */
 
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAppPanels } from '../AppPanelsContext';
+import { useApp } from '../AppContext';
 import { 
   FaCoffee, FaBreadSlice, FaUtensils, FaCalendarAlt, FaPizzaSlice, 
   FaBullhorn, FaMapMarkerAlt, FaBook, FaTrophy, FaMusic, FaGlassCheers, FaUsers, 
-  FaBus, FaQuestionCircle, FaCreditCard, FaWallet, FaWrench, FaTshirt, FaGift, FaClock, FaMedal, FaMoon,
+  FaBus, FaQuestionCircle, FaWrench, FaClock,
   FaFileAlt, FaShieldAlt
 } from 'react-icons/fa';
 import './InfoSection.css';
@@ -65,36 +67,20 @@ const sectionsData: { [key: string]: SectionData } = {
       ]
   },
   cashless: {
-    title: 'BRACELETS',
+    title: 'INFO HOTELS',
     items: [
-      { icon: <FaQuestionCircle />, text: 'Comment ça marche ?' },
-      { icon: <FaCreditCard />, text: 'Recharger mon bracelet' },
-      { icon: <FaWallet />, text: 'Consulter mon solde' },
-      { icon: <FaWrench />, text: 'Problèmes et SAV' },
+      { icon: <FaMapMarkerAlt />, text: 'Localisation des hôtels' },
+      { icon: <FaClock />, text: 'Horaires de réception' },
+      { icon: <FaWrench />, text: 'Services disponibles' },
+      { icon: <FaQuestionCircle />, text: 'Contact et assistance' },
     ]
   },
   shop: {
-    title: 'TOSS SHOP',
+    title: 'PLANNING FILES',
     items: [
-      { icon: <FaTshirt />, text: 'Vêtements' },
-      { icon: <FaGift />, text: 'Goodies' },
-      { icon: <FaClock />, text: 'Horaires d\'ouverture' },
-    ]
-  },
-  ranking: {
-    title: 'CLASSEMENT GÉNÉRAL',
-    items: [
-      { icon: <FaUsers />, text: 'Classement par délégation' },
-      { icon: <FaTrophy />, text: 'Classement par sport' },
-      { icon: <FaMedal />, text: 'Médailles' },
-    ]
-  },
-  schedule: {
-    title: 'PLANNING TOSS',
-    items: [
-      { icon: <FaCalendarAlt />, text: 'Planning des matchs' },
-      { icon: <FaMoon />, text: 'Planning des soirées' },
-      { icon: <FaUtensils />, text: 'Planning restauration' },
+      { icon: <FaTrophy />, text: 'Planning des différents sports' },
+      { icon: <FaUtensils />, text: 'Planning des restaurants' },
+      { icon: <FaBus />, text: 'Planning des bus fin de soirée' },
     ]
   },
   legal: {
@@ -108,7 +94,25 @@ const sectionsData: { [key: string]: SectionData } = {
 
 const InfoSection: React.FC = () => {
   const { sectionName } = useParams<{ sectionName: string }>();
+  const { isEditing } = useAppPanels();
+  const { isAdmin } = useApp();
+  const navigate = useNavigate();
   const section = sectionsData[sectionName || ''];
+  
+  // Forcer la synchronisation des états sur iOS
+  useEffect(() => {
+    // Vérifier et synchroniser l'état admin depuis localStorage
+    const adminStatus = localStorage.getItem('isAdmin') === 'true';
+    if (adminStatus !== isAdmin) {
+      console.log('InfoSection - Synchronisation admin depuis localStorage:', adminStatus);
+    }
+    
+    // Vérifier et synchroniser l'état editing depuis localStorage
+    const editingStatus = localStorage.getItem('isEditing') === 'true';
+    if (editingStatus !== isEditing) {
+      console.log('InfoSection - Synchronisation editing depuis localStorage:', editingStatus);
+    }
+  }, [isAdmin, isEditing]);
 
   const handleItemClick = (item: SectionItem) => {
     // Gestion spéciale pour les mentions légales
@@ -117,6 +121,20 @@ const InfoSection: React.FC = () => {
         window.open('/privacy-policy.html', '_blank');
       } else if (item.text === 'Conditions Générales d\'Utilisation') {
         window.open('/terms-of-service.html', '_blank');
+      }
+    }
+    
+    // Gestion spéciale pour Planning Files - navigation React Router
+    if (sectionName === 'shop') {
+      if (item.text === 'Planning des différents sports') {
+        // Naviguer vers PlanningFiles avec filtre sports
+        navigate('/planning-files?sports=true');
+      } else if (item.text === 'Planning des restaurants') {
+        // Naviguer vers PlanningFiles avec filtre restaurants
+        navigate('/planning-files?restaurants=true');
+      } else if (item.text === 'Planning des bus fin de soirée') {
+        // Naviguer vers PlanningFiles avec filtre bus
+        navigate('/planning-files?bus=true');
       }
     }
   };

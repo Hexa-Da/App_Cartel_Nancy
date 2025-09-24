@@ -14,7 +14,7 @@
  * - Évite les conflits d'état entre composants
  */
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info';
 
@@ -36,7 +36,29 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
   const [activeTab, setActiveTab] = useState<TabType>('map');
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(() => {
+    // Récupérer l'état depuis localStorage au chargement
+    const saved = localStorage.getItem('isEditing');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Sauvegarder l'état isEditing dans localStorage à chaque changement
+  useEffect(() => {
+    localStorage.setItem('isEditing', JSON.stringify(isEditing));
+  }, [isEditing]);
+
+  // Écouter les changements d'état admin et désactiver isEditing si l'admin se déconnecte
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'isAdmin' && e.newValue !== 'true') {
+        // Si l'admin se déconnecte, désactiver le mode édition
+        setIsEditing(false);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [setIsEditing]);
 
   const closeAllPanels = () => {
     setActiveTab('map');

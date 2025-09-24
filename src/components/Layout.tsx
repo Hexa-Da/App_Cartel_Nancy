@@ -149,8 +149,8 @@ const Layout: React.FC = () => {
         // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
         updateLastSeenTimestamp();
         setShowChat(false);
-        // Empêcher la navigation en ajoutant une nouvelle entrée
-        window.history.pushState({ path: location.pathname, chat: false }, '', location.pathname);
+        // Empêcher la navigation en remplaçant l'entrée actuelle
+        window.history.replaceState({ path: location.pathname, chat: false }, '', location.pathname);
         isHandlingPopState = false;
         return;
       }
@@ -167,7 +167,7 @@ const Layout: React.FC = () => {
       if (location.pathname === '/map') {
         if (activeTab !== 'map') {
           setActiveTab('map');
-          window.history.pushState({ path: location.pathname, tab: 'map' }, '', location.pathname);
+          window.history.replaceState({ path: location.pathname, tab: 'map' }, '', location.pathname);
         } else {
           // Permettre la navigation normale
           navigate(-1);
@@ -185,28 +185,13 @@ const Layout: React.FC = () => {
     };
   }, [showChat, location.pathname, activeTab, navigate]);
 
-  // Ajouter une entrée dans l'historique pour les pages principales et empêcher le retour
+  // Ajouter une seule entrée dans l'historique pour les pages principales
   useEffect(() => {
     if (location.pathname === '/' || location.pathname === '/info') {
-      // Remplacer l'entrée actuelle et ajouter une nouvelle pour empêcher le retour
+      // Remplacer l'entrée actuelle pour empêcher le retour
       window.history.replaceState({ path: location.pathname }, '', location.pathname);
-      window.history.pushState({ path: location.pathname }, '', location.pathname);
     }
   }, [location.pathname]);
-
-  // Gestion agressive pour empêcher le retour sur les pages principales
-  useEffect(() => {
-    if (location.pathname === '/' || location.pathname === '/info') {
-      const preventBack = (e: PopStateEvent) => {
-        if (location.pathname === '/' || location.pathname === '/info') {
-          window.history.pushState({ path: location.pathname }, '', location.pathname);
-        }
-      };
-      
-      window.addEventListener('popstate', preventBack);
-      return () => window.removeEventListener('popstate', preventBack);
-    }
-    }, [location.pathname]);
   
   // Effet pour mettre à jour le timestamp de dernière lecture lors de la navigation
   useEffect(() => {
@@ -593,11 +578,6 @@ const Layout: React.FC = () => {
 
   // Mise à jour du timestamp de dernière lecture lors de l'ouverture/fermeture du chat
   const handleChatToggle = () => {
-    if (!showChat) {
-      // Ajouter une entrée dans l'historique quand on ouvre le chat
-      window.history.pushState({ path: location.pathname, chat: true }, '', location.pathname);
-    }
-    
     setShowChat(!showChat);
     
     // Mettre à jour le timestamp de dernière lecture à l'ouverture ET à la fermeture
@@ -628,15 +608,25 @@ const Layout: React.FC = () => {
 
       {/* Fenêtre modale pour le chat */}
       {showChat && (
-        <div className={`chat-panel ${location.pathname === '/' || location.pathname === '/info' ? 'home-info-chat' : ''}`}>
+        <div className={`chat-panel ${location.pathname === '/' || location.pathname === '/info' || location.pathname.startsWith('/info/') || location.pathname === '/planning-files' ? 'home-info-chat' : ''}`}>
           <div className="chat-panel-header">
             <h3>Messages de l'orga</h3>
-            <div style={{ display: 'flex', alignItems: 'center'}}>
+            <div style={{ display: 'flex', alignItems: 'center', position: 'relative'}}>
               {isAdmin && isEditing && (
                 <button
                   className="add-message-button"
                   onClick={() => setShowAddMessage((v) => !v)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70, marginTop: '3.8rem' }}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    height: 20, 
+                    width: 70, 
+                    position: 'absolute',
+                    top: '-0.5rem',
+                    right: 0,
+                    zIndex: 10
+                  }}
                 >
                   {showAddMessage ? 'Annuler' : 'Ajouter'}
                 </button>

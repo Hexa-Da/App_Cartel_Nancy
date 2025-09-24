@@ -17,6 +17,7 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getStorage } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 
 // Configuration Firebase
 const firebaseConfig = {
@@ -32,6 +33,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
 
 // Fonction simple de vérification admin (à adapter selon vos besoins)
 import { ADMIN_CODE } from './config/admin';
@@ -40,4 +42,4 @@ export function verifyAdminCode(code: string): boolean {
   return code === ADMIN_CODE;
 }
 
-export { database, storage };
+export { database, storage, auth };

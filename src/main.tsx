@@ -20,6 +20,7 @@ import App from './App';
 import Home from './pages/Home';
 import Info from './pages/Info';
 import InfoSection from './pages/InfoSection';
+import PlanningFilesPage from './pages/PlanningFilesPage';
 
 import AllPages from './components/AllPages';
 
@@ -40,8 +41,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="/map" element={<App />} />
               <Route path="/info" element={<Info />} />
               <Route path="info/:sectionName" element={<InfoSection />} />
-
-              
+              <Route path="/planning-files" element={<PlanningFilesPage />} />
 
               <Route path="classement" element={<div>Classement</div>} />
               <Route path="profil" element={<div>Profil</div>} />

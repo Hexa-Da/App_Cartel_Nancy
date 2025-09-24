@@ -29,7 +29,6 @@ import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
-import PlanningFiles from './components/PlanningFiles';
 import { Outlet, useLocation} from 'react-router-dom';
 import { useAppPanels, TabType } from './AppPanelsContext';
 import Header from './components/Header';
@@ -627,8 +626,8 @@ function App() {
   const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null);
   const [editingMessageValue, setEditingMessageValue] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info'>('map');
-  const [chatOriginTab, setChatOriginTab] = useState<'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info'>('map');
+  const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'calendar' | 'home' | 'info'>('map');
+  const [chatOriginTab, setChatOriginTab] = useState<'map' | 'events' | 'chat' | 'calendar' | 'home' | 'info'>('map');
   const [appAction, setAppAction] = useState(0);
   
   // Effet pour gérer le lieu sélectionné depuis la page Home
@@ -3615,6 +3614,7 @@ function App() {
         localStorage.removeItem('isAdmin');
         setUser(null);
         setIsAdmin(false);
+        setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
       } catch (error) {
         console.error('Erreur lors de la déconnexion:', error);
       }
@@ -3623,9 +3623,6 @@ function App() {
 
   const handleBack = () => {
     switch (activeTab as TabType) {
-      case 'planning':
-        setActiveTab('events');
-        break;
       case 'events':
         setActiveTab('map');
         break;
@@ -3644,14 +3641,14 @@ function App() {
     }
   };
 
-  const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info') => {
+  const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'calendar' | 'home' | 'info') => {
     // Ajouter une entrée dans l'historique pour toutes les pages secondaires
     if (tab !== 'map' && tab !== 'home' && tab !== 'info') {
       window.history.pushState({ tab }, '', window.location.pathname);
     }
     setPreviousTab(activeTab);
     setActiveTab(tab);
-    if (tab === 'planning' || tab === 'calendar') {
+    if (tab === 'calendar') {
       setFromEvents(activeTab === 'events');
     } else {
       setFromEvents(false);
@@ -3704,9 +3701,6 @@ function App() {
       
       // Pour les autres pages secondaires, gérer selon la logique existante
       switch (activeTab as TabType) {
-        case 'planning':
-          setActiveTab('events');
-          break;
         case 'events':
           setActiveTab('map');
           break;
@@ -3752,8 +3746,8 @@ function App() {
   }, [activeTab]);
 
   useEffect(() => {
-    // Détecte le retour de 'planning' ou 'calendar' vers 'events' et déclenche le scroll
-    if ((previousTabRef.current === 'planning' || previousTabRef.current === 'calendar') && activeTab === 'events') {
+    // Détecte le retour de 'calendar' vers 'events' et déclenche le scroll
+    if (previousTabRef.current === 'calendar' && activeTab === 'events') {
       setTimeout(() => {
         const eventsList = document.querySelector('.events-list');
         if (eventsList) {
@@ -4008,34 +4002,6 @@ function App() {
                       <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
                     </svg>
                     Calendrier
-                  </button>
-                  <button
-                    className="planning-button"
-                    style={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '8px 12px',
-                      margin: '0px',
-                      marginLeft: '35px',
-                      border: 'none',
-                      borderRadius: '8px',
-                      backgroundColor: 'var(--bg-secondary)',
-                      color: 'var(--text-color)',
-                      cursor: 'pointer',
-                      fontSize: '0.9rem',
-                      fontWeight: '500',
-                      transition: 'all 0.2s ease',
-                      minWidth: 'auto',
-                      width: 'auto'
-                    }}
-                    onClick={() => handleTabChange('planning')}
-                    title="Voir les plannings (bus, tournois, etc.)"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
-                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                    </svg>
-                    Planning
                   </button>
                     <button 
                       className="filter-toggle-button"
@@ -4293,25 +4259,6 @@ function App() {
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-            {/* AJOUTER panneau Planning */}
-            {activeTab === 'planning' && (
-              <div className="planning-panel">
-                <div className="planning-panel-header">
-                  <h3>Plannings</h3>
-                </div>
-                <div style={{ 
-                  padding: '2rem', 
-                  textAlign: 'center', 
-                  maxWidth: 800, 
-                  margin: '0 auto',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center'
-                }}>
-                  <PlanningFiles isAdmin={isAdmin} />
                 </div>
               </div>
             )}

@@ -1,6 +1,6 @@
 .planning-files {
-  padding: 20px;
-  max-width: 1200px;
+  padding: 10px 20px 20px 20px;
+  max-width: 1400px;
   margin: 0 auto;
   text-align: center;
   color: var(--text-primary);
@@ -205,8 +205,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(12px);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -313,4 +313,142 @@
   color: #fff !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+/* Styles spécifiques pour iOS */
+body.ios .planning-files {
+  -webkit-overflow-scrolling: touch;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+body.ios .planning-file-item {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body.ios .planning-file-item:active {
+  -webkit-transform: scale(0.98);
+  transform: scale(0.98);
+  transition: -webkit-transform 0.1s ease;
+  transition: transform 0.1s ease;
+}
+
+body.ios .view-button,
+body.ios .delete-button {
+  min-height: 44px;
+  min-width: 44px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body.ios .view-button:active,
+body.ios .delete-button:active {
+  -webkit-transform: scale(0.95);
+  transform: scale(0.95);
+  transition: -webkit-transform 0.1s ease;
+  transition: transform 0.1s ease;
+}
+
+body.ios .add-file-button {
+  min-height: 44px;
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body.ios .add-file-button:active {
+  -webkit-transform: scale(0.98);
+  transform: scale(0.98);
+  transition: -webkit-transform 0.1s ease;
+  transition: transform 0.1s ease;
+}
+
+body.ios .modal-overlay {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+body.ios .modal-content {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+body.ios .modal-content input[type="file"] {
+  font-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+body.ios .modal-content input[type="text"] {
+  font-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.ios .modal-content input[type="text"]:focus {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+body.ios .modal-content select {
+  font-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.ios .modal-content button {
+  min-height: 44px;
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body.ios .modal-content button:active {
+  -webkit-transform: scale(0.98);
+  transform: scale(0.98);
+  transition: -webkit-transform 0.1s ease;
+  transition: transform 0.1s ease;
+}
+
+/* Support pour les simulateurs iOS */
+body.ios-simulator .planning-files {
+  -webkit-overflow-scrolling: touch;
+}
+
+body.ios-simulator .modal-overlay {
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+body.ios-simulator .modal-content {
+  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
 } 

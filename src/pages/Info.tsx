@@ -17,7 +17,7 @@
 
 import React from 'react';
 import './Info.css';
-import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel } from 'react-icons/fa';
+import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel, FaHotel, FaFileAlt, FaMoon, FaShieldAlt, FaGlassCheers, FaMusic, FaFileContract } from 'react-icons/fa';
 import { GiPartyPopper } from 'react-icons/gi';
 import { MdLeaderboard, MdEventNote } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -77,39 +77,27 @@ const Info: React.FC = () => {
         />
         
         <InfoCard
-          icon={<GiPartyPopper />}
+          icon={<FaMusic />}
           title="Planning Soirées"
           onClick={() => handleCardClick('planning')}
         />
         
         <InfoCard
-          icon={<FaIdCard />}
-          title="Bracelets Cashless"
+          icon={<FaHotel />}
+          title="Info Hotels"
           onClick={() => handleCardClick('cashless')}
         />
         
         <InfoCard
-          icon={<FaShoppingCart />}
-          title="TOSS Shop"
+          icon={<FaFileAlt />}
+          title="Planning Files"
           onClick={() => handleCardClick('shop')}
         />
         
         <InfoCard
-          icon={<FaGavel />}
+          icon={<FaFileContract />}
           title="Mentions Légales"
           onClick={() => handleCardClick('legal')}
-        />
-        
-        <InfoCard
-          icon={<MdLeaderboard />}
-          title="Classement Général"
-          onClick={() => handleCardClick('ranking')}
-        />
-        
-        <InfoCard
-          icon={<MdEventNote />}
-          title="Planning TOSS"
-          onClick={() => handleCardClick('schedule')}
         />
       </div>
 

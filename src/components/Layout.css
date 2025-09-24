@@ -18,7 +18,7 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 24px var(--shadow-color);
-  z-index: 1000;
+  z-index: 1001;
   padding: 5px 20px;
   padding-top: 5px;
 }
@@ -379,4 +379,24 @@ body.ios .admin-button {
 
 body.ios .header-settings-button {
   margin-top: 30px;
+}
+
+/* Styles pour le texte "Cartel Nancy" selon le thème */
+.header-logo-text {
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-top: -7px;
+  margin-left: -15px;
+}
+
+/* Mode clair - Texte noir */
+[data-theme="light"] .header-logo-text {
+  color: #000000 !important;
+}
+
+/* Mode sombre - Texte blanc */
+[data-theme="dark"] .header-logo-text {
+  color: #ffffff !important;
 }

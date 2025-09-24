@@ -1,0 +1,461 @@
+/**
+ * @fileoverview Styles CSS pour PlanningFilesPage.tsx
+ * 
+ * Ce fichier contient :
+ * - Styles de base pour les filtres dynamiques
+ * - Styles spécifiques iOS avec body.ios
+ * - Responsive design pour mobile
+ * - Animations et transitions
+ * 
+ * Nécessaire car :
+ * - Séparation des styles du composant React
+ * - Styles iOS spécifiques pour les filtres
+ * - Meilleure maintenabilité du code
+ * - Performance optimisée
+ */
+
+/* ===== STYLES DE BASE ===== */
+
+/* Variables explicites pour les filtres */
+.planning-files-page .filter-label,
+.planning-files-page .filter-select {
+  color: var(--text-primary, #181818) !important;
+}
+
+/* Mode sombre spécifique */
+[data-theme="dark"] .planning-files-page .filter-label,
+[data-theme="dark"] .planning-files-page .filter-select {
+  color: #ffffff !important;
+}
+
+/* Mode clair spécifique */
+[data-theme="light"] .planning-files-page .filter-label,
+[data-theme="light"] .planning-files-page .filter-select {
+  color: #181818 !important;
+}
+
+/* Chevrons des filtres - Mode sombre */
+[data-theme="dark"] .planning-files-page .filter-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+}
+
+/* Chevrons des filtres - Mode clair */
+[data-theme="light"] .planning-files-page .filter-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23181818' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+}
+
+.planning-files-page {
+  padding-top: 100px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 80px;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  transition: opacity 0.3s ease;
+}
+
+.filters-container {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg-color);
+  padding: 15px 20px;
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  box-shadow: none;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.filter-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: unset;
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(var(--accent-color-rgb), 0.2);
+}
+
+.planning-container {
+  padding: 20px;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ===== STYLES iOS SPÉCIFIQUES ===== */
+
+/* Détection iOS et application des styles */
+body.ios .planning-files-page {
+  padding-top: 120px !important; /* Réduit de 140px à 120px car les filtres sont encore plus remontés */
+  -webkit-transform: translateZ(0) !important; /* Force l'accélération matérielle */
+  transform: translateZ(0) !important;
+  will-change: padding-top !important;
+}
+
+body.ios .filters-container {
+  top: 20px !important; /* Remonté encore plus de 40px à 20px */
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: var(--bg-color) !important;
+}
+
+body.ios .filter-group {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: 300px !important;
+  gap: 12px !important; /* Augmenté de 8px à 12px */
+  margin: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+body.ios .filter-select {
+  font-size: 16px !important;
+  appearance: none !important;
+  border-radius: 6px !important;
+  user-select: none !important;
+  padding: 10px 12px !important;
+  min-height: 44px !important; /* Taille minimale recommandée pour iOS */
+  box-shadow: none !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--bg-secondary) !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* Chevrons iOS - Mode sombre */
+body.ios[data-theme="dark"] .planning-files-page .filter-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+}
+
+/* Chevrons iOS - Mode clair */
+body.ios[data-theme="light"] .planning-files-page .filter-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23181818' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+}
+
+
+/* ===== STYLES POUR LES BARRES DE CHARGEMENT ===== */
+
+.upload-progress-bar {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  background: rgba(20,20,20,0.95);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s;
+  border-radius: 12px;
+  border: 2px solid var(--accent-color);
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.page-loading-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background: rgba(20,20,20,0.95);
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid var(--accent-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Styles iOS pour les barres de chargement */
+body.ios .upload-progress-bar,
+body.ios .page-loading-indicator {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body.ios .upload-progress-bar {
+  min-width: 320px;
+  max-width: 480px;
+  padding: 24px;
+}
+
+body.ios .page-loading-indicator {
+  min-width: 280px;
+  max-width: 400px;
+  padding: 24px;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes spin {
+  0% { 
+    -webkit-transform: rotate(0deg); 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    -webkit-transform: rotate(360deg); 
+    transform: rotate(360deg); 
+  }
+}
+
+body.ios .upload-progress-bar div[style*="animation: spin"],
+body.ios .page-loading-indicator div[style*="animation: spin"] {
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+
+/* ===== SUPPORT SIMULATEUR iOS ===== */
+
+body.ios-simulator .upload-progress-bar,
+body.ios-simulator .page-loading-indicator {
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+
+body.ios-simulator .planning-files-page {
+  padding-top: 160px !important;
+}
+
+body.ios-simulator .filters-container {
+  top: 120px !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+@media (max-width: 768px) {
+  .filters-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .filter-group {
+    max-width: 100%;
+  }
+  
+  .filter-select {
+    font-size: 16px; /* Évite le zoom sur iOS */
+  }
+}
+
+@media (max-width: 480px) {
+  .planning-files-page {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  .filters-container {
+    padding: 10px 15px;
+  }
+  
+  .filter-group {
+    max-width: 100%;
+  }
+}
+
+/* ===== ÉTATS DE CHARGEMENT ===== */
+
+.planning-files-page.loading {
+  opacity: 0.3;
+}
+
+.planning-files-page.loaded {
+  opacity: 1;
+}
+
+/* ===== AMÉLIORATIONS ACCESSIBILITÉ ===== */
+
+.filter-select:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.filter-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== SUPPRESSION DES EFFETS HOVER/ACTIVE ===== */
+
+/* Suppression de tous les effets hover/active sur les filtres */
+.filter-select:hover,
+.filter-select:active,
+.filter-select:focus:hover,
+.filter-select:focus:active {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+
+/* ===== CORRECTIONS SPÉCIFIQUES iOS ===== */
+
+/* Force le layout en colonne sur iOS */
+body.ios .filters-container > * {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: 300px !important;
+}
+
+/* Évite les problèmes de zoom sur iOS */
+body.ios .filter-select {
+  font-size: 16px !important;
+}
+
+/* Force la hauteur minimale pour les éléments tactiles */
+body.ios .filter-select {
+  min-height: 44px !important;
+  line-height: 1.2 !important;
+}
+
+/* Force le recalcul du positionnement sur iOS */
+body.ios .planning-files-page {
+  position: relative !important;
+  z-index: 1 !important;
+  padding-top: 120px !important; /* Valeur fixe de fallback ajustée */
+}
+
+body.ios .filters-container {
+  position: fixed !important;
+  z-index: 100 !important;
+  top: 10px !important; /* Cohérent avec le style principal */
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: var(--bg-color) !important;
+}
+
+body.ios .planning-container {
+  position: relative !important;
+  z-index: 1 !important;
+  margin-top: -55px !important; /* Réduit de 20px à 10px pour remonter encore plus le conteneur */
+  clear: both !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+}
+
+/* Force le recalcul avec des styles plus agressifs */
+body.ios .planning-files-page .planning-container {
+  margin-top: -55px !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+}
+
+/* Styles de fallback pour iOS */
+.ios .planning-container,
+[data-ios="true"] .planning-container {
+  margin-top: -55px !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+}
+
+/* Force le recalcul avec des media queries iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  body.ios .planning-files-page {
+    padding-top: 140px !important; /* Ajusté pour les écrans Retina */
+  }
+}
+
+@media screen and (orientation: landscape) and (max-width: 1024px) {
+  body.ios .planning-files-page {
+    padding-top: 100px !important; /* Ajusté pour le mode paysage */
+  }
+}
+
+@media screen and (orientation: portrait) and (max-width: 768px) {
+  body.ios .planning-files-page {
+    padding-top: 120px !important; /* Ajusté pour le mode portrait */
+  }
+}
+
+/* Force le recalcul avec des animations CSS sur iOS */
+@keyframes forceRecalculate {
+  0% { padding-top: 120px; }
+  1% { padding-top: 121px; }
+  100% { padding-top: 120px; }
+}
+
+body.ios .planning-files-page {
+  animation: forceRecalculate 0.1s ease-in-out;
+}
+
+/* Force le recalcul lors des changements de filtres */
+body.ios .filters-container:has(.filter-select:focus) ~ .planning-files-page,
+body.ios .filters-container:has(.filter-select:hover) ~ .planning-files-page {
+  padding-top: 140px !important; /* Ajusté pour les filtres remontés */
+  transition: padding-top 0.3s ease !important;
+}
+
+/* Force le recalcul avec des pseudo-éléments */
+body.ios .planning-files-page::before {
+  content: '';
+  display: block;
+  height: 0;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}

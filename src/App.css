@@ -171,7 +171,7 @@ html, body, #root {
   flex-wrap: wrap;
   gap: 1rem;
   box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .app-header img {
@@ -1376,6 +1376,16 @@ body.ios .events-panel {
   background-size: 12px;
 }
 
+/* Chevrons des filtres - Mode sombre */
+[data-theme="dark"] .filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
+}
+
+/* Chevrons des filtres - Mode clair */
+[data-theme="light"] .filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23181818' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
+}
+
 @media (prefers-color-scheme: dark) {
   .filter-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
@@ -1783,7 +1793,7 @@ body.ios .leaflet-control-zoom{
   width: 100%;
   height: 100%;
   background-color: var(--bg-color);
-  z-index: 1000;
+  z-index: 999;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1791,7 +1801,7 @@ body.ios .leaflet-control-zoom{
 }
 
 body.ios .chat-panel {
-  top: 2rem !important;
+  top: 6rem !important;
 }
 
 .chat-panel-header {
@@ -1922,14 +1932,14 @@ body.ios .chat-panel {
   top: 2.8rem;
   right: 1rem;
   background-color: var(--bg-color);
-  z-index: 900;
+  z-index: 999;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 body.ios .home-info-chat {
-  top: 6.5rem;
+  top: 10.5rem;
 }
 
 .home-info-chat .chat-panel-header {
@@ -1941,16 +1951,16 @@ body.ios .home-info-chat {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  margin-top: -50px;
-  padding-top: 0;
+  margin-top: 0;
+  padding-top: 0.7rem;
 }
 
 body.ios .home-info-chat .chat-panel-header {
-  margin-top: 15px;
+  margin-top: 0;
 }
 
 .home-info-chat .chat-panel-header h3 {
-  margin-top: 3.7rem;
+  margin-top: 0;
   color: var(--text-color);
   font-size: 1.2rem;
   align-items: center;
@@ -2423,6 +2433,20 @@ body.ios .planning-panel {
 .info-page .chat-panel {
   top: 2rem;
   height: calc(100% - 2rem);
+}
+
+/* Ajustement pour iOS sur les pages Home et Info */
+body.ios .home-page .chat-panel,
+body.ios .info-page .chat-panel,
+body.ios .home-info-chat {
+  top: 6rem !important;
+  height: calc(100% - 6rem) !important;
+}
+
+/* Ajustement pour iOS sur la page Map - chat plus haut */
+body.ios .chat-panel:not(.home-info-chat) {
+  top: 1.5rem !important;
+  height: calc(100% - 1.5rem) !important;
 }
 
 .home-page .chat-panel-header h3,

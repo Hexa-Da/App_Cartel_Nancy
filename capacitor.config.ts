@@ -5,10 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Cartel Nancy',
   webDir: 'dist',
   server: {
-    androidScheme: 'https',
-    cleartext: true,
-    hostname: 'localhost',
-    allowNavigation: ['*']
+    androidScheme: 'https'
   },
   ios: {
     scheme: 'Cartel Nancy',
