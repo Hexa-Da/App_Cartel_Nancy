@@ -122,15 +122,8 @@
 /* ===== STYLES iOS SPÉCIFIQUES ===== */
 
 /* Détection iOS et application des styles */
-body.ios .planning-files-page {
-  padding-top: 120px !important; /* Réduit de 140px à 120px car les filtres sont encore plus remontés */
-  -webkit-transform: translateZ(0) !important; /* Force l'accélération matérielle */
-  transform: translateZ(0) !important;
-  will-change: padding-top !important;
-}
-
 body.ios .filters-container {
-  top: 20px !important; /* Remonté encore plus de 40px à 20px */
+  top: 60px !important; /* Descendu encore plus de 100px à 60px */
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
   -webkit-tap-highlight-color: transparent !important;
@@ -373,13 +366,13 @@ body.ios .filter-select {
 body.ios .planning-files-page {
   position: relative !important;
   z-index: 1 !important;
-  padding-top: 120px !important; /* Valeur fixe de fallback ajustée */
+  padding-top: 100px !important; /* Valeur fixe de fallback ajustée */
 }
 
 body.ios .filters-container {
   position: fixed !important;
   z-index: 100 !important;
-  top: 10px !important; /* Cohérent avec le style principal */
+  top: 60px !important; /* Cohérent avec le style principal */
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
@@ -417,27 +410,27 @@ body.ios .planning-files-page .planning-container {
 /* Force le recalcul avec des media queries iOS */
 @media screen and (-webkit-min-device-pixel-ratio: 2) {
   body.ios .planning-files-page {
-    padding-top: 140px !important; /* Ajusté pour les écrans Retina */
+    padding-top: 120px !important; /* Ajusté pour les écrans Retina */
   }
 }
 
 @media screen and (orientation: landscape) and (max-width: 1024px) {
   body.ios .planning-files-page {
-    padding-top: 100px !important; /* Ajusté pour le mode paysage */
+    padding-top: 80px !important; /* Ajusté pour le mode paysage */
   }
 }
 
 @media screen and (orientation: portrait) and (max-width: 768px) {
   body.ios .planning-files-page {
-    padding-top: 120px !important; /* Ajusté pour le mode portrait */
+    padding-top: 100px !important; /* Ajusté pour le mode portrait */
   }
 }
 
 /* Force le recalcul avec des animations CSS sur iOS */
 @keyframes forceRecalculate {
-  0% { padding-top: 120px; }
-  1% { padding-top: 121px; }
-  100% { padding-top: 120px; }
+  0% { padding-top: 100px; }
+  1% { padding-top: 101px; }
+  100% { padding-top: 100px; }
 }
 
 body.ios .planning-files-page {
@@ -447,7 +440,7 @@ body.ios .planning-files-page {
 /* Force le recalcul lors des changements de filtres */
 body.ios .filters-container:has(.filter-select:focus) ~ .planning-files-page,
 body.ios .filters-container:has(.filter-select:hover) ~ .planning-files-page {
-  padding-top: 140px !important; /* Ajusté pour les filtres remontés */
+  padding-top: 120px !important; /* Ajusté pour les filtres remontés */
   transition: padding-top 0.3s ease !important;
 }
 

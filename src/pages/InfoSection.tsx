@@ -127,14 +127,14 @@ const InfoSection: React.FC = () => {
     // Gestion spéciale pour Planning Files - navigation React Router
     if (sectionName === 'shop') {
       if (item.text === 'Planning des différents sports') {
-        // Naviguer vers PlanningFiles avec filtre sports
-        navigate('/planning-files?sports=true');
+        // Naviguer vers PlanningFiles avec filtre sports et provenance
+        navigate('/planning-files?sports=true&from=info-section');
       } else if (item.text === 'Planning des restaurants') {
-        // Naviguer vers PlanningFiles avec filtre restaurants
-        navigate('/planning-files?restaurants=true');
+        // Naviguer vers PlanningFiles avec filtre restaurants et provenance
+        navigate('/planning-files?restaurants=true&from=info-section');
       } else if (item.text === 'Planning des bus fin de soirée') {
-        // Naviguer vers PlanningFiles avec filtre bus
-        navigate('/planning-files?bus=true');
+        // Naviguer vers PlanningFiles avec filtre bus et provenance
+        navigate('/planning-files?bus=true&from=info-section');
       }
     }
   };

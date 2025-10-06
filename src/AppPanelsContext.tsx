@@ -25,7 +25,12 @@ interface AppPanelsContextType {
   setShowAddMessage: React.Dispatch<React.SetStateAction<boolean>>;
   showEmergency: boolean;
   setShowEmergency: React.Dispatch<React.SetStateAction<boolean>>;
+  showSettings: boolean;
+  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+  showAdminModal: boolean;
+  setShowAdminModal: React.Dispatch<React.SetStateAction<boolean>>;
   closeAllPanels: () => void;
+  closeAllModals: () => void;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -36,6 +41,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
   const [activeTab, setActiveTab] = useState<TabType>('map');
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
   const [isEditing, setIsEditing] = useState(() => {
     // Récupérer l'état depuis localStorage au chargement
     const saved = localStorage.getItem('isEditing');
@@ -60,10 +67,23 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [setIsEditing]);
 
+  // Annuler l'ajout de message si isEditing passe à false
+  useEffect(() => {
+    if (!isEditing && showAddMessage) {
+      setShowAddMessage(false);
+    }
+  }, [isEditing, showAddMessage, setShowAddMessage]);
+
   const closeAllPanels = () => {
     setActiveTab('map');
     setShowAddMessage(false);
     setShowEmergency(false);
+  };
+
+  const closeAllModals = () => {
+    setShowSettings(false);
+    setShowEmergency(false);
+    setShowAdminModal(false);
   };
 
   return (
@@ -71,7 +91,10 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
       activeTab, setActiveTab,
       showAddMessage, setShowAddMessage,
       showEmergency, setShowEmergency,
+      showSettings, setShowSettings,
+      showAdminModal, setShowAdminModal,
       closeAllPanels,
+      closeAllModals,
       isEditing, setIsEditing
     }}>
       {children}

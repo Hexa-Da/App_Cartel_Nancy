@@ -50,7 +50,7 @@ Créez un fichier `.env` à la racine :
 
 ```env
 # 🔐 Code administrateur
-VITE_ADMIN_CODE=cartel2025
+VITE_ADMIN_CODE=cartelnancy2026
 
 # 🔥 Firebase Configuration
 VITE_FIREBASE_API_KEY=votre_api_key
@@ -91,13 +91,15 @@ App_Cartel_Nancy/
 
 ### 🧩 Composants principaux
 
-| Composant | Rôle | Nécessaire car |
-|-----------|------|----------------|
-| **App.tsx** | Composant principal avec carte et chat | Interface centrale de l'application |
-| **Layout.tsx** | Structure générale avec navigation | Définit l'architecture commune |
-| **Header.tsx** | En-tête avec auth admin | Navigation et authentification |
-| **VSSForm.tsx** | Formulaire signalements VSS | Obligation légale de signalement |
-| **AdminLoginModal.tsx** | Authentification sécurisée | Sécurise l'accès admin |
+| Composant | Rôle |
+|-----------|------|
+| **App.tsx** | Composant racine avec routage |
+| **Layout.tsx** | Structure commune de l'app |
+| **Header.tsx** | Barre d'état |
+| **BottomNav.tsx** | Barre de navigation principale |
+| **EventList.tsx** | Liste et filtres des événements |
+| **CalendarPopup.tsx** | Calendrier des événements |
+| **PlanningFilesPage.tsx** | Répertoire de tous les fichiers |
 
 ### 📄 Pages principales
 
@@ -120,6 +122,7 @@ App_Cartel_Nancy/
 ### Backend & Services
 - **Firebase Realtime Database** pour les données temps réel
 - **Firebase Cloud Messaging** pour les notifications
+- **Firebase Storage** pour les fichier pdf
 - **EmailJS** pour l'envoi d'emails depuis le frontend
 
 ### Mobile
@@ -144,61 +147,17 @@ npm run sync-android           # Synchronisation Capacitor
 npm run android-full-deploy    # Build complet avec installation
 npm run build-android-apk      # Build APK de release
 npm run build-android-release  # Build App Bundle pour Play Store
+npm run clean-android          # Nettoyage build Android
+npm run rebuild-android        # Nettoyage + rebuild Android
 ```
 
 ### Mobile (iOS)
 ```bash
 npm run sync-ios         # Synchronisation Capacitor
 npm run ios-full-deploy  # Build complet iOS
-```
-
-### Nettoyage
-```bash
-npm run clean-android    # Nettoyage build Android
 npm run clean-ios        # Nettoyage build iOS
-npm run rebuild-android  # Nettoyage + rebuild Android
 npm run rebuild-ios      # Nettoyage + rebuild iOS
 ```
-
-## 🔐 Authentification et sécurité
-
-### Mode Administrateur
-- **Code d'accès** : Défini dans `VITE_ADMIN_CODE`
-- **Fonctionnalités** : Édition des messages, gestion des événements
-- **Stockage** : LocalStorage chiffré
-- **Sécurité** : Code jamais exposé dans le code source
-
-### Signalements VSS
-- **Formulaire sécurisé** avec validation
-- **Envoi direct** via EmailJS (pas de client email externe)
-- **Option d'anonymat** pour protéger les victimes
-- **Conformité légale** obligatoire
-
-## 📱 Fonctionnalités détaillées
-
-### 🗺️ Carte interactive
-- Géolocalisation en temps réel
-- Marqueurs pour événements et lieux
-- Lignes de bus et arrêts
-- Navigation vers les lieux
-
-### 💬 Chat temps réel
-- Messages instantanés via Firebase
-- Traduction automatique des messages
-- Mode édition pour les administrateurs
-- Notifications push pour nouveaux messages
-
-### 📅 Gestion des événements
-- Affichage des matchs et événements
-- Filtres par sport, date, lieu
-- Détails complets des événements
-- Planning intégré avec calendrier
-
-### 🔐 Mode Administrateur
-- Authentification par code sécurisé
-- Édition des messages du chat
-- Gestion des événements
-- Accès aux fonctionnalités avancées
 
 ## 🚀 Déploiement
 
@@ -242,26 +201,6 @@ Projet développé pour le Cartel  Nancy 2026. Tous droits réservés.
 
 ---
 
-## 🆕 Dernières mises à jour
-
-### Version actuelle
-- ✅ **Système d'authentification sécurisé** avec variables d'environnement
-- ✅ **Interface d'administration complète** avec mode édition
-- ✅ **Chat temps réel** avec notifications push
-- ✅ **Signalements VSS** conformes à la législation
-- ✅ **Documentation complète** avec en-têtes explicatifs
-- ✅ **Conformité RGPD** avec politique de confidentialité
-- ✅ **Application native** Android et iOS
-
-### 🚀 Optimisations récentes
-- ✅ **Performance** : Chargement intelligent et virtualisation
-- ✅ **Sécurité** : Code admin dans variables d'environnement
-- ✅ **UX** : Interface responsive et intuitive
-- ✅ **Légal** : Mentions légales et signalements VSS
-- ✅ **Documentation** : En-têtes explicatifs sur tous les fichiers
-
----
-
 **Cartel Nancy 2026** - Application officielle de l'événement sportif et culturel
 
-*Dernière mise à jour : Septembre 2025*
+*Dernière mise à jour : Octobre 2025*

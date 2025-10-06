@@ -26,6 +26,7 @@ interface AdminLoginModalProps {
 
 const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLogin }) => {
   const [code, setCode] = useState('');
+  const adminCodeId = `admin-code-${Math.random().toString(36).substr(2, 9)}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,10 +53,10 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLo
         
         <form onSubmit={handleSubmit} className="admin-login-form">
           <div className="form-group">
-            <label htmlFor="admin-code">Code d'accès</label>
+            <label htmlFor={adminCodeId}>Code d'accès</label>
             <input
               type="password"
-              id="admin-code"
+              id={adminCodeId}
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Entrez le code d'accès"

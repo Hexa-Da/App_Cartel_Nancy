@@ -576,7 +576,6 @@ html, body, #root {
   overflow-y: auto; /* Ajoute le scroll vertical si nécessaire */
   /* Propriétés pour faire disparaître les scrollbars automatiquement */
   scrollbar-gutter: stable;
-  overflow-scrollbar: auto;
 }
 
 /* Styles de scrollbars uniformes - gérés par les styles globaux */
@@ -739,7 +738,7 @@ html, body, #root {
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
-  z-index: 1000;
+  z-index: 2000;
   box-shadow: 0 2px 5px var(--shadow-color);
   animation: slideIn 0.3s ease-out;
 }
@@ -771,7 +770,7 @@ html, body, #root {
 
 .location-error {
   position: fixed;
-  bottom: 120px; /* Au-dessus de la barre de navigation */
+  bottom: 60px; /* Plus bas sur l'écran */
   left: 20px;
   background-color: var(--danger-color);
   color: white;
@@ -787,7 +786,7 @@ html, body, #root {
 }
 
 body.ios .location-error {
-  bottom: 150px; /* Au-dessus de la barre de navigation iOS */
+  bottom: 90px; /* Plus bas sur l'écran iOS aussi */
 }
 
 .location-error-buttons {
@@ -1200,7 +1199,7 @@ body.ios .location-error {
   position: fixed !important;
   top: 50px !important;
   left: 10px !important;
-  z-index: 1000;
+  z-index: 2000;
   padding: 0.5rem 1rem;
   background-color: var(--bg-primary);
   color: var(--text-color);
@@ -1216,10 +1215,6 @@ body.ios .location-error {
   gap: 0.5rem;
 }
 
-body.ios .events-toggle-button {
-  top: 110px !important;
-}
-
 /* Repositionner le panneau d'événements à gauche */
 .events-panel {
   position: fixed;
@@ -1228,14 +1223,10 @@ body.ios .events-toggle-button {
   width: 100%;
   height: 100%;
   background-color: var(--bg-color);
-  z-index: 1000;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-body.ios .events-panel {
-  top: 4rem;
 }
 
 .events-panel-header {
@@ -1271,6 +1262,7 @@ body.ios .events-panel {
   visibility: hidden;
   margin-top: 0;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .event-filters.show {
@@ -1289,25 +1281,98 @@ body.ios .events-panel {
   width: 100%;
 }
 
+.filter-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+/* Styles spécifiques pour le bouton toggle du panel d'événements */
+.events-panel .filter-toggle-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 16px;
+  background-color: var(--warning-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.3s ease;
+  height: 24px;
+  width: 70px;
+  justify-content: center;
+  z-index: 995;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
 .filter-toggle-button {
   position: absolute;
   top: 10px;
   right: 10px;
   padding: 8px 16px;
   background-color: var(--warning-color);
-  color: var(--text-color);
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 2px;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
   height: 24px;
   width: 70px;
   justify-content: center;
   z-index: 995;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+/* Styles spécifiques pour les boutons de reset du panel d'événements */
+.events-panel .filter-reset-button {
+  position: absolute;
+  top: 47px;
+  right: 90px;
+  padding: 0;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  height: 24px;
+  width: 24px;
+  z-index: 995;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.events-panel .filter-reset-button.star {
+  position: absolute;
+  top: 47px;
+  right: 124px;
+  padding: 0;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  height: 24px;
+  width: 24px;
+  z-index: 995;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.events-panel .filter-reset-button.star.active {
+  opacity: 1;
+  color: #ffd700;
 }
 
 .filter-reset-button {
@@ -1324,11 +1389,31 @@ body.ios .events-panel {
   height: 24px;
   width: 24px;
   z-index: 995;
+  transition: all 0.3s ease;
+  opacity: 1;
 }
 
-.filter-toggle-button:active,
-.filter-reset-button:active {
-  transform: translateY(0);
+.filter-reset-button.star {
+  position: absolute;
+  top: 47px;
+  right: 124px;
+  padding: 0;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  height: 24px;
+  width: 24px;
+  z-index: 995;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.filter-reset-button.star.active {
+  opacity: 1;
+  color: #ffd700;
 }
 
 .gender-filter-row {
@@ -1336,6 +1421,30 @@ body.ios .events-panel {
   gap: 0.5rem;
   flex: 1.03;
   width: 100%;
+}
+
+/* Styles spécifiques pour les boutons de genre du panel d'événements */
+.event-filters .gender-filter-button {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4px !important;
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  font-size: 14px !important;
+  flex: 1 !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.event-filters .gender-filter-button:focus {
+  outline: none !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.event-filters .gender-filter-button.active {
+  background-color: var(--primary-color) !important;
+  color: white !important;
 }
 
 .gender-filter-button {
@@ -1346,6 +1455,9 @@ body.ios .events-panel {
   font-size: 14px;
   flex: 1;
   width: 100%;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .gender-filter-button:focus {
@@ -1355,6 +1467,27 @@ body.ios .events-panel {
 
 .gender-filter-button.active {
   background-color: var(--primary-color);
+  color: white;
+}
+
+/* Styles spécifiques pour les filtres du panel d'événements */
+.event-filters .filter-select {
+  flex: 1 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4px !important;
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  font-size: 14.4px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='var(--text-primary)' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 12px !important;
 }
 
 .filter-select {
@@ -1370,7 +1503,7 @@ body.ios .events-panel {
   cursor: pointer;
   transition: all 0.3s ease;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='currentColor' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='var(--text-primary)' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 12px;
@@ -1542,17 +1675,13 @@ body.ios .events-panel {
   position: fixed !important;
   top: 35px !important;
   right: 0px !important;
-  z-index: 1000;
+  z-index: 2000;
   border: none !important;
   box-shadow: 0 2px 8px var(--shadow-color) !important;
   margin: 15px !important;
   background: var(--bg-primary) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
-}
-
-body.ios .leaflet-control-zoom{
-  top: 95px !important
 }
 
 .leaflet-control-zoom a {
@@ -1788,10 +1917,10 @@ body.ios .leaflet-control-zoom{
 /* Styles unifiés pour le chat sur toutes les pages */
 .chat-panel {
   position: fixed;
-  top: -1.7rem;
+  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: var(--bg-color);
   z-index: 999;
   display: flex;
@@ -1800,24 +1929,34 @@ body.ios .leaflet-control-zoom{
   pointer-events: auto;
 }
 
+/* CSS pur pour iOS - pas de JavaScript */
 body.ios .chat-panel {
-  top: 6rem !important;
+  top: 0 !important;
+  height: 100vh !important;
+  height: 100svh !important; /* Small viewport height */
+  width: 100vw !important;
+  position: fixed !important;
+  overflow: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
 }
 
 .chat-panel-header {
   padding: 0.7rem;
   background-color: var(--bg-color);
   position: sticky;
-  margin-top: 10px;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
+  margin-top: 2.5rem;
+  padding-top: 0.7rem;
 }
 
 .chat-panel-header h3 {
-  margin-top: 3.7rem;
+  margin-top: 0;
   color: var(--text-color);
   font-size: 1.2rem;
   align-items: center;
@@ -1827,11 +1966,66 @@ body.ios .chat-panel {
 
 .chat-container {
   padding: 1rem;
-  height: calc(110vh - 120px);
+  height: calc(100vh - 120px);
   overflow-y: auto;
   background-color: var(--bg-color);
   color: var(--text-color);
   margin-bottom: 10px;
+  flex: 1;
+}
+
+/* CSS pur pour iOS - pas de JavaScript */
+body.ios .chat-container {
+  height: calc(100vh - 120px) !important;
+  height: calc(100svh - 120px) !important; /* Small viewport height */
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+}
+
+/* Agrandissement du conteneur de chat quand le clavier apparaît */
+.keyboard-open .chat-container {
+  height: calc(100vh - 120px) !important;
+  margin-bottom: 5px;
+  padding: 1rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+body.android.keyboard-open .chat-container {
+  height: calc(100vh - 100px) !important;
+  margin-bottom: 5px;
+  padding: 1rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* CSS pur pour iOS avec clavier - pas de JavaScript */
+body.ios.keyboard-open .chat-container {
+  height: calc(100vh - 120px) !important;
+  height: calc(100svh - 120px) !important; /* Small viewport height */
+  margin-bottom: 5px;
+  padding: 1rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+}
+
+/* Amélioration spécifique du header du chat-panel quand le clavier est ouvert */
+.keyboard-open .chat-panel-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  background-color: var(--bg-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  margin-top: 0 !important;
+  padding: 1rem !important;
+}
+
+.keyboard-open .chat-panel-header h3 {
+  margin-top: 0 !important;
 }
 
 .chat-message {
@@ -1929,17 +2123,16 @@ body.ios .chat-panel {
 /* Style spécifique pour le chat panel sur Home et Info */
 .home-info-chat {
   position: fixed;
-  top: 2.8rem;
-  right: 1rem;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: var(--bg-color);
   z-index: 999;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-body.ios .home-info-chat {
-  top: 10.5rem;
+  pointer-events: auto;
 }
 
 .home-info-chat .chat-panel-header {
@@ -1951,13 +2144,10 @@ body.ios .home-info-chat {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  margin-top: 0;
+  margin-top: 2.5rem;
   padding-top: 0.7rem;
 }
 
-body.ios .home-info-chat .chat-panel-header {
-  margin-top: 0;
-}
 
 .home-info-chat .chat-panel-header h3 {
   margin-top: 0;
@@ -1975,6 +2165,23 @@ body.ios .home-info-chat .chat-panel-header {
   background-color: var(--bg-color);
   color: var(--text-color);
   margin-bottom: 10px;
+}
+
+/* Agrandissement du conteneur de chat pour Home et Info quand le clavier apparaît */
+.keyboard-open .home-info-chat .chat-container {
+  height: calc(100vh - 120px) !important;
+  margin-bottom: 5px;
+  padding: 1rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+body.android.keyboard-open .home-info-chat .chat-container {
+  height: calc(100vh - 100px) !important;
+  margin-bottom: 5px;
+  padding: 1rem 2rem;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .chat-message {
@@ -2086,7 +2293,7 @@ body.ios .home-info-chat .chat-panel-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .emergency-popup-content {
@@ -2134,14 +2341,10 @@ body.ios .home-info-chat .chat-panel-header {
   width: 100%;
   height: 100%;
   background-color: var(--bg-color);
-  z-index: 1000;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-body.ios .planning-panel {
-  top: 4rem;
 }
 
 .planning-panel-header {
@@ -2428,25 +2631,252 @@ body.ios .planning-panel {
   box-shadow: none;
 }
 
-/* Style spécifique pour le chat panel sur Home et Info */
-.home-page .chat-panel,
-.info-page .chat-panel {
-  top: 2rem;
-  height: calc(100% - 2rem);
+/* Tous les chats utilisent maintenant les mêmes styles de base */
+
+/* Agrandissement du chat quand le clavier apparaît - seulement pour les éléments de chat */
+.chat-panel.keyboard-open,
+.home-info-chat.keyboard-open {
+  height: 100vh !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  position: fixed !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
 }
 
-/* Ajustement pour iOS sur les pages Home et Info */
-body.ios .home-page .chat-panel,
-body.ios .info-page .chat-panel,
-body.ios .home-info-chat {
-  top: 6rem !important;
-  height: calc(100% - 6rem) !important;
+/* CSS pur pour iOS - pas de JavaScript */
+body.ios .chat-panel.keyboard-open,
+body.ios .home-info-chat.keyboard-open {
+  height: 100vh !important;
+  height: 100svh !important; /* Small viewport height */
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  position: fixed !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
 }
 
-/* Ajustement pour iOS sur la page Map - chat plus haut */
+/* Styles iOS spécifiques pour .chat-panel seul (sans .home-info-chat) */
 body.ios .chat-panel:not(.home-info-chat) {
-  top: 1.5rem !important;
-  height: calc(100% - 1.5rem) !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100svh !important;
+  overflow: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+  z-index: 999 !important;
+}
+
+body.ios .chat-panel:not(.home-info-chat).keyboard-open {
+  height: 100vh !important;
+  height: 100svh !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  position: fixed !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+}
+
+body.ios .chat-panel:not(.home-info-chat) .chat-container {
+  height: calc(100vh - 120px) !important;
+  height: calc(100svh - 120px) !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+}
+
+body.ios .chat-panel:not(.home-info-chat).keyboard-open .chat-container {
+  height: calc(100vh - 120px) !important;
+  height: calc(100svh - 120px) !important;
+  margin-bottom: 5px;
+  padding: 1rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+}
+
+/* Agrandissement spécifique pour Android avec clavier */
+body.android .chat-panel.keyboard-open,
+body.android .home-info-chat.keyboard-open {
+  height: 100vh !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  position: fixed !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+}
+
+/* Agrandissement des éléments de saisie de message quand le clavier apparaît - seulement dans le chat */
+.chat-panel.keyboard-open textarea,
+.home-info-chat.keyboard-open textarea {
+  margin-top: 1rem !important;
+  font-size: 1.1rem !important;
+  padding: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.chat-panel.keyboard-open input[type="text"],
+.home-info-chat.keyboard-open input[type="text"] {
+  top: 5rem !important;
+  font-size: 1.1rem !important;
+  padding: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.chat-panel.keyboard-open button[type="submit"],
+.home-info-chat.keyboard-open button[type="submit"] {
+  top: 5rem !important;
+  font-size: 1.2rem !important;
+  padding: 8px 12px !important;
+  width: auto !important;
+}
+
+/* Amélioration du header du chat quand le clavier est ouvert - seulement dans le chat */
+.chat-panel.keyboard-open .chat-panel-header,
+.home-info-chat.keyboard-open .chat-panel-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  background-color: var(--bg-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  margin-top: 0 !important;
+  padding: 1rem !important;
+}
+
+/* Agrandissement des messages de chat - seulement dans le chat */
+.chat-panel.keyboard-open .chat-message,
+.home-info-chat.keyboard-open .chat-message {
+  padding: 1rem 1.2rem 3rem 1.2rem !important;
+  font-size: 1rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.chat-panel.keyboard-open .chat-message-content,
+.home-info-chat.keyboard-open .chat-message-content {
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Agrandissement spécifique pour Android - seulement dans le chat */
+body.android .chat-panel.keyboard-open textarea,
+body.android .home-info-chat.keyboard-open textarea {
+  margin-top: 0.5rem !important;
+  font-size: 1.1rem !important;
+  padding: 12px !important;
+}
+
+body.android .chat-panel.keyboard-open input[type="text"],
+body.android .home-info-chat.keyboard-open input[type="text"] {
+  top: 4rem !important;
+  font-size: 1.1rem !important;
+  padding: 12px !important;
+}
+
+body.android .chat-panel.keyboard-open button[type="submit"],
+body.android .home-info-chat.keyboard-open button[type="submit"] {
+  top: 4rem !important;
+  font-size: 1.2rem !important;
+  padding: 8px 12px !important;
+}
+
+/* CSS pur pour iOS - pas de JavaScript */
+body.ios .chat-panel.keyboard-open .chat-container,
+body.ios .home-info-chat.keyboard-open .chat-container {
+  height: calc(100vh - 120px) !important;
+  height: calc(100svh - 120px) !important; /* Small viewport height */
+  margin-bottom: 5px;
+  padding: 1rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+}
+
+/* Stabilisation globale du viewport iOS avec CSS pur */
+body.ios {
+  height: 100vh !important;
+  height: 100svh !important; /* Small viewport height */
+  width: 100vw !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  overflow: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  -webkit-overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
+}
+
+/* Support des viewport units modernes pour iOS */
+@supports (height: 100svh) {
+  body.ios .chat-panel {
+    height: 100svh !important;
+  }
+  
+  body.ios .chat-container {
+    height: calc(100svh - 120px) !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: none !important;
+    touch-action: pan-x pan-y !important;
+  }
+  
+  body.ios .chat-panel.keyboard-open,
+  body.ios .home-info-chat.keyboard-open {
+    height: 100svh !important;
+  }
+  
+  /* Styles iOS spécifiques pour .chat-panel seul avec viewport units modernes */
+  body.ios .chat-panel:not(.home-info-chat) {
+    height: 100svh !important;
+  }
+  
+  body.ios .chat-panel:not(.home-info-chat).keyboard-open {
+    height: 100svh !important;
+  }
+  
+  body.ios .chat-panel:not(.home-info-chat) .chat-container {
+    height: calc(100svh - 120px) !important;
+  }
+  
+  body.ios .chat-panel:not(.home-info-chat).keyboard-open .chat-container {
+    height: calc(100svh - 120px) !important;
+  }
+  
+  body.ios .chat-panel.keyboard-open .chat-container,
+  body.ios .home-info-chat.keyboard-open .chat-container {
+    height: calc(100svh - 120px) !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: none !important;
+    touch-action: pan-x pan-y !important;
+  }
+  
+  body.ios {
+    height: 100svh !important;
+  }
 }
 
 .home-page .chat-panel-header h3,
@@ -2568,7 +2998,7 @@ body.ios .add-venue-button {
   position: fixed;
   right: 20px;
   bottom: 60px; /* Plus bas */
-  z-index: 1000;
+  z-index: 2000;
 }
 
 body.ios .location-loading {

@@ -28,7 +28,7 @@ interface BottomNavProps {
 const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { closeAllPanels } = useAppPanels();
+  const { closeAllPanels, closeAllModals } = useAppPanels();
   const [platformClass, setPlatformClass] = useState('');
 
   useEffect(() => {
@@ -36,8 +36,61 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
     setPlatformClass(platform);
   }, []);
 
+  // Masquer la barre de navigation quand le clavier apparaît
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  
+  useEffect(() => {
+    let initialHeight = window.innerHeight;
+    
+    const checkKeyboardState = () => {
+      const currentHeight = window.innerHeight;
+      const heightDifference = initialHeight - currentHeight;
+      
+      // Si la hauteur a diminué de plus de 150px, le clavier est probablement ouvert
+      const keyboardOpen = heightDifference > 150;
+      setIsKeyboardOpen(keyboardOpen);
+    };
+
+    const handleResize = () => {
+      checkKeyboardState();
+    };
+
+    const handleFocusIn = () => {
+      // Quand un input reçoit le focus, vérifier l'état du clavier
+      setTimeout(checkKeyboardState, 100);
+    };
+
+    const handleFocusOut = () => {
+      // Quand un input perd le focus, vérifier l'état du clavier
+      setTimeout(checkKeyboardState, 100);
+    };
+
+    // Écouter les événements pour détecter le clavier
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+    
+    // Écouter les changements de viewport (clavier virtuel)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', checkKeyboardState);
+    }
+
+    // Vérifier l'état initial
+    checkKeyboardState();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', checkKeyboardState);
+      }
+    };
+  }, []);
+
   const handleNavClick = (path: string) => {
     closeAllPanels();
+    closeAllModals(); // Fermer tous les modals (settings, emergency, admin)
     if (closeLayoutPanels) closeLayoutPanels();
     navigate(path, { replace: false });
   };
@@ -53,8 +106,14 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
     handleNavClick(path);
   };
 
+  // Ne pas afficher la barre de navigation si le clavier est ouvert
+  if (isKeyboardOpen) {
+    return null;
+  }
+
   return (
-    <nav className={`bottom-nav ${platformClass}`}>
+    <div className="bottom-nav-container">
+      <nav className={`bottom-nav ${platformClass}`}>
       <button 
         className={`nav-button ${location.pathname === '/' ? 'active' : ''}`}
         onClick={(e) => handleClick(e, '/')}
@@ -119,7 +178,8 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
           <line x1="12" y1="8" x2="12.01" y2="8"/>
         </svg>
       </button>
-    </nav>
+      </nav>
+    </div>
   );
 };
 

@@ -50,10 +50,8 @@ const Header: React.FC<HeaderProps> = ({
   hideBackButton
 }) => {
   const navigate = useNavigate();
-  const [showSettings, setShowSettings] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
   const { isAdmin, user, setIsAdmin, setUser } = useApp();
-  const { setIsEditing } = useAppPanels();
+  const { setIsEditing, showSettings, setShowSettings, showAdminModal, setShowAdminModal } = useAppPanels();
 
   const handleAdminLogin = (code: string) => {
     if (verifyAdminCode(code)) {
@@ -227,6 +225,9 @@ const Header: React.FC<HeaderProps> = ({
                 setIsAdmin(false);
                 setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
                 if (onAdmin) onAdmin();
+                
+                // Déclencher un événement de déconnexion admin
+                window.dispatchEvent(new CustomEvent('adminLogout'));
               } : () => setShowAdminModal(true)}
               title={user ? "Se déconnecter" : "Se connecter"}
             >

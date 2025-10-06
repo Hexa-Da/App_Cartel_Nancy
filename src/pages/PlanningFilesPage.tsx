@@ -143,10 +143,10 @@ const PlanningFilesPage: React.FC = () => {
       if (filtersElement) {
         const height = filtersElement.offsetHeight;
         const isSingleLine = eventType === 'all';
-        // Sur iOS, ajouter plus d'espace pour éviter le chevauchement
+        // Sur iOS, ajouter moins d'espace pour redescendre les filtres
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const extraSpace = isIOS ? 60 : (isSingleLine ? 5 : 10);
+        const extraSpace = isIOS ? 20 : (isSingleLine ? 5 : 10);
         const newHeight = height + extraSpace;
         setFiltersHeight(newHeight);
         
@@ -154,7 +154,7 @@ const PlanningFilesPage: React.FC = () => {
         if (isIOS) {
           const planningPage = document.querySelector('.planning-files-page') as HTMLElement;
           if (planningPage) {
-            planningPage.style.paddingTop = `${newHeight + 40}px`;
+            planningPage.style.paddingTop = `${newHeight + 10}px`;
           }
         }
       }
@@ -191,13 +191,13 @@ const PlanningFilesPage: React.FC = () => {
         const filtersElement = document.getElementById('filters-container');
         if (filtersElement) {
           const height = filtersElement.offsetHeight;
-          const newHeight = height + 60;
+          const newHeight = height + 20;
           setFiltersHeight(newHeight);
           
           // Forcer le style directement avec !important
           const planningPage = document.querySelector('.planning-files-page') as HTMLElement;
           if (planningPage) {
-            planningPage.style.setProperty('padding-top', `${newHeight + 40}px`, 'important');
+            planningPage.style.setProperty('padding-top', `${newHeight + 10}px`, 'important');
             // Forcer le reflow
             planningPage.offsetHeight;
           }
@@ -342,7 +342,7 @@ const PlanningFilesPage: React.FC = () => {
     <div 
       className={`planning-files-page ${isPageLoading ? 'loading' : 'loaded'}`}
       style={{
-        paddingTop: isIOS ? `${filtersHeight + 40}px` : `${filtersHeight + 20}px`
+        paddingTop: isIOS ? `${filtersHeight + 10}px` : `${filtersHeight + 20}px`
       }}>
       {uploadBar}
       {loadingIndicator}

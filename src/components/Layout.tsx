@@ -93,10 +93,9 @@ interface Venue {
 
 const Layout: React.FC = () => {
   const [showChat, setShowChat] = useState(false);
-  const [showEmergency, setShowEmergency] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showVSSForm, setShowVSSForm] = useState(false);
-  const { isEditing, setIsEditing, activeTab, setActiveTab } = useAppPanels();
+  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency } = useAppPanels();
   const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [newVenueName, setNewVenueName] = useState('');
@@ -117,16 +116,36 @@ const Layout: React.FC = () => {
   });
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [newMessage, setNewMessage] = useState('');
+
+  // Annuler l'ajout de message si isEditing passe à false
+  useEffect(() => {
+    if (!isEditing && showAddMessage) {
+      setShowAddMessage(false);
+      setNewMessage('');
+    }
+  }, [isEditing, showAddMessage]);
+
   const [newMessageSender, setNewMessageSender] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Fermer le formulaire de message si on navigue vers une autre page
+  useEffect(() => {
+    if (showAddMessage && !showChat) {
+      setShowAddMessage(false);
+      setNewMessage('');
+      setNewMessageSender('');
+    }
+  }, [location.pathname, showChat, showAddMessage]);
 
   // Ajoute la classe de la plateforme au body
   useEffect(() => {
     const platform = Capacitor.getPlatform();
     document.body.classList.add(platform);
   }, []);
+
+  // Pas de gestion JavaScript du clavier - utilisation CSS pure uniquement
 
   // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
   useEffect(() => {
@@ -555,6 +574,10 @@ const Layout: React.FC = () => {
     // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
     if (showChat) {
       updateLastSeenTimestamp();
+      // Fermer le formulaire de message si on ferme le chat
+      setShowAddMessage(false);
+      setNewMessage('');
+      setNewMessageSender('');
     }
     
     setShowChat(false);
@@ -566,19 +589,69 @@ const Layout: React.FC = () => {
     if (showChat) {
       // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
       updateLastSeenTimestamp();
+      // Fermer le formulaire de message si on ferme le chat
+      setShowAddMessage(false);
+      setNewMessage('');
+      setNewMessageSender('');
       setShowChat(false);
       return;
     }
-    if (activeTab !== 'map') {
-      setActiveTab('map');
-    } else {
-      navigate(-1);
+    
+    // Gestion de la navigation selon l'URL actuelle
+    const currentPath = location.pathname;
+    
+    // Navigation spécifique selon les routes
+    if (currentPath.startsWith('/info/')) {
+      // Retour depuis InfoSection vers Info
+      navigate('/info');
+      return;
+    }
+    
+    if (currentPath === '/planning-files') {
+      // Vérifier s'il y a un paramètre indiquant la provenance
+      const urlParams = new URLSearchParams(location.search);
+      const fromParam = urlParams.get('from');
+      
+      if (fromParam === 'info-section') {
+        // Retour vers la section Planning Files dans Info
+        navigate('/info/shop');
+      } else {
+        // Retour par défaut vers Info
+        navigate('/info');
+      }
+      return;
+    }
+    
+    // Utiliser la même logique de navigation que dans App.tsx pour les autres cas
+    switch (activeTab) {
+      case 'events':
+        setActiveTab('map');
+        break;
+      case 'calendar':
+        setActiveTab('events');
+        break;
+      case 'chat':
+        // Géré au-dessus
+        break;
+      case 'home':
+      case 'info':
+        // Pas de retour possible depuis les pages principales
+        return;
+      default:
+        setActiveTab('map');
     }
   };
 
   // Mise à jour du timestamp de dernière lecture lors de l'ouverture/fermeture du chat
   const handleChatToggle = () => {
     setShowChat(!showChat);
+    
+    // Fermer le formulaire de message si on ferme le chat
+    if (showChat) {
+      setShowAddMessage(false);
+      setNewMessage('');
+      setNewMessageSender('');
+    }
     
     // Mettre à jour le timestamp de dernière lecture à l'ouverture ET à la fermeture
     updateLastSeenTimestamp();
@@ -597,8 +670,8 @@ const Layout: React.FC = () => {
         onBack={handleBack}
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
-        isBackDisabled={(location.pathname === '/' || location.pathname === '/info') && !showChat}
-        hideBackButton={(location.pathname === '/' || location.pathname === '/map' || location.pathname === '/info') && !showChat}
+        isBackDisabled={(location.pathname === '/' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
+        hideBackButton={(location.pathname === '/' || location.pathname === '/map' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
       />
       <main className="app-main">
         <Outlet />

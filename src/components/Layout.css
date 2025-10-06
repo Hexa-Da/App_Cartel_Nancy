@@ -23,10 +23,6 @@
   padding-top: 5px;
 }
 
-body.ios .app-header {
-  padding-top: 65px;
-  height: 100px;
-}
 
 .header-left,
 .header-right {
@@ -88,10 +84,6 @@ body.ios .app-header {
   margin-top: -30px;
 }
 
-body.ios .chat-button {
-  margin-top: 30px;
-}
-
 .unread-badge {
   position: absolute;
   top: -4px;
@@ -116,10 +108,6 @@ body.ios .chat-button {
   margin-top: -30px;
 }
 
-body.ios .emergency-button {
-  margin-top: 30px;
-}
-
 .edit-button {
   font-size: 16px !important;
   font-weight: bold;
@@ -127,9 +115,7 @@ body.ios .emergency-button {
   margin-top: -30px;
 }
 
-body.ios .edit-button {
-  margin-top: 30px;
-}
+
 
 .edit-button:button  {
   color: var(--warning-color);
@@ -169,7 +155,7 @@ body.ios .edit-button {
 
 /* Assurer que les popups sont toujours au-dessus du contenu */
 .leaflet-popup {
-  z-index: 1000;
+  z-index: 2000;
 }
 
 /* Gestion simplifiée du body */
@@ -189,9 +175,6 @@ body {
   margin-top: -30px;
 }
 
-body.ios .admin-button {
-  margin-top: 30px;
-}
 
 /* Styles pour les SVG du header */
 .emergency-button svg,
@@ -292,7 +275,7 @@ body.ios .admin-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .emergency-popup-content {
@@ -377,9 +360,6 @@ body.ios .admin-button {
   margin-top: -30px;
 }
 
-body.ios .header-settings-button {
-  margin-top: 30px;
-}
 
 /* Styles pour le texte "Cartel Nancy" selon le thème */
 .header-logo-text {

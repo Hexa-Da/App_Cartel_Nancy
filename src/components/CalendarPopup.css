@@ -89,10 +89,6 @@
   flex-shrink: 0; /* Empêche le header de se rétrécir */
 }
 
-body.ios .calendar-panel-header {
-  margin-top: 6.5rem;
-}
-
 .calendar-panel-header h3 {
   margin: 0;
   color: var(--text-color);
@@ -153,7 +149,7 @@ body.ios .calendar-panel-header {
 }
 
 .calendar-filters-section .filter-row {
-  margin-top: -0.1rem;
+  margin-top: -0.12rem;
   padding: 0 0.5rem;
 }
 
@@ -549,8 +545,4 @@ body.ios .calendar-panel-header {
 
 .calendar-popup .filter-reset-button {
   margin-top: -27px;
-} 
-
-body.ios .calendar-popup .filter-reset-button {
-  margin-top: 32px;
 } 

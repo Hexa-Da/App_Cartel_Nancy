@@ -31,13 +31,11 @@ import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import { Outlet, useLocation} from 'react-router-dom';
 import { useAppPanels, TabType } from './AppPanelsContext';
-import Header from './components/Header';
 import NotificationService from './services/NotificationService';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
-import EmergencyPopup from './components/EmergencyPopup';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
 
@@ -469,116 +467,7 @@ function App() {
     }
   }, []);
 
-  // Gestion ultra-agressive du clavier pour Android
-  useEffect(() => {
-    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
-      let initialHeight = window.innerHeight;
-      let keyboardVisible = false;
-
-      // Forcer le body à une hauteur fixe dès le début
-      document.body.style.height = '100vh';
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-
-      const handleResize = () => {
-        const currentHeight = window.innerHeight;
-        const heightDiff = initialHeight - currentHeight;
-        
-        console.log('Android resize:', { currentHeight, initialHeight, heightDiff });
-        
-        // Détecter l'ouverture du clavier (seuil très sensible)
-        if (heightDiff > 50 && !keyboardVisible) {
-          keyboardVisible = true;
-          document.body.classList.add('keyboard-open');
-          document.body.style.height = `${currentHeight}px`;
-          document.body.style.overflow = 'hidden';
-          document.body.style.position = 'fixed';
-          document.body.style.width = '100%';
-          console.log('Clavier Android détecté - layout forcé');
-        }
-        // Détecter la fermeture du clavier
-        else if (heightDiff < 30 && keyboardVisible) {
-          keyboardVisible = false;
-          document.body.classList.remove('keyboard-open');
-          document.body.style.height = '100vh';
-          document.body.style.overflow = 'hidden';
-          document.body.style.position = 'fixed';
-          document.body.style.width = '100%';
-          console.log('Clavier Android fermé - layout restauré');
-        }
-      };
-
-      // Détection par focus/blur ultra-agressive
-      const handleInputFocus = () => {
-        console.log('Input focus Android');
-        setTimeout(() => {
-          const currentHeight = window.innerHeight;
-          const heightDiff = initialHeight - currentHeight;
-          console.log('Focus check:', { currentHeight, heightDiff });
-          if (heightDiff > 50) {
-            keyboardVisible = true;
-            document.body.classList.add('keyboard-open');
-            document.body.style.height = `${currentHeight}px`;
-            document.body.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-            console.log('Clavier forcé par focus');
-          }
-        }, 100);
-      };
-
-      const handleInputBlur = () => {
-        console.log('Input blur Android');
-        setTimeout(() => {
-          keyboardVisible = false;
-          document.body.classList.remove('keyboard-open');
-          document.body.style.height = '100vh';
-          document.body.style.overflow = 'hidden';
-          document.body.style.position = 'fixed';
-          document.body.style.width = '100%';
-          console.log('Clavier fermé par blur');
-        }, 100);
-      };
-
-      // Attacher les événements aux inputs
-      const inputs = document.querySelectorAll('input, textarea');
-      inputs.forEach(input => {
-        input.addEventListener('focus', handleInputFocus);
-        input.addEventListener('blur', handleInputBlur);
-      });
-
-      // Observer pour les nouveaux inputs
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE) {
-              const element = node as Element;
-              const newInputs = element.querySelectorAll ? element.querySelectorAll('input, textarea') : [];
-              newInputs.forEach(input => {
-                input.addEventListener('focus', handleInputFocus);
-                input.addEventListener('blur', handleInputBlur);
-              });
-            }
-          });
-        });
-      });
-
-      observer.observe(document.body, { childList: true, subtree: true });
-      
-      // Écouter les changements de viewport
-      window.addEventListener('resize', handleResize);
-      
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        inputs.forEach(input => {
-          input.removeEventListener('focus', handleInputFocus);
-          input.removeEventListener('blur', handleInputBlur);
-        });
-        observer.disconnect();
-      };
-    }
-  }, []);
+  // Pas de gestion JavaScript du clavier - utilisation CSS pure uniquement
 
   // Forcer l'orientation portrait au démarrage
   useEffect(() => {
@@ -626,8 +515,8 @@ function App() {
   const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null);
   const [editingMessageValue, setEditingMessageValue] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [previousTab, setPreviousTab] = useState<'map' | 'events' | 'chat' | 'calendar' | 'home' | 'info'>('map');
-  const [chatOriginTab, setChatOriginTab] = useState<'map' | 'events' | 'chat' | 'calendar' | 'home' | 'info'>('map');
+  const [previousTab, setPreviousTab] = useState<TabType>('map');
+  const [chatOriginTab, setChatOriginTab] = useState<TabType>('map');
   const [appAction, setAppAction] = useState(0);
   
   // Effet pour gérer le lieu sélectionné depuis la page Home
@@ -700,13 +589,30 @@ function App() {
       // Forcer la mise à jour des marqueurs et de l'interface
       triggerMarkerUpdate();
       updateMapMarkers();
+      // Recharger les marqueurs d'hôtels et restaurants
+      createHotelAndRestaurantMarkers();
       // Mettre à jour l'état admin
       setIsAdmin(true);
       setUser({ isAdmin: true });
     };
 
+    const handleAdminLogout = () => {
+      // Forcer la mise à jour des marqueurs et de l'interface
+      triggerMarkerUpdate();
+      updateMapMarkers();
+      // Recharger les marqueurs d'hôtels et restaurants
+      createHotelAndRestaurantMarkers();
+      // Mettre à jour l'état admin
+      setIsAdmin(false);
+      setUser(null);
+    };
+
     window.addEventListener('adminLoginSuccess', handleAdminLoginSuccess);
-    return () => window.removeEventListener('adminLoginSuccess', handleAdminLoginSuccess);
+    window.addEventListener('adminLogout', handleAdminLogout);
+    return () => {
+      window.removeEventListener('adminLoginSuccess', handleAdminLoginSuccess);
+      window.removeEventListener('adminLogout', handleAdminLogout);
+    };
   }, []);
 
   // Lecture en temps réel des messages depuis Firebase
@@ -1133,9 +1039,10 @@ function App() {
         // setDelegationFilter(e.newValue);
         // triggerMarkerUpdate();
       }
-      if (e.key === 'preferredHotel' || e.key === 'preferredRestaurant') {
-        triggerMarkerUpdate();
-      }
+      // Les changements d'hôtel/restaurant sont gérés par un effet spécifique
+      // if (e.key === 'preferredHotel' || e.key === 'preferredRestaurant') {
+      //   triggerMarkerUpdate();
+      // }
     };
 
     const handlePreferenceChange = (e: CustomEvent) => {
@@ -1144,9 +1051,10 @@ function App() {
         // setEventFilter(e.detail.value);
         // triggerMarkerUpdate();
       }
-      if (e.detail.key === 'preferredHotel' || e.detail.key === 'preferredRestaurant') {
-        triggerMarkerUpdate();
-      }
+      // Les changements d'hôtel/restaurant sont gérés par un effet spécifique
+      // if (e.detail.key === 'preferredHotel' || e.detail.key === 'preferredRestaurant') {
+      //   triggerMarkerUpdate();
+      // }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -2211,9 +2119,16 @@ function App() {
   // Générer les marqueurs pour la carte
   useEffect(() => {
     if (!locationError && mapRef.current) {
-      // Nettoyer les marqueurs existants
-      markersRef.current.forEach(marker => marker.remove());
-      markersRef.current = [];
+      // Nettoyer uniquement les marqueurs de venues et parties (pas les hôtels/restaurants)
+      markersRef.current = markersRef.current.filter(marker => {
+        const isHotelOrRestaurant = marker.getElement()?.classList.contains('hotel-marker') || 
+                                  marker.getElement()?.classList.contains('restaurant-marker');
+        if (!isHotelOrRestaurant) {
+          marker.remove();
+          return false;
+        }
+        return true;
+      });
 
       // VENUES
       venues.forEach(venue => {
@@ -2418,133 +2333,7 @@ function App() {
         }
       });
 
-      // HOTELS
-      hotels.forEach(hotel => {
-        const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
-        const shouldShow = preferredHotel === 'none' || hotel.id === preferredHotel;
-        if (!shouldShow) return;
-          const marker = L.marker([hotel.latitude, hotel.longitude], {
-            icon: L.divIcon({
-              className: 'custom-marker hotel-marker',
-              html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🏢</span>
-                   </div>`,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
-              popupAnchor: [0, -15]
-            })
-          });
-          const popupContent = document.createElement('div');
-          popupContent.className = 'venue-popup';
-          popupContent.innerHTML = `
-            <h3>${hotel.name}</h3>
-            <p>${hotel.description}</p>
-            <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
-          `;
-          const buttonsContainer = document.createElement('div');
-          buttonsContainer.className = 'popup-buttons';
-          const mapsButton = document.createElement('button');
-          mapsButton.className = 'maps-button';
-          mapsButton.textContent = 'Ouvrir dans Google Maps';
-          mapsButton.addEventListener('click', async () => {
-            await openInGoogleMaps(hotel);
-          });
-          buttonsContainer.appendChild(mapsButton);
-          const copyButton = document.createElement('button');
-          copyButton.className = 'copy-button';
-          copyButton.textContent = 'Copier l\'adresse';
-          copyButton.addEventListener('click', () => {
-            copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
-          });
-          buttonsContainer.appendChild(copyButton);
-          
-          // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
-          if (isAdmin && isEditing) {
-            const editDescriptionButton = document.createElement('button');
-            editDescriptionButton.className = 'edit-description-button';
-            editDescriptionButton.textContent = 'Modifier la description';
-            editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
-            editDescriptionButton.addEventListener('click', () => {
-              // Ouvrir le formulaire modal pour éditer la description
-              openEditHotelDescriptionModal(hotel.id, hotel.description || '');
-            });
-            popupContent.appendChild(editDescriptionButton);
-          }
-          
-          popupContent.appendChild(buttonsContainer);
-          marker.bindPopup(popupContent);
-          marker.on('popupopen', () => {
-            handlePopupOpen();
-          });
-          if (mapRef.current) {
-            marker.addTo(mapRef.current);
-            markersRef.current.push(marker);
-        }
-      });
-
-      // RESTAURANTS
-      restaurants.forEach(restaurant => {
-        const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
-        const shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
-        if (!shouldShow) return;
-          const marker = L.marker([restaurant.latitude, restaurant.longitude], {
-            icon: L.divIcon({
-              className: 'custom-marker restaurant-marker',
-              html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">🍽️</span>
-                   </div>`,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
-              popupAnchor: [0, -15]
-            })
-          });
-          const popupContent = document.createElement('div');
-          popupContent.className = 'venue-popup';
-          popupContent.innerHTML = `
-            <h3>${restaurant.name}</h3>
-            <p>${restaurant.description}</p>
-            <p class="venue-address">${restaurant.address}</p>
-          `;
-          const buttonsContainer = document.createElement('div');
-          buttonsContainer.className = 'popup-buttons';
-          const mapsButton = document.createElement('button');
-          mapsButton.className = 'maps-button';
-          mapsButton.textContent = 'Ouvrir dans Google Maps';
-          mapsButton.addEventListener('click', async () => {
-            await openInGoogleMaps(restaurant);
-          });
-          buttonsContainer.appendChild(mapsButton);
-          const copyButton = document.createElement('button');
-          copyButton.className = 'copy-button';
-          copyButton.textContent = 'Copier l\'adresse';
-          copyButton.addEventListener('click', () => {
-            copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
-          });
-          buttonsContainer.appendChild(copyButton);
-          
-          // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
-          if (isAdmin && isEditing) {
-            const editDescriptionButton = document.createElement('button');
-            editDescriptionButton.className = 'edit-description-button';
-            editDescriptionButton.textContent = 'Modifier la description';
-            editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
-            editDescriptionButton.addEventListener('click', () => {
-              // Ouvrir le formulaire modal pour éditer la description
-              openEditRestaurantDescriptionModal(restaurant.id, restaurant.description || '');
-            });
-            popupContent.appendChild(editDescriptionButton);
-          }
-          
-          popupContent.appendChild(buttonsContainer);
-          marker.bindPopup(popupContent);
-          marker.on('popupopen', () => {
-            handlePopupOpen();
-          });
-          if (mapRef.current) {
-            marker.addTo(mapRef.current);
-            markersRef.current.push(marker);
-        }
-      });
+      // HOTELS et RESTAURANTS - Gérés par un effet séparé pour éviter les conflits
 
       // PARTIES (seulement pour les admins)
       if (isAdmin) {
@@ -2647,30 +2436,10 @@ function App() {
       });
       }
     }
-  }, [venues, hotels, restaurants, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed]);
+  }, [venues, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed]);
 
-  // Effet pour gérer les changements de préférences d'hôtels et restaurants
-  useEffect(() => {
-    const handlePreferenceChange = (e: StorageEvent) => {
-      if (e.key === 'preferredHotel' || e.key === 'preferredRestaurant') {
-        const map = mapRef.current;
-        if (!map) return;
-
-        // Supprimer uniquement les marqueurs d'hôtels et restaurants
-        markersRef.current = markersRef.current.filter(marker => {
-          const isHotelOrRestaurant = marker.getElement()?.classList.contains('hotel-marker') || 
-                                    marker.getElement()?.classList.contains('restaurant-marker');
-          if (isHotelOrRestaurant) {
-            marker.remove();
-            return false;
-          }
-          return true;
-        });
-
-        // Recréer les marqueurs d'hôtels
-        hotels.forEach(hotel => {
-          const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
-          if (preferredHotel === 'none' || hotel.id === preferredHotel) {
+  // Fonction pour créer un marqueur d'hôtel
+  const createHotelMarker = (hotel: any) => {
             const marker = L.marker([hotel.latitude, hotel.longitude], {
               icon: L.divIcon({
                 className: 'custom-marker hotel-marker',
@@ -2688,7 +2457,7 @@ function App() {
             popupContent.innerHTML = `
               <h3>${hotel.name}</h3>
               <p>${hotel.description}</p>
-              <p class="venue-address">${hotel.address}</p>
+      <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
             `;
             const buttonsContainer = document.createElement('div');
             buttonsContainer.className = 'popup-buttons';
@@ -2706,21 +2475,31 @@ function App() {
               copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
             });
             buttonsContainer.appendChild(copyButton);
+    
+    // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
+    if (isAdmin && isEditing) {
+      const editDescriptionButton = document.createElement('button');
+      editDescriptionButton.className = 'edit-description-button';
+      editDescriptionButton.textContent = 'Modifier la description';
+      editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+      editDescriptionButton.addEventListener('click', () => {
+        // Ouvrir le formulaire modal pour éditer la description
+        openEditHotelDescriptionModal(hotel.id, hotel.description || '');
+      });
+      popupContent.appendChild(editDescriptionButton);
+    }
+    
             popupContent.appendChild(buttonsContainer);
             marker.bindPopup(popupContent);
             marker.on('popupopen', () => {
               handlePopupOpen();
             });
 
-            marker.addTo(map);
-            markersRef.current.push(marker);
-          }
-        });
+    return marker;
+  };
 
-        // Recréer les marqueurs de restaurants
-        restaurants.forEach(restaurant => {
-          const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
-          if (preferredRestaurant === 'none' || restaurant.id === preferredRestaurant) {
+  // Fonction pour créer un marqueur de restaurant
+  const createRestaurantMarker = (restaurant: any) => {
             const marker = L.marker([restaurant.latitude, restaurant.longitude], {
               icon: L.divIcon({
                 className: 'custom-marker restaurant-marker',
@@ -2756,22 +2535,124 @@ function App() {
               copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
             });
             buttonsContainer.appendChild(copyButton);
+    
+    // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
+    if (isAdmin && isEditing) {
+      const editDescriptionButton = document.createElement('button');
+      editDescriptionButton.className = 'edit-description-button';
+      editDescriptionButton.textContent = 'Modifier la description';
+      editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+      editDescriptionButton.addEventListener('click', () => {
+        // Ouvrir le formulaire modal pour éditer la description
+        openEditRestaurantDescriptionModal(restaurant.id, restaurant.description || '');
+      });
+      popupContent.appendChild(editDescriptionButton);
+    }
+    
             popupContent.appendChild(buttonsContainer);
             marker.bindPopup(popupContent);
             marker.on('popupopen', () => {
               handlePopupOpen();
             });
 
+    return marker;
+  };
+
+  // Fonction pour créer les marqueurs d'hôtels et restaurants
+  const createHotelAndRestaurantMarkers = () => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Supprimer uniquement les marqueurs d'hôtels et restaurants existants
+    markersRef.current = markersRef.current.filter(marker => {
+      const isHotelOrRestaurant = marker.getElement()?.classList.contains('hotel-marker') || 
+                                marker.getElement()?.classList.contains('restaurant-marker');
+      if (isHotelOrRestaurant) {
+        marker.remove();
+        return false;
+      }
+      return true;
+    });
+
+    // Recréer les marqueurs d'hôtels selon la préférence actuelle
+    const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
+    hotels.forEach(hotel => {
+      if (preferredHotel === 'none' || hotel.id === preferredHotel) {
+        const marker = createHotelMarker(hotel);
             marker.addTo(map);
             markersRef.current.push(marker);
           }
         });
+
+    // Recréer les marqueurs de restaurants selon la préférence actuelle
+    const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
+    restaurants.forEach(restaurant => {
+      if (preferredRestaurant === 'none' || restaurant.id === preferredRestaurant) {
+        const marker = createRestaurantMarker(restaurant);
+        marker.addTo(map);
+        markersRef.current.push(marker);
+      }
+    });
+  };
+
+  // Effet pour créer les marqueurs d'hôtels et restaurants au premier chargement
+  useEffect(() => {
+    if (mapRef.current && !locationError && hotels.length > 0 && restaurants.length > 0) {
+      // Vérifier s'il y a déjà des marqueurs d'hôtels/restaurants
+      const hasHotelOrRestaurantMarkers = markersRef.current.some(marker => 
+        marker.getElement()?.classList.contains('hotel-marker') || 
+        marker.getElement()?.classList.contains('restaurant-marker')
+      );
+      
+      // Créer les marqueurs seulement s'il n'y en a pas déjà
+      if (!hasHotelOrRestaurantMarkers) {
+        const preferredHotel = localStorage.getItem('preferredHotel') || 'none';
+        hotels.forEach(hotel => {
+          if (preferredHotel === 'none' || hotel.id === preferredHotel) {
+            const marker = createHotelMarker(hotel);
+            if (mapRef.current) {
+              marker.addTo(mapRef.current);
+              markersRef.current.push(marker);
+            }
+          }
+        });
+
+        const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
+        restaurants.forEach(restaurant => {
+          if (preferredRestaurant === 'none' || restaurant.id === preferredRestaurant) {
+            const marker = createRestaurantMarker(restaurant);
+            if (mapRef.current) {
+              marker.addTo(mapRef.current);
+              markersRef.current.push(marker);
+            }
+          }
+        });
+      }
+    }
+  }, [mapRef.current, locationError, hotels, restaurants, isAdmin, isEditing]);
+
+  // Effet pour gérer les changements de préférences d'hôtels et restaurants
+  useEffect(() => {
+    const handlePreferenceChange = (e: StorageEvent) => {
+      if (e.key === 'preferredHotel' || e.key === 'preferredRestaurant') {
+        createHotelAndRestaurantMarkers();
+      }
+    };
+
+    // Écouter aussi les événements personnalisés pour les changements dans le même onglet
+    const handleCustomPreferenceChange = (e: CustomEvent) => {
+      if (e.detail.key === 'preferredHotel' || e.detail.key === 'preferredRestaurant') {
+        createHotelAndRestaurantMarkers();
       }
     };
 
     window.addEventListener('storage', handlePreferenceChange);
-    return () => window.removeEventListener('storage', handlePreferenceChange);
-  }, [hotels, restaurants]);
+    window.addEventListener('preferenceChange', handleCustomPreferenceChange as EventListener);
+    return () => {
+      window.removeEventListener('storage', handlePreferenceChange);
+      window.removeEventListener('preferenceChange', handleCustomPreferenceChange as EventListener);
+    };
+  }, [hotels, restaurants, isAdmin, isEditing]);
 
   // Fonction pour commencer l'édition d'un match
   const startEditingMatch = (venueId: string, match: Match | null) => {
@@ -3641,7 +3522,7 @@ function App() {
     }
   };
 
-  const handleTabChange = (tab: 'map' | 'events' | 'chat' | 'calendar' | 'home' | 'info') => {
+  const handleTabChange = (tab: TabType) => {
     // Ajouter une entrée dans l'historique pour toutes les pages secondaires
     if (tab !== 'map' && tab !== 'home' && tab !== 'info') {
       window.history.pushState({ tab }, '', window.location.pathname);
@@ -3825,28 +3706,6 @@ function App() {
           <div style={{ color: '#1976D2', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: 8 }}>Chargement des données…</div>
         </div>
       )}
-      <Header
-        onChat={handleOpenChat}
-        onEmergency={() => setShowEmergency(true)}
-        onAdmin={handleAdminClick}
-        showChat={activeTab === 'chat'}
-        unreadCount={unreadCount}
-        onBack={handleBack}
-        hideBackButton={(activeTab === 'home' || activeTab === 'map' || activeTab === 'info') && activeTab !== 'chat'}
-        onEditModeToggle={() => {
-          setIsEditing(!isEditing);
-          if (isEditing) {
-            // Si on désactive le mode édition, on réinitialise les états liés à l'édition
-            setIsAddingPlace(false);
-            setEditingVenue({ id: null, venue: null });
-            setTempMarker(null);
-            setIsPlacingMarker(false);
-          }
-        }}
-        isEditing={isEditing}
-
-        isBackDisabled={activeTab === 'map' || activeTab === 'home' || activeTab === 'info'}
-      />
       <main className="app-main">
         {locationError && showLocationPrompt && (
           <div className="location-error">
@@ -4266,12 +4125,22 @@ function App() {
               <div className="chat-panel">
                 <div className="chat-panel-header">
                   <h3>Messages de l'orga</h3>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', position: 'relative'}}>
                     {isAdmin && isEditing && (
                       <button
                         className="add-message-button"
                         onClick={() => setShowAddMessage((v) => !v)}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 20, width: 70, marginTop: '3.8rem' }}
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          height: 20, 
+                          width: 70, 
+                          position: 'absolute',
+                          top: '-0.5rem',
+                          right: 0,
+                          zIndex: 10
+                        }}
                       >
                         {showAddMessage ? 'Annuler' : 'Ajouter'}
                       </button>
@@ -4334,24 +4203,22 @@ function App() {
                       value={newMessage}
                       onChange={e => {
                         setNewMessage(e.target.value);
-                        // Ajuster automatiquement la hauteur
-                        e.target.style.height = '25px'; // Reset d'abord à la hauteur minimale
-                        e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`; // Limiter à 200px max
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${e.target.scrollHeight}px`;
                       }}
                       placeholder="Votre message..."
                       style={{
                         flex: 1,
-                        height: '25px', // Hauteur initiale
-                        minHeight: '25px',
-                        maxHeight: '200px', 
+                        height: '25px',
+                        minHeight: '25px', 
+                        maxHeight: '200px',
                         padding: '8px',
                         borderRadius: '4px',
                         border: '1px solid var(--border-color)',
                         background: 'var(--bg-color)',
                         resize: 'none',
-                        overflowY: 'auto', // Permettre le scroll vertical si nécessaire
-                        marginTop: '2rem',
-                        transition: 'height 0.1s ease' // Animation fluide du changement de hauteur
+                        overflow: 'hidden',
+                        marginTop: '2rem'
                       }}
                       autoFocus
                     />
@@ -4592,12 +4459,7 @@ function App() {
         }}
         isEditing={isEditing}
         onBack={handleBack}
-        isBackDisabled={activeTab === 'map' || activeTab === 'home' || activeTab === 'info'}
-      />
-      <EmergencyPopup
-        isOpen={showEmergency}
-        onClose={() => setShowEmergency(false)}
-        onShowVSS={() => setShowVSSForm(true)}
+        isBackDisabled={activeTab === 'map' || activeTab === 'info'}
       />
       {/* Formulaire VSS */}
       {showVSSForm && (

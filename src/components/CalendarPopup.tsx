@@ -626,6 +626,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
           getAllDelegations={getAllDelegations}
           hasGenderMatches={hasGenderMatches}
           isBackDisabled={isBackDisabled}
+          hideBackButton={false}
         />
         
         <div className="calendar-popup-content">

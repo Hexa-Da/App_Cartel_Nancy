@@ -107,11 +107,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
 
   const notificationService = NotificationService.getInstance();
 
-  // Initialiser le service de notifications
-  useEffect(() => {
-    notificationService.initialize();
-  }, []);
-
   // Gérer le changement d'état des notifications
   const handleNotificationChange = async (enabled: boolean) => {
     if (enabled) {

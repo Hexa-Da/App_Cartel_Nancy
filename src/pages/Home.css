@@ -748,12 +748,6 @@
   font-size: 1rem;
 }
 
-body.ios .welcome-title {
-  margin-top: -20px !important;
-  padding-top: 0px !important;
-  padding-bottom: 10px !important;
-}
-
 /* Améliorations pour les très petits écrans */
 @media (max-width: 320px) {
   .home-page {
@@ -899,4 +893,162 @@ body.android .home-page {
 body.android input,
 body.android textarea {
   font-size: 16px;
+}
+
+/* Ajustements spécifiques pour iOS - remonter modérément les listes horizontales */
+body.ios .home-page {
+  padding-top: 0px !important;
+  margin-top: 10px !important;
+  padding: 5px 10px !important;
+}
+
+/* Annuler le padding-top du Layout.css pour iOS */
+body.ios .home-page {
+  padding-top: 0px !important;
+}
+
+/* S'assurer que le contenu n'est pas caché par le header sur iOS */
+body.ios .home-page {
+  position: relative !important;
+  z-index: 1 !important;
+  margin-top: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+  min-height: auto !important;
+}
+
+/* Contourner les contraintes du app-main sur iOS */
+body.ios .app-main {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+body.ios .app-main > * {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+/* Sections individuelles */
+body.ios .matches-section {
+  margin: 15px 0 !important;
+}
+
+body.ios .matches-section:first-of-type {
+  margin-top: -15px !important;
+}
+
+/* S'assurer que le premier titre est bien visible sur iOS */
+body.ios .matches-section:first-of-type h2 {
+  position: relative !important;
+  z-index: 1000 !important;
+  background-color: var(--bg-color) !important;
+  padding: 5px 0 !important;
+  margin-top: -5px !important;
+  margin-bottom: 18px !important;
+}
+
+body.ios .matches-section h2 {
+  margin: 0 0 18px 15px !important;
+}
+
+body.ios .horizontal-scroll {
+  padding: 0 10px !important;
+  gap: 8px !important;
+}
+
+/* Annuler tous les media queries pour iOS */
+@media (max-width: 480px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (min-height: 700px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (min-height: 800px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (min-height: 900px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (min-height: 1100px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (max-height: 700px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (max-height: 600px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 700px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (min-width: 701px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (max-width: 320px) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  body.ios .home-page {
+    margin-top: 0 !important;
+    padding-top: 0px !important;
+    padding: 5px 10px !important;
+  }
 } 

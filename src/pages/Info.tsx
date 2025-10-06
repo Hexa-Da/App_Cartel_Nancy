@@ -43,8 +43,12 @@ const Info: React.FC = () => {
   // Écouter la connexion admin réussie pour rafraîchir la page
   React.useEffect(() => {
     const handleAdminLoginSuccess = () => {
-      // Forcer le rafraîchissement de la page
-      window.location.reload();
+      // Rafraîchir l'état sans recharger complètement la page
+      // pour éviter les problèmes avec la BottomNav
+      setTimeout(() => {
+        // Petit délai pour laisser le temps aux autres composants de se mettre à jour
+        window.dispatchEvent(new Event('adminStateChanged'));
+      }, 100);
     };
 
     window.addEventListener('adminLoginSuccess', handleAdminLoginSuccess);

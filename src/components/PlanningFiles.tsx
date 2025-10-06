@@ -4,6 +4,128 @@ import { database, storage } from '../firebase';
 import { PlanningFile } from '../types';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
 
+// Classe pour optimiser les connexions Firebase et monitoring des coûts
+class FirebaseOptimizer {
+  private static instance: FirebaseOptimizer;
+  private activeConnections = 0;
+  private maxConnections = 95;
+  private dailyTransfer = 0;
+  private dailyStorage = 0;
+  private readonly MAX_DAILY_TRANSFER = 10 * 1024 * 1024 * 1024; // 10GB
+  private readonly MAX_DAILY_STORAGE = 1024 * 1024 * 1024; // 1GB
+
+  static getInstance() {
+    if (!FirebaseOptimizer.instance) {
+      FirebaseOptimizer.instance = new FirebaseOptimizer();
+    }
+    return FirebaseOptimizer.instance;
+  }
+
+  trackTransfer(bytes: number) {
+    this.dailyTransfer += bytes;
+    if (this.dailyTransfer > this.MAX_DAILY_TRANSFER * 0.8) {
+      console.warn('⚠️ Limite de transfert quotidien atteinte à 80%');
+    }
+  }
+
+  trackStorage(bytes: number) {
+    this.dailyStorage += bytes;
+    if (this.dailyStorage > this.MAX_DAILY_STORAGE * 0.8) {
+      console.warn('⚠️ Limite de stockage quotidien atteinte à 80%');
+    }
+  }
+
+  canCreateConnection(): boolean {
+    return this.activeConnections < this.maxConnections;
+  }
+
+  registerConnection() {
+    this.activeConnections++;
+  }
+
+  unregisterConnection() {
+    this.activeConnections = Math.max(0, this.activeConnections - 1);
+  }
+}
+
+// Fonction de compression d'image optimisée
+const compressImage = (file: File, maxSizeKB = 500, quality = 0.8): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    // Vérifier si c'est une image
+    if (!file.type.startsWith('image/')) {
+      resolve(file); // Retourner le fichier tel quel si ce n'est pas une image
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    if (!ctx) {
+      reject(new Error('Canvas context not available'));
+      return;
+    }
+
+    img.onload = () => {
+      // Redimensionner si nécessaire
+      const maxWidth = 1200;
+      const maxHeight = 1200;
+      let { width, height } = img;
+
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width *= ratio;
+        height *= ratio;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Image compression failed'));
+            return;
+          }
+
+          // Vérifier la taille finale
+          if (blob.size > maxSizeKB * 1024) {
+            // Recompresser avec une qualité plus faible
+            const newQuality = Math.max(0.3, quality - 0.1);
+            canvas.toBlob(
+              (newBlob) => {
+                if (!newBlob) {
+                  reject(new Error('Image recompression failed'));
+                  return;
+                }
+                const compressedFile = new File([newBlob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                });
+                resolve(compressedFile);
+              },
+              'image/jpeg',
+              newQuality
+            );
+          } else {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(compressedFile);
+          }
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+
+    img.onerror = () => reject(new Error('Image loading failed'));
+    img.src = URL.createObjectURL(file);
+  });
+};
+
 interface PlanningFilesProps {
   isAdmin?: boolean;
   filter?: string;
@@ -91,11 +213,25 @@ export default function PlanningFiles({
   }, [filter]);
 
   useEffect(() => {
-    // Charger les fichiers
+    // Charger les fichiers avec optimisation des connexions
+    const optimizer = FirebaseOptimizer.getInstance();
+    
+    if (!optimizer.canCreateConnection()) {
+      console.warn('Limite de connexions Firebase atteinte pour les fichiers');
+      return;
+    }
+
+    optimizer.registerConnection();
+    
     const filesRef = ref(database, 'planningFiles');
     const filesUnsubscribe = onValue(filesRef, (snapshot) => {
       const data = snapshot.val();
+      
       if (data) {
+        // Calculer la taille des données transférées
+        const dataSize = JSON.stringify(data).length;
+        optimizer.trackTransfer(dataSize);
+        
         const filesArray = Object.entries(data).map(([id, value]) => ({
           id,
           ...(value as Omit<PlanningFile, 'id'>)
@@ -108,6 +244,7 @@ export default function PlanningFiles({
 
     return () => {
       filesUnsubscribe();
+      optimizer.unregisterConnection();
     };
   }, []);
 
@@ -226,6 +363,14 @@ export default function PlanningFiles({
       return;
     }
 
+    const optimizer = FirebaseOptimizer.getInstance();
+    
+    // Vérifier la limite de connexions
+    if (!optimizer.canCreateConnection()) {
+      alert('Limite de connexions Firebase atteinte. Veuillez réessayer plus tard.');
+      return;
+    }
+
     try {
       setUploading(true);
       setUploadProgress(0);
@@ -235,14 +380,31 @@ export default function PlanningFiles({
         throw new Error('Le fichier est trop volumineux. Taille maximum : 100MB');
       }
 
+      // Compresser l'image si c'est une image
+      let fileToUpload = file;
+      if (file.type.startsWith('image/')) {
+        setUploadProgress(10); // Indiquer le début de la compression
+        try {
+          fileToUpload = await compressImage(file, 500, 0.8);
+          console.log(`Image compressée: ${file.size} bytes → ${fileToUpload.size} bytes (${Math.round((1 - fileToUpload.size / file.size) * 100)}% de réduction)`);
+        } catch (compressionError) {
+          console.warn('Erreur de compression, utilisation du fichier original:', compressionError);
+          fileToUpload = file;
+        }
+      }
+
       // Générer un nom de fichier unique
       const timestamp = Date.now();
-      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const sanitizedFileName = fileToUpload.name.replace(/[^a-zA-Z0-9.-]/g, '_');
       const storagePath = `planningFiles/${timestamp}_${sanitizedFileName}`;
+
+      // Calculer la taille des données pour le monitoring
+      optimizer.trackStorage(fileToUpload.size);
+      optimizer.trackTransfer(fileToUpload.size);
 
       // Upload file to Firebase Storage with progress tracking
       const storageReference = storageRef(storage, storagePath);
-      const uploadTask = uploadBytesResumable(storageReference, file);
+      const uploadTask = uploadBytesResumable(storageReference, fileToUpload);
 
       // Gérer le suivi de la progression
       uploadTask.on('state_changed',
@@ -264,14 +426,23 @@ export default function PlanningFiles({
             // Upload réussi, obtenir l'URL
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
+            // Calculer la taille des données de la base
+            const fileData = {
+              ...newFile,
+              url: downloadURL,
+              uploadDate: Date.now(),
+              uploadedBy: 'admin',
+              originalSize: file.size,
+              compressedSize: fileToUpload.size,
+              compressionRatio: file.type.startsWith('image/') ? Math.round((1 - fileToUpload.size / file.size) * 100) : 0
+            };
+            
+            const dataSize = JSON.stringify(fileData).length;
+            optimizer.trackTransfer(dataSize);
+
             // Save file info to database
-      const newFileRef = push(ref(database, 'planningFiles'));
-      await set(newFileRef, {
-        ...newFile,
-        url: downloadURL,
-        uploadDate: Date.now(),
-        uploadedBy: 'admin'
-      });
+            const newFileRef = push(ref(database, 'planningFiles'));
+            await set(newFileRef, fileData);
 
       setNewFile({
         name: '',
