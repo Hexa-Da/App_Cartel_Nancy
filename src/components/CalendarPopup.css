@@ -538,7 +538,6 @@
   padding: 1rem;
   /* Propriétés pour faire disparaître les scrollbars automatiquement */
   scrollbar-gutter: stable;
-  overflow-scrollbar: auto;
 }
 
 /* Styles de scrollbars uniformes - gérés par les styles globaux */

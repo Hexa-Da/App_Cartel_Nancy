@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Cartel Nancy</string>
+	<string>Cartel Nancy</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -18,10 +18,40 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>cartelnancy</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Cette application nécessite l'autorisation d'envoyer des notifications pour vous informer des nouveaux messages dans le chat.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -45,38 +75,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
-	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
-	
-	<!-- Permissions pour les notifications push -->
-	<key>NSUserNotificationUsageDescription</key>
-	<string>Cette application nécessite l'autorisation d'envoyer des notifications pour vous informer des nouveaux messages dans le chat.</string>
-	
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>cartelnancy</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>
