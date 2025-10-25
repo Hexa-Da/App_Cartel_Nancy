@@ -33,6 +33,10 @@ interface AppPanelsContextType {
   closeAllModals: () => void;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  showChat: boolean;
+  setShowChat: React.Dispatch<React.SetStateAction<boolean>>;
+  chatOriginTab: TabType;
+  setChatOriginTab: React.Dispatch<React.SetStateAction<TabType>>;
 }
 
 const AppPanelsContext = createContext<AppPanelsContextType | undefined>(undefined);
@@ -43,6 +47,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
   const [showEmergency, setShowEmergency] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [chatOriginTab, setChatOriginTab] = useState<TabType>('map');
   const [isEditing, setIsEditing] = useState(() => {
     // Récupérer l'état depuis localStorage au chargement
     const saved = localStorage.getItem('isEditing');
@@ -95,7 +101,9 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
       showAdminModal, setShowAdminModal,
       closeAllPanels,
       closeAllModals,
-      isEditing, setIsEditing
+      isEditing, setIsEditing,
+      showChat, setShowChat,
+      chatOriginTab, setChatOriginTab
     }}>
       {children}
     </AppPanelsContext.Provider>

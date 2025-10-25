@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1002;
 }
 
 .calendar-popup {
@@ -99,11 +99,6 @@
 .calendar-panel-header .filter-reset-button.star {
   transition: all 0.3s ease;
   opacity: 1;
-}
-
-.calendar-panel-header .filter-reset-button.star.active {
-  opacity: 1;
-  color: #ffd700;
 }
 
 .calendar-fixed-header .filter-toggle-button {
@@ -197,11 +192,6 @@
   z-index: 995;
   transition: all 0.3s ease;
   opacity: 1;
-}
-
-.calendar-filters-section .filter-reset-button.star.active {
-  opacity: 1;
-  color: #ffd700;
 }
 
 .calendar-filters-section .filter-select {
@@ -310,6 +300,10 @@
   gap: 0.5rem;
   margin-top: 0px;
   margin-bottom: 0px;
+  /* Forcer les filter-row à ne pas être grisées */
+  opacity: 1 !important;
+  filter: none !important;
+  background-color: transparent !important;
 }
 
 .filter-select {

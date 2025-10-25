@@ -423,7 +423,7 @@ interface OutletContext {
 import VSSForm from './components/VSSForm';
 
 function App() {
-  const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing } = useAppPanels();
+  const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing, showChat, setShowChat, chatOriginTab, setChatOriginTab } = useAppPanels();
   const location = useLocation();
 
   // Ajoute la classe 'ios' au body si la plateforme est iOS
@@ -516,7 +516,6 @@ function App() {
   const [editingMessageValue, setEditingMessageValue] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [previousTab, setPreviousTab] = useState<TabType>('map');
-  const [chatOriginTab, setChatOriginTab] = useState<TabType>('map');
   const [appAction, setAppAction] = useState(0);
   
   // Effet pour gérer le lieu sélectionné depuis la page Home
@@ -668,7 +667,6 @@ function App() {
     try {
       // Pour l'instant, on utilise des notifications locales
       // TODO: Implémenter FCM plus tard
-      console.log('Envoi de notification à tous les utilisateurs:', message);
       
       // Notification locale pour l'expéditeur
       const notificationService = NotificationService.getInstance();
@@ -822,8 +820,8 @@ function App() {
   });
 
   const [parties, setParties] = useState<Party[]>(() => {
-    const savedResult = localStorage.getItem('centre-prouve-result') || 'à venir';
-    const savedDJResult = localStorage.getItem('zenith-dj-contest-result') || 'à venir';
+    const savedPompomsResult = localStorage.getItem('parc-expo-pompoms-result') || 'à venir';
+    const savedDJResult = localStorage.getItem('parc-expo-dj-contest-result') || 'à venir';
     
     // Charger les descriptions modifiées depuis le localStorage
     const savedDescription1 = localStorage.getItem('party-description-1') || "Rendez vous 12h puis départ du Défilé à 13h";
@@ -847,28 +845,28 @@ function App() {
       },
       {
         id: '2',
-        name: "Centre Prouvé",
-        position: [48.687858, 6.176977],
+        name: "Parc Expo",
+        position: [48.663030, 6.191597],
         description: savedDescription2,
-        address: "1 Pl. de la République, 54000 Nancy",
+        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
         date: '2026-04-16T21:00:00',
-        latitude: 48.687858,
-        longitude: 6.176977,
+        latitude: 48.663030,
+        longitude: 6.191597,
         emoji: '🎀',
         sport: 'Pompom',
-        result: savedResult
+        result: savedPompomsResult
       },
       {
         id: '3',
-        name: "Zénith",
-        position: [48.710498, 6.137549],
+        name: "Parc Expo",
+        position: [48.663481, 6.189737],
         description: savedDescription3,
-        address: "Rue du Zénith, 54320 Maxéville",
+        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
         date: '2026-04-17T20:00:00',
-        latitude: 48.710498,
-        longitude: 6.137549,
+        latitude: 48.663481,
+        longitude: 6.189737,
         emoji: '🎧',
         sport: 'Party',
         result: savedDJResult
@@ -1236,11 +1234,11 @@ function App() {
     const unsubscribePartyResults = loadFromFirebase('editableData/partyResults', (data) => {
       if (data) {
         // Mettre à jour les résultats des soirées
-        if (data['centre-prouve'] && data['centre-prouve'].result) {
-          localStorage.setItem('centre-prouve-result', data['centre-prouve'].result);
+        if (data['parc-expo-pompoms'] && data['parc-expo-pompoms'].result) {
+          localStorage.setItem('parc-expo-pompoms-result', data['parc-expo-pompoms'].result);
         }
-        if (data['zenith-dj-contest'] && data['zenith-dj-contest'].result) {
-          localStorage.setItem('zenith-dj-contest-result', data['zenith-dj-contest'].result);
+        if (data['parc-expo-dj-contest'] && data['parc-expo-dj-contest'].result) {
+          localStorage.setItem('parc-expo-dj-contest-result', data['parc-expo-dj-contest'].result);
         }
         dataLoaded = true;
         checkAllDataLoaded();
@@ -1977,8 +1975,8 @@ function App() {
               case 'Place Stanislas':
                 partyId = 'place-stanislas';
                 break;
-              case 'Centre Prouvé':
-                partyId = 'centre-prouve';
+              case 'Parc Expo':
+                partyId = 'parc-expo';
                 break;
               case 'Zénith':
                 partyId = 'zenith';
@@ -2344,8 +2342,8 @@ function App() {
           case 'Place Stanislas':
             partyVenueId = 'place-stanislas';
             break;
-          case 'Centre Prouvé':
-            partyVenueId = 'centre-prouve';
+          case 'Parc Expo':
+            partyVenueId = 'parc-expo';
             break;
           case 'Zénith':
             partyVenueId = 'zenith';
@@ -2378,8 +2376,8 @@ function App() {
           <p>${party.description}</p>
           <p class="venue-address">${party.address}</p>
           ${party.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
-          ${party.name === 'Centre Prouvé' ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
-          ${party.name === 'Zénith' && party.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+          ${party.name === 'Parc Expo' && party.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+          ${party.name === 'Parc Expo' && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         `;
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
@@ -2399,7 +2397,7 @@ function App() {
         buttonsContainer.appendChild(copyButton);
         
         // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ contest) seulement si le mode édition est activé
-        if (isAdmin && isEditing && (party.name === 'Centre Prouvé' || (party.name === 'Zénith' && party.description.includes('DJ contest')))) {
+        if (isAdmin && isEditing && (party.name === 'Parc Expo' || (party.name === 'Parc Expo' && party.description.includes('DJ contest')))) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
@@ -2688,10 +2686,10 @@ function App() {
 
   // Fonction pour sauvegarder le résultat de la soirée pompom
   const savePartyResult = (partyId: string, result: string) => {
-    if (partyId === '2') { // Centre Prouvé
-      localStorage.setItem('centre-prouve-result', result);
+    if (partyId === '2') { // // Parc Expo
+      localStorage.setItem('parc-expo-pompoms-result', result);
       // Sauvegarder dans Firebase
-      saveToFirebase('editableData/partyResults/centre-prouve', { result, updatedAt: new Date().toISOString() });
+      saveToFirebase('editableData/partyResults/parc-expo-pompoms', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
         prevParties.map((party: Party) => 
@@ -2699,10 +2697,10 @@ function App() {
         )
       );
       triggerMarkerUpdate();
-    } else if (partyId === '3') { // Zénith DJ Contest
-      localStorage.setItem('zenith-dj-contest-result', result);
+    } else if (partyId === '3') { // Parc Expo DJ Contest
+      localStorage.setItem('parc-expo-dj-contest-result', result);
       // Sauvegarder dans Firebase
-      saveToFirebase('editableData/partyResults/zenith-dj-contest', { result, updatedAt: new Date().toISOString() });
+      saveToFirebase('editableData/partyResults/parc-expo-dj-contest', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
         prevParties.map((party: Party) => 
@@ -2895,15 +2893,15 @@ function App() {
   // Fonction pour mettre à jour l'état local avec les données Firebase
   const updateLocalStateFromFirebase = () => {
     // Mettre à jour les résultats des soirées
-    const centreProuveResult = localStorage.getItem('centre-prouve-result') || 'à venir';
-    const zenithDJResult = localStorage.getItem('zenith-dj-contest-result') || 'à venir';
+    const parcExpoPompomsResult = localStorage.getItem('parc-expo-pompoms-result') || 'à venir';
+    const parcExpoDJResult = localStorage.getItem('parc-expo-dj-contest-result') || 'à venir';
     
     setParties((prevParties: Party[]) => 
       prevParties.map((party: Party) => {
         if (party.id === '2') {
-          return { ...party, result: centreProuveResult };
+          return { ...party, result: parcExpoPompomsResult };
         } else if (party.id === '3') {
-          return { ...party, result: zenithDJResult };
+          return { ...party, result: parcExpoDJResult };
         }
         return party;
       })
@@ -2958,7 +2956,7 @@ function App() {
           restaurantDescriptions[restaurant.id] = {
             description: localStorage.getItem(`restaurant-description-${restaurant.id}`) || restaurant.description,
             updatedAt: new Date().toISOString()
-          };
+          };  
         });
         return restaurantDescriptions;
       };
@@ -2966,12 +2964,12 @@ function App() {
       // Structure complète avec toutes les données existantes
       const initialStructure = {
         partyResults: {
-          'centre-prouve': {
-            result: localStorage.getItem('centre-prouve-result') || 'à venir',
+          'parc-expo-pompoms': {
+            result: localStorage.getItem('parc-expo-pompoms-result') || 'à venir',
             updatedAt: new Date().toISOString()
           },
-          'zenith-dj-contest': {
-            result: localStorage.getItem('zenith-dj-contest-result') || 'à venir',
+          'parc-expo-dj-contest': {
+            result: localStorage.getItem('parc-expo-dj-contest-result') || 'à venir',
             updatedAt: new Date().toISOString()
           }
         },
@@ -3078,8 +3076,8 @@ function App() {
               case 'Place Stanislas':
                 partyId = 'place-stanislas';
                 break;
-              case 'Centre Prouvé':
-                partyId = 'centre-prouve';
+              case 'Parc Expo':
+                partyId = 'parc-expo';
                 break;
               case 'Zénith':
                 partyId = 'zenith';
@@ -3300,7 +3298,7 @@ function App() {
       return [
         { value: 'Tous', label: 'Tous les lieux' },
         { value: 'place-stanislas', label: 'Place Stanislas' },
-        { value: 'centre-prouve', label: 'Centre Prouvé' },
+        { value: 'parc-expo', label: 'Parc Expo' },
         { value: 'zenith', label: 'Zénith' }
       ];
     }
@@ -3380,34 +3378,20 @@ function App() {
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
 
   const handleOpenChat = () => {
-    // Si on est déjà sur le chat, on retourne à l'onglet d'origine
-    if (activeTab === 'chat') {
-      setActiveTab(chatOriginTab);
-      // Déclencher l'auto-scroll si on revient à l'onglet événements
-      if (chatOriginTab === 'events') {
-        setTimeout(() => {
-          const eventsList = document.querySelector('.events-list');
-          if (eventsList) {
-            const firstNonPassedEvent = eventsList.querySelector('.event-item:not(.passed)');
-            if (firstNonPassedEvent) {
-              // Calculer la position avec un offset pour laisser de l'espace en haut
-              const containerRect = eventsList.getBoundingClientRect();
-              const elementRect = firstNonPassedEvent.getBoundingClientRect();
-              const offset = 15; // 40px d'espace en haut
-              
-              const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
-              eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
-            }
-          }
-        }, 100);
-      }
-      // Ne pas ajouter d'entrée dans l'historique pour permettre la navigation continue
+    
+    // Si le chat est déjà ouvert, le fermer
+    if (showChat) {
+      setShowChat(false);
+      // Ne pas changer activeTab - rester sur la page actuelle
     } else {
       // Sinon on mémorise l'onglet actuel comme origine et on ouvre le chat
       setChatOriginTab(activeTab);
-      setActiveTab('chat');
+      
+      // Ouvrir le chat directement, même depuis CalendarPopup
+      setShowChat(true);
+      
       // Ajouter une entrée dans l'historique seulement si on ne vient pas d'une page principale
-      if (activeTab !== 'map' && activeTab !== 'home' && activeTab !== 'info') {
+      if (activeTab !== 'map' && activeTab !== 'home' && activeTab !== 'info' && activeTab !== 'calendar') {
         window.history.pushState({ tab: 'chat', origin: activeTab }, '', window.location.pathname);
       }
       if (messages.length > 0) {
@@ -4042,12 +4026,12 @@ function App() {
                               <span>🎀</span>
                               <span>Pompom</span>
                             </>
-                          ) : event.name === 'Zénith' && event.description.includes('DJ contest') ? (
+                          ) : event.name === 'Parc Expo' && event.description.includes('DJ contest') ? (
                             <>
                               <span>🎧</span>
                               <span>DJ CONTEST</span>
                             </>
-                          ) : event.name === 'Zénith' && event.description.includes('Soirée du 17 avril') ? (
+                          ) : event.name === 'Parc Expo' && event.description.includes('Soirée du 17 avril') ? (
                             <>
                               <span>🏆</span>
                               <span>RÉSULTATS</span>
@@ -4080,17 +4064,17 @@ function App() {
                               <h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4>
                             </div>
                           )}
-                          {event.name === 'Centre Prouvé' && (
+                          {event.name === 'Parc Expo' && event.description.includes('Soirée Pompoms') && (
                             <div className="party-results">
                               <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
-                                Résultat : {localStorage.getItem('centre-prouve-result') || 'à venir'}
+                                Résultat : {localStorage.getItem('parc-expo-pompoms-result') || 'à venir'}
                               </h4>
                             </div>
                           )}
-                          {event.name === 'Zénith' && event.description.includes('DJ contest') && (
+                          {event.name === 'Parc Expo' && event.description.includes('DJ contest') && (
                             <div className="party-results">
                               <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
-                                Résultat : {localStorage.getItem('zenith-dj-contest-result') || 'à venir'}
+                                Résultat : {localStorage.getItem('parc-expo-dj-contest-result') || 'à venir'}
                               </h4>
                             </div>
                           )}
@@ -4445,7 +4429,7 @@ function App() {
         onChat={handleOpenChat}
         onEmergency={() => setShowEmergency(true)}
         onAdmin={handleAdminClick}
-        showChat={activeTab === 'chat'}
+        showChat={showChat}
         unreadCount={unreadCount}
         onEditModeToggle={() => {
           setIsEditing(!isEditing);
@@ -4458,7 +4442,15 @@ function App() {
           }
         }}
         isEditing={isEditing}
-        onBack={handleBack}
+        onBack={() => {
+          // Si le chat est ouvert, le fermer d'abord
+          if (showChat) {
+            setShowChat(false);
+            return;
+          }
+          // Sinon, utiliser la logique normale
+          handleBack();
+        }}
         isBackDisabled={activeTab === 'map' || activeTab === 'info'}
       />
       {/* Formulaire VSS */}

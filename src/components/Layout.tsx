@@ -92,10 +92,9 @@ interface Venue {
 }
 
 const Layout: React.FC = () => {
-  const [showChat, setShowChat] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showVSSForm, setShowVSSForm] = useState(false);
-  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency } = useAppPanels();
+  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab } = useAppPanels();
   const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [newVenueName, setNewVenueName] = useState('');
@@ -586,7 +585,9 @@ const Layout: React.FC = () => {
   };
 
   const handleBack = () => {
+
     if (showChat) {
+
       // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
       updateLastSeenTimestamp();
       // Fermer le formulaire de message si on ferme le chat
@@ -594,8 +595,10 @@ const Layout: React.FC = () => {
       setNewMessage('');
       setNewMessageSender('');
       setShowChat(false);
+      // Ne pas changer activeTab - rester sur la page actuelle
       return;
     }
+
     
     // Gestion de la navigation selon l'URL actuelle
     const currentPath = location.pathname;

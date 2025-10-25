@@ -21,10 +21,6 @@ import Home from './pages/Home';
 import Info from './pages/Info';
 import InfoSection from './pages/InfoSection';
 import PlanningFilesPage from './pages/PlanningFilesPage';
-
-import AllPages from './components/AllPages';
-
-
 import Layout from './components/Layout';
 import './index.css';
 import { AppPanelsProvider } from './AppPanelsContext';

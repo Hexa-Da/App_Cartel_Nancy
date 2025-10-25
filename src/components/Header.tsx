@@ -150,8 +150,13 @@ const Header: React.FC<HeaderProps> = ({
           {onChat && (
             <button
               className={`chat-button${showChat ? ' active' : ''}`}
-              style={{ right: '135px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
-              onClick={onChat}
+              style={{ right: '135px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001 }}
+              onClick={() => {
+                if (onChat) {
+                  onChat();
+                } else {
+                }
+              }}
               title="Messages de l'orga"
             >
               <svg 
