@@ -48,7 +48,7 @@ const sectionsData: { [key: string]: SectionData } = {
       { icon: <FaPizzaSlice />, text: 'Alternatives' },
     ],
   },
-  activities: {
+  sport: {
     title: 'SPORTS',
     items: [
       { icon: <FaBullhorn />, text: "Cérémonie d'ouverture" },
@@ -57,7 +57,7 @@ const sectionsData: { [key: string]: SectionData } = {
       { icon: <FaTrophy />, text: 'Podiums et médailles' },
     ]
   },
-  planning: {
+  party: {
       title: 'SOIRÉES',
       items: [
         { icon: <FaMusic />, text: 'Jeudi soir' },
@@ -66,8 +66,8 @@ const sectionsData: { [key: string]: SectionData } = {
         { icon: <FaBus />, text: 'Infos navettes' },
       ]
   },
-  cashless: {
-    title: 'INFO HOTELS',
+  hotel: {
+    title: 'HOTELS',
     items: [
       { icon: <FaMapMarkerAlt />, text: 'Localisation des hôtels' },
       { icon: <FaClock />, text: 'Horaires de réception' },
@@ -75,7 +75,7 @@ const sectionsData: { [key: string]: SectionData } = {
       { icon: <FaQuestionCircle />, text: 'Contact et assistance' },
     ]
   },
-  shop: {
+  planning: {
     title: 'PLANNING FILES',
     items: [
       { icon: <FaTrophy />, text: 'Planning des différents sports' },
@@ -125,7 +125,13 @@ const InfoSection: React.FC = () => {
     }
     
     // Gestion spéciale pour Planning Files - navigation React Router
-    if (sectionName === 'shop') {
+    if (sectionName === 'planning') {
+        // Ajouter pushState avant la navigation
+      window.history.pushState({ 
+        path: location.pathname, 
+        target: 'planning-files' 
+      }, '', `/info/${sectionName}`);
+
       if (item.text === 'Planning des différents sports') {
         // Naviguer vers PlanningFiles avec filtre sports et provenance
         navigate('/planning-files?sports=true&from=info-section');

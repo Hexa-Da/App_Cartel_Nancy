@@ -58,9 +58,12 @@ body.ios .modal-form-overlay {
   font-size: 1.5rem;
   cursor: pointer;
   color: var(--text-color);
-  position: relative;
-  margin-top: 10px;
-  margin-right: -7px;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  position: static;
+  margin-top: -10px;
+  z-index: auto;
 }
 
 /* Contenu scrollable */

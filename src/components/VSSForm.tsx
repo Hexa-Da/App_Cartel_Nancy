@@ -96,7 +96,6 @@ ${emailContent}`);
           <button 
             className="close-button"
             onClick={onClose}
-            style={{ position: 'absolute', top: '15px', right: '10px', zIndex: 10 }}
           >
             ×
           </button>

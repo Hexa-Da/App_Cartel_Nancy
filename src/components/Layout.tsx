@@ -93,26 +93,10 @@ interface Venue {
 
 const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
-  const [showVSSForm, setShowVSSForm] = useState(false);
-  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab } = useAppPanels();
+  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, // États du formulaire de lieu
+    newVenueName, setNewVenueName, newVenueDescription, setNewVenueDescription, newVenueAddress, setNewVenueAddress, selectedSport, setSelectedSport, selectedEmoji, setSelectedEmoji, tempMarker, setTempMarker, editingVenue, setEditingVenue, // États du formulaire de match
+    editingMatch, setEditingMatch, newMatch, setNewMatch } = useAppPanels();
   const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
-  const [isAddingPlace, setIsAddingPlace] = useState(false);
-  const [newVenueName, setNewVenueName] = useState('');
-  const [newVenueDescription, setNewVenueDescription] = useState('');
-  const [newVenueAddress, setNewVenueAddress] = useState('');
-  const [selectedSport, setSelectedSport] = useState('Football');
-  const [selectedEmoji, setSelectedEmoji] = useState('⚽');
-  const [tempMarker, setTempMarker] = useState<[number, number] | null>(null);
-  const [isPlacingMarker, setIsPlacingMarker] = useState(false);
-  const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: Venue | null }>({ id: null, venue: null });
-  const [editingMatch, setEditingMatch] = useState<{ venueId: string | null, match: Match | null }>({ venueId: null, match: null });
-  const [newMatch, setNewMatch] = useState<{ date: string, teams: string, description: string, endTime?: string, result?: string }>({
-    date: '',
-    teams: '',
-    description: '',
-    endTime: '',
-    result: ''
-  });
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [newMessage, setNewMessage] = useState('');
 
@@ -138,6 +122,18 @@ const Layout: React.FC = () => {
     }
   }, [location.pathname, showChat, showAddMessage]);
 
+    // Synchroniser activeTab avec location.pathname
+    useEffect(() => {
+      if (location.pathname === '/home') {
+        setActiveTab('home');
+      } else if (location.pathname === '/info') {
+        setActiveTab('info');
+      } else if (location.pathname.startsWith('/info/')) {
+        // Garder 'info' pour les sous-routes
+        setActiveTab('info');
+      }
+    }, [location.pathname]);
+
   // Ajoute la classe de la plateforme au body
   useEffect(() => {
     const platform = Capacitor.getPlatform();
@@ -154,71 +150,6 @@ const Layout: React.FC = () => {
     }
   }, []);
 
-  // Gestion du bouton physique retour des téléphones
-  useEffect(() => {
-    let isHandlingPopState = false;
-
-    const handlePopState = (event: PopStateEvent) => {
-      if (isHandlingPopState) return;
-      isHandlingPopState = true;
-
-      // Si le chat est ouvert, le fermer
-      if (showChat) {
-        // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
-        updateLastSeenTimestamp();
-        setShowChat(false);
-        // Empêcher la navigation en remplaçant l'entrée actuelle
-        window.history.replaceState({ path: location.pathname, chat: false }, '', location.pathname);
-        isHandlingPopState = false;
-        return;
-      }
-      
-      // Pages principales : empêcher complètement la navigation
-      if (location.pathname === '/' || location.pathname === '/info') {
-        // Empêcher la navigation en ajoutant une nouvelle entrée
-        window.history.pushState({ path: location.pathname }, '', location.pathname);
-        isHandlingPopState = false;
-        return;
-      }
-      
-      // Pour la page map, gérer selon la logique existante
-      if (location.pathname === '/map') {
-        if (activeTab !== 'map') {
-          setActiveTab('map');
-          window.history.replaceState({ path: location.pathname, tab: 'map' }, '', location.pathname);
-        } else {
-          // Permettre la navigation normale
-          navigate(-1);
-        }
-      }
-      
-      isHandlingPopState = false;
-    };
-
-    // Écouter les événements de navigation (bouton retour physique)
-    window.addEventListener('popstate', handlePopState);
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [showChat, location.pathname, activeTab, navigate]);
-
-  // Ajouter une seule entrée dans l'historique pour les pages principales
-  useEffect(() => {
-    if (location.pathname === '/' || location.pathname === '/info') {
-      // Remplacer l'entrée actuelle pour empêcher le retour
-      window.history.replaceState({ path: location.pathname }, '', location.pathname);
-    }
-  }, [location.pathname]);
-  
-  // Effet pour mettre à jour le timestamp de dernière lecture lors de la navigation
-  useEffect(() => {
-    // Si le chat était ouvert et qu'on navigue vers une autre page, mettre à jour le timestamp
-    if (showChat && messages.length > 0) {
-      updateLastSeenTimestamp();
-    }
-  }, [location.pathname, showChat, messages]);
-  
   // Fonction utilitaire pour mettre à jour le timestamp de dernière lecture
   // Cette fonction est appelée à chaque fois que le chat est fermé pour s'assurer
   // que le macaron de notification n'apparaît que quand il y a de nouveaux messages
@@ -230,6 +161,134 @@ const Layout: React.FC = () => {
       localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
     }
   };
+
+  // Gestion du bouton physique retour des téléphones
+  useEffect(() => {
+    let isHandlingPopState = false;
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (isHandlingPopState) return;
+      isHandlingPopState = true;
+
+      // Si RestaurantDescriptionModal est ouvert, le fermer
+      if (showEditRestaurantDescriptionModal) {
+        setShowEditRestaurantDescriptionModal(false);
+        window.history.replaceState({ path: location.pathname, restaurantDescription: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si HotelDescriptionModal est ouvert, le fermer
+      if (showEditHotelDescriptionModal) {
+        setShowEditHotelDescriptionModal(false);
+        window.history.replaceState({ path: location.pathname, hotelDescription: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si DescriptionModal est ouvert, le fermer
+      if (showEditDescriptionModal) {
+        setShowEditDescriptionModal(false);
+        window.history.replaceState({ path: location.pathname, description: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si ResultModal est ouvert, le fermer
+      if (showEditResultModal) {
+        setShowEditResultModal(false);
+        window.history.replaceState({ path: location.pathname, result: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si VenueModal est ouvert, le fermer
+      if (showEditVenueModal) {
+        setShowEditVenueModal(false);
+        window.history.replaceState({ path: location.pathname, venue: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si MatchModal est ouvert, le fermer
+      if (showEditMatchModal) {
+        setShowEditMatchModal(false);
+        window.history.replaceState({ path: location.pathname, match: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si AddPlaceModal est ouvert, le fermer
+      if (isAddingPlace) {
+        setIsAddingPlace(false);
+        window.history.replaceState({ path: location.pathname, addPlace: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si AdminModal est ouvert, le fermer
+      if (showAdminModal) {
+        setShowAdminModal(false);
+        window.history.replaceState({ path: location.pathname, admin: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si VSSForm est ouvert, le fermer
+      if (showVSSForm) {
+        setShowVSSForm(false);
+        window.history.replaceState({ path: location.pathname, vssForm: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si SettingsMenu est ouvert, le fermer
+      if (showSettings) {
+        setShowSettings(false);
+        window.history.replaceState({ path: location.pathname, settings: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si EmergencyPopup est ouvert, le fermer
+      if (showEmergency) {
+        setShowEmergency(false);
+        window.history.replaceState({ path: location.pathname, emergency: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+      
+      // Après avoir géré les modaux et le chat, appeler handleBack() pour gérer la navigation
+      handleBack();
+      isHandlingPopState = false;
+    };
+
+    // Écouter les événements de navigation (bouton retour physique)
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showChat, showEmergency, showVSSForm, showSettings, showAdminModal, showEditMatchModal, showEditVenueModal, showEditResultModal, showEditDescriptionModal, showEditHotelDescriptionModal, showEditRestaurantDescriptionModal, isAddingPlace, location.pathname, activeTab, navigate, messages]);  // Ajouter une seule entrée dans l'historique pour les pages principales
+  
+  useEffect(() => {
+    if (location.pathname === '/home' || location.pathname === '/info') {
+      // Vérifier si c'est la première visite pour éviter les replaceState répétés
+      const hasReplaced = sessionStorage.getItem(`historyReplaced_${location.pathname}`);
+      if (!hasReplaced) {
+        window.history.replaceState({ path: location.pathname }, '', location.pathname);
+        sessionStorage.setItem(`historyReplaced_${location.pathname}`, 'true');
+      }
+    }
+  }, [location.pathname]);
+  
+  // Effet pour mettre à jour le timestamp de dernière lecture lors de la navigation
+  useEffect(() => {
+    // Si le chat était ouvert et qu'on navigue vers une autre page, mettre à jour le timestamp
+    if (showChat && messages.length > 0) {
+      updateLastSeenTimestamp();
+    }
+  }, [location.pathname, showChat, messages]);
 
   // État pour gérer les traductions des messages
   const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
@@ -585,7 +644,6 @@ const Layout: React.FC = () => {
   };
 
   const handleBack = () => {
-
     if (showChat) {
 
       // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
@@ -617,7 +675,7 @@ const Layout: React.FC = () => {
       
       if (fromParam === 'info-section') {
         // Retour vers la section Planning Files dans Info
-        navigate('/info/shop');
+        navigate('/info/planning');
       } else {
         // Retour par défaut vers Info
         navigate('/info');
@@ -666,15 +724,18 @@ const Layout: React.FC = () => {
     <div className="layout">
       <Header
         onChat={handleChatToggle}
-        onEmergency={() => setShowEmergency(true)}
+        onEmergency={() => {
+          setShowEmergency(true);
+          window.history.pushState({ path: location.pathname, emergency: true }, '', location.pathname);
+        }}
         onAdmin={handleAdminClick}
         showChat={showChat}
         unreadCount={unreadCount}
         onBack={handleBack}
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
-        isBackDisabled={(location.pathname === '/' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
-        hideBackButton={(location.pathname === '/' || location.pathname === '/map' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
+        isBackDisabled={(location.pathname === '/home' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
+        hideBackButton={(location.pathname === '/home' || location.pathname === '/map' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
       />
       <main className="app-main">
         <Outlet />
@@ -855,7 +916,10 @@ const Layout: React.FC = () => {
       <EmergencyPopup 
         isOpen={showEmergency}
         onClose={() => setShowEmergency(false)}
-        onShowVSS={() => setShowVSSForm(true)}
+        onShowVSS={() => {
+          setShowVSSForm(true);
+          window.history.pushState({ path: location.pathname, vssForm: true }, '', location.pathname);
+        }}
       />
 
       {/* Formulaire VSS */}

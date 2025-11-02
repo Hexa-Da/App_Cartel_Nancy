@@ -115,9 +115,9 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
     <div className="bottom-nav-container">
       <nav className={`bottom-nav ${platformClass}`}>
       <button 
-        className={`nav-button ${location.pathname === '/' ? 'active' : ''}`}
-        onClick={(e) => handleClick(e, '/')}
-        onTouchEnd={(e) => handleTouchEnd(e, '/')}
+        className={`nav-button ${location.pathname === '/home' ? 'active' : ''}`}
+        onClick={(e) => handleClick(e, '/home')}
+        onTouchEnd={(e) => handleTouchEnd(e, '/home')}
       >
         <svg 
           className="nav-icon"

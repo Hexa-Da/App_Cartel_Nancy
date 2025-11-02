@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Router>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/map" element={<App />} />
               <Route path="/info" element={<Info />} />
               <Route path="info/:sectionName" element={<InfoSection />} />
@@ -41,7 +41,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
               <Route path="classement" element={<div>Classement</div>} />
               <Route path="profil" element={<div>Profil</div>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/home" replace />} />
             </Route>
           </Routes>
         </Router>

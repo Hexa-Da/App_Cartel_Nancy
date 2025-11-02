@@ -56,11 +56,7 @@ const Info: React.FC = () => {
   }, []);
 
   const handleCardClick = (section: string) => {
-    if (section === 'map') {
-      navigate('/map');
-    } else {
-      navigate(`/info/${section}`);
-    }
+    navigate(`/info/${section}`);
   };
 
   return (
@@ -70,32 +66,32 @@ const Info: React.FC = () => {
       <div className="info-grid">
         <InfoCard
           icon={<FaUtensils />}
-          title="Infos Restauration"
+          title="Infos Restaurations"
           onClick={() => handleCardClick('restauration')}
         />
         
         <InfoCard
           icon={<FaTrophy />}
-          title="Info Sport"
-          onClick={() => handleCardClick('activities')}
+          title="Infos Sports"
+          onClick={() => handleCardClick('sport')}
         />
         
         <InfoCard
           icon={<FaMusic />}
-          title="Planning Soirées"
-          onClick={() => handleCardClick('planning')}
+          title="Infos Soirées"
+          onClick={() => handleCardClick('party')}
         />
         
         <InfoCard
           icon={<FaHotel />}
-          title="Info Hotels"
-          onClick={() => handleCardClick('cashless')}
+          title="Infos Hotels"
+          onClick={() => handleCardClick('hotel')}
         />
         
         <InfoCard
           icon={<FaFileAlt />}
           title="Planning Files"
-          onClick={() => handleCardClick('shop')}
+          onClick={() => handleCardClick('planning')}
         />
         
         <InfoCard

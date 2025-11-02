@@ -74,6 +74,7 @@ interface BaseItem {
 
 interface Hotel extends BaseItem {
   type: 'hotel';
+  telephone?: string;
   matches: Match[];
 }
 
@@ -423,7 +424,60 @@ interface OutletContext {
 import VSSForm from './components/VSSForm';
 
 function App() {
-  const { activeTab, setActiveTab, showAddMessage, setShowAddMessage, showEmergency, setShowEmergency, closeAllPanels, isEditing, setIsEditing, showChat, setShowChat, chatOriginTab, setChatOriginTab } = useAppPanels();
+  const { 
+    activeTab, 
+    setActiveTab, 
+    showAddMessage, 
+    setShowAddMessage, 
+    showEmergency, 
+    setShowEmergency, 
+    closeAllPanels, 
+    isEditing, 
+    setIsEditing, 
+    showChat, 
+    setShowChat, 
+    chatOriginTab, 
+    setChatOriginTab,
+    // États des formulaires
+    showVSSForm,
+    setShowVSSForm,
+    showEditMatchModal,
+    setShowEditMatchModal,
+    showEditVenueModal,
+    setShowEditVenueModal,
+    showEditResultModal,
+    setShowEditResultModal,
+    showEditDescriptionModal,
+    setShowEditDescriptionModal,
+    showEditHotelDescriptionModal,
+    setShowEditHotelDescriptionModal,
+    showEditRestaurantDescriptionModal,
+    setShowEditRestaurantDescriptionModal,
+    isAddingPlace,
+    setIsAddingPlace,
+    isPlacingMarker,
+    setIsPlacingMarker,
+    // États du formulaire de lieu
+    newVenueName,
+    setNewVenueName,
+    newVenueDescription,
+    setNewVenueDescription,
+    newVenueAddress,
+    setNewVenueAddress,
+    selectedSport,
+    setSelectedSport,
+    selectedEmoji,
+    setSelectedEmoji,
+    tempMarker,
+    setTempMarker,
+    editingVenue,
+    setEditingVenue,
+    // États du formulaire de match
+    editingMatch,
+    setEditingMatch,
+    newMatch,
+    setNewMatch
+  } = useAppPanels();
   const location = useLocation();
 
   // Ajoute la classe 'ios' au body si la plateforme est iOS
@@ -745,16 +799,23 @@ function App() {
 
   const [hotels, setHotels] = useState<Hotel[]>(() => {
     // Charger les descriptions modifiées depuis le localStorage
-    const savedDescription1 = localStorage.getItem('hotel-description-1') || "+33 892 68 31 25";
-    const savedDescription2 = localStorage.getItem('hotel-description-2') || "+33 3 83 44 66 00";
+    const savedDescription1 = localStorage.getItem('hotel-description-1') ?? '';
+    const savedDescription2 = localStorage.getItem('hotel-description-2') ?? '';
+    const savedDescription3 = localStorage.getItem('hotel-description-3') ?? '';
+    const savedDescription4 = localStorage.getItem('hotel-description-4') ?? '';
+    const savedDescription5 = localStorage.getItem('hotel-description-5') ?? '';
+    const savedDescription6 = localStorage.getItem('hotel-description-6') ?? '';
+    const savedDescription7 = localStorage.getItem('hotel-description-7') ?? '';
+    const savedDescription8 = localStorage.getItem('hotel-description-8') ?? '';
     
     return [
       {
         id: '1',
-        name: "ibis budget Nancy Porte Sud",
-        position: [48.638751, 6.183532],
+        name: "Ibis Styles Nancy Sud",
+        position: [48.638767, 6.183726],
         description: savedDescription1,
-        address: "Za Frocourt, 6 All. de la Genelière, 54180 Houdemont",
+        address: "8 Allée De La Genelière, Rn 57, 54180 Houdemont",
+        telephone: "03 83 56 10 25",
         type: 'hotel',
         date: '',
         latitude: 48.638751,
@@ -765,18 +826,109 @@ function App() {
       },
       {
         id: '2',
-        name: "KYRIAD DIRECT NANCY SUD - Vandoeuvre",
-        position: [48.650667, 6.146258],
+        name: "Nemea Home Suite Nancy Centre",
+        position: [48.685828, 6.190530],
         description: savedDescription2,
-        address: "1 Av. de la Forêt de Haye, 54500 Vandœuvre-lès-Nancy",
+        address: "13 Rue Albert Lebrun, 54000 Nancy",
+        telephone: "03 83 33 88 40",
         type: 'hotel',
         date: '',
-        latitude: 48.650667,
-        longitude: 6.146258,
+        latitude: 48.685828,
+        longitude: 6.190530,
         emoji: '🏢',
         sport: 'Hotel',
         matches: []
       },
+      {
+        id: '3',
+        name: "Nemea Grand Coeur Nancy Centre",
+        position: [48.685564, 6.181711],
+        description: savedDescription3,
+        address: "12 Rue Charles III, 54000 Nancy",
+        telephone: "03 83 27 02 66",
+        type: 'hotel',
+        date: '',
+        latitude: 48.685564,
+        longitude: 6.181711,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      },
+      {
+        id: '4',
+        name: "Hotel Ibis Nancy Brabois",
+        position: [48.650700, 6.144908],
+        description: savedDescription4,
+        address: "All. de Bourgogne, 54500 Vandœuvre-lès-Nancy",
+        telephone: "03 83 44 55 77",
+        type: 'hotel',
+        date: '',
+        latitude: 48.650700,
+        longitude: 6.144908,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      },
+      {
+        id: '5',
+        name: "Hotel Residome Nancy",
+        position: [48.694090, 6.195636],
+        description: savedDescription5,
+        address: "9 Bd de la Mothe, 54000 Nancy",
+        telephone: "03 83 19 55 60",
+        type: 'hotel',
+        date: '',
+        latitude: 48.694090,
+        longitude: 6.195636,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      },
+      {
+        id: '6',
+        name: "Ibis Budget Nancy Laxou",
+        position: [48.695594, 6.124011],
+        description: savedDescription6,
+        address: "1 Rue du Vair, 54520 Laxou",
+        telephone: "08 92 68 04 82",
+        type: 'hotel',
+        date: '',
+        latitude: 48.695594,
+        longitude: 6.124011,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      },
+      {
+        id: '7',
+        name: "Hotel Revotel Nancy Centre",
+        position: [48.689027, 6.170853],
+        description: savedDescription7,
+        address: "41 Rue Raymond Poincaré, 54000 Nancy",
+        telephone: "03 83 28 02 13",
+        type: 'hotel',
+        date: '',
+        latitude: 48.689027,
+        longitude: 6.170853,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      },
+      {
+        id: '8',
+        name: "Hotel Cerise Nancy",
+        position: [48.699409, 6.144490],
+        description: savedDescription8,
+        address: "1339 Av. Raymond Pinchard, 54100 Nancy",
+        telephone: "03 83 98 03 33",
+        type: 'hotel',
+        date: '',
+        latitude: 48.699409,
+        longitude: 6.144490,
+        emoji: '🏢',
+        sport: 'Hotel',
+        matches: []
+      }
     ];
   });
 
@@ -943,39 +1095,21 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const [isAddingPlace, setIsAddingPlace] = useState(false);
-  const [newVenueName, setNewVenueName] = useState('');
-  const [newVenueDescription, setNewVenueDescription] = useState('');
-  const [newVenueAddress, setNewVenueAddress] = useState('');
-  const [selectedSport, setSelectedSport] = useState('Football');
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
-  const [editingMatch, setEditingMatch] = useState<{venueId: string | null, match: Match | null}>({ venueId: null, match: null });
   const [editingPartyResult, setEditingPartyResult] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
-  const [showEditResultModal, setShowEditResultModal] = useState(false);
   const [editingResult, setEditingResult] = useState('');
   const [editingPartyDescription, setEditingPartyDescription] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
-  const [showEditDescriptionModal, setShowEditDescriptionModal] = useState(false);
   const [editingDescription, setEditingDescription] = useState('');
   const [editingHotelDescription, setEditingHotelDescription] = useState<{hotelId: string | null, isEditing: boolean}>({ hotelId: null, isEditing: false });
-  const [showEditHotelDescriptionModal, setShowEditHotelDescriptionModal] = useState(false);
   const [editingHotelDescriptionText, setEditingHotelDescriptionText] = useState('');
   const [editingRestaurantDescription, setEditingRestaurantDescription] = useState<{restaurantId: string | null, isEditing: boolean}>({ restaurantId: null, isEditing: false });
-  const [showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal] = useState(false);
   const [editingRestaurantDescriptionText, setEditingRestaurantDescriptionText] = useState('');
-  const [newMatch, setNewMatch] = useState<{date: string, teams: string, description: string, endTime?: string, result?: string}>({
-    date: '',
-    teams: '',
-    description: '',
-    result: ''
-  });
   const [openPopup, setOpenPopup] = useState<string | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [mapStyle, setMapStyle] = useState('osm');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: Venue | null }>({ id: null, venue: null });
-  const [selectedEmoji, setSelectedEmoji] = useState('⚽');
   const [eventFilter, setEventFilter] = useState<string>(() => {
     const saved = localStorage.getItem('mapEventFilter');
     return saved || 'all';
@@ -1450,9 +1584,14 @@ function App() {
     };
   }, [history, historyIndex, venues]);
 
-  // Ajouter ces états au début du composant App
-  const [tempMarker, setTempMarker] = useState<[number, number] | null>(null);
-  const [isPlacingMarker, setIsPlacingMarker] = useState(false);
+  // Fonction utilitaire pour mettre à jour le timestamp de dernière lecture
+  const updateLastSeenTimestamp = () => {
+    if (messages.length > 0) {
+      const mostRecentMsg = messages[0];
+      const newTimestamp = mostRecentMsg.timestamp;
+      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
+    }
+  };
 
   // Modifier la fonction qui gère l'ajout d'un lieu
   const handleAddVenue = async () => {
@@ -2416,8 +2555,10 @@ function App() {
           editDescriptionButton.textContent = 'Modifier la description';
           editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
           editDescriptionButton.addEventListener('click', () => {
-            // Ouvrir le formulaire modal pour éditer la description
-            openEditDescriptionModal(party.id, party.description || '');
+            // Lire la description depuis localStorage pour avoir la version à jour
+            const savedDesc = localStorage.getItem(`party-description-${party.id}`);
+            const currentDescription = savedDesc !== null ? savedDesc : (party.description || '');
+            openEditDescriptionModal(party.id, currentDescription);
           });
           popupContent.appendChild(editDescriptionButton);
         }
@@ -2450,12 +2591,16 @@ function App() {
               })
             });
 
+            const savedDescription = localStorage.getItem(`hotel-description-${hotel.id}`) !== null 
+              ? localStorage.getItem(`hotel-description-${hotel.id}`) 
+              : hotel.description;            
             const popupContent = document.createElement('div');
             popupContent.className = 'venue-popup';
             popupContent.innerHTML = `
               <h3>${hotel.name}</h3>
-              <p>${hotel.description}</p>
-      <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
+              ${savedDescription ? `<p>${savedDescription}</p>` : ''}
+              <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
+              ${hotel.telephone ? `<p class="venue-phone">Téléphone : ${hotel.telephone}</p>` : ''}
             `;
             const buttonsContainer = document.createElement('div');
             buttonsContainer.className = 'popup-buttons';
@@ -2471,8 +2616,21 @@ function App() {
             copyButton.textContent = 'Copier l\'adresse';
             copyButton.addEventListener('click', () => {
               copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
-            });
+            }); 
             buttonsContainer.appendChild(copyButton);
+
+            // Ajouter le bouton "Appeler" si l'hôtel a un numéro de téléphone
+            if (hotel.telephone) {
+              const callButton = document.createElement('button');
+              callButton.className = 'call-button';
+              callButton.textContent = 'Appeler';
+              callButton.addEventListener('click', () => {
+                // Nettoyer le numéro de téléphone (enlever les espaces et caractères spéciaux pour le lien tel:)
+                const cleanPhone = hotel.telephone.replace(/\s+/g, '');
+                window.location.href = `tel:${cleanPhone}`;
+              });
+              buttonsContainer.appendChild(callButton);
+            }
     
     // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
     if (isAdmin && isEditing) {
@@ -2481,8 +2639,10 @@ function App() {
       editDescriptionButton.textContent = 'Modifier la description';
       editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
       editDescriptionButton.addEventListener('click', () => {
-        // Ouvrir le formulaire modal pour éditer la description
-        openEditHotelDescriptionModal(hotel.id, hotel.description || '');
+        // Lire la description depuis localStorage pour avoir la version à jour
+        const savedDesc = localStorage.getItem(`hotel-description-${hotel.id}`);
+        const currentDescription = savedDesc !== null ? savedDesc : (hotel.description || '');
+        openEditHotelDescriptionModal(hotel.id, currentDescription);
       });
       popupContent.appendChild(editDescriptionButton);
     }
@@ -2512,9 +2672,12 @@ function App() {
 
             const popupContent = document.createElement('div');
             popupContent.className = 'venue-popup';
+            const savedDescription = localStorage.getItem(`restaurant-description-${restaurant.id}`) !== null 
+              ? localStorage.getItem(`restaurant-description-${restaurant.id}`) 
+              : restaurant.description;            
             popupContent.innerHTML = `
               <h3>${restaurant.name}</h3>
-              <p>${restaurant.description}</p>
+              <p>${savedDescription}</p>
               <p class="venue-address">${restaurant.address}</p>
             `;
             const buttonsContainer = document.createElement('div');
@@ -2541,8 +2704,10 @@ function App() {
       editDescriptionButton.textContent = 'Modifier la description';
       editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
       editDescriptionButton.addEventListener('click', () => {
-        // Ouvrir le formulaire modal pour éditer la description
-        openEditRestaurantDescriptionModal(restaurant.id, restaurant.description || '');
+        // Lire la description depuis localStorage pour avoir la version à jour
+        const savedDesc = localStorage.getItem(`restaurant-description-${restaurant.id}`);
+        const currentDescription = savedDesc !== null ? savedDesc : (restaurant.description || '');
+        openEditRestaurantDescriptionModal(restaurant.id, currentDescription);
       });
       popupContent.appendChild(editDescriptionButton);
     }
@@ -2652,6 +2817,13 @@ function App() {
     };
   }, [hotels, restaurants, isAdmin, isEditing]);
 
+  // Effet pour recréer les marqueurs d'hôtels et restaurants quand isEditing ou isAdmin change
+  useEffect(() => {
+    if (mapRef.current && !locationError && hotels.length > 0 && restaurants.length > 0) {
+      createHotelAndRestaurantMarkers();
+    }
+  }, [isEditing, isAdmin]);
+
   // Fonction pour commencer l'édition d'un match
   const startEditingMatch = (venueId: string, match: Match | null) => {
     if (!checkAdminRights()) return;
@@ -2745,7 +2917,7 @@ function App() {
         hotel.id === hotelId ? { ...hotel, description } : hotel
       )
     );
-    
+    createHotelAndRestaurantMarkers();
     triggerMarkerUpdate();
     setEditingHotelDescription({ hotelId: null, isEditing: false });
   };
@@ -2764,7 +2936,7 @@ function App() {
         restaurant.id === restaurantId ? { ...restaurant, description } : restaurant
       )
     );
-    
+    createHotelAndRestaurantMarkers();
     setEditingRestaurantDescription({ restaurantId: null, isEditing: false });
   };
 
@@ -2783,13 +2955,11 @@ function App() {
 
   // Fonction pour sauvegarder le résultat depuis le modal
   const handleSaveResultFromModal = () => {
-    if (editingResult.trim() !== '') {
-      // Déterminer quelle soirée éditer selon le contexte
-      const currentPartyId = editingPartyResult.partyId;
-      if (currentPartyId) {
-        savePartyResult(currentPartyId, editingResult.trim());
-        closeEditResultModal();
-      }
+    // Déterminer quelle soirée éditer selon le contexte
+    const currentPartyId = editingPartyResult.partyId;
+    if (currentPartyId) {
+      savePartyResult(currentPartyId, editingResult.trim());
+      closeEditResultModal();
     }
   };
 
@@ -2808,13 +2978,11 @@ function App() {
 
   // Fonction pour sauvegarder la description depuis le modal
   const handleSaveDescriptionFromModal = () => {
-    if (editingDescription.trim() !== '') {
-      // Déterminer quelle soirée éditer selon le contexte
-      const currentPartyId = editingPartyDescription.partyId;
-      if (currentPartyId) {
-        savePartyDescription(currentPartyId, editingDescription.trim());
-        closeEditDescriptionModal();
-      }
+    // Déterminer quelle soirée éditer selon le contexte
+    const currentPartyId = editingPartyDescription.partyId;
+    if (currentPartyId) {
+      savePartyDescription(currentPartyId, editingDescription.trim());
+      closeEditDescriptionModal();
     }
   };
 
@@ -2833,12 +3001,10 @@ function App() {
 
   // Fonction pour sauvegarder la description de l'hôtel depuis le modal
   const handleSaveHotelDescriptionFromModal = () => {
-    if (editingHotelDescriptionText.trim() !== '') {
-      const currentHotelId = editingHotelDescription.hotelId;
-      if (currentHotelId) {
-        saveHotelDescription(currentHotelId, editingHotelDescriptionText.trim());
-        closeEditHotelDescriptionModal();
-      }
+    const currentHotelId = editingHotelDescription.hotelId;
+    if (currentHotelId) {
+      saveHotelDescription(currentHotelId, editingHotelDescriptionText.trim());
+      closeEditHotelDescriptionModal();
     }
   };
 
@@ -2857,12 +3023,10 @@ function App() {
 
   // Fonction pour sauvegarder la description du restaurant depuis le modal
   const handleSaveRestaurantDescriptionFromModal = () => {
-    if (editingRestaurantDescriptionText.trim() !== '') {
-      const currentRestaurantId = editingRestaurantDescription.restaurantId;
-      if (currentRestaurantId) {
-        saveRestaurantDescription(currentRestaurantId, editingRestaurantDescriptionText.trim());
-        closeEditRestaurantDescriptionModal();
-      }
+    const currentRestaurantId = editingRestaurantDescription.restaurantId;
+    if (currentRestaurantId) {
+      saveRestaurantDescription(currentRestaurantId, editingRestaurantDescriptionText.trim());
+      closeEditRestaurantDescriptionModal();
     }
   };
 
@@ -3390,10 +3554,12 @@ function App() {
       // Ouvrir le chat directement, même depuis CalendarPopup
       setShowChat(true);
       
-      // Ajouter une entrée dans l'historique seulement si on ne vient pas d'une page principale
-      if (activeTab !== 'map' && activeTab !== 'home' && activeTab !== 'info' && activeTab !== 'calendar') {
-        window.history.pushState({ tab: 'chat', origin: activeTab }, '', window.location.pathname);
-      }
+      // TOUJOURS ajouter une entrée dans l'historique lors de l'ouverture du chat
+      window.history.pushState({ 
+        chat: true, 
+        origin: activeTab 
+      }, '', window.location.pathname);
+
       if (messages.length > 0) {
         // Maintenant que les messages sont triés par ordre décroissant, le premier est le plus récent
         const mostRecentMsg = messages[0];
@@ -3540,76 +3706,6 @@ function App() {
   // Juste après la déclaration de useAppPanels et des states principaux dans App()
   const previousTabRef = useRef<TabType | null>(null);
 
-  // Gestion du bouton physique retour des téléphones
-  useEffect(() => {
-    let isHandlingPopState = false;
-
-    const handlePopState = (event: PopStateEvent) => {
-      if (isHandlingPopState) return;
-      isHandlingPopState = true;
-
-      // Pages principales : empêcher complètement la navigation
-      if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
-        // Empêcher la navigation en ajoutant une nouvelle entrée
-        window.history.pushState({ tab: activeTab }, '', window.location.pathname);
-        isHandlingPopState = false;
-        return;
-      }
-      
-      // Si on est sur le chat, retourner à la page d'origine
-      if (activeTab === 'chat') {
-        setActiveTab(chatOriginTab);
-        // Ne pas ajouter d'entrée dans l'historique ici pour permettre la navigation continue
-        isHandlingPopState = false;
-        return;
-      }
-      
-      // Pour les autres pages secondaires, gérer selon la logique existante
-      switch (activeTab as TabType) {
-        case 'events':
-          setActiveTab('map');
-          break;
-        case 'calendar':
-          setActiveTab('events');
-          break;
-        default:
-          setActiveTab('map');
-      }
-      
-      isHandlingPopState = false;
-    };
-
-    // Écouter les événements de navigation (bouton retour physique)
-    window.addEventListener('popstate', handlePopState);
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [activeTab, chatOriginTab]);
-
-  // Ajouter une entrée dans l'historique pour les pages principales et empêcher le retour
-  useEffect(() => {
-    if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
-      // Remplacer l'entrée actuelle et ajouter une nouvelle pour empêcher le retour
-      window.history.replaceState({ tab: activeTab }, '', window.location.pathname);
-      window.history.pushState({ tab: activeTab }, '', window.location.pathname);
-    }
-  }, [activeTab]);
-
-  // Gestion agressive pour empêcher le retour sur les pages principales
-  useEffect(() => {
-    if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
-      const preventBack = (e: PopStateEvent) => {
-        if (activeTab === 'map' || activeTab === 'home' || activeTab === 'info') {
-          window.history.pushState({ tab: activeTab }, '', window.location.pathname);
-        }
-      };
-      
-      window.addEventListener('popstate', preventBack);
-      return () => window.removeEventListener('popstate', preventBack);
-    }
-  }, [activeTab]);
-
   useEffect(() => {
     // Détecte le retour de 'calendar' vers 'events' et déclenche le scroll
     if (previousTabRef.current === 'calendar' && activeTab === 'events') {
@@ -3632,7 +3728,6 @@ function App() {
     previousTabRef.current = activeTab;
   }, [activeTab]);
 
-  const [showVSSForm, setShowVSSForm] = useState(false);
 
 
   // Fonctions wrapper pour sauvegarder les filtres dans le localStorage
@@ -3741,16 +3836,6 @@ function App() {
           <LocationMarker />
           <MapEvents onMapClick={handleMapClick} />
                           <BusLines visibleLines={['T1', 'T5', 'T4', 'T2', 'T3']} />
-          {/* Pinne temporaire supprimée pour éviter l'affichage de la pinne orange
-          {tempMarker && (
-            <Marker
-              position={tempMarker}
-              icon={DefaultIcon}
-            >
-              <Popup>Nouveau lieu</Popup>
-            </Marker>
-          )}
-          */}
               <div className="leaflet-control-container">
                 <div className="leaflet-top leaflet-right">
                   <div className="leaflet-control-zoom leaflet-bar leaflet-control">
@@ -4453,10 +4538,6 @@ function App() {
         }}
         isBackDisabled={activeTab === 'map' || activeTab === 'info'}
       />
-      {/* Formulaire VSS */}
-      {showVSSForm && (
-        <VSSForm onClose={() => setShowVSSForm(false)} />
-      )}
 
               {/* Modal d'édition du résultat de la soirée pompom */}
         {showEditResultModal && (
@@ -4486,7 +4567,6 @@ function App() {
                   <button 
                     className="modal-form-submit" 
                     onClick={handleSaveResultFromModal} 
-                    disabled={!editingResult.trim()}
                   >
                     Sauvegarder le résultat
                   </button>
@@ -4505,8 +4585,8 @@ function App() {
             <div className="modal-form-container">
               <div className="modal-form-header">
                 <h2>
-                  {editingPartyDescription.partyId === '2' ? 'Description du show pompom' : 
-                   editingPartyDescription.partyId === '3' ? 'Description du DJ Contest' : 
+                  {editingPartyDescription.partyId === '2' ? 'Show pompom' : 
+                   editingPartyDescription.partyId === '3' ? 'DJ Contest' : 
                    'Description de la soirée'}
                 </h2>
                 <button className="close-button" onClick={closeEditDescriptionModal}>×</button>
@@ -4527,7 +4607,6 @@ function App() {
                   <button 
                     className="modal-form-submit" 
                     onClick={handleSaveDescriptionFromModal} 
-                    disabled={!editingDescription.trim()}
                   >
                     Sauvegarder la description
                   </button>
@@ -4564,7 +4643,6 @@ function App() {
                   <button 
                     className="modal-form-submit" 
                     onClick={handleSaveHotelDescriptionFromModal} 
-                    disabled={!editingHotelDescriptionText.trim()}
                   >
                     Sauvegarder la description
                   </button>
@@ -4601,7 +4679,6 @@ function App() {
                   <button 
                     className="modal-form-submit" 
                     onClick={handleSaveRestaurantDescriptionFromModal} 
-                    disabled={!editingRestaurantDescriptionText.trim()}
                   >
                     Sauvegarder la description
                   </button>

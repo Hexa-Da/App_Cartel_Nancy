@@ -40,8 +40,14 @@ const sportOptions = [
 
 const hotelOptions = [
   { value: 'none', label: 'Tous les hôtels' },
-  { value: '1', label: 'ibis budget Nancy Porte Sud' },
-  { value: '2', label: 'KYRIAD DIRECT NANCY SUD - Vandoeuvre' }
+  { value: '1', label: 'Ibis Styles Nancy Sud' },
+  { value: '2', label: 'Nemea Home Suite Nancy Centre' },
+  { value: '3', label: 'Nemea Grand Coeur Nancy Centre' },
+  { value: '4', label: 'Hotel Ibis Nancy Brabois' },
+  { value: '5', label: 'Hotel Residome Nancy' },
+  { value: '6', label: 'Ibis Budget Nancy Laxou' },
+  { value: '7', label: 'Hotel Revotel Nancy Centre' },
+  { value: '8', label: 'Hotel Cerise Nancy' }
 ];
 
 const restaurantOptions = [

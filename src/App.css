@@ -976,9 +976,16 @@ body.ios .location-error {
   transition: all 0.3s ease;
 }
 
-.copy-button:active {
-  transform: translateY(0);
-  background-color: #512DA8;
+.call-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #5dabae;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  transition: all 0.3s ease;
 }
 
 .popup-buttons .modif-button {

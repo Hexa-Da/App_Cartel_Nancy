@@ -56,10 +56,9 @@ body.ios .vss-form-overlay {
   padding: 0.25rem;
   border-radius: 4px;
   transition: background-color 0.2s ease;
-}
-
-.vss-form-header .close-button:hover {
-  background-color: var(--bg-secondary);
+  position: static;
+  margin-right: -10px;
+  z-index: auto;
 }
 
 .vss-form-content {

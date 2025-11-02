@@ -202,7 +202,10 @@ const Header: React.FC<HeaderProps> = ({
           <button
             className="header-settings-button"
             style={{ right: '55px', top: '40px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
-            onClick={() => setShowSettings(true)}
+            onClick={() => {
+              setShowSettings(true);
+              window.history.pushState({ path: window.location.pathname, settings: true }, '', window.location.pathname);
+            }}
             title="Paramètres"
           >
             <svg 
