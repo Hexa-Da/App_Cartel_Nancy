@@ -3,7 +3,8 @@ import './CalendarPopup.css';
 import { Venue } from '../types';
 import Header from './Header';
 import BottomNav from './BottomNav';
-import EventDetails, { Event } from './EventDetails';
+import EventDetails, { Event } from '../components/EventDetails';
+import { useAppPanels } from '../AppPanelsContext';
 
 interface CalendarPopupProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   onBack,
   isBackDisabled
 }) => {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const { selectedEvent, setSelectedEvent } = useAppPanels();
   const [isStarFilterActive, setIsStarFilterActive] = useState(() => {
     const saved = localStorage.getItem('starFilterActive');
     return saved !== null ? JSON.parse(saved) : false;

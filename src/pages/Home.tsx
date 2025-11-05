@@ -16,12 +16,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import EventDetails, { Event } from '../components/EventDetails';
 import { Match, Venue } from '../types';
 import './Home.css';
 import '../components/EventDetails.css';
 import { useApp } from '../AppContext';
+import { useAppPanels } from '../AppPanelsContext';
 
 type Place = Venue;
 
@@ -31,9 +32,10 @@ interface ExtendedMatch extends Match {
 
 const Home: React.FC = () => {
   const { getFilteredEvents, getAllDelegations } = useApp();
+  const { selectedEvent, setSelectedEvent } = useAppPanels();
   const [events, setEvents] = useState<Place[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const [userPreferences, setUserPreferences] = useState({
     favoriteSports: (() => {
       const raw = localStorage.getItem('preferredSport');
@@ -61,7 +63,16 @@ const Home: React.FC = () => {
   useEffect(() => {
     const updateEvents = () => {
       const filteredEvents = getFilteredEvents();
-      setEvents(filteredEvents);
+      // Filtrer les venues sans id et mapper pour correspondre à l'interface Venue de types.ts
+      setEvents(
+        filteredEvents
+          .filter((venue): venue is typeof venue & { id: string } => !!venue.id)
+          .map(venue => ({
+            ...venue,
+            type: 'venue' as const,
+            matches: venue.matches || []
+          }))
+      );
     };
 
     const handleStorageChange = (e: StorageEvent) => {
@@ -317,7 +328,7 @@ const Home: React.FC = () => {
 
   const handleEventClick = (match: ExtendedMatch) => {
     const [, time] = match.date.split('T');
-    setSelectedEvent({
+    const newEvent: Event = {
       type: match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party' : 'match',
       time: time.split('.')[0],
       endTime: match.endTime ? match.endTime.split('T')[1].split('.')[0] : undefined,
@@ -328,7 +339,15 @@ const Home: React.FC = () => {
       sport: match.sport,
       venue: match.venue || '',
       result: match.result
-    });
+    };
+    
+    setSelectedEvent(newEvent);
+    
+    // Ajouter une entrée dans l'historique pour permettre la fermeture avec le bouton retour
+    window.history.pushState({ 
+      path: location.pathname, 
+      eventDetails: true 
+    }, '', location.pathname);
   };
 
   const handleViewOnMap = (venue: Venue) => {

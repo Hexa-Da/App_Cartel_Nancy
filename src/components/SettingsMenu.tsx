@@ -39,6 +39,7 @@ const sportOptions = [
 ];
 
 const hotelOptions = [
+  { value: '0000', label: 'Aucun' },
   { value: 'none', label: 'Tous les hôtels' },
   { value: '1', label: 'Ibis Styles Nancy Sud' },
   { value: '2', label: 'Nemea Home Suite Nancy Centre' },

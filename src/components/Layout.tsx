@@ -29,6 +29,7 @@ import { useApp } from '../AppContext';
 import VSSForm from './VSSForm';
 import EmergencyPopup from './EmergencyPopup';
 import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import './ModalForm.css';
 
 const sportEmojis = {
@@ -95,7 +96,7 @@ const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, // États du formulaire de lieu
     newVenueName, setNewVenueName, newVenueDescription, setNewVenueDescription, newVenueAddress, setNewVenueAddress, selectedSport, setSelectedSport, selectedEmoji, setSelectedEmoji, tempMarker, setTempMarker, editingVenue, setEditingVenue, // États du formulaire de match
-    editingMatch, setEditingMatch, newMatch, setNewMatch } = useAppPanels();
+    editingMatch, setEditingMatch, newMatch, setNewMatch, selectedEvent, setSelectedEvent } = useAppPanels();
   const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [newMessage, setNewMessage] = useState('');
@@ -169,6 +170,14 @@ const Layout: React.FC = () => {
     const handlePopState = (event: PopStateEvent) => {
       if (isHandlingPopState) return;
       isHandlingPopState = true;
+
+      // Fermer EventDetails en premier si ouvert
+      if (selectedEvent) {
+        setSelectedEvent(null);
+        window.history.replaceState({ path: location.pathname, eventDetails: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
 
       // Si RestaurantDescriptionModal est ouvert, le fermer
       if (showEditRestaurantDescriptionModal) {
@@ -257,8 +266,28 @@ const Layout: React.FC = () => {
         isHandlingPopState = false;
         return;
       }
+
+      if (showChat) {
+        updateLastSeenTimestamp();
+        setShowAddMessage(false);
+        setNewMessage('');
+        setNewMessageSender('');
+        setShowChat(false);
+        window.history.replaceState({ path: location.pathname, chat: false }, '', location.pathname);
+        isHandlingPopState = false;
+        return;
+      }
+
+      const currentPath = location.pathname;
       
-      // Après avoir géré les modaux et le chat, appeler handleBack() pour gérer la navigation
+      // Pour les navigations de routes (/info, /info/planning, /planning-files)
+      if (currentPath.startsWith('/info') || currentPath === '/planning-files') {
+        // React Router a déjà mis à jour l'URL lors du popstate
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Pour les autres cas, appeler handleBack() pour gérer la navigation
       handleBack();
       isHandlingPopState = false;
     };
@@ -269,8 +298,7 @@ const Layout: React.FC = () => {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [showChat, showEmergency, showVSSForm, showSettings, showAdminModal, showEditMatchModal, showEditVenueModal, showEditResultModal, showEditDescriptionModal, showEditHotelDescriptionModal, showEditRestaurantDescriptionModal, isAddingPlace, location.pathname, activeTab, navigate, messages]);  // Ajouter une seule entrée dans l'historique pour les pages principales
-  
+  }, [showChat, showEmergency, showVSSForm, showSettings, showAdminModal, showEditMatchModal, showEditVenueModal, showEditResultModal, showEditDescriptionModal, showEditHotelDescriptionModal, showEditRestaurantDescriptionModal, isAddingPlace, location.pathname, activeTab, navigate, messages, selectedEvent]);    
   useEffect(() => {
     if (location.pathname === '/home' || location.pathname === '/info') {
       // Vérifier si c'est la première visite pour éviter les replaceState répétés
@@ -705,10 +733,19 @@ const Layout: React.FC = () => {
 
   // Mise à jour du timestamp de dernière lecture lors de l'ouverture/fermeture du chat
   const handleChatToggle = () => {
+    const wasChatOpen = showChat;
     setShowChat(!showChat);
+
+    if (!wasChatOpen) {
+      // Quand on OUVRE le chat, ajouter une entrée dans l'historique
+      window.history.pushState({ 
+        path: location.pathname, 
+        chat: true 
+      }, '', location.pathname);
+    }
     
     // Fermer le formulaire de message si on ferme le chat
-    if (showChat) {
+    if (wasChatOpen) {
       setShowAddMessage(false);
       setNewMessage('');
       setNewMessageSender('');

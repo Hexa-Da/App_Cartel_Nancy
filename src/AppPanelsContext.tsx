@@ -15,6 +15,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Event } from './components/EventDetails';
 
 export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info';
 
@@ -76,6 +77,8 @@ interface AppPanelsContextType {
   setEditingMatch: React.Dispatch<React.SetStateAction<{ venueId: string | null, match: any | null }>>;
   newMatch: { date: string, teams: string, description: string, endTime?: string, result?: string };
   setNewMatch: React.Dispatch<React.SetStateAction<{ date: string, teams: string, description: string, endTime?: string, result?: string }>>;
+  selectedEvent: Event | null;
+  setSelectedEvent: React.Dispatch<React.SetStateAction<Event | null>>;
 }
 
 const AppPanelsContext = createContext<AppPanelsContextType | undefined>(undefined);
@@ -120,6 +123,7 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
     const saved = localStorage.getItem('isEditing');
     return saved ? JSON.parse(saved) : false;
   });
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   // Sauvegarder l'état isEditing dans localStorage à chaque changement
   useEffect(() => {
@@ -198,7 +202,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
       editingVenue, setEditingVenue,
       // États du formulaire de match
       editingMatch, setEditingMatch,
-      newMatch, setNewMatch
+      newMatch, setNewMatch,
+      selectedEvent, setSelectedEvent
     }}>
       {children}
     </AppPanelsContext.Provider>

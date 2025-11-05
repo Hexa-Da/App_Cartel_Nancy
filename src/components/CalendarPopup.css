@@ -76,8 +76,8 @@
 }
 
 .calendar-panel-header {
-  padding: 0.5rem;
-  margin-top: 2.8rem;
+  padding: 0.7rem;
+  margin-top: 2.5rem;
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
@@ -92,8 +92,11 @@
 .calendar-panel-header h3 {
   margin: 0;
   color: var(--text-color);
-  font-size: 1.2rem;
-  font-weight: 600;
+  align-items: center;
+  justify-content: center;
+  position: flex;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 .calendar-panel-header .filter-reset-button.star {
@@ -101,24 +104,24 @@
   opacity: 1;
 }
 
-.calendar-fixed-header .filter-toggle-button {
+.calendar-panel-header .filter-toggle-button {
+  position: absolute;
+  top: 15px;
+  right: 10px;
   padding: 8px 16px;
   background-color: var(--warning-color);
   color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 2px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-.calendar-fixed-header .filter-toggle-button:hover {
-  background-color: var(--warning-hover);
-}
-
-.calendar-fixed-header .filter-toggle-button:active {
-  transform: translateY(1px);
+  height: 24px;
+  width: 70px;
+  justify-content: center;
+  z-index: 995;
 }
 
 .calendar-filters-reset-button {

@@ -126,12 +126,6 @@ const InfoSection: React.FC = () => {
     
     // Gestion spéciale pour Planning Files - navigation React Router
     if (sectionName === 'planning') {
-        // Ajouter pushState avant la navigation
-      window.history.pushState({ 
-        path: location.pathname, 
-        target: 'planning-files' 
-      }, '', `/info/${sectionName}`);
-
       if (item.text === 'Planning des différents sports') {
         // Naviguer vers PlanningFiles avec filtre sports et provenance
         navigate('/planning-files?sports=true&from=info-section');

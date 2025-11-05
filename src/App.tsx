@@ -22,7 +22,7 @@ import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef, createContext, useContext, useCallback, useMemo } from 'react';
 import './App.css';
-import { ref, onValue, set, push, remove, update } from 'firebase/database';
+import { ref, onValue, set, push, remove, update, get } from 'firebase/database';
 import { database } from './firebase';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
@@ -530,16 +530,23 @@ function App() {
     }
   }, []);
 
-  // Effet pour gérer le changement de route
+  // Effet pour gérer le changement de route et forcer la recréation des marqueurs
   useEffect(() => {
     if (location.pathname === '/map' && activeTab === 'map') {
       setActiveTab('map');
-      // Forcer la mise à jour des marqueurs
-      setAppAction(prev => prev + 1);
       // Forcer la mise à jour de la carte
       if (mapRef.current) {
         mapRef.current.invalidateSize();
       }
+      // Forcer la recréation des marqueurs en déclenchant un re-render
+      // On utilise un timeout pour s'assurer que la carte est bien prête
+      setTimeout(() => {
+        if (mapRef.current) {
+          // Forcer la mise à jour en modifiant appAction
+          // Cela déclenchera le useEffect principal qui recrée les marqueurs
+          setAppAction(prev => prev + 1);
+        }
+      }, 200);
     }
   }, [location.pathname, activeTab]);
 
@@ -563,6 +570,18 @@ function App() {
   const markersRef = useRef<L.Marker[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  // Refs pour accéder aux valeurs actuelles dans les handlers de popup
+  const isAdminRef = useRef(isAdmin);
+  const isEditingRef = useRef(isEditing);
+  
+  // Mettre à jour les refs quand les valeurs changent
+  useEffect(() => {
+    isAdminRef.current = isAdmin;
+  }, [isAdmin]);
+  
+  useEffect(() => {
+    isEditingRef.current = isEditing;
+  }, [isEditing]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -798,22 +817,13 @@ function App() {
   };
 
   const [hotels, setHotels] = useState<Hotel[]>(() => {
-    // Charger les descriptions modifiées depuis le localStorage
-    const savedDescription1 = localStorage.getItem('hotel-description-1') ?? '';
-    const savedDescription2 = localStorage.getItem('hotel-description-2') ?? '';
-    const savedDescription3 = localStorage.getItem('hotel-description-3') ?? '';
-    const savedDescription4 = localStorage.getItem('hotel-description-4') ?? '';
-    const savedDescription5 = localStorage.getItem('hotel-description-5') ?? '';
-    const savedDescription6 = localStorage.getItem('hotel-description-6') ?? '';
-    const savedDescription7 = localStorage.getItem('hotel-description-7') ?? '';
-    const savedDescription8 = localStorage.getItem('hotel-description-8') ?? '';
-    
+    // Les descriptions seront chargées depuis Firebase via les listeners
     return [
       {
         id: '1',
         name: "Ibis Styles Nancy Sud",
         position: [48.638767, 6.183726],
-        description: savedDescription1,
+        description: '',
         address: "8 Allée De La Genelière, Rn 57, 54180 Houdemont",
         telephone: "03 83 56 10 25",
         type: 'hotel',
@@ -828,7 +838,7 @@ function App() {
         id: '2',
         name: "Nemea Home Suite Nancy Centre",
         position: [48.685828, 6.190530],
-        description: savedDescription2,
+        description: '',
         address: "13 Rue Albert Lebrun, 54000 Nancy",
         telephone: "03 83 33 88 40",
         type: 'hotel',
@@ -843,7 +853,7 @@ function App() {
         id: '3',
         name: "Nemea Grand Coeur Nancy Centre",
         position: [48.685564, 6.181711],
-        description: savedDescription3,
+        description: '',
         address: "12 Rue Charles III, 54000 Nancy",
         telephone: "03 83 27 02 66",
         type: 'hotel',
@@ -858,7 +868,7 @@ function App() {
         id: '4',
         name: "Hotel Ibis Nancy Brabois",
         position: [48.650700, 6.144908],
-        description: savedDescription4,
+        description: '',
         address: "All. de Bourgogne, 54500 Vandœuvre-lès-Nancy",
         telephone: "03 83 44 55 77",
         type: 'hotel',
@@ -873,7 +883,7 @@ function App() {
         id: '5',
         name: "Hotel Residome Nancy",
         position: [48.694090, 6.195636],
-        description: savedDescription5,
+        description: '',
         address: "9 Bd de la Mothe, 54000 Nancy",
         telephone: "03 83 19 55 60",
         type: 'hotel',
@@ -888,7 +898,7 @@ function App() {
         id: '6',
         name: "Ibis Budget Nancy Laxou",
         position: [48.695594, 6.124011],
-        description: savedDescription6,
+        description: '',
         address: "1 Rue du Vair, 54520 Laxou",
         telephone: "08 92 68 04 82",
         type: 'hotel',
@@ -903,7 +913,7 @@ function App() {
         id: '7',
         name: "Hotel Revotel Nancy Centre",
         position: [48.689027, 6.170853],
-        description: savedDescription7,
+        description: '',
         address: "41 Rue Raymond Poincaré, 54000 Nancy",
         telephone: "03 83 28 02 13",
         type: 'hotel',
@@ -918,7 +928,7 @@ function App() {
         id: '8',
         name: "Hotel Cerise Nancy",
         position: [48.699409, 6.144490],
-        description: savedDescription8,
+        description: '',
         address: "1339 Av. Raymond Pinchard, 54100 Nancy",
         telephone: "03 83 98 03 33",
         type: 'hotel',
@@ -933,16 +943,13 @@ function App() {
   });
 
   const [restaurants, setRestaurants] = useState<Restaurant[]>(() => {
-    // Charger les descriptions modifiées depuis le localStorage
-    const savedDescription1 = localStorage.getItem('restaurant-description-1') || "Repas du soir";
-    const savedDescription2 = localStorage.getItem('restaurant-description-2') || "Repas du midi";
-    
+    // Les descriptions seront chargées depuis Firebase via les listeners
     return [
       {
         id: '1',
         name: "Crous ARTEM",
         position: [48.673570, 6.169268],
-        description: savedDescription1,
+        description: "Repas du soir",
         address: "Rue Michel Dinet, 54000 Nancy",
         type: 'restaurant',
         date: '',
@@ -957,7 +964,7 @@ function App() {
         id: '2',
         name: "Parc Saint-Marie",
         position: [48.680449, 6.170722],
-        description: savedDescription2,
+        description: "Repas du midi",
         address: "1 Av. Boffrand, 54000 Nancy",
         type: 'restaurant',
         date: '',
@@ -972,21 +979,13 @@ function App() {
   });
 
   const [parties, setParties] = useState<Party[]>(() => {
-    const savedPompomsResult = localStorage.getItem('parc-expo-pompoms-result') || 'à venir';
-    const savedDJResult = localStorage.getItem('parc-expo-dj-contest-result') || 'à venir';
-    
-    // Charger les descriptions modifiées depuis le localStorage
-    const savedDescription1 = localStorage.getItem('party-description-1') || "Rendez vous 12h puis départ du Défilé à 13h";
-    const savedDescription2 = localStorage.getItem('party-description-2') || "Soirée Pompoms du 16 avril, 21h-3h";
-    const savedDescription3 = localStorage.getItem('party-description-3') || "Soirée DJ contest 17 avril, 20h-4h";
-    const savedDescription4 = localStorage.getItem('party-description-4') || "Soirée du 18 avril, 20h-4h";
-    
+    // Les descriptions et résultats seront chargés depuis Firebase via les listeners
     return [
       {
         id: '1',
         name: "Place Stanislas",
         position: [48.693524, 6.183270],
-        description: savedDescription1,
+        description: "Rendez vous 12h puis départ du Défilé à 13h",
         address: "Pl. Stanislas, 54000 Nancy",
         type: 'party',
         date: '2026-04-16T12:00:00',
@@ -999,7 +998,7 @@ function App() {
         id: '2',
         name: "Parc Expo",
         position: [48.663030, 6.191597],
-        description: savedDescription2,
+        description: "Soirée Pompoms du 16 avril, 21h-3h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
         date: '2026-04-16T21:00:00',
@@ -1007,13 +1006,13 @@ function App() {
         longitude: 6.191597,
         emoji: '🎀',
         sport: 'Pompom',
-        result: savedPompomsResult
+        result: 'à venir'
       },
       {
         id: '3',
         name: "Parc Expo",
         position: [48.663481, 6.189737],
-        description: savedDescription3,
+        description: "Soirée DJ contest 17 avril, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
         date: '2026-04-17T20:00:00',
@@ -1021,13 +1020,13 @@ function App() {
         longitude: 6.189737,
         emoji: '🎧',
         sport: 'Party',
-        result: savedDJResult
+        result: 'à venir'
       },
       {
         id: '4',
         name: "Zénith",
         position: [48.711077, 6.139991],
-        description: savedDescription4,
+        description: "Soirée du 18 avril, 20h-4h",
         address: "Rue du Zénith, 54320 Maxéville",
         type: 'party',
         date: '2026-04-18T20:00:00',
@@ -1354,12 +1353,13 @@ function App() {
   // Charger les descriptions et résultats depuis Firebase au démarrage
   useEffect(() => {
     let unsubscribeFunctions: (() => void)[] = [];
-    let dataLoaded = false;
+    let loadedCount = 0;
+    const totalSources = 4; // partyResults, hotelDescriptions, restaurantDescriptions, partyDescriptions
     
     // Fonction pour vérifier si toutes les données sont chargées et mettre à jour l'état
     const checkAllDataLoaded = () => {
-      if (dataLoaded) {
-        // Mettre à jour l'état local avec les données Firebase
+      loadedCount++;
+      if (loadedCount === totalSources) {
         updateLocalStateFromFirebase();
       }
     };
@@ -1367,16 +1367,23 @@ function App() {
     // Charger les résultats des soirées
     const unsubscribePartyResults = loadFromFirebase('editableData/partyResults', (data) => {
       if (data) {
-        // Mettre à jour les résultats des soirées
+        // Mettre à jour directement l'état React depuis Firebase
         if (data['parc-expo-pompoms'] && data['parc-expo-pompoms'].result) {
-          localStorage.setItem('parc-expo-pompoms-result', data['parc-expo-pompoms'].result);
+          setParties((prevParties: Party[]) => 
+            prevParties.map((party: Party) => 
+              party.id === '2' ? { ...party, result: data['parc-expo-pompoms'].result } : party
+            )
+          );
         }
         if (data['parc-expo-dj-contest'] && data['parc-expo-dj-contest'].result) {
-          localStorage.setItem('parc-expo-dj-contest-result', data['parc-expo-dj-contest'].result);
+          setParties((prevParties: Party[]) => 
+            prevParties.map((party: Party) => 
+              party.id === '3' ? { ...party, result: data['parc-expo-dj-contest'].result } : party
+            )
+          );
         }
-        dataLoaded = true;
-        checkAllDataLoaded();
       }
+      checkAllDataLoaded();
     });
 
     // Charger les descriptions des hôtels
@@ -1384,10 +1391,19 @@ function App() {
       if (data) {
         Object.entries(data).forEach(([hotelId, hotelData]: [string, any]) => {
           if (hotelData.description) {
-            localStorage.setItem(`hotel-description-${hotelId}`, hotelData.description);
+            // Mettre à jour directement l'état React depuis Firebase
+            setHotels((prevHotels: Hotel[]) => 
+              prevHotels.map((hotel: Hotel) => 
+                hotel.id === hotelId ? { ...hotel, description: hotelData.description } : hotel
+              )
+            );
+            // Mettre à jour les marqueurs après la modification
+            createHotelAndRestaurantMarkers();
           }
         });
-        dataLoaded = true;
+        checkAllDataLoaded();
+      } else {
+        // Appeler même si data est null pour compter comme chargé
         checkAllDataLoaded();
       }
     });
@@ -1397,10 +1413,18 @@ function App() {
       if (data) {
         Object.entries(data).forEach(([restaurantId, restaurantData]: [string, any]) => {
           if (restaurantData.description) {
-            localStorage.setItem(`restaurant-description-${restaurantId}`, restaurantData.description);
+            // Mettre à jour directement l'état React depuis Firebase
+            // Les marqueurs seront recréés automatiquement par le useEffect qui surveille les changements de descriptions
+            setRestaurants((prevRestaurants: Restaurant[]) => 
+              prevRestaurants.map((restaurant: Restaurant) => 
+                restaurant.id === restaurantId ? { ...restaurant, description: restaurantData.description } : restaurant
+              )
+            );
           }
         });
-        dataLoaded = true;
+        checkAllDataLoaded();
+      } else {
+        // Appeler même si data est null pour compter comme chargé
         checkAllDataLoaded();
       }
     });
@@ -1410,12 +1434,16 @@ function App() {
       if (data) {
         Object.entries(data).forEach(([partyId, partyData]: [string, any]) => {
           if (partyData.description) {
-            localStorage.setItem(`party-description-${partyId}`, partyData.description);
+            // Mettre à jour directement l'état React depuis Firebase
+            setParties((prevParties: Party[]) => 
+              prevParties.map((party: Party) => 
+                party.id === partyId ? { ...party, description: partyData.description } : party
+              )
+            );
           }
         });
-        dataLoaded = true;
-        checkAllDataLoaded();
       }
+      checkAllDataLoaded();
     });
 
     // Ajouter seulement les fonctions unsubscribe valides
@@ -2255,20 +2283,39 @@ function App() {
 
   // Générer les marqueurs pour la carte
   useEffect(() => {
-    if (!locationError && mapRef.current) {
-      // Nettoyer uniquement les marqueurs de venues et parties (pas les hôtels/restaurants)
-      markersRef.current = markersRef.current.filter(marker => {
-        const isHotelOrRestaurant = marker.getElement()?.classList.contains('hotel-marker') || 
-                                  marker.getElement()?.classList.contains('restaurant-marker');
-        if (!isHotelOrRestaurant) {
-          marker.remove();
-          return false;
-        }
-        return true;
-      });
+    // S'assurer qu'on est sur la page map avant de créer les marqueurs
+    if (location.pathname !== '/map' && activeTab !== 'map') {
+      return;
+    }
 
-      // VENUES
-      venues.forEach(venue => {
+    // Attendre que la carte soit prête
+    if (!mapRef.current) {
+      // Si la carte n'est pas encore prête, réessayer après un court délai
+      const timeoutId = setTimeout(() => {
+        if (mapRef.current && (location.pathname === '/map' || activeTab === 'map')) {
+          // Déclencher une mise à jour pour créer les marqueurs
+          setAppAction(prev => prev + 1);
+        }
+      }, 100);
+      // Retourner la fonction de cleanup
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+
+    // Nettoyer uniquement les marqueurs de venues et parties (pas les hôtels/restaurants)
+    markersRef.current = markersRef.current.filter(marker => {
+      const isHotelOrRestaurant = marker.getElement()?.classList.contains('hotel-marker') || 
+                                marker.getElement()?.classList.contains('restaurant-marker');
+      if (!isHotelOrRestaurant) {
+        marker.remove();
+        return false;
+      }
+      return true;
+    });
+
+    // VENUES
+    venues.forEach(venue => {
         // Filtrage par délégation
         const delegationMatch =
           delegationFilter === 'all' ||
@@ -2468,13 +2515,13 @@ function App() {
           marker.addTo(mapRef.current);
           markersRef.current.push(marker);
         }
-      });
+    });
 
-      // HOTELS et RESTAURANTS - Gérés par un effet séparé pour éviter les conflits
+    // HOTELS et RESTAURANTS - Gérés par un effet séparé pour éviter les conflits
 
-      // PARTIES (seulement pour les admins)
-      if (isAdmin) {
-        parties.forEach(party => {
+    // PARTIES (seulement pour les admins)
+    if (isAdmin) {
+      parties.forEach(party => {
         // Calculer l'ID du lieu pour la correspondance avec le filtre
         let partyVenueId = '';
         switch (party.name) {
@@ -2555,9 +2602,8 @@ function App() {
           editDescriptionButton.textContent = 'Modifier la description';
           editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
           editDescriptionButton.addEventListener('click', () => {
-            // Lire la description depuis localStorage pour avoir la version à jour
-            const savedDesc = localStorage.getItem(`party-description-${party.id}`);
-            const currentDescription = savedDesc !== null ? savedDesc : (party.description || '');
+            // Utiliser directement la description de l'état React (synchronisé avec Firebase)
+            const currentDescription = party.description || '';
             openEditDescriptionModal(party.id, currentDescription);
           });
           popupContent.appendChild(editDescriptionButton);
@@ -2566,6 +2612,62 @@ function App() {
         popupContent.appendChild(buttonsContainer);
         marker.bindPopup(popupContent);
         marker.on('popupopen', () => {
+          // Mettre à jour le contenu du popup avec les données actuelles depuis l'état React
+          const currentParty = parties.find(p => p.id === party.id) || party;
+          
+          // Mettre à jour le contenu HTML
+          popupContent.innerHTML = `
+            <h3>${currentParty.name}</h3>
+            <p>${currentParty.description}</p>
+            <p class="venue-address">${currentParty.address}</p>
+            ${currentParty.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
+            ${currentParty.name === 'Parc Expo' && currentParty.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
+            ${currentParty.name === 'Parc Expo' && currentParty.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
+          `;
+          
+          // Réajouter les boutons
+          const buttonsContainerNew = document.createElement('div');
+          buttonsContainerNew.className = 'popup-buttons';
+          const mapsButton = document.createElement('button');
+          mapsButton.className = 'maps-button';
+          mapsButton.textContent = 'Ouvrir dans Google Maps';
+          mapsButton.addEventListener('click', async () => {
+            await openInGoogleMaps(currentParty);
+          });
+          buttonsContainerNew.appendChild(mapsButton);
+          const copyButton = document.createElement('button');
+          copyButton.className = 'copy-button';
+          copyButton.textContent = 'Copier l\'adresse';
+          copyButton.addEventListener('click', () => {
+            copyToClipboard(currentParty.address || `${currentParty.latitude},${currentParty.longitude}`);
+          });
+          buttonsContainerNew.appendChild(copyButton);
+          
+          // Réajouter les boutons admin si nécessaire
+          if (isAdmin && isEditing && (currentParty.name === 'Parc Expo' || (currentParty.name === 'Parc Expo' && currentParty.description.includes('DJ contest')))) {
+            const editResultButton = document.createElement('button');
+            editResultButton.className = 'edit-result-button';
+            editResultButton.textContent = 'Modifier le résultat';
+            editResultButton.style.cssText = 'background-color: #FF8C00; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+            editResultButton.addEventListener('click', () => {
+              openEditResultModal(currentParty.id, currentParty.result || 'à venir');
+            });
+            popupContent.appendChild(editResultButton);
+          }
+          
+          if (isAdmin && isEditing) {
+            const editDescriptionButton = document.createElement('button');
+            editDescriptionButton.className = 'edit-description-button';
+            editDescriptionButton.textContent = 'Modifier la description';
+            editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+            editDescriptionButton.addEventListener('click', () => {
+              const currentDescription = currentParty.description || '';
+              openEditDescriptionModal(currentParty.id, currentDescription);
+            });
+            popupContent.appendChild(editDescriptionButton);
+          }
+          
+          popupContent.appendChild(buttonsContainerNew);
           handlePopupOpen();
         });
         if (mapRef.current) {
@@ -2573,9 +2675,8 @@ function App() {
           markersRef.current.push(marker);
         }
       });
-      }
     }
-  }, [venues, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed]);
+  }, [venues, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed, location.pathname, activeTab, appAction]);
 
   // Fonction pour créer un marqueur d'hôtel
   const createHotelMarker = (hotel: any) => {
@@ -2591,9 +2692,7 @@ function App() {
               })
             });
 
-            const savedDescription = localStorage.getItem(`hotel-description-${hotel.id}`) !== null 
-              ? localStorage.getItem(`hotel-description-${hotel.id}`) 
-              : hotel.description;            
+            const savedDescription = hotel.description;         
             const popupContent = document.createElement('div');
             popupContent.className = 'venue-popup';
             popupContent.innerHTML = `
@@ -2632,24 +2731,66 @@ function App() {
               buttonsContainer.appendChild(callButton);
             }
     
-    // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
-    if (isAdmin && isEditing) {
-      const editDescriptionButton = document.createElement('button');
-      editDescriptionButton.className = 'edit-description-button';
-      editDescriptionButton.textContent = 'Modifier la description';
-      editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
-      editDescriptionButton.addEventListener('click', () => {
-        // Lire la description depuis localStorage pour avoir la version à jour
-        const savedDesc = localStorage.getItem(`hotel-description-${hotel.id}`);
-        const currentDescription = savedDesc !== null ? savedDesc : (hotel.description || '');
-        openEditHotelDescriptionModal(hotel.id, currentDescription);
-      });
-      popupContent.appendChild(editDescriptionButton);
-    }
-    
             popupContent.appendChild(buttonsContainer);
             marker.bindPopup(popupContent);
             marker.on('popupopen', () => {
+              // Mettre à jour le contenu du popup avec les données actuelles depuis l'état React
+              const currentHotel = hotels.find(h => h.id === hotel.id) || hotel;
+              
+              // Mettre à jour le contenu HTML
+              popupContent.innerHTML = `
+                <h3>${currentHotel.name}</h3>
+                ${currentHotel.description ? `<p>${currentHotel.description}</p>` : ''}
+                <p class="venue-address">${currentHotel.address || `${currentHotel.latitude}, ${currentHotel.longitude}`}</p>
+                ${currentHotel.telephone ? `<p class="venue-phone">Téléphone : ${currentHotel.telephone}</p>` : ''}
+              `;
+              
+              // Réajouter les boutons
+              const buttonsContainerNew = document.createElement('div');
+              buttonsContainerNew.className = 'popup-buttons';
+              const mapsButton = document.createElement('button');
+              mapsButton.className = 'maps-button';
+              mapsButton.textContent = 'Ouvrir dans Google Maps';
+              mapsButton.addEventListener('click', async () => {
+                await openInGoogleMaps(currentHotel);
+              });
+              buttonsContainerNew.appendChild(mapsButton);
+              const copyButton = document.createElement('button');
+              copyButton.className = 'copy-button';
+              copyButton.textContent = 'Copier l\'adresse';
+              copyButton.addEventListener('click', () => {
+                copyToClipboard(currentHotel.address || `${currentHotel.latitude},${currentHotel.longitude}`);
+              });
+              buttonsContainerNew.appendChild(copyButton);
+              
+              // Réajouter le bouton "Appeler" si l'hôtel a un numéro de téléphone
+              if (currentHotel.telephone) {
+                const callButton = document.createElement('button');
+                callButton.className = 'call-button';
+                callButton.textContent = 'Appeler';
+                callButton.addEventListener('click', () => {
+                  const cleanPhone = currentHotel.telephone.replace(/\s+/g, '');
+                  window.location.href = `tel:${cleanPhone}`;
+                });
+                buttonsContainerNew.appendChild(callButton);
+              }
+              
+              // Réajouter le bouton d'édition si admin - Utiliser les refs pour avoir les valeurs actuelles
+              const currentIsAdmin = isAdminRef.current;
+              const currentIsEditing = isEditingRef.current;
+              if (currentIsAdmin && currentIsEditing) {
+                const editDescriptionButton = document.createElement('button');
+                editDescriptionButton.className = 'edit-description-button';
+                editDescriptionButton.textContent = 'Modifier la description';
+                editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+                editDescriptionButton.addEventListener('click', () => {
+                  const currentDescription = currentHotel.description || '';
+                  openEditHotelDescriptionModal(currentHotel.id, currentDescription);
+                });
+                popupContent.appendChild(editDescriptionButton);
+              }
+              
+              popupContent.appendChild(buttonsContainerNew);
               handlePopupOpen();
             });
 
@@ -2672,9 +2813,7 @@ function App() {
 
             const popupContent = document.createElement('div');
             popupContent.className = 'venue-popup';
-            const savedDescription = localStorage.getItem(`restaurant-description-${restaurant.id}`) !== null 
-              ? localStorage.getItem(`restaurant-description-${restaurant.id}`) 
-              : restaurant.description;            
+            const savedDescription = restaurant.description;           
             popupContent.innerHTML = `
               <h3>${restaurant.name}</h3>
               <p>${savedDescription}</p>
@@ -2697,24 +2836,53 @@ function App() {
             });
             buttonsContainer.appendChild(copyButton);
     
-    // Ajouter le bouton d'édition de la description pour les admins seulement si le mode édition est activé
-    if (isAdmin && isEditing) {
-      const editDescriptionButton = document.createElement('button');
-      editDescriptionButton.className = 'edit-description-button';
-      editDescriptionButton.textContent = 'Modifier la description';
-      editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
-      editDescriptionButton.addEventListener('click', () => {
-        // Lire la description depuis localStorage pour avoir la version à jour
-        const savedDesc = localStorage.getItem(`restaurant-description-${restaurant.id}`);
-        const currentDescription = savedDesc !== null ? savedDesc : (restaurant.description || '');
-        openEditRestaurantDescriptionModal(restaurant.id, currentDescription);
-      });
-      popupContent.appendChild(editDescriptionButton);
-    }
-    
             popupContent.appendChild(buttonsContainer);
             marker.bindPopup(popupContent);
             marker.on('popupopen', () => {
+              // Mettre à jour le contenu du popup avec les données actuelles depuis l'état React
+              const currentRestaurant = restaurants.find(r => r.id === restaurant.id) || restaurant;
+              
+              // Mettre à jour le contenu HTML
+              popupContent.innerHTML = `
+                <h3>${currentRestaurant.name}</h3>
+                <p>${currentRestaurant.description}</p>
+                <p class="venue-address">${currentRestaurant.address}</p>
+              `;
+              
+              // Réajouter les boutons
+              const buttonsContainerNew = document.createElement('div');
+              buttonsContainerNew.className = 'popup-buttons';
+              const mapsButton = document.createElement('button');
+              mapsButton.className = 'maps-button';
+              mapsButton.textContent = 'Ouvrir dans Google Maps';
+              mapsButton.addEventListener('click', async () => {
+                await openInGoogleMaps(currentRestaurant);
+              });
+              buttonsContainerNew.appendChild(mapsButton);
+              const copyButton = document.createElement('button');
+              copyButton.className = 'copy-button';
+              copyButton.textContent = 'Copier l\'adresse';
+              copyButton.addEventListener('click', () => {
+                copyToClipboard(currentRestaurant.address || `${currentRestaurant.latitude},${currentRestaurant.longitude}`);
+              });
+              buttonsContainerNew.appendChild(copyButton);
+              
+              // Réajouter le bouton d'édition si admin - Utiliser les refs pour avoir les valeurs actuelles
+              const currentIsAdmin = isAdminRef.current;
+              const currentIsEditing = isEditingRef.current;
+              if (currentIsAdmin && currentIsEditing) {
+                const editDescriptionButton = document.createElement('button');
+                editDescriptionButton.className = 'edit-description-button';
+                editDescriptionButton.textContent = 'Modifier la description';
+                editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
+                editDescriptionButton.addEventListener('click', () => {
+                  const currentDescription = currentRestaurant.description || '';
+                  openEditRestaurantDescriptionModal(currentRestaurant.id, currentDescription);
+                });
+                popupContent.appendChild(editDescriptionButton);
+              }
+              
+              popupContent.appendChild(buttonsContainerNew);
               handlePopupOpen();
             });
 
@@ -2824,6 +2992,17 @@ function App() {
     }
   }, [isEditing, isAdmin]);
 
+  // Effet pour recréer les marqueurs quand les descriptions des hôtels ou restaurants changent
+  useEffect(() => {
+    if (mapRef.current && !locationError && hotels.length > 0 && restaurants.length > 0) {
+      // Délai pour éviter de recréer trop souvent si plusieurs mises à jour arrivent en même temps
+      const timeoutId = setTimeout(() => {
+        createHotelAndRestaurantMarkers();
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [hotels, restaurants]);
+
   // Fonction pour commencer l'édition d'un match
   const startEditingMatch = (venueId: string, match: Match | null) => {
     if (!checkAdminRights()) return;
@@ -2859,8 +3038,7 @@ function App() {
   // Fonction pour sauvegarder le résultat de la soirée pompom
   const savePartyResult = (partyId: string, result: string) => {
     if (partyId === '2') { // // Parc Expo
-      localStorage.setItem('parc-expo-pompoms-result', result);
-      // Sauvegarder dans Firebase
+      // Sauvegarder dans Firebase uniquement
       saveToFirebase('editableData/partyResults/parc-expo-pompoms', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
@@ -2870,8 +3048,7 @@ function App() {
       );
       triggerMarkerUpdate();
     } else if (partyId === '3') { // Parc Expo DJ Contest
-      localStorage.setItem('parc-expo-dj-contest-result', result);
-      // Sauvegarder dans Firebase
+      // Sauvegarder dans Firebase uniquement
       saveToFirebase('editableData/partyResults/parc-expo-dj-contest', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
@@ -2886,10 +3063,7 @@ function App() {
 
   // Fonction pour sauvegarder la description de la soirée
   const savePartyDescription = (partyId: string, description: string) => {
-    // Sauvegarder dans localStorage avec une clé unique
-    localStorage.setItem(`party-description-${partyId}`, description);
-    
-    // Sauvegarder dans Firebase
+    // Sauvegarder dans Firebase uniquement
     saveToFirebase(`editableData/partyDescriptions/${partyId}`, { description, updatedAt: new Date().toISOString() });
     
     // Mettre à jour l'état local
@@ -2905,10 +3079,7 @@ function App() {
 
   // Fonction pour sauvegarder la description de l'hôtel
   const saveHotelDescription = (hotelId: string, description: string) => {
-    // Sauvegarder dans localStorage avec une clé unique
-    localStorage.setItem(`hotel-description-${hotelId}`, description);
-    
-    // Sauvegarder dans Firebase
+    // Sauvegarder dans Firebase uniquement
     saveToFirebase(`editableData/hotelDescriptions/${hotelId}`, { description, updatedAt: new Date().toISOString() });
     
     // Mettre à jour l'état local
@@ -2924,10 +3095,7 @@ function App() {
 
   // Fonction pour sauvegarder la description du restaurant
   const saveRestaurantDescription = (restaurantId: string, description: string) => {
-    // Sauvegarder dans localStorage avec une clé unique
-    localStorage.setItem(`restaurant-description-${restaurantId}`, description);
-    
-    // Sauvegarder dans Firebase
+    // Sauvegarder dans Firebase uniquement
     saveToFirebase(`editableData/restaurantDescriptions/${restaurantId}`, { description, updatedAt: new Date().toISOString() });
     
     // Mettre à jour l'état local
@@ -3055,45 +3223,10 @@ function App() {
   };
 
   // Fonction pour mettre à jour l'état local avec les données Firebase
+  // Cette fonction est maintenant simplifiée car les états sont mis à jour directement par les listeners Firebase
   const updateLocalStateFromFirebase = () => {
-    // Mettre à jour les résultats des soirées
-    const parcExpoPompomsResult = localStorage.getItem('parc-expo-pompoms-result') || 'à venir';
-    const parcExpoDJResult = localStorage.getItem('parc-expo-dj-contest-result') || 'à venir';
-    
-    setParties((prevParties: Party[]) => 
-      prevParties.map((party: Party) => {
-        if (party.id === '2') {
-          return { ...party, result: parcExpoPompomsResult };
-        } else if (party.id === '3') {
-          return { ...party, result: parcExpoDJResult };
-        }
-        return party;
-      })
-    );
-
-    // Mettre à jour les descriptions des hôtels dynamiquement
-    setHotels((prevHotels: Hotel[]) => 
-      prevHotels.map((hotel: Hotel) => {
-        const savedDescription = localStorage.getItem(`hotel-description-${hotel.id}`);
-        if (savedDescription) {
-          return { ...hotel, description: savedDescription };
-        }
-        return hotel;
-      })
-    );
-
-    // Mettre à jour les descriptions des restaurants dynamiquement
-    setRestaurants((prevRestaurants: Restaurant[]) => 
-      prevRestaurants.map((restaurant: Restaurant) => {
-        const savedDescription = localStorage.getItem(`restaurant-description-${restaurant.id}`);
-        if (savedDescription) {
-          return { ...restaurant, description: savedDescription };
-        }
-        return restaurant;
-      })
-    );
-
-    // Déclencher la mise à jour des marqueurs pour refléter les changements
+    // Les états sont déjà mis à jour directement par les listeners Firebase
+    // On déclenche juste la mise à jour des marqueurs pour refléter les changements
     triggerMarkerUpdate();
   };
 
@@ -3102,12 +3235,12 @@ function App() {
     try {
       const editableDataRef = ref(database, 'editableData');
       
-      // Générer dynamiquement la structure pour inclure tous les hôtels et restaurants
+      // Générer dynamiquement la structure pour inclure tous les hôtels et restaurants depuis les états React
       const generateHotelDescriptions = () => {
         const hotelDescriptions: any = {};
         hotels.forEach((hotel) => {
           hotelDescriptions[hotel.id] = {
-            description: localStorage.getItem(`hotel-description-${hotel.id}`) || hotel.description,
+            description: hotel.description || '',
             updatedAt: new Date().toISOString()
           };
         });
@@ -3118,22 +3251,28 @@ function App() {
         const restaurantDescriptions: any = {};
         restaurants.forEach((restaurant) => {
           restaurantDescriptions[restaurant.id] = {
-            description: localStorage.getItem(`restaurant-description-${restaurant.id}`) || restaurant.description,
+            description: restaurant.description || '',
             updatedAt: new Date().toISOString()
           };  
         });
         return restaurantDescriptions;
       };
 
-      // Structure complète avec toutes les données existantes
+      // Trouver les résultats des soirées depuis l'état parties
+      const party2 = parties.find(p => p.id === '2');
+      const party3 = parties.find(p => p.id === '3');
+      const party1 = parties.find(p => p.id === '1');
+      const party4 = parties.find(p => p.id === '4');
+
+      // Structure complète avec toutes les données depuis les états React
       const initialStructure = {
         partyResults: {
           'parc-expo-pompoms': {
-            result: localStorage.getItem('parc-expo-pompoms-result') || 'à venir',
+            result: party2?.result || 'à venir',
             updatedAt: new Date().toISOString()
           },
           'parc-expo-dj-contest': {
-            result: localStorage.getItem('parc-expo-dj-contest-result') || 'à venir',
+            result: party3?.result || 'à venir',
             updatedAt: new Date().toISOString()
           }
         },
@@ -3141,26 +3280,85 @@ function App() {
         restaurantDescriptions: generateRestaurantDescriptions(),
         partyDescriptions: {
           '1': {
-            description: localStorage.getItem('party-description-1') || 'Rendez vous 12h puis départ du Défilé à 13h',
+            description: party1?.description || 'Rendez vous 12h puis départ du Défilé à 13h',
             updatedAt: new Date().toISOString()
           },
           '2': {
-            description: localStorage.getItem('party-description-2') || 'Soirée Pompoms du 16 avril, 21h-3h',
+            description: party2?.description || 'Soirée Pompoms du 16 avril, 21h-3h',
             updatedAt: new Date().toISOString()
           },
           '3': {
-            description: localStorage.getItem('party-description-3') || 'Soirée DJ contest 17 avril, 20h-4h',
+            description: party3?.description || 'Soirée DJ contest 17 avril, 20h-4h',
             updatedAt: new Date().toISOString()
           },
           '4': {
-            description: localStorage.getItem('party-description-4') || 'Soirée du 17 avril, 20h-4h',
+            description: party4?.description || 'Soirée du 18 avril, 20h-4h',
             updatedAt: new Date().toISOString()
           }
         }
       };
 
-      // Écrire directement dans la branche editableData
-      await set(editableDataRef, initialStructure);
+      // Vérifier si editableData existe déjà dans Firebase
+      const snapshot = await get(editableDataRef);
+      if (!snapshot.exists()) {
+        // Si la structure n'existe pas, l'initialiser avec les valeurs par défaut
+        await set(editableDataRef, initialStructure);
+      } else {
+        // Si la structure existe, ne mettre à jour que les champs manquants sans écraser les données existantes
+        const existingData = snapshot.val();
+        const updates: any = {};
+        
+        // Vérifier et mettre à jour seulement les parties manquantes
+        if (!existingData.partyResults) {
+          updates.partyResults = initialStructure.partyResults;
+        } else {
+          // Mettre à jour seulement les résultats manquants
+          if (!existingData.partyResults['parc-expo-pompoms']) {
+            updates['partyResults/parc-expo-pompoms'] = initialStructure.partyResults['parc-expo-pompoms'];
+          }
+          if (!existingData.partyResults['parc-expo-dj-contest']) {
+            updates['partyResults/parc-expo-dj-contest'] = initialStructure.partyResults['parc-expo-dj-contest'];
+          }
+        }
+        
+        if (!existingData.hotelDescriptions) {
+          updates.hotelDescriptions = initialStructure.hotelDescriptions;
+        } else {
+          // Mettre à jour seulement les descriptions d'hôtels manquantes
+          hotels.forEach((hotel) => {
+            if (!existingData.hotelDescriptions[hotel.id]) {
+              updates[`hotelDescriptions/${hotel.id}`] = initialStructure.hotelDescriptions[hotel.id];
+            }
+          });
+        }
+        
+        if (!existingData.restaurantDescriptions) {
+          updates.restaurantDescriptions = initialStructure.restaurantDescriptions;
+        } else {
+          // Mettre à jour seulement les descriptions de restaurants manquantes
+          restaurants.forEach((restaurant) => {
+            if (!existingData.restaurantDescriptions[restaurant.id]) {
+              updates[`restaurantDescriptions/${restaurant.id}`] = initialStructure.restaurantDescriptions[restaurant.id];
+            }
+          });
+        }
+        
+        if (!existingData.partyDescriptions) {
+          updates.partyDescriptions = initialStructure.partyDescriptions;
+        } else {
+          // Mettre à jour seulement les descriptions de soirées manquantes
+          ['1', '2', '3', '4'].forEach((partyId) => {
+            if (!existingData.partyDescriptions[partyId]) {
+              updates[`partyDescriptions/${partyId}`] = initialStructure.partyDescriptions[partyId as '1' | '2' | '3' | '4'];
+            }
+          });
+        }
+        
+        // Appliquer seulement les mises à jour nécessaires
+        if (Object.keys(updates).length > 0) {
+          await update(editableDataRef, updates);
+        }
+      }
       
       // Mettre à jour l'état local avec les données Firebase
       updateLocalStateFromFirebase();
@@ -4152,14 +4350,14 @@ function App() {
                           {event.name === 'Parc Expo' && event.description.includes('Soirée Pompoms') && (
                             <div className="party-results">
                               <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
-                                Résultat : {localStorage.getItem('parc-expo-pompoms-result') || 'à venir'}
+                                Résultat : {event.result || 'à venir'}
                               </h4>
                             </div>
                           )}
                           {event.name === 'Parc Expo' && event.description.includes('DJ contest') && (
                             <div className="party-results">
                               <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
-                                Résultat : {localStorage.getItem('parc-expo-dj-contest-result') || 'à venir'}
+                                Résultat : {event.result || 'à venir'}
                               </h4>
                             </div>
                           )}

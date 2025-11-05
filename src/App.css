@@ -556,6 +556,13 @@ html, body, #root {
   margin-bottom: 1rem !important;
 }
 
+.venue-phone {
+  font-weight: italic;
+  color: var(--text-color-light) !important;
+  margin-bottom: 0.5rem !important;
+  margin-top: -0.5rem !important;
+}
+
 .maps-button {
   width: 100%;
   padding: 0.5rem;
@@ -1211,16 +1218,14 @@ body.ios .location-error {
   padding: 0.5rem 1rem;
   background-color: var(--bg-primary);
   color: var(--text-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  box-shadow: 0 2px 6px var(--shadow-color);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  border: none !important;
+  border-radius: 8px;
+  transition: none !important;
 }
 
 /* Repositionner le panneau d'événements à gauche */
@@ -1239,7 +1244,7 @@ body.ios .location-error {
 
 .events-panel-header {
   padding: 1.4rem;
-  margin-top: 2.5rem;
+  margin-top: 2.52rem;
   background-color: var(--bg-color);
   position: sticky;
   z-index: 2;
@@ -1305,7 +1310,6 @@ body.ios .location-error {
   background-color: var(--warning-color);
   color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
   display: flex;
@@ -1316,7 +1320,6 @@ body.ios .location-error {
   width: 70px;
   justify-content: center;
   z-index: 995;
-  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .filter-toggle-button {
@@ -1327,7 +1330,6 @@ body.ios .location-error {
   background-color: var(--warning-color);
   color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
   display: flex;
@@ -1338,7 +1340,6 @@ body.ios .location-error {
   width: 70px;
   justify-content: center;
   z-index: 995;
-  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 /* Styles spécifiques pour les boutons de reset du panel d'événements */
@@ -1960,16 +1961,16 @@ body.ios .chat-panel {
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
   margin-top: 0;
-  padding-top: 0.7rem;
 }
 
 .chat-panel-header h3 {
   margin-top: 0;
   color: var(--text-color);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   align-items: center;
   justify-content: center;
   position: flex;
+  font-weight: 700;
 }
 
 .chat-container {
@@ -2160,10 +2161,11 @@ body.ios.keyboard-open .chat-container {
 .home-info-chat .chat-panel-header h3 {
   margin-top: 0;
   color: var(--text-color);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   align-items: center;
   justify-content: center;
   position: flex;
+  font-weight: 700;
 }
 
 .home-info-chat .chat-container {
