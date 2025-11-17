@@ -28,14 +28,13 @@ const sportOptions = [
   { value: 'Natation', label: '🏊 Natation' },
   { value: 'Badminton', label: '🏸 Badminton' },
   { value: 'Tennis', label: '🎾 Tennis' },
-  { value: 'Cross', label: '🏃 Cross' },
+  { value: 'Cross', label: '👟 Cross' },
   { value: 'Volleyball', label: '🏐 Volleyball' },
   { value: 'Ping-pong', label: '🏓 Ping-pong' },
   { value: 'Boxe', label: '🥊 Boxe' },
   { value: 'Athlétisme', label: '🏃‍♂️ Athlétisme' },
-  { value: 'Pétanque', label: '🍹 Pétanque' },
+  { value: 'Spikeball', label: '⚡️ Spikeball' },
   { value: 'Escalade', label: '🧗‍♂️ Escalade' },
-  { value: 'Jeux de société', label: '🎲 Jeux de société' }
 ];
 
 const hotelOptions = [

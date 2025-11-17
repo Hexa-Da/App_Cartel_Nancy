@@ -20,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import './Layout.css';
-import { ref, onValue, set, push, remove, update } from 'firebase/database';
+import { ref, onValue, set, push, remove, update, get } from 'firebase/database';
 import { database } from '../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
@@ -41,14 +41,13 @@ const sportEmojis = {
   'Natation': '🏊',
   'Badminton': '🏸',
   'Tennis': '🎾',
-  'Cross': '🏃',
+  'Cross': '👟',
   'Volleyball': '🏐',
   'Ping-pong': '🏓',
   'Boxe': '🥊',
   'Athlétisme': '🏃‍♂️',
-  'Pétanque': '🍹',
+  'Spikeball': '⚡️',
   'Escalade': '🧗‍♂️',
-  'Jeux de société': '🎲'
 } as const;
 
 interface Message {
@@ -501,7 +500,9 @@ const Layout: React.FC = () => {
     if (!isAdmin) return;
 
     const venueRef = ref(database, `venues/${venueId}`);
-    onValue(venueRef, (snapshot) => {
+    
+    try {
+      const snapshot = await get(venueRef);
       const venue = snapshot.val();
       if (!venue) return;
 
@@ -532,7 +533,7 @@ const Layout: React.FC = () => {
 
       const updatedMatches = [...(venue.matches || []), match];
       
-      set(venueRef, {
+      await set(venueRef, {
         ...venue,
         matches: updatedMatches
       });
@@ -546,7 +547,10 @@ const Layout: React.FC = () => {
         result: ''
       });
       setEditingMatch({ venueId: null, match: null });
-    });
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du match:', error);
+      alert('Une erreur est survenue lors de l\'ajout du match.');
+    }
   };
 
   // Fonction pour mettre à jour un match
@@ -554,7 +558,9 @@ const Layout: React.FC = () => {
     if (!isAdmin) return;
     
     const venueRef = ref(database, `venues/${venueId}`);
-    onValue(venueRef, (snapshot) => {
+    
+    try {
+      const snapshot = await get(venueRef);
       const venue = snapshot.val();
       if (!venue) return;
 
@@ -562,13 +568,16 @@ const Layout: React.FC = () => {
         match.id === matchId ? { ...match, ...updatedData } : match
       );
       
-      set(venueRef, {
+      await set(venueRef, {
         ...venue,
         matches: updatedMatches
       });
       
       setEditingMatch({ venueId: null, match: null });
-    });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du match:', error);
+      alert('Une erreur est survenue lors de la mise à jour du match.');
+    }
   };
 
   // Fonction pour supprimer un match
@@ -580,17 +589,22 @@ const Layout: React.FC = () => {
     }
     
     const venueRef = ref(database, `venues/${venueId}`);
-    onValue(venueRef, (snapshot) => {
+    
+    try {
+      const snapshot = await get(venueRef);
       const venue = snapshot.val();
       if (!venue) return;
 
       const updatedMatches = venue.matches.filter((match: Match) => match.id !== matchId);
       
-      set(venueRef, {
+      await set(venueRef, {
         ...venue,
         matches: updatedMatches
       });
-    });
+    } catch (error) {
+      console.error('Erreur lors de la suppression du match:', error);
+      alert('Une erreur est survenue lors de la suppression du match.');
+    }
   };
 
   // Fonction pour commencer l'édition d'un match
@@ -782,7 +796,7 @@ const Layout: React.FC = () => {
 
       {/* Fenêtre modale pour le chat */}
       {showChat && (
-        <div className={`chat-panel ${location.pathname === '/' || location.pathname === '/info' || location.pathname.startsWith('/info/') || location.pathname === '/planning-files' ? 'home-info-chat' : ''}`}>
+        <div className={`chat-panel ${location.pathname === '/home' || location.pathname === '/info' || location.pathname.startsWith('/info/') || location.pathname === '/planning-files' ? 'home-info-chat' : ''}`}>
           <div className="chat-panel-header">
             <h3>Messages de l'orga</h3>
             <div style={{ display: 'flex', alignItems: 'center', position: 'relative'}}>
@@ -1062,18 +1076,23 @@ const Layout: React.FC = () => {
                   <option value="Natation">Natation 🏊</option>
                   <option value="Badminton">Badminton 🏸</option>
                   <option value="Tennis">Tennis 🎾</option>
-                  <option value="Cross">Cross 🏃</option>
+                  <option value="Cross">Cross 👟</option>
                   <option value="Volleyball">Volleyball 🏐</option>
                   <option value="Ping-pong">Ping-pong 🏓</option>
                   <option value="Boxe">Boxe 🥊</option>
                   <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
-                  <option value="Pétanque">Pétanque 🍹</option>
+                  <option value="Spikeball">Spikeball ⚡️</option>
                   <option value="Escalade">Escalade 🧗‍♂️</option>
-                  <option value="Jeux de société">Jeux de société 🎲</option>
                 </select>
               </div>
               <div className="modal-form-actions">
-                <button className="modal-form-submit" onClick={() => handleAddVenue()} disabled={!newVenueName || !newVenueAddress}>Ajouter</button>
+                <button
+                  className="modal-form-submit"
+                  onClick={() => (editingVenue.id ? handleUpdateVenue() : handleAddVenue())}
+                  disabled={!newVenueName || (!editingVenue.id && !newVenueAddress)}
+                >
+                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
+                </button>
                 <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
               </div>
             </div>

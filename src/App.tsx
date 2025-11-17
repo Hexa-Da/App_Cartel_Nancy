@@ -719,46 +719,8 @@ function App() {
       isAdmin: true
     });
 
-    // Envoyer une notification locale à l'expéditeur
     const notificationService = NotificationService.getInstance();
-    const hasPermission = await notificationService.checkPermission();
-    
-    if (hasPermission) {
-      await notificationService.sendLocalNotification(
-        'Message envoyé',
-        'Votre message a été envoyé avec succès'
-      );
-    }
-
-    // Ici vous devriez implémenter l'envoi de notifications push à tous les utilisateurs
-    // via Firebase Cloud Messaging (FCM) ou votre serveur
-    await sendPushNotificationToAllUsers(msg, sender);
-  };
-
-  // Fonction pour envoyer des notifications push à tous les utilisateurs
-  const sendPushNotificationToAllUsers = async (message: string, sender: string) => {
-    try {
-      // Pour l'instant, on utilise des notifications locales
-      // TODO: Implémenter FCM plus tard
-      
-      // Notification locale pour l'expéditeur
-      const notificationService = NotificationService.getInstance();
-      await notificationService.sendLocalNotification(
-        'Message envoyé',
-        'Votre message a été envoyé avec succès'
-      );
-      
-      // TODO: Remplacer par l'envoi FCM quand ce sera configuré
-      // Exemple avec Firebase Functions :
-      // const response = await fetch('/api/send-notification', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ message, sender })
-      // });
-      
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi des notifications:', error);
-    }
+    await notificationService.notifyChatMessage(msg, sender);
   };
 
   // Modification d'un message dans Firebase (texte et nom)
@@ -1275,19 +1237,14 @@ function App() {
     Volleyball: '🏐',
     Tennis: '🎾',
     Badminton: '🏸',
-    Hockey: '🏑',
-    'Base-ball': '⚾',
-    Golf: '⛳',
     'Ping-pong': '🏓',
     Ultimate: '🥏',
     Natation: '🏊',
-    Cross: '🏃',
+    Cross: '👟',
     Boxe: '🥊',
     Athlétisme: '🏃‍♂️',
-    Pétanque: '🍹',
     Escalade: '🧗‍♂️',
-    'Jeux de société': '🎲',
-    Other: '🎯',
+    Spikeball: '⚡️',
     Pompom: '🎀',
     Defile: '🎺',
     Party: '🎉',
@@ -1338,14 +1295,13 @@ function App() {
       'Natation': '🏊',
       'Badminton': '🏸',
       'Tennis': '🎾',
-      'Cross': '🏃',
+      'Cross': '👟',
       'Volleyball': '🏐',
       'Ping-pong': '🏓',
       'Boxe': '🥊',
       'Athlétisme': '🏃‍♂️',
-      'Pétanque': '🍹',
+      'Spikeball': '⚡️',
       'Escalade': '🧗‍♂️',
-      'Jeux de société': '🎲'
     };
     return sportIcons[sport] || '🏆';
   };
@@ -4213,14 +4169,13 @@ function App() {
                         <option value="Natation">Natation 🏊</option>
                         <option value="Badminton">Badminton 🏸</option>
                         <option value="Tennis">Tennis 🎾</option>
-                        <option value="Cross">Cross 🏃</option>
+                        <option value="Cross">Cross 👟</option>
                         <option value="Volleyball">Volleyball 🏐</option>
                         <option value="Ping-pong">Ping-pong 🏓</option>
                         <option value="Boxe">Boxe 🥊</option>
                         <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
-                        <option value="Pétanque">Pétanque 🍹</option>
+                        <option value="Spikeball">Spikeball ⚡️</option>
                         <option value="Escalade">Escalade 🧗‍♂️</option>
-                        <option value="Jeux de société">Jeux de société 🎲</option>
                       </select>
 
                       <select
@@ -4662,14 +4617,13 @@ function App() {
                   <option value="Natation">Natation 🏊</option>
                   <option value="Badminton">Badminton 🏸</option>
                   <option value="Tennis">Tennis 🎾</option>
-                  <option value="Cross">Cross 🏃</option>
+                  <option value="Cross">Cross 👟</option>
                   <option value="Volleyball">Volleyball 🏐</option>
                   <option value="Ping-pong">Ping-pong 🏓</option>
                   <option value="Boxe">Boxe 🥊</option>
                   <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
-                  <option value="Pétanque">Pétanque 🍹</option>
+                  <option value="Spikeball">Spikeball ⚡️</option>
                   <option value="Escalade">Escalade 🧗‍♂️</option>
-                  <option value="Jeux de société">Jeux de société 🎲</option>
                 </select>
               </div>
               <div className="modal-form-actions">

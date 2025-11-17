@@ -623,12 +623,6 @@ html, body, #root {
   margin: 0.25rem 0;
 }
 
-.match-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
 .edit-match-button,
 .delete-match-button,
 .add-match-button {
@@ -1254,6 +1248,10 @@ body.ios .location-error {
   border-bottom: 1px solid var(--border-color);
 }
 
+body.ios .events-panel-header {
+  margin-top: 2.48rem;
+}
+
 .events-panel-header h3 {
   margin: 0;
   color: var(--text-color);
@@ -1301,34 +1299,13 @@ body.ios .location-error {
   margin-bottom: 0px;
 }
 
-/* Styles spécifiques pour le bouton toggle du panel d'événements */
-.events-panel .filter-toggle-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 8px 16px;
-  background-color: var(--warning-color);
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  transition: all 0.3s ease;
-  height: 24px;
-  width: 70px;
-  justify-content: center;
-  z-index: 995;
-}
-
 .filter-toggle-button {
   position: absolute;
-  top: 10px;
+  top: 0.5rem;
   right: 10px;
   padding: 8px 16px;
   background-color: var(--warning-color);
-  color: white;
+  color: var(--text-color);
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
@@ -1342,52 +1319,12 @@ body.ios .location-error {
   z-index: 995;
 }
 
-/* Styles spécifiques pour les boutons de reset du panel d'événements */
-.events-panel .filter-reset-button {
-  position: absolute;
-  top: 47px;
-  right: 90px;
-  padding: 0;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  height: 24px;
-  width: 24px;
-  z-index: 995;
-  transition: all 0.3s ease;
-  opacity: 1;
-}
-
-.events-panel .filter-reset-button.star {
-  position: absolute;
-  top: 47px;
-  right: 124px;
-  padding: 0;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  height: 24px;
-  width: 24px;
-  z-index: 995;
-  transition: all 0.3s ease;
-  opacity: 1;
-}
-
-.events-panel .filter-reset-button.star.active {
-  opacity: 1;
-  color: #ffd700;
+body.ios .filter-toggle-button {
+  top: 0.575rem;
 }
 
 .filter-reset-button {
   position: absolute;
-  top: 47px;
-  right: 90px;
   padding: 0;
   border: none;
   font-size: 24px;
@@ -1404,8 +1341,6 @@ body.ios .location-error {
 
 .filter-reset-button.star {
   position: absolute;
-  top: 47px;
-  right: 124px;
   padding: 0;
   border: none;
   font-size: 24px;
@@ -1840,18 +1775,6 @@ body.ios .location-error {
   font-size: 14px;
 }
 
-/* Styles pour le logo */
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-}
-
 /* Styles pour l'icône de l'onglet */
 .link[rel="icon"] {
   display: block;
@@ -1942,7 +1865,6 @@ body.ios .location-error {
 body.ios .chat-panel {
   top: 40px !important;
   height: calc(100vh - 40px) !important;
-  height: calc(100svh - 40px) !important; /* Small viewport height */
   width: 100vw !important;
   position: fixed !important;
   overflow: hidden !important;
@@ -2177,6 +2099,10 @@ body.ios.keyboard-open .chat-container {
   margin-bottom: 10px;
 }
 
+body.ios .home-info-chat .chat-panel-header {
+  margin-top: 0rem;
+}
+
 /* Agrandissement du conteneur de chat pour Home et Info quand le clavier apparaît */
 .keyboard-open .home-info-chat .chat-container {
   height: calc(100vh - 120px) !important;
@@ -2203,76 +2129,8 @@ body.android.keyboard-open .home-info-chat .chat-container {
   border-left: 4px solid var(--primary-color);
 }
 
-.home-info-chat .chat-message.admin {
-  background-color: var(--secondary-color);
-  border-left: 4px solid var(--primary-color);
-}
-
-.home-info-chat .chat-message-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-.home-info-chat .chat-message-content {
-  font-size: 0.9rem;
-  line-height: 1.4;
-  max-width: 90vw;
-  word-break: break-word;
-  white-space: pre-line;
-  padding: 0.2rem 0.1rem;
-  color: var(--text-color);
-}
-
 /* Bouton de traduction dans le chat panel */
-.home-info-chat .translate-button {
-  position: absolute !important;
-  bottom: 8px !important;
-  right: 8px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  cursor: pointer !important;
-  font-size: 0.8rem !important;
-  color: var(--text-color) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  transition: all 0.3s ease !important;
-  z-index: 1 !important;
-}
-
 /* Conteneur des boutons admin dans le chat home-info */
-.home-info-chat .chat-admin-buttons {
-  position: absolute !important;
-  bottom: 8px !important;
-  right: 110px !important;
-  display: flex !important;
-  gap: 10px !important;
-  z-index: 1 !important;
-}
-
-/* Boutons admin individuels dans le chat home-info */
-.home-info-chat .edit-message-button,
-.home-info-chat .delete-message-button {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  color: var(--text-color) !important;
-  font-size: 0.75rem !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.3s ease !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-}
-
 @media (max-width: 600px) {
   .chat-message-content {
     padding: 0.2rem 0.2rem;
@@ -2672,57 +2530,6 @@ body.ios .home-info-chat.keyboard-open {
   overflow: hidden !important;
 }
 
-/* Styles iOS spécifiques pour .chat-panel seul (sans .home-info-chat) */
-body.ios .chat-panel:not(.home-info-chat) {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100svh !important;
-  overflow: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: none !important;
-  touch-action: pan-x pan-y !important;
-  z-index: 999 !important;
-}
-
-body.ios .chat-panel:not(.home-info-chat).keyboard-open {
-  height: 100vh !important;
-  height: 100svh !important;
-  width: 100vw !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  position: fixed !important;
-  z-index: 9999 !important;
-  overflow: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: none !important;
-  touch-action: pan-x pan-y !important;
-}
-
-body.ios .chat-panel:not(.home-info-chat) .chat-container {
-  height: calc(100vh - 120px) !important;
-  height: calc(100svh - 120px) !important;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: none !important;
-  touch-action: pan-x pan-y !important;
-}
-
-body.ios .chat-panel:not(.home-info-chat).keyboard-open .chat-container {
-  height: calc(100vh - 120px) !important;
-  height: calc(100svh - 120px) !important;
-  margin-bottom: 5px;
-  padding: 1rem 2rem;
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: none !important;
-  touch-action: pan-x pan-y !important;
-}
-
 /* Agrandissement spécifique pour Android avec clavier */
 body.android .chat-panel.keyboard-open,
 body.android .home-info-chat.keyboard-open {
@@ -2857,23 +2664,6 @@ body.ios {
   body.ios .chat-panel.keyboard-open,
   body.ios .home-info-chat.keyboard-open {
     height: 100svh !important;
-  }
-  
-  /* Styles iOS spécifiques pour .chat-panel seul avec viewport units modernes */
-  body.ios .chat-panel:not(.home-info-chat) {
-    height: 100svh !important;
-  }
-  
-  body.ios .chat-panel:not(.home-info-chat).keyboard-open {
-    height: 100svh !important;
-  }
-  
-  body.ios .chat-panel:not(.home-info-chat) .chat-container {
-    height: calc(100svh - 120px) !important;
-  }
-  
-  body.ios .chat-panel:not(.home-info-chat).keyboard-open .chat-container {
-    height: calc(100svh - 120px) !important;
   }
   
   body.ios .chat-panel.keyboard-open .chat-container,
@@ -3043,12 +2833,6 @@ body.ios .leaflet-container {
   border-radius: 50%;
 }
 
-.filter-reset-button:focus {
-  outline: none;
-  box-shadow: none;
-  border: none;
-}
-
 .file-preview {
   margin: 10px 0;
   width: 100%;
@@ -3167,9 +2951,4 @@ select,
 
 .settings-item {
   border-bottom: 1px solid var(--border-color);
-}
-
-/* Style pour le bouton étoile actif */
-.filter-reset-button.star.active {
-  color: #ffd700;
 }

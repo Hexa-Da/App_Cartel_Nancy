@@ -157,6 +157,7 @@ export default function PlanningFiles({
   });
   const [internalUploading, setInternalUploading] = useState(false);
   const [internalUploadProgress, setInternalUploadProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
   
   // Utiliser les props externes si fournies, sinon les états internes
   const uploading = externalUploading !== undefined ? externalUploading : internalUploading;
@@ -179,14 +180,13 @@ export default function PlanningFiles({
     { value: 'Natation', label: 'Natation 🏊' },
     { value: 'Badminton', label: 'Badminton 🏸' },
     { value: 'Tennis', label: 'Tennis 🎾' },
-    { value: 'Cross', label: 'Cross 🏃' },
+    { value: 'Cross', label: 'Cross 👟' },
     { value: 'Volleyball', label: 'Volleyball 🏐' },
     { value: 'Ping-pong', label: 'Ping-pong 🏓' },
     { value: 'Boxe', label: 'Boxe 🥊' },
     { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
-    { value: 'Pétanque', label: 'Pétanque 🍹' },
+    { value: 'Spikeball', label: 'Spikeball ⚡️' },
     { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-    { value: 'Jeux de société', label: 'Jeux de société 🎲' },
     { value: 'Pompom', label: 'Pompom 🎀' },
     { value: 'Defile', label: 'Défilé 🎺' },
     { value: 'Hotel', label: 'Hôtel 🏢' },
@@ -213,6 +213,9 @@ export default function PlanningFiles({
   }, [filter]);
 
   useEffect(() => {
+    // Désactiver l'écoute si la page n'est pas visible
+    if (!isVisible) return;
+
     // Charger les fichiers avec optimisation des connexions
     const optimizer = FirebaseOptimizer.getInstance();
     
@@ -246,6 +249,19 @@ export default function PlanningFiles({
       filesUnsubscribe();
       optimizer.unregisterConnection();
     };
+  }, [isVisible]);
+
+  // Utiliser IntersectionObserver pour détecter la visibilité
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      setIsVisible(entries[0].isIntersecting);
+    });
+    
+    // Observer le conteneur du composant
+    const container = document.querySelector('.planning-files');
+    if (container) observer.observe(container);
+    
+    return () => observer.disconnect();
   }, []);
 
   // Effet pour filtrer les fichiers quand les filtres ou la liste change
@@ -259,7 +275,7 @@ export default function PlanningFiles({
       const sportsTypes = [
         'Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
         'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Boxe',
-        'Athlétisme', 'Pétanque', 'Escalade', 'Jeux de société', 'Pompom', 'Defile'
+        'Athlétisme', 'Spikeball', 'Escalade', 'Pompom', 'Defile'
       ];
       filtered = filtered.filter(file => 
         sportsTypes.includes(file.eventType)

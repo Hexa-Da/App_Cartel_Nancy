@@ -97,7 +97,7 @@ App_Cartel_Nancy/
 | **Layout.tsx** | Structure commune de l'app |
 | **Header.tsx** | Barre d'état |
 | **BottomNav.tsx** | Barre de navigation principale |
-| **EventList.tsx** | Liste et filtres des événements |
+| **SettingsMenu.tsx** | Paramètre et choix des préférances |
 | **CalendarPopup.tsx** | Calendrier des événements |
 | **PlanningFilesPage.tsx** | Répertoire de tous les fichiers |
 
@@ -105,7 +105,7 @@ App_Cartel_Nancy/
 
 | Page | Fonctionnalité | Accès |
 |------|----------------|-------|
-| **Home** | Événements récents avec filtres | `/` |
+| **Home** | Événements récents avec filtres | `/home` |
 | **Map** | Carte interactive avec géolocalisation | `/map` |
 | **Info** | Menu informations pratiques | `/info` |
 | **InfoSection** | Sections détaillées (dynamique) | `/info/:section` |
@@ -117,7 +117,6 @@ App_Cartel_Nancy/
 - **Vite** pour le build rapide
 - **React Router** pour la navigation
 - **Leaflet** pour les cartes interactives
-- **React Icons** pour les icônes
 
 ### Backend & Services
 - **Firebase Realtime Database** pour les données temps réel

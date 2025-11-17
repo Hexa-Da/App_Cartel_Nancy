@@ -19,11 +19,14 @@ import { PushNotifications } from '@capacitor/push-notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
+import { ref, set } from 'firebase/database';
+import { database } from '../firebase';
 
 class NotificationService {
   private static instance: NotificationService;
   private isInitialized = false;
   private fcmToken: string | null = null;
+  private readonly chatTopic = 'chat';
 
   private constructor() {}
 
@@ -39,70 +42,12 @@ class NotificationService {
 
     try {
       if (Capacitor.isNativePlatform()) {
-        // Initialiser les notifications locales
-        const localPermission = await LocalNotifications.requestPermissions();
-        
-        // Vérifier et demander les permissions pour les notifications push
-        const permissionStatus = await PushNotifications.checkPermissions();
-        if (permissionStatus.receive === 'prompt') {
-          const result = await PushNotifications.requestPermissions();
-          console.log('Permission notifications push:', result.receive);
-        }
-
-        // Écouter les événements de notification
-        PushNotifications.addListener('registration', async (token) => {
-          console.log('Token FCM reçu:', token.value);
-          this.fcmToken = token.value;
-          
-          // S'abonner au topic 'chat' pour recevoir les notifications de chat
-          try {
-            await PushNotifications.addListener('pushNotificationReceived', (notification) => {
-              console.log('Notification reçue:', notification);
-              // Afficher une notification locale si l'app est au premier plan
-              this.showInAppNotification(notification);
-            });
-            
-            // S'abonner au topic 'chat'
-            await this.subscribeToTopic('chat');
-            console.log('Abonné au topic chat');
-          } catch (error) {
-            console.error('Erreur lors de l\'abonnement au topic:', error);
-          }
-          
-          // Ici vous pourriez envoyer le token à votre serveur Firebase
-          this.saveTokenToFirebase(token.value);
-        });
-
-        PushNotifications.addListener('registrationError', (error) => {
-          console.error('Erreur lors de l\'enregistrement FCM:', error.error);
-        });
-
-        PushNotifications.addListener('pushNotificationReceived', (notification) => {
-          console.log('Notification reçue:', notification);
-          // Afficher une notification locale si l'app est au premier plan
-          this.showInAppNotification(notification);
-        });
-
-        PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-          console.log('Action sur notification:', notification);
-          // Gérer l'action sur la notification (ex: ouvrir le chat)
-        });
-
-        // Enregistrer pour les notifications push
-        await PushNotifications.register();
-
-        // Demander la permission de géolocalisation
-        await this.requestLocationPermission();
+        await this.initializeNativePush();
       } else {
-        // Gestion des notifications web
-        if ('Notification' in window) {
-          const permission = await Notification.requestPermission();
-          console.log('Permission notifications web:', permission);
+        await this.initializeWebPush();
         }
-        // Demander la permission de géolocalisation web
-        await this.requestLocationPermission();
-      }
 
+        await this.requestLocationPermission();
       this.isInitialized = true;
     } catch (error) {
       console.error('Error initializing notifications:', error);
@@ -111,48 +56,157 @@ class NotificationService {
     }
   }
 
+  /**
+   * Déclenche l'envoi d'une notification push pour un nouveau message de chat.
+   * La distribution finale est gérée côté serveur (Cloud Function / API sécurisée).
+   */
+  async notifyChatMessage(message: string, sender: string) {
+    try {
+      // Confirmer à l'expéditeur localement (même si l'appel distant échoue)
+      await this.sendLocalNotification(
+        'Message envoyé',
+        'Votre message a été envoyé avec succès'
+      );
+
+      const endpoint = import.meta.env.VITE_FCM_NOTIFICATION_ENDPOINT;
+      if (!endpoint) {
+        console.warn('[NotificationService] VITE_FCM_NOTIFICATION_ENDPOINT manquant : impossible de déclencher la notification distante.');
+        return;
+      }
+
+      await this.callSecuredEndpoint(endpoint, {
+        message,
+        sender,
+        topic: this.chatTopic,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de la notification de chat:', error);
+    }
+  }
+
   private async saveTokenToFirebase(token: string) {
     try {
-      // Sauvegarder le token dans Firebase pour pouvoir envoyer des notifications
-      // Cette fonction devrait être implémentée selon votre structure Firebase
-      console.log('Token sauvegardé:', token);
+      const tokenKey = this.getTokenKey(token);
+      const tokenRef = ref(database, `fcmTokens/${tokenKey}`);
+
+      await set(tokenRef, {
+        token,
+        platform: Capacitor.getPlatform(),
+        updatedAt: Date.now()
+      });
+
+      console.log('Token FCM enregistré dans la base:', tokenKey);
     } catch (error) {
       console.error('Erreur lors de la sauvegarde du token:', error);
     }
   }
 
+  private getTokenKey(token: string) {
+    return token.replace(/[^a-zA-Z0-9_-]/g, '');
+  }
+
   private showInAppNotification(notification: any) {
-    // Afficher une notification dans l'application si elle est au premier plan
     if (Capacitor.isNativePlatform()) {
       this.sendLocalNotification(
         notification.title || 'Nouveau message',
         notification.body || 'Vous avez reçu un nouveau message'
       );
+    } else if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(notification.title || 'Nouveau message', {
+        body: notification.body || 'Vous avez reçu un nouveau message'
+      });
     }
   }
 
-  // S'abonner à un topic FCM
   private async subscribeToTopic(topic: string) {
+    if (!this.fcmToken) return;
+
     try {
-      // Pour Capacitor, on utilise l'API FCM directement
-      if (Capacitor.isNativePlatform()) {
-        // S'abonner au topic via l'API FCM
-        const response = await fetch(`https://iid.googleapis.com/iid/v1/${this.fcmToken}/rel/topics/${topic}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `key=${import.meta.env.VITE_FIREBASE_SERVER_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Erreur lors de l'abonnement au topic: ${response.status}`);
-        }
+      const endpoint = import.meta.env.VITE_FCM_SUBSCRIBE_ENDPOINT;
+      if (!endpoint) {
+        console.warn(`[NotificationService] VITE_FCM_SUBSCRIBE_ENDPOINT manquant : abonnement au topic "${topic}" ignoré.`);
+        return;
+      }
+
+      await this.callSecuredEndpoint(endpoint, {
+        token: this.fcmToken,
+        topic
+      });
         
         console.log(`Abonné au topic ${topic}`);
-      }
     } catch (error) {
       console.error(`Erreur lors de l'abonnement au topic ${topic}:`, error);
+    }
+  }
+
+  private async callSecuredEndpoint(url: string, payload: Record<string, unknown>) {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+
+    const authKey = import.meta.env.VITE_FCM_ENDPOINT_AUTH_KEY;
+    if (authKey) {
+      headers.Authorization = `Bearer ${authKey}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorPayload = await response.text();
+      throw new Error(`Erreur HTTP ${response.status} (${response.statusText}) : ${errorPayload}`);
+    }
+  }
+
+  private async initializeNativePush() {
+    await LocalNotifications.requestPermissions();
+
+    const permissionStatus = await PushNotifications.checkPermissions();
+    if (permissionStatus.receive === 'prompt') {
+      const result = await PushNotifications.requestPermissions();
+      console.log('Permission notifications push:', result.receive);
+    }
+
+    this.registerNativeListeners();
+    await PushNotifications.register();
+  }
+
+  private registerNativeListeners() {
+    PushNotifications.addListener('registration', async (token) => {
+      try {
+        this.fcmToken = token.value;
+        console.log('Token FCM reçu:', token.value);
+
+        await this.saveTokenToFirebase(token.value);
+        await this.subscribeToTopic(this.chatTopic);
+      } catch (error) {
+        console.error('Erreur lors du traitement du token FCM:', error);
+      }
+    });
+
+    PushNotifications.addListener('registrationError', (error) => {
+      console.error('Erreur lors de l\'enregistrement FCM:', error.error);
+    });
+
+    PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      console.log('Notification reçue:', notification);
+      this.showInAppNotification(notification);
+    });
+
+    PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+      console.log('Action sur notification:', notification);
+      // TODO: implémenter une navigation vers l'écran de chat si nécessaire
+    });
+  }
+
+  private async initializeWebPush() {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      console.log('Permission notifications web:', permission);
     }
   }
 

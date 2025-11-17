@@ -144,12 +144,11 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     { value: 'Ping-pong', label: 'Ping-pong 🏓' },
     { value: 'Ultimate', label: 'Ultimate 🥏' },
     { value: 'Natation', label: 'Natation 🏊' },
-    { value: 'Cross', label: 'Cross 🏃' },
+    { value: 'Cross', label: 'Cross 👟' },
     { value: 'Boxe', label: 'Boxe 🥊' },
     { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
-    { value: 'Pétanque', label: 'Pétanque 🍹' },
+    { value: 'Spikeball', label: 'Spikeball ⚡️' },
     { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-    { value: 'Jeux de société', label: 'Jeux de société 🎲' },
   ];
 
   const days = [
