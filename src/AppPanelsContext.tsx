@@ -17,7 +17,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Event } from './components/EventDetails';
 
-export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info';
+export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info' | 'party-map';
 
 interface AppPanelsContextType {
   activeTab: TabType;
@@ -53,6 +53,10 @@ interface AppPanelsContextType {
   setShowEditHotelDescriptionModal: React.Dispatch<React.SetStateAction<boolean>>;
   showEditRestaurantDescriptionModal: boolean;
   setShowEditRestaurantDescriptionModal: React.Dispatch<React.SetStateAction<boolean>>;
+  showPlaceTypeModal: boolean;
+  setShowPlaceTypeModal: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedPlaceType: string | null;
+  setSelectedPlaceType: React.Dispatch<React.SetStateAction<string | null>>;
   isAddingPlace: boolean;
   setIsAddingPlace: React.Dispatch<React.SetStateAction<boolean>>;
   isPlacingMarker: boolean;
@@ -68,6 +72,10 @@ interface AppPanelsContextType {
   setSelectedSport: React.Dispatch<React.SetStateAction<string>>;
   selectedEmoji: string;
   setSelectedEmoji: React.Dispatch<React.SetStateAction<string>>;
+  selectedEventType: string;
+  setSelectedEventType: React.Dispatch<React.SetStateAction<string>>;
+  selectedIndicationType: string;
+  setSelectedIndicationType: React.Dispatch<React.SetStateAction<string>>;
   tempMarker: [number, number] | null;
   setTempMarker: React.Dispatch<React.SetStateAction<[number, number] | null>>;
   editingVenue: { id: string | null, venue: any | null };
@@ -79,6 +87,8 @@ interface AppPanelsContextType {
   setNewMatch: React.Dispatch<React.SetStateAction<{ date: string, teams: string, description: string, endTime?: string, result?: string }>>;
   selectedEvent: Event | null;
   setSelectedEvent: React.Dispatch<React.SetStateAction<Event | null>>;
+  selectedPartyForMap: string | null;
+  setSelectedPartyForMap: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const AppPanelsContext = createContext<AppPanelsContextType | undefined>(undefined);
@@ -99,6 +109,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
   const [showEditDescriptionModal, setShowEditDescriptionModal] = useState(false);
   const [showEditHotelDescriptionModal, setShowEditHotelDescriptionModal] = useState(false);
   const [showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal] = useState(false);
+  const [showPlaceTypeModal, setShowPlaceTypeModal] = useState(false);
+  const [selectedPlaceType, setSelectedPlaceType] = useState<string | null>(null);
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [isPlacingMarker, setIsPlacingMarker] = useState(false);
   // États du formulaire de lieu
@@ -107,6 +119,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
   const [newVenueAddress, setNewVenueAddress] = useState('');
   const [selectedSport, setSelectedSport] = useState('Football');
   const [selectedEmoji, setSelectedEmoji] = useState('⚽');
+  const [selectedEventType, setSelectedEventType] = useState('DJ contest');
+  const [selectedIndicationType, setSelectedIndicationType] = useState('Soins');
   const [tempMarker, setTempMarker] = useState<[number, number] | null>(null);
   const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: any | null }>({ id: null, venue: null });
   // États du formulaire de match
@@ -124,6 +138,7 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
     return saved ? JSON.parse(saved) : false;
   });
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [selectedPartyForMap, setSelectedPartyForMap] = useState<string | null>(null);
 
   // Sauvegarder l'état isEditing dans localStorage à chaque changement
   useEffect(() => {
@@ -167,6 +182,7 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
     setShowEditDescriptionModal(false);
     setShowEditHotelDescriptionModal(false);
     setShowEditRestaurantDescriptionModal(false);
+    setShowPlaceTypeModal(false);
     setIsAddingPlace(false);
   };
 
@@ -190,6 +206,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
       showEditDescriptionModal, setShowEditDescriptionModal,
       showEditHotelDescriptionModal, setShowEditHotelDescriptionModal,
       showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal,
+      showPlaceTypeModal, setShowPlaceTypeModal,
+      selectedPlaceType, setSelectedPlaceType,
       isAddingPlace, setIsAddingPlace,
       isPlacingMarker, setIsPlacingMarker,
       // États du formulaire de lieu
@@ -198,12 +216,15 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
       newVenueAddress, setNewVenueAddress,
       selectedSport, setSelectedSport,
       selectedEmoji, setSelectedEmoji,
+      selectedEventType, setSelectedEventType,
+      selectedIndicationType, setSelectedIndicationType,
       tempMarker, setTempMarker,
       editingVenue, setEditingVenue,
       // États du formulaire de match
       editingMatch, setEditingMatch,
       newMatch, setNewMatch,
-      selectedEvent, setSelectedEvent
+      selectedEvent, setSelectedEvent,
+      selectedPartyForMap, setSelectedPartyForMap
     }}>
       {children}
     </AppPanelsContext.Provider>

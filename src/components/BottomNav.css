@@ -240,3 +240,69 @@ body.ios .nav-button {
   pointer-events: auto !important;
   transform: translateY(5px) !important;
 } 
+
+/* Media query spécifique pour très petits écrans (iPhone 6, SE, etc.) */
+@media (max-width: 375px) {
+  .bottom-nav {
+    min-height: 55px;
+    padding-bottom: env(safe-area-inset-bottom, 8px);
+  }
+
+  .nav-button {
+    min-height: 55px;
+    min-width: 50px;
+    padding: 10px 6px;
+  }
+
+  body.ios .nav-button {
+    min-height: 65px;
+    min-width: 55px;
+    padding: 12px 6px;
+  }
+
+  .nav-icon {
+    font-size: 18px;
+  }
+  .nav-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Media query spécifique pour iPhone 5 et très petits écrans (320px) */
+@media (max-width: 320px) {
+  .bottom-nav {
+    min-height: 50px;
+    padding-bottom: env(safe-area-inset-bottom, 6px);
+    bottom: 0;
+  }
+
+  .nav-button {
+    min-height: 50px;
+    min-width: 45px;
+    padding: 8px 4px;
+  }
+
+  body.ios .bottom-nav {
+    min-height: 60px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 15px));
+  }
+
+  body.ios .nav-button {
+    min-height: 60px;
+    min-width: 50px;
+    padding: 10px 4px;
+  }
+
+  .nav-icon {
+    font-size: 16px;
+  }
+  .nav-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .nav-label {
+    font-size: 8px;
+  }
+}

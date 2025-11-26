@@ -51,6 +51,7 @@ const hotelOptions = [
 ];
 
 const restaurantOptions = [
+  { value: '0000', label: 'Aucun' },
   { value: 'none', label: 'Tous les restaurants' },
   { value: '1', label: 'Crous ARTEM' },
   { value: '2', label: 'Parc Saint-Marie' }

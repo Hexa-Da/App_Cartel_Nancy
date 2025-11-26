@@ -50,6 +50,22 @@ const sportEmojis = {
   'Escalade': '🧗‍♂️',
 } as const;
 
+const eventTypeEmojis: { [key: string]: string } = {
+  'DJ contest': '🎧',
+  'Show Pompom': '🎀',
+  'Showcase': '🎤',
+};
+
+const indicationTypeEmojis: { [key: string]: string } = {
+  'Soins': '🚑',
+  'Poubelle': '🗑️',
+  'Dejeuner': '🥐',
+  'Bar': '🍺',
+  'Accès handicapé': '👨‍🦽',
+  'Safe place': '🗣️',
+  'Toilette': '🚾'
+};
+
 interface Message {
   id?: string;
   content: string;
@@ -93,9 +109,9 @@ interface Venue {
 
 const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
-  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, // États du formulaire de lieu
-    newVenueName, setNewVenueName, newVenueDescription, setNewVenueDescription, newVenueAddress, setNewVenueAddress, selectedSport, setSelectedSport, selectedEmoji, setSelectedEmoji, tempMarker, setTempMarker, editingVenue, setEditingVenue, // États du formulaire de match
-    editingMatch, setEditingMatch, newMatch, setNewMatch, selectedEvent, setSelectedEvent } = useAppPanels();
+  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, showPlaceTypeModal, setShowPlaceTypeModal, selectedPlaceType, setSelectedPlaceType, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, // États du formulaire de lieu
+    newVenueName, setNewVenueName, newVenueDescription, setNewVenueDescription, newVenueAddress, setNewVenueAddress,     selectedSport, setSelectedSport, selectedEmoji, setSelectedEmoji, selectedEventType, setSelectedEventType, selectedIndicationType, setSelectedIndicationType, tempMarker, setTempMarker, editingVenue, setEditingVenue, // États du formulaire de match
+    editingMatch, setEditingMatch, newMatch, setNewMatch, selectedEvent, setSelectedEvent, selectedPartyForMap, setSelectedPartyForMap } = useAppPanels();
   const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [newMessage, setNewMessage] = useState('');
@@ -277,6 +293,14 @@ const Layout: React.FC = () => {
         return;
       }
 
+      // Si on est sur la page party-map, revenir à la carte principale
+      if (activeTab === 'party-map') {
+        setSelectedPartyForMap(null);
+        setActiveTab('map');
+        isHandlingPopState = false;
+        return;
+      }
+
       const currentPath = location.pathname;
       
       // Pour les navigations de routes (/info, /info/planning, /planning-files)
@@ -384,11 +408,6 @@ const Layout: React.FC = () => {
   const handleAddVenue = async () => {
     if (!isAdmin) return;
 
-    if (!newVenueName || !newVenueDescription || (!newVenueAddress && !tempMarker)) {
-      alert('Veuillez remplir tous les champs requis ou placer un marqueur sur la carte.');
-      return;
-    }
-
     let coordinates: [number, number] | null = null;
     
     if (tempMarker) {
@@ -403,31 +422,44 @@ const Layout: React.FC = () => {
         
         if (data && data.length > 0) {
           coordinates = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        } else {
+          // Si le géocodage échoue, utiliser des coordonnées par défaut (centre de Nancy)
+          coordinates = [48.6921, 6.1844];
         }
       } catch (error) {
         console.error('Erreur de géocodage:', error);
+        // En cas d'erreur, utiliser des coordonnées par défaut
+        coordinates = [48.6921, 6.1844];
       }
-    }
-
-    if (!coordinates) {
-      alert('Une erreur est survenue lors de la récupération des coordonnées.');
-      return;
+    } else {
+      // Si aucune adresse ni marqueur, utiliser des coordonnées par défaut
+      coordinates = [48.6921, 6.1844]; // Coordonnées par défaut (Nancy)
     }
 
     const venuesRef = ref(database, 'venues');
     const newVenueRef = push(venuesRef);
-    const newVenue: Omit<Venue, 'id'> = {
-      name: newVenueName,
+    const newVenue: any = {
+      name: newVenueName || '',
       position: coordinates,
-      description: newVenueDescription,
+      description: newVenueDescription || '',
       address: newVenueAddress || `${coordinates[0]}, ${coordinates[1]}`,
       matches: [],
-      sport: selectedSport,
+      sport: selectedSport || 'Football',
       date: '',
       latitude: coordinates[0],
       longitude: coordinates[1],
-      emoji: selectedEmoji
+      emoji: selectedEmoji || '⚽',
+      type: 'venue',
+      placeType: selectedPlaceType || 'sport'
     };
+    
+    // Ajouter les champs spécifiques selon le type
+    if (selectedPlaceType === 'soirée') {
+      newVenue.eventType = selectedEventType;
+    }
+    if (selectedPlaceType === 'indication') {
+      newVenue.indicationType = selectedIndicationType;
+    }
 
     try {
       await set(newVenueRef, newVenue);
@@ -436,6 +468,8 @@ const Layout: React.FC = () => {
       setNewVenueDescription('');
       setNewVenueAddress('');
       setSelectedSport('Football');
+      setSelectedEventType('DJ contest');
+      setSelectedIndicationType('Soins');
       setTempMarker(null);
       setIsPlacingMarker(false);
       setIsAddingPlace(false);
@@ -448,25 +482,37 @@ const Layout: React.FC = () => {
   const handleUpdateVenue = async () => {
     if (!isAdmin || !editingVenue.id) return;
 
-    if (!newVenueName || !newVenueDescription) {
-      alert('Veuillez remplir tous les champs requis.');
-      return;
-    }
-
     const coordinates: [number, number] = tempMarker || [editingVenue.venue?.latitude || 0, editingVenue.venue?.longitude || 0];
     
     const venueRef = ref(database, `venues/${editingVenue.id}`);
-    const updatedVenue = {
+    // Utiliser directement les valeurs des champs (même si vides) pour permettre la suppression
+    const updatedVenue: any = {
       ...editingVenue.venue,
       name: newVenueName,
       description: newVenueDescription,
       address: newVenueAddress || `${coordinates[0].toFixed(6)}, ${coordinates[1].toFixed(6)}`,
-      sport: selectedSport,
+      sport: selectedSport || editingVenue.venue?.sport || 'Football',
       latitude: coordinates[0],
       longitude: coordinates[1],
       position: coordinates,
-      emoji: selectedEmoji
+      emoji: selectedEmoji || editingVenue.venue?.emoji || '⚽',
+      placeType: selectedPlaceType || editingVenue.venue?.placeType || 'sport'
     };
+    
+    // Ajouter les champs spécifiques selon le type
+    if (selectedPlaceType === 'soirée') {
+      updatedVenue.eventType = selectedEventType;
+    } else {
+      // Supprimer eventType si ce n'est plus une soirée
+      delete updatedVenue.eventType;
+    }
+    
+    if (selectedPlaceType === 'indication') {
+      updatedVenue.indicationType = selectedIndicationType;
+    } else {
+      // Supprimer indicationType si ce n'est plus une indication
+      delete updatedVenue.indicationType;
+    }
 
     try {
       await set(venueRef, updatedVenue);
@@ -475,6 +521,8 @@ const Layout: React.FC = () => {
       setNewVenueDescription('');
       setNewVenueAddress('');
       setSelectedSport('Football');
+      setSelectedEventType('DJ contest');
+      setSelectedIndicationType('Soins');
       setTempMarker(null);
       setEditingVenue({ id: null, venue: null });
       setIsAddingPlace(false);
@@ -506,25 +554,20 @@ const Layout: React.FC = () => {
       const venue = snapshot.val();
       if (!venue) return;
 
-      if (!newMatch.date || !newMatch.teams || !newMatch.description) {
-        alert('Veuillez remplir tous les champs requis (date de début, équipes et description)');
-        return;
-      }
-
       const matchId = uuidv4();
       const match: Match = {
         id: matchId,
         name: `${venue.name} - Match`,
-        description: newMatch.description,
+        description: newMatch.description || '',
         address: venue.address,
         latitude: venue.latitude,
         longitude: venue.longitude,
         position: [venue.latitude, venue.longitude],
-        date: newMatch.date,
+        date: newMatch.date || '',
         type: 'match',
-        teams: newMatch.teams,
+        teams: newMatch.teams || '',
         sport: venue.sport,
-        time: new Date(newMatch.date).toTimeString().split(' ')[0],
+        time: newMatch.date ? new Date(newMatch.date).toTimeString().split(' ')[0] : '',
         endTime: newMatch.endTime || '',
         result: newMatch.result || '',
         venueId: venue.id,
@@ -733,6 +776,10 @@ const Layout: React.FC = () => {
       case 'calendar':
         setActiveTab('events');
         break;
+      case 'party-map':
+        setSelectedPartyForMap(null);
+        setActiveTab('map');
+        break;
       case 'chat':
         // Géré au-dessus
         break;
@@ -785,8 +832,8 @@ const Layout: React.FC = () => {
         onBack={handleBack}
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
-        isBackDisabled={(location.pathname === '/home' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
-        hideBackButton={(location.pathname === '/home' || location.pathname === '/map' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar'}
+        isBackDisabled={(location.pathname === '/home' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar' && activeTab !== 'party-map'}
+        hideBackButton={(location.pathname === '/home' || location.pathname === '/map' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar' && activeTab !== 'party-map'}
       />
       <main className="app-main">
         <Outlet />
@@ -1035,7 +1082,7 @@ const Layout: React.FC = () => {
                 <input id="match-result" type="text" value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, result: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, result: e.target.value }); } }} placeholder="Ex: 2-1 (à saisir si disponible)" className="modal-form-input" />
               </div>
               <div className="modal-form-actions">
-                <button className="modal-form-submit" onClick={() => { if (editingMatch.match) { handleUpdateMatch(editingMatch.venueId!, editingMatch.match.id, { date: editingMatch.match.date, endTime: editingMatch.match.endTime || '', teams: editingMatch.match.teams, description: editingMatch.match.description, result: editingMatch.match.result }); finishEditingMatch(); } else { handleAddMatch(editingMatch.venueId!); } }} disabled={editingMatch.match ? !editingMatch.match.date || !editingMatch.match.teams || !editingMatch.match.description : !newMatch.date || !newMatch.teams || !newMatch.description}>{editingMatch.match ? 'Mettre à jour' : 'Ajouter'}</button>
+                <button className="modal-form-submit" onClick={() => { if (editingMatch.match) { handleUpdateMatch(editingMatch.venueId!, editingMatch.match.id, { date: editingMatch.match.date, endTime: editingMatch.match.endTime || '', teams: editingMatch.match.teams, description: editingMatch.match.description, result: editingMatch.match.result }); finishEditingMatch(); } else { handleAddMatch(editingMatch.venueId!); } }}>{editingMatch.match ? 'Mettre à jour' : 'Ajouter'}</button>
                 <button className="modal-form-cancel" onClick={finishEditingMatch}>Annuler</button>
               </div>
             </div>
@@ -1043,12 +1090,12 @@ const Layout: React.FC = () => {
         </div>
       )}
 
-      {/* Formulaire d'édition de lieu */}
-      {isAddingPlace && (
+      {/* Formulaire d'ajout de lieu - Type Sport */}
+      {isAddingPlace && selectedPlaceType === 'sport' && (
         <div className="modal-form-overlay">
           <div className="modal-form-container">
             <div className="modal-form-header">
-              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un lieu'}</h2>
+              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un lieu de sport'}</h2>
               <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
             </div>
             <div className="modal-form-content">
@@ -1089,7 +1136,212 @@ const Layout: React.FC = () => {
                 <button
                   className="modal-form-submit"
                   onClick={() => (editingVenue.id ? handleUpdateVenue() : handleAddVenue())}
-                  disabled={!newVenueName || (!editingVenue.id && !newVenueAddress)}
+                >
+                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Hôtel */}
+      {isAddingPlace && selectedPlaceType === 'hotel' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un hôtel'}</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom de l'hôtel</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Hôtel de Ville" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'hôtel..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button
+                  className="modal-form-submit"
+                  onClick={() => (editingVenue.id ? handleUpdateVenue() : handleAddVenue())}
+                >
+                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Restaurant */}
+      {isAddingPlace && selectedPlaceType === 'resto' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un restaurant'}</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du restaurant</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Le Bistrot" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le restaurant..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button
+                  className="modal-form-submit"
+                  onClick={() => (editingVenue.id ? handleUpdateVenue() : handleAddVenue())}
+                >
+                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Défilé */}
+      {isAddingPlace && selectedPlaceType === 'défilé' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un défilé'}</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Place Stanislas" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le défilé..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button
+                  className="modal-form-submit"
+                  onClick={() => (editingVenue.id ? handleUpdateVenue() : handleAddVenue())}
+                >
+                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Soirée */}
+      {isAddingPlace && selectedPlaceType === 'soirée' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter une soirée'}</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Salle des fêtes" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur la soirée..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-event">Event</label>
+                <select id="venue-event" value={selectedEventType} onChange={(e) => { 
+                  setSelectedEventType(e.target.value);
+                  setSelectedEmoji(eventTypeEmojis[e.target.value as keyof typeof eventTypeEmojis] || '🎉');
+                }} className="modal-form-input">
+                  <option value="DJ contest">DJ contest 🎧</option>
+                  <option value="Show Pompom">Show Pompom 🎀</option>
+                  <option value="Showcase">Showcase 🎤</option>
+                </select>
+              </div>
+              <div className="modal-form-actions">
+                <button
+                  className="modal-form-submit"
+                  onClick={() => (editingVenue.id ? handleUpdateVenue() : handleAddVenue())}
+                >
+                  {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Indication */}
+      {isAddingPlace && selectedPlaceType === 'indication' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter une indication'}</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom de l'indication</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Point de soins" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'indication..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-type">Type</label>
+                <select id="venue-type" value={selectedIndicationType} onChange={(e) => { 
+                  setSelectedIndicationType(e.target.value);
+                  setSelectedEmoji(indicationTypeEmojis[e.target.value as keyof typeof indicationTypeEmojis] || '📍');
+                }} className="modal-form-input">
+                  <option value="Soins">Soins 🚑</option>
+                  <option value="Poubelle">Poubelle 🗑️</option>
+                  <option value="Dejeuner">Dejeuner 🥐</option>
+                  <option value="Bar">Bar 🍺</option>
+                  <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
+                  <option value="Safe place">Safe place 🗣️</option>
+                  <option value="Toilette">Toilette 🚾</option>
+                </select>
+              </div>
+              <div className="modal-form-actions">
+                <button
+                  className="modal-form-submit"
+                  onClick={() => (editingVenue.id ? handleUpdateVenue() : handleAddVenue())}
                 >
                   {editingVenue.id ? 'Mettre à jour' : 'Ajouter'}
                 </button>

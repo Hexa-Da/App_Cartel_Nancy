@@ -38,6 +38,7 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
+import PartyMap from './pages/PartyMap';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -375,6 +376,29 @@ function MapEvents({ onMapClick }: { onMapClick: (e: { latlng: { lat: number; ln
   return null;
 }
 
+// Composant pour écouter les changements de zoom
+function ZoomListener({ onZoomChange }: { onZoomChange: (zoom: number) => void }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    const handleZoom = () => {
+      const zoom = map.getZoom();
+      onZoomChange(zoom);
+    };
+    
+    // Écouter les événements de zoom
+    map.on('zoomend', handleZoom);
+    // Initialiser avec le zoom actuel
+    handleZoom();
+    
+    return () => {
+      map.off('zoomend', handleZoom);
+    };
+  }, [map, onZoomChange]);
+  
+  return null;
+}
+
 interface Message {
   id?: string; // id Firebase
   content: string;
@@ -453,6 +477,10 @@ function App() {
     setShowEditHotelDescriptionModal,
     showEditRestaurantDescriptionModal,
     setShowEditRestaurantDescriptionModal,
+    showPlaceTypeModal,
+    setShowPlaceTypeModal,
+    selectedPlaceType,
+    setSelectedPlaceType,
     isAddingPlace,
     setIsAddingPlace,
     isPlacingMarker,
@@ -468,6 +496,10 @@ function App() {
     setSelectedSport,
     selectedEmoji,
     setSelectedEmoji,
+    selectedEventType,
+    setSelectedEventType,
+    selectedIndicationType,
+    setSelectedIndicationType,
     tempMarker,
     setTempMarker,
     editingVenue,
@@ -476,7 +508,9 @@ function App() {
     editingMatch,
     setEditingMatch,
     newMatch,
-    setNewMatch
+    setNewMatch,
+    selectedPartyForMap,
+    setSelectedPartyForMap
   } = useAppPanels();
   const location = useLocation();
 
@@ -568,6 +602,8 @@ function App() {
   const [newMessageSender, setNewMessageSender] = useState(''); 
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
+  const indicationMarkersRef = useRef<L.Marker[]>([]);
+  const [currentZoom, setCurrentZoom] = useState<number>(13);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   // Refs pour accéder aux valeurs actuelles dans les handlers de popup
@@ -1252,6 +1288,22 @@ function App() {
     Restaurant: '🍽️'
   };
 
+  const eventTypeEmojis: { [key: string]: string } = {
+    'DJ contest': '🎧',
+    'Show Pompom': '🎀',
+    'Showcase': '🎤',
+  };
+
+  const indicationTypeEmojis: { [key: string]: string } = {
+    'Soins': '🚑',
+    'Poubelle': '🗑️',
+    'Dejeuner': '🥐',
+    'Bar': '🍺',
+    'Accès handicapé': '👨‍🦽',
+    'Safe place': '🗣️',
+    'Toilette': '🚾',
+  };
+
   // Fonction pour géocoder une adresse avec Nominatim
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
     try {
@@ -1581,43 +1633,45 @@ function App() {
   const handleAddVenue = async () => {
     if (!checkAdminRights()) return;
 
-    if (!newVenueName || !newVenueDescription || (!newVenueAddress && !tempMarker)) {
-      alert('Veuillez remplir tous les champs requis ou placer un marqueur sur la carte.');
-      return;
-    }
-
     let coordinates: [number, number] | null = null;
     
     if (tempMarker) {
       coordinates = tempMarker;
     } else if (newVenueAddress) {
       coordinates = await geocodeAddress(newVenueAddress);
+      // Si le géocodage échoue, utiliser des coordonnées par défaut (centre de Nancy)
       if (!coordinates) {
-        alert('Adresse non trouvée. Veuillez vérifier l\'adresse saisie ou placer un marqueur sur la carte.');
-        return;
+        coordinates = [48.6921, 6.1844]; // Coordonnées par défaut (Nancy)
       }
-    }
-
-    if (!coordinates) {
-      alert('Une erreur est survenue lors de la récupération des coordonnées.');
-      return;
+    } else {
+      // Si aucune adresse ni marqueur, utiliser des coordonnées par défaut
+      coordinates = [48.6921, 6.1844]; // Coordonnées par défaut (Nancy)
     }
 
     const venuesRef = ref(database, 'venues');
     const newVenueRef = push(venuesRef);
-    const newVenue: Omit<Venue, 'id'> = {
-      name: newVenueName,
+    const newVenue: any = {
+      name: newVenueName || '',
       position: coordinates,
-      description: newVenueDescription,
+      description: newVenueDescription || '',
       address: newVenueAddress || `${coordinates[0]}, ${coordinates[1]}`,
       matches: [],
-      sport: selectedSport,
+      sport: selectedSport || 'Football',
       date: '',
       latitude: coordinates[0],
       longitude: coordinates[1],
-      emoji: selectedEmoji,
-      type: 'venue'
+      emoji: selectedEmoji || '⚽',
+      type: 'venue',
+      placeType: selectedPlaceType || 'sport'
     };
+    
+    // Ajouter les champs spécifiques selon le type
+    if (selectedPlaceType === 'soirée') {
+      newVenue.eventType = selectedEventType;
+    }
+    if (selectedPlaceType === 'indication') {
+      newVenue.indicationType = selectedIndicationType;
+    }
 
     try {
       await set(newVenueRef, newVenue);
@@ -1638,6 +1692,8 @@ function App() {
       setNewVenueDescription('');
       setNewVenueAddress('');
       setSelectedSport('Football');
+      setSelectedEventType('DJ contest');
+      setSelectedIndicationType('Soins');
       setTempMarker(null);
       setIsPlacingMarker(false);
       setIsAddingPlace(false);
@@ -1712,25 +1768,20 @@ function App() {
     const venue = venues.find(v => v.id === venueId);
     if (!venue) return;
 
-    if (!newMatch.date || !newMatch.teams || !newMatch.description) {
-      alert('Veuillez remplir tous les champs requis (date de début, équipes et description)');
-      return;
-    }
-
     const matchId = uuidv4();
     const match: Match = {
       id: matchId,
       name: `${venue.name} - Match`,
-      description: newMatch.description,
+      description: newMatch.description || '',
       address: venue.address,
       latitude: venue.latitude,
       longitude: venue.longitude,
       position: [venue.latitude, venue.longitude],
-      date: newMatch.date,
+      date: newMatch.date || '',
       type: 'match',
-      teams: newMatch.teams,
+      teams: newMatch.teams || '',
       sport: venue.sport,
-      time: new Date(newMatch.date).toTimeString().split(' ')[0],
+      time: newMatch.date ? new Date(newMatch.date).toTimeString().split(' ')[0] : '',
       endTime: newMatch.endTime || '',
       result: newMatch.result || '',
       venueId: venue.id,
@@ -1886,7 +1937,7 @@ function App() {
   const handleUpdateVenue = async () => {
     if (!checkAdminRights()) return;
 
-    if (editingVenue.id && newVenueName && newVenueDescription) {
+    if (editingVenue.id) {
       // Trouver le lieu dans la liste
       const venue = venues.find(v => v.id === editingVenue.id);
       
@@ -1899,16 +1950,43 @@ function App() {
         const coordinates: [number, number] = tempMarker || [venue.latitude, venue.longitude];
         
         // Créer l'objet de mise à jour
-        const updatedVenue = {
+        // Utiliser directement les valeurs des champs (même si vides) pour permettre la suppression
+        const venueAny = venue as any;
+        const updatedVenue: any = {
           ...venue,
           name: newVenueName,
           description: newVenueDescription,
           address: newVenueAddress || `${coordinates[0].toFixed(6)}, ${coordinates[1].toFixed(6)}`,
-          sport: selectedSport,
           latitude: coordinates[0],
           longitude: coordinates[1],
-          position: coordinates
+          position: coordinates,
+          placeType: selectedPlaceType || venueAny.placeType || 'sport'
         };
+        
+        // Ajouter les champs spécifiques selon le type
+        if (selectedPlaceType === 'sport') {
+          updatedVenue.sport = selectedSport;
+          updatedVenue.emoji = selectedEmoji;
+          // Supprimer les champs qui ne sont pas pour les venues sport
+          delete updatedVenue.eventType;
+          delete updatedVenue.indicationType;
+        } else if (selectedPlaceType === 'soirée') {
+          updatedVenue.emoji = selectedEmoji;
+          updatedVenue.eventType = selectedEventType;
+          // Supprimer les champs qui ne sont pas pour les soirées
+          delete updatedVenue.indicationType;
+        } else if (selectedPlaceType === 'indication') {
+          updatedVenue.emoji = selectedEmoji;
+          updatedVenue.indicationType = selectedIndicationType;
+          // Supprimer les champs qui ne sont pas pour les indications
+          delete updatedVenue.eventType;
+        } else {
+          // Pour hotel, resto, défilé, utiliser l'emoji sélectionné ou celui du venue
+          updatedVenue.emoji = selectedEmoji || venue.emoji || '📍';
+          // Supprimer les champs qui ne sont pas pour ces types
+          delete updatedVenue.eventType;
+          delete updatedVenue.indicationType;
+        }
         
         try {
           await set(venueRef, updatedVenue);
@@ -1930,6 +2008,9 @@ function App() {
           setNewVenueDescription('');
           setNewVenueAddress('');
           setSelectedSport('Football');
+          setSelectedEventType('DJ contest');
+          setSelectedIndicationType('Soins');
+          setSelectedPlaceType(null);
           setTempMarker(null);
           setEditingVenue({ id: null, venue: null });
           setIsAddingPlace(false);
@@ -1946,12 +2027,110 @@ function App() {
     setEditingVenue({ id: venue.id, venue: venue as unknown as Venue });
     setIsEditing(true);
     setIsAddingPlace(true); 
-    setNewVenueName(venue.name);
-    setNewVenueDescription(venue.description);
-    setNewVenueAddress(venue.address);
-    setSelectedSport(venue.sport);
-    setSelectedEmoji(venue.emoji);
+    
+    // Déterminer le type de lieu selon le type stocké ou les propriétés
+    let placeType: string | null = null;
+    if (venue.type === 'hotel') {
+      placeType = 'hotel';
+    } else if (venue.type === 'restaurant') {
+      placeType = 'resto';
+    } else if (venue.type === 'party') {
+      placeType = 'soirée';
+    } else if (venue.type === 'venue') {
+      // Pour les venues, vérifier s'il y a des propriétés supplémentaires
+      const venueAny = venue as any;
+      if (venueAny.placeType) {
+        placeType = venueAny.placeType;
+      } else if (venueAny.eventType) {
+        placeType = 'soirée';
+      } else if (venueAny.indicationType) {
+        placeType = 'indication';
+      } else {
+        // Par défaut, considérer comme sport
+        placeType = 'sport';
+      }
+    }
+    
+    if (placeType) {
+      setSelectedPlaceType(placeType);
+    }
+    
+    setNewVenueName(venue.name || '');
+    setNewVenueDescription(venue.description || '');
+    setNewVenueAddress(venue.address || '');
+    setSelectedSport(venue.sport || 'Football');
     setTempMarker([venue.latitude, venue.longitude]);
+    
+    // Charger les valeurs spécifiques selon le type
+    const venueAny = venue as any;
+    
+    // Gérer les types d'événements pour les soirées
+    if (placeType === 'soirée') {
+      if (venueAny.eventType) {
+        setSelectedEventType(venueAny.eventType);
+        // Mettre à jour l'emoji selon le type d'event
+        const eventEmoji = eventTypeEmojis[venueAny.eventType as keyof typeof eventTypeEmojis];
+        if (eventEmoji) {
+          setSelectedEmoji(eventEmoji);
+        } else {
+          // Si l'emoji n'est pas trouvé, utiliser celui du venue ou une valeur par défaut
+          setSelectedEmoji(venue.emoji || '🎉');
+        }
+      } else {
+        // Valeur par défaut si pas d'eventType
+        setSelectedEventType('DJ contest');
+        setSelectedEmoji(eventTypeEmojis['DJ contest'] || '🎉');
+      }
+      // Réinitialiser indicationType si ce n'est pas une indication
+      setSelectedIndicationType('Soins');
+    } 
+    // Gérer les types d'indication
+    else if (placeType === 'indication') {
+      if (venueAny.indicationType) {
+        // Charger le type d'indication depuis le venue
+        const indicationTypeValue = String(venueAny.indicationType).trim();
+        if (indicationTypeValue) {
+          setSelectedIndicationType(indicationTypeValue);
+          // Mettre à jour l'emoji selon le type d'indication
+          const indicationEmoji = indicationTypeEmojis[indicationTypeValue as keyof typeof indicationTypeEmojis];
+          if (indicationEmoji) {
+            setSelectedEmoji(indicationEmoji);
+          } else {
+            // Si l'emoji n'est pas trouvé, utiliser celui du venue ou une valeur par défaut
+            setSelectedEmoji(venue.emoji || '📍');
+          }
+        } else {
+          // Valeur par défaut si indicationType est vide
+          setSelectedIndicationType('Soins');
+          setSelectedEmoji(indicationTypeEmojis['Soins'] || '📍');
+        }
+      } else {
+        // Valeur par défaut si pas d'indicationType
+        setSelectedIndicationType('Soins');
+        setSelectedEmoji(indicationTypeEmojis['Soins'] || '📍');
+      }
+      // Réinitialiser eventType si ce n'est pas une soirée
+      setSelectedEventType('DJ contest');
+    } 
+    // Pour les autres types (sport, hotel, resto, défilé)
+    else {
+      // Réinitialiser les valeurs spécifiques
+      setSelectedEventType('DJ contest');
+      setSelectedIndicationType('Soins');
+    }
+    
+    // Pour les autres types (sport, hotel, resto, défilé), utiliser l'emoji du venue ou une valeur par défaut
+    if (placeType === 'sport') {
+      if (venue.emoji) {
+        setSelectedEmoji(venue.emoji);
+      } else {
+        setSelectedEmoji(sportEmojis[venue.sport as keyof typeof sportEmojis] || '⚽');
+      }
+    } else if (placeType && placeType !== 'soirée' && placeType !== 'indication') {
+      // Pour hotel, resto, défilé, utiliser l'emoji du venue ou une valeur par défaut
+      setSelectedEmoji(venue.emoji || '📍');
+    }
+    
     setIsPlacingMarker(false);
   };
 
@@ -1962,6 +2141,9 @@ function App() {
     setNewVenueDescription('');
     setNewVenueAddress('');
     setSelectedSport('Football');
+    setSelectedEventType('DJ contest');
+    setSelectedIndicationType('Soins');
+    setSelectedPlaceType(null);
     setTempMarker(null);
     setIsPlacingMarker(false);
     setIsAddingPlace(false);
@@ -2269,6 +2451,12 @@ function App() {
       }
       return true;
     });
+    
+    // Nettoyer les marqueurs d'indication
+    indicationMarkersRef.current.forEach(marker => {
+      marker.remove();
+    });
+    indicationMarkersRef.current = [];
 
     // VENUES
     venues.forEach(venue => {
@@ -2305,30 +2493,68 @@ function App() {
 
         if (!shouldShow) return;
 
+        // Vérifier si c'est une indication
+        const venueAny = venue as any;
+        const isIndication = venueAny.placeType === 'indication' || venueAny.indicationType;
+                
+        let markerHtml: string;
+        let markerSize: [number, number];
+        let iconAnchor: [number, number];
+        let popupAnchor: [number, number];
+        let markerClassName: string;
+        
+        if (isIndication) {
+          // Marqueur d'indication : fond blanc, même taille que les venues
+          const indicationEmoji = venueAny.indicationType ? indicationTypeEmojis[venueAny.indicationType as keyof typeof indicationTypeEmojis] || venue.emoji : venue.emoji;
+          markerHtml = `<div class="marker-content indication-marker" style="background-color: white; color: #333; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                         <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${indicationEmoji}</span>
+                       </div>`;
+          markerSize = [30, 30];
+          iconAnchor = [15, 15];
+          popupAnchor = [0, -15];
+          markerClassName = 'custom-marker indication-marker';
+        } else {
+          // Marqueur normal (venue)
         const markerColor = getMarkerColor(venue.date);
+          markerHtml = `<div class="marker-content" style="background-color: ${markerColor.color}; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+                         <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${getSportIcon(venue.sport)}</span>
+                       </div>`;
+          markerSize = [30, 30];
+          iconAnchor = [15, 15];
+          popupAnchor = [0, -15];
+          markerClassName = 'custom-marker';
+        }
+
         const marker = L.marker([venue.latitude, venue.longitude], {
           icon: L.divIcon({
-            className: 'custom-marker',
-            html: `<div class="marker-content" style="background-color: ${markerColor.color}; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                     <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${getSportIcon(venue.sport)}</span>
-                   </div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -15]
+            className: markerClassName,
+            html: markerHtml,
+            iconSize: markerSize,
+            iconAnchor: iconAnchor,
+            popupAnchor: popupAnchor
           })
         });
 
         // Créer le contenu du popup
         const popupContent = document.createElement('div');
         popupContent.className = 'venue-popup';
+        if (isIndication) {
+          popupContent.innerHTML = `
+            <h3>${venue.name}</h3>
+            <p>${venue.description}</p>
+            <p><strong>Type:</strong> ${venueAny.indicationType || 'Indication'}</p>
+          `;
+        } else {
         popupContent.innerHTML = `
           <h3>${venue.name}</h3>
           <p>${venue.description}</p>
           <p><strong>Sport:</strong> ${venue.sport}</p>
           <p class="venue-address">${venue.address || `${venue.latitude}, ${venue.longitude}`}</p>
         `;
+        }
 
-        // Boutons d'actions
+        // Boutons d'actions (uniquement pour les venues normales, pas pour les indications)
+        if (!isIndication) {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
         const mapsButton = document.createElement('button');
@@ -2346,11 +2572,12 @@ function App() {
         });
         buttonsContainer.appendChild(copyButton);
         popupContent.appendChild(buttonsContainer);
+        }
 
-        // Ajouter les matchs au popup
+        // Ajouter les matchs au popup (uniquement pour les venues normales, pas pour les indications)
         const matchesListDiv = document.createElement('div');
         matchesListDiv.className = 'matches-list';
-        if (venue.matches && venue.matches.length > 0) {
+        if (!isIndication && venue.matches && venue.matches.length > 0) {
           matchesListDiv.innerHTML = '<h4>Matchs :</h4>';
           const sortedMatches = [...venue.matches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
           const matchesScrollContainer = document.createElement('div');
@@ -2432,13 +2659,15 @@ function App() {
           });
           matchesListDiv.appendChild(matchesScrollContainer);
           popupContent.appendChild(matchesListDiv);
-        } else {
+        } else if (!isIndication) {
           matchesListDiv.innerHTML = '<p>Aucun match prévu</p>';
           popupContent.appendChild(matchesListDiv);
         }
         if (isEditing && isAdmin) {
           const editButtonsContainer = document.createElement('div');
           editButtonsContainer.className = 'popup-buttons';
+          // Ne pas afficher le bouton d'ajout de match pour les indications
+          if (!isIndication) {
           const addMatchButton = document.createElement('button');
           addMatchButton.className = 'add-match-button';
           addMatchButton.textContent = 'Ajouter un match';
@@ -2447,6 +2676,7 @@ function App() {
             startEditingMatch(venue.id || '', null);
           });
           editButtonsContainer.appendChild(addMatchButton);
+          }
           const editButton = document.createElement('button');
           editButton.className = 'modif-button';
           editButton.textContent = 'Modifier ce lieu';
@@ -2468,9 +2698,17 @@ function App() {
           handlePopupOpen();
         });
         if (mapRef.current) {
+          if (isIndication) {
+            indicationMarkersRef.current.push(marker);
+            // Ne pas ajouter à la carte si le zoom est < 17
+            if (currentZoom >= 17) {
+          marker.addTo(mapRef.current);
+            }
+          } else {
           marker.addTo(mapRef.current);
           markersRef.current.push(marker);
         }
+    }
     });
 
     // HOTELS et RESTAURANTS - Gérés par un effet séparé pour éviter les conflits
@@ -2517,12 +2755,12 @@ function App() {
           <h3>${party.name}</h3>
           <p>${party.description}</p>
           <p class="venue-address">${party.address}</p>
-          ${party.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
           ${party.name === 'Parc Expo' && party.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
           ${party.name === 'Parc Expo' && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         `;
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
+        
         const mapsButton = document.createElement('button');
         mapsButton.className = 'maps-button';
         mapsButton.textContent = 'Ouvrir dans Google Maps';
@@ -2537,6 +2775,19 @@ function App() {
           copyToClipboard(party.address || `${party.latitude},${party.longitude}`);
         });
         buttonsContainer.appendChild(copyButton);
+        
+        // Bouton pour voir la map des lieux de soirée (après "Copier l'adresse")
+        if (party.name !== 'Place Stanislas') {
+          const partyMapButton = document.createElement('button');
+          partyMapButton.className = 'party-map-button';
+          partyMapButton.textContent = 'Voir la carte des lieux';
+          partyMapButton.style.cssText = 'background-color: #5dabae; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; font-size: clamp(0.8rem, 3vw, 0.9rem); transition: all 0.3s ease;';
+          partyMapButton.addEventListener('click', () => {
+            setSelectedPartyForMap(party.name);
+            setActiveTab('party-map');
+          });
+          buttonsContainer.appendChild(partyMapButton);
+        }
         
         // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ contest) seulement si le mode édition est activé
         if (isAdmin && isEditing && (party.name === 'Parc Expo' || (party.name === 'Parc Expo' && party.description.includes('DJ contest')))) {
@@ -2576,7 +2827,6 @@ function App() {
             <h3>${currentParty.name}</h3>
             <p>${currentParty.description}</p>
             <p class="venue-address">${currentParty.address}</p>
-            ${currentParty.name !== 'Place Stanislas' ? '<div class="party-bus"><h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4></div>' : ''}
             ${currentParty.name === 'Parc Expo' && currentParty.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
             ${currentParty.name === 'Parc Expo' && currentParty.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
           `;
@@ -2584,6 +2834,7 @@ function App() {
           // Réajouter les boutons
           const buttonsContainerNew = document.createElement('div');
           buttonsContainerNew.className = 'popup-buttons';
+          
           const mapsButton = document.createElement('button');
           mapsButton.className = 'maps-button';
           mapsButton.textContent = 'Ouvrir dans Google Maps';
@@ -2598,6 +2849,19 @@ function App() {
             copyToClipboard(currentParty.address || `${currentParty.latitude},${currentParty.longitude}`);
           });
           buttonsContainerNew.appendChild(copyButton);
+          
+          // Bouton pour voir la map des lieux de soirée (après "Copier l'adresse")
+          if (currentParty.name !== 'Place Stanislas') {
+            const partyMapButton = document.createElement('button');
+            partyMapButton.className = 'party-map-button';
+            partyMapButton.textContent = 'Voir la carte des lieux';
+            partyMapButton.style.cssText = 'background-color: #5dabae; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; font-size: clamp(0.8rem, 3vw, 0.9rem); transition: all 0.3s ease;';
+            partyMapButton.addEventListener('click', () => {
+              setSelectedPartyForMap(currentParty.name);
+              setActiveTab('party-map');
+            });
+            buttonsContainerNew.appendChild(partyMapButton);
+          }
           
           // Réajouter les boutons admin si nécessaire
           if (isAdmin && isEditing && (currentParty.name === 'Parc Expo' || (currentParty.name === 'Parc Expo' && currentParty.description.includes('DJ contest')))) {
@@ -3817,6 +4081,9 @@ function App() {
       case 'chat':
         setActiveTab(chatOriginTab);
         break;
+      case 'party-map':
+        setActiveTab('map');
+        break;
       case 'home':
       case 'info':
         // Pas de retour possible depuis les pages principales
@@ -3833,6 +4100,9 @@ function App() {
     }
     setPreviousTab(activeTab);
     setActiveTab(tab);
+    if (tab === 'party-map') {
+      // Ne rien faire de spécial pour party-map
+    }
     if (tab === 'calendar') {
       setFromEvents(activeTab === 'events');
     } else {
@@ -3989,6 +4259,21 @@ function App() {
           />
           <LocationMarker />
           <MapEvents onMapClick={handleMapClick} />
+          <ZoomListener onZoomChange={(zoom) => {
+            setCurrentZoom(zoom);
+            // Mettre à jour la visibilité des marqueurs d'indication
+            indicationMarkersRef.current.forEach(marker => {
+              if (zoom >= 17) {
+                if (mapRef.current && !mapRef.current.hasLayer(marker)) {
+                  marker.addTo(mapRef.current);
+                }
+              } else {
+                if (mapRef.current && mapRef.current.hasLayer(marker)) {
+                  marker.remove();
+                }
+              }
+            });
+          }} />
                           <BusLines visibleLines={['T1', 'T5', 'T4', 'T2', 'T3']} />
               <div className="leaflet-control-container">
                 <div className="leaflet-top leaflet-right">
@@ -4006,13 +4291,7 @@ function App() {
                     <button 
                       className="add-venue-button"
                       onClick={() => {
-                        setIsAddingPlace(true);
-                        setEditingVenue({ id: null, venue: null });
-                        setNewVenueName('');
-                        setNewVenueDescription('');
-                        setNewVenueAddress('');
-                        setSelectedSport('Football');
-                        setTempMarker(null);
+                        setShowPlaceTypeModal(true);
                       }}
                       title="Ajouter un lieu"
                     >
@@ -4576,7 +4855,7 @@ function App() {
                 <input id="match-result" type="text" value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, result: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, result: e.target.value }); } }} placeholder="Ex: 2-1 (à saisir si disponible)" className="modal-form-input" />
               </div>
               <div className="modal-form-actions">
-                <button className="modal-form-submit" onClick={() => { if (editingMatch.match) { handleUpdateMatch(editingMatch.venueId!, editingMatch.match.id, { date: editingMatch.match.date, endTime: editingMatch.match.endTime || '', teams: editingMatch.match.teams, description: editingMatch.match.description, result: editingMatch.match.result }); finishEditingMatch(); } else { handleAddMatch(editingMatch.venueId!); } }} disabled={editingMatch.match ? !editingMatch.match.date || !editingMatch.match.teams || !editingMatch.match.description : !newMatch.date || !newMatch.teams || !newMatch.description}>{editingMatch.match ? 'Mettre à jour' : 'Ajouter'}</button>
+                <button className="modal-form-submit" onClick={() => { if (editingMatch.match) { handleUpdateMatch(editingMatch.venueId!, editingMatch.match.id, { date: editingMatch.match.date, endTime: editingMatch.match.endTime || '', teams: editingMatch.match.teams, description: editingMatch.match.description, result: editingMatch.match.result }); finishEditingMatch(); } else { handleAddMatch(editingMatch.venueId!); } }}>{editingMatch.match ? 'Mettre à jour' : 'Ajouter'}</button>
                 <button className="modal-form-cancel" onClick={finishEditingMatch}>Annuler</button>
               </div>
             </div>
@@ -4584,13 +4863,149 @@ function App() {
         </div>
       )}
       
-      {/* Formulaire d'édition de lieu */}
-      {isAddingPlace && (
+      {/* Modal de sélection du type de lieu */}
+      {showPlaceTypeModal && (
         <div className="modal-form-overlay">
           <div className="modal-form-container">
             <div className="modal-form-header">
-              <h2>{editingVenue.id ? 'Modifier le lieu' : 'Ajouter un lieu'}</h2>
-              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+              <h2>Choisir le type de lieu</h2>
+              <button className="close-button" onClick={() => setShowPlaceTypeModal(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="place-type-selection">
+                <button 
+                  className="place-type-button"
+                  onClick={() => {
+                    setSelectedPlaceType('sport');
+                    setShowPlaceTypeModal(false);
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                setNewVenueName('');
+                setNewVenueDescription('');
+                setNewVenueAddress('');
+                setSelectedSport('Football');
+                    setSelectedEmoji(sportEmojis['Football'] || '⚽');
+                    setSelectedEventType('DJ contest');
+                    setSelectedIndicationType('Soins');
+                setTempMarker(null);
+                  }}
+                >
+                  <span className="place-type-icon">⚽</span>
+                  <span className="place-type-label">Sport</span>
+                </button>
+                <button 
+                  className="place-type-button"
+                  onClick={() => {
+                    setSelectedPlaceType('hotel');
+                    setShowPlaceTypeModal(false);
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                      setSelectedSport('Football');
+                    setSelectedEventType('DJ contest');
+                    setSelectedIndicationType('Soins');
+                    setTempMarker(null);
+                  }}
+                >
+                  <span className="place-type-icon">🏢</span>
+                  <span className="place-type-label">Hôtel</span>
+                </button>
+                <button 
+                  className="place-type-button"
+                  onClick={() => {
+                    setSelectedPlaceType('soirée');
+                    setShowPlaceTypeModal(false);
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                    setSelectedEventType('DJ contest');
+                    setSelectedIndicationType('Soins');
+                    setSelectedEmoji(eventTypeEmojis['DJ contest'] || '🎉');
+                    setTempMarker(null);
+                  }}
+                >
+                  <span className="place-type-icon">🎉</span>
+                  <span className="place-type-label">Soirée</span>
+                </button>
+                <button 
+                  className="place-type-button"
+                  onClick={() => {
+                    setSelectedPlaceType('défilé');
+                    setShowPlaceTypeModal(false);
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                    setSelectedEventType('DJ contest');
+                    setSelectedIndicationType('Soins');
+                    setTempMarker(null);
+                  }}
+                >
+                  <span className="place-type-icon">🎺</span>
+                  <span className="place-type-label">Défilé</span>
+                </button>
+                <button 
+                  className="place-type-button"
+                  onClick={() => {
+                    setSelectedPlaceType('resto');
+                    setShowPlaceTypeModal(false);
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                    setSelectedEventType('DJ contest');
+                    setSelectedIndicationType('Soins');
+                    setTempMarker(null);
+                  }}
+                >
+                  <span className="place-type-icon">🍽️</span>
+                  <span className="place-type-label">Restaurant</span>
+                </button>
+                <button 
+                  className="place-type-button"
+                  onClick={() => {
+                    setSelectedPlaceType('indication');
+                    setShowPlaceTypeModal(false);
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                    setSelectedEventType('DJ contest');
+                    setSelectedIndicationType('Soins');
+                    setSelectedEmoji(indicationTypeEmojis['Soins'] || '📍');
+                    setTempMarker(null);
+                  }}
+                >
+                  <span className="place-type-icon">📍</span>
+                  <span className="place-type-label">Indication</span>
+                </button>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-cancel" onClick={() => setShowPlaceTypeModal(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire de modification de lieu - Type Sport */}
+      {isAddingPlace && editingVenue.id && selectedPlaceType === 'sport' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Modifier le lieu de sport</h2>
+              <button className="close-button" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>×</button>
             </div>
             <div className="modal-form-content">
               <div className="modal-form-group">
@@ -4627,7 +5042,420 @@ function App() {
                 </select>
               </div>
               <div className="modal-form-actions">
-                <button className="modal-form-submit" onClick={() => handleAddVenue()} disabled={!newVenueName || !newVenueAddress}>Ajouter</button>
+                <button className="modal-form-submit" onClick={() => handleUpdateVenue()}>Mettre à jour</button>
+                <button className="modal-form-cancel" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Sport */}
+      {isAddingPlace && !editingVenue.id && selectedPlaceType === 'sport' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Ajouter un lieu de sport</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Gymnase Raymond Poincaré" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Pour rentrer il faut..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+                <div className="modal-form-group">
+                  <label htmlFor="venue-sport">Sport</label>
+                  <select id="venue-sport" value={selectedSport} onChange={(e) => { setSelectedSport(e.target.value); setSelectedEmoji(sportEmojis[e.target.value as keyof typeof sportEmojis] || '⚽'); }} className="modal-form-input">
+                    <option value="Football">Football ⚽</option>
+                    <option value="Basketball">Basketball 🏀</option>
+                    <option value="Handball">Handball 🤾</option>
+                    <option value="Rugby">Rugby 🏉</option>
+                    <option value="Ultimate">Ultimate 🥏</option>
+                    <option value="Natation">Natation 🏊</option>
+                    <option value="Badminton">Badminton 🏸</option>
+                    <option value="Tennis">Tennis 🎾</option>
+                    <option value="Cross">Cross 👟</option>
+                    <option value="Volleyball">Volleyball 🏐</option>
+                    <option value="Ping-pong">Ping-pong 🏓</option>
+                    <option value="Boxe">Boxe 🥊</option>
+                    <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
+                    <option value="Spikeball">Spikeball ⚡️</option>
+                    <option value="Escalade">Escalade 🧗‍♂️</option>
+                  </select>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleAddVenue()}>Ajouter</button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+                </div>
+              )}
+
+      {/* Formulaire de modification de lieu - Type Hôtel */}
+      {isAddingPlace && editingVenue.id && selectedPlaceType === 'hotel' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Modifier l'hôtel</h2>
+              <button className="close-button" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>×</button>
+            </div>
+            <div className="modal-form-content">
+                <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom de l'hôtel</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Hôtel de Ville" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'hôtel..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleUpdateVenue()}>Mettre à jour</button>
+                <button className="modal-form-cancel" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Hôtel */}
+      {isAddingPlace && !editingVenue.id && selectedPlaceType === 'hotel' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Ajouter un hôtel</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+                <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom de l'hôtel</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Hôtel de Ville" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'hôtel..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleAddVenue()}>Ajouter</button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire de modification de lieu - Type Restaurant */}
+      {isAddingPlace && editingVenue.id && selectedPlaceType === 'resto' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Modifier le restaurant</h2>
+              <button className="close-button" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du restaurant</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Le Bistrot" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le restaurant..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleUpdateVenue()}>Mettre à jour</button>
+                <button className="modal-form-cancel" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Restaurant */}
+      {isAddingPlace && !editingVenue.id && selectedPlaceType === 'resto' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Ajouter un restaurant</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du restaurant</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Le Bistrot" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le restaurant..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleAddVenue()}>Ajouter</button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire de modification de lieu - Type Défilé */}
+      {isAddingPlace && editingVenue.id && selectedPlaceType === 'défilé' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Modifier le défilé</h2>
+              <button className="close-button" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Place Stanislas" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le défilé..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleUpdateVenue()}>Mettre à jour</button>
+                <button className="modal-form-cancel" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Défilé */}
+      {isAddingPlace && !editingVenue.id && selectedPlaceType === 'défilé' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Ajouter un défilé</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Place Stanislas" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le défilé..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleAddVenue()}>Ajouter</button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire de modification de lieu - Type Soirée */}
+      {isAddingPlace && editingVenue.id && selectedPlaceType === 'soirée' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Modifier la soirée</h2>
+              <button className="close-button" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Salle des fêtes" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur la soirée..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-event">Event</label>
+                <select id="venue-event" value={selectedEventType} onChange={(e) => { 
+                  setSelectedEventType(e.target.value);
+                  setSelectedEmoji(eventTypeEmojis[e.target.value as keyof typeof eventTypeEmojis] || '🎉');
+                }} className="modal-form-input">
+                  <option value="DJ contest">DJ contest 🎧</option>
+                  <option value="Show Pompom">Show Pompom 🎀</option>
+                  <option value="Showcase">Showcase 🎤</option>
+                  </select>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleUpdateVenue()}>Mettre à jour</button>
+                <button className="modal-form-cancel" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>Annuler</button>
+              </div>
+            </div>
+          </div>
+                </div>
+              )}
+
+      {/* Formulaire d'ajout de lieu - Type Soirée */}
+      {isAddingPlace && !editingVenue.id && selectedPlaceType === 'soirée' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Ajouter une soirée</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom du lieu</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Salle des fêtes" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur la soirée..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-event">Event</label>
+                <select id="venue-event" value={selectedEventType} onChange={(e) => { 
+                  setSelectedEventType(e.target.value);
+                  setSelectedEmoji(eventTypeEmojis[e.target.value as keyof typeof eventTypeEmojis] || '🎉');
+                }} className="modal-form-input">
+                  <option value="DJ contest">DJ contest 🎧</option>
+                  <option value="Show Pompom">Show Pompom 🎀</option>
+                  <option value="Showcase">Showcase 🎤</option>
+                  </select>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleAddVenue()}>Ajouter</button>
+                <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+                </div>
+              )}
+
+      {/* Formulaire de modification de lieu - Type Indication */}
+      {isAddingPlace && editingVenue.id && selectedPlaceType === 'indication' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Modifier l'indication</h2>
+              <button className="close-button" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom de l'indication</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Point de soins" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'indication..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-type">Type</label>
+                <select id="venue-type" value={selectedIndicationType} onChange={(e) => { 
+                  setSelectedIndicationType(e.target.value);
+                  setSelectedEmoji(indicationTypeEmojis[e.target.value as keyof typeof indicationTypeEmojis] || '📍');
+                }} className="modal-form-input">
+                  <option value="Soins">Soins 🚑</option>
+                  <option value="Poubelle">Poubelle 🗑️</option>
+                  <option value="Dejeuner">Dejeuner 🥐</option>
+                  <option value="Bar">Bar 🍺</option>
+                  <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
+                  <option value="Safe place">Safe place 🗣️</option>
+                  <option value="Toilette">Toilette 🚾</option>
+                </select>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleUpdateVenue()}>Mettre à jour</button>
+                <button className="modal-form-cancel" onClick={() => { setIsAddingPlace(false); cancelEditingVenue(); }}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire d'ajout de lieu - Type Indication */}
+      {isAddingPlace && !editingVenue.id && selectedPlaceType === 'indication' && (
+        <div className="modal-form-overlay">
+          <div className="modal-form-container">
+            <div className="modal-form-header">
+              <h2>Ajouter une indication</h2>
+              <button className="close-button" onClick={() => setIsAddingPlace(false)}>×</button>
+            </div>
+            <div className="modal-form-content">
+              <div className="modal-form-group">
+                <label htmlFor="venue-name">Nom de l'indication</label>
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Point de soins" className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-description">Description</label>
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'indication..." className="modal-form-input" />
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-address">Adresse</label>
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
+              </div>
+              <div className="modal-form-group">
+                <label htmlFor="venue-type">Type</label>
+                <select id="venue-type" value={selectedIndicationType} onChange={(e) => { 
+                  setSelectedIndicationType(e.target.value);
+                  setSelectedEmoji(indicationTypeEmojis[e.target.value as keyof typeof indicationTypeEmojis] || '📍');
+                }} className="modal-form-input">
+                  <option value="Soins">Soins 🚑</option>
+                  <option value="Poubelle">Poubelle 🗑️</option>
+                  <option value="Dejeuner">Dejeuner 🥐</option>
+                  <option value="Bar">Bar 🍺</option>
+                  <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
+                  <option value="Safe place">Safe place 🗣️</option>
+                  <option value="Toilette">Toilette 🚾</option>
+                </select>
+              </div>
+              <div className="modal-form-actions">
+                <button className="modal-form-submit" onClick={() => handleAddVenue()}>Ajouter</button>
                 <button className="modal-form-cancel" onClick={() => setIsAddingPlace(false)}>Annuler</button>
               </div>
             </div>
@@ -4842,6 +5670,8 @@ function App() {
             </div>
           </div>
         )}
+
+      {activeTab === 'party-map' && <PartyMap />}
 
       <Outlet />
     </div>

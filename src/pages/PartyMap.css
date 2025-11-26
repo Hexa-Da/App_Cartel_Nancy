@@ -1,0 +1,65 @@
+.party-map-container {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 80px - 60px);
+  z-index: 1000;
+  background-color: var(--bg-color);
+}
+
+/* Ajustement pour iOS avec safe-area */
+body.ios .party-map-container {
+  top: calc(80px + env(safe-area-inset-top, 0px));
+  height: calc(100vh - 80px - env(safe-area-inset-top, 0px) - 70px);
+  height: calc(100svh - 80px - env(safe-area-inset-top, 0px) - 70px);
+}
+
+/* Ajustement pour Android */
+body.android .party-map-container {
+  top: 80px;
+  height: calc(100vh - 80px - 50px);
+}
+
+/* Ajustement pour tenir compte du header et de la BottomNav */
+@media (max-width: 600px) {
+  .party-map-container {
+    top: 80px;
+    height: calc(100vh - 80px - 50px);
+  }
+  
+  body.ios .party-map-container {
+    top: calc(80px + env(safe-area-inset-top, 0px));
+    height: calc(100vh - 80px - env(safe-area-inset-top, 0px) - 70px);
+    height: calc(100svh - 80px - env(safe-area-inset-top, 0px) - 70px);
+  }
+}
+
+.party-map-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  padding: 0 60px;
+}
+
+.back-button {
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.back-button:active {
+  transform: scale(0.95);
+}
+
