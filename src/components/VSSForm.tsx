@@ -2,9 +2,8 @@
  * @fileoverview Formulaire de signalement VSS (Violences Sexuelles et Sexistes)
  * 
  * Ce composant gère :
- * - Formulaire de signalement avec champs obligatoires et optionnels
+ * - Formulaire de signalement avec champs obligatoires
  * - Envoi d'emails via EmailJS sans client email externe
- * - Option d'anonymat pour les signalements
  * - Validation des données et feedback utilisateur
  * - Interface sécurisée et confidentielle
  * - Fallback vers mailto en cas d'échec EmailJS
@@ -29,13 +28,22 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     description: '',
     date: '',
     location: '',
-    contact: '',
-    anonymous: false
+    firstName: '',
+    lastName: '',
+    phone: '',
+    certified: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Vérifier que la case de certification est cochée
+    if (!formData.certified) {
+      alert('Veuillez certifier que les coordonnées fournies sont correctes.');
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -49,8 +57,10 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
         date: formData.date,
         location: formData.location,
         description: formData.description,
-        contact: formData.anonymous ? 'Anonyme' : formData.contact,
-        from_name: formData.anonymous ? 'Anonyme' : 'Signalement VSS'
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        from_name: `${formData.firstName} ${formData.lastName}`
       };
 
       // Envoyer l'email directement
@@ -72,7 +82,9 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
 Date de l'incident : ${formData.date}
 Lieu : ${formData.location}
 Description : ${formData.description}
-Contact (si non anonyme) : ${formData.anonymous ? 'Anonyme' : formData.contact}`;
+Nom : ${formData.lastName}
+Prénom : ${formData.firstName}
+Téléphone : ${formData.phone}`;
 
       try {
         const mailtoUrl = `mailto:pap71@hotmail.fr?subject=Signalement%20VSS&body=${encodeURIComponent(emailContent)}`;
@@ -139,35 +151,59 @@ ${emailContent}`);
           </div>
 
           <div className="form-group">
-            <div className="anonymous-checkbox">
-              <input
-                type="checkbox"
-                id="anonymous"
-                checked={formData.anonymous}
-                onChange={(e) => setFormData({ ...formData, anonymous: e.target.checked })}
-              />
-              <label htmlFor="anonymous">Je souhaite rester anonyme</label>
-            </div>
+            <label htmlFor="lastName">Nom *</label>
+            <input
+              type="text"
+              id="lastName"
+              value={formData.lastName}
+              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              placeholder="Votre nom"
+              required
+            />
           </div>
 
-          {!formData.anonymous && (
-            <div className="form-group">
-              <label htmlFor="contact">Contact (email ou téléphone)</label>
+          <div className="form-group">
+            <label htmlFor="firstName">Prénom *</label>
+            <input
+              type="text"
+              id="firstName"
+              value={formData.firstName}
+              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              placeholder="Votre prénom"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="phone">Numéro de téléphone *</label>
+            <input
+              type="tel"
+              id="phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="Votre numéro de téléphone"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <div className="certification-checkbox">
               <input
-                type="text"
-                id="contact"
-                value={formData.contact}
-                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                placeholder="Votre contact pour le suivi"
+                type="checkbox"
+                id="certified"
+                checked={formData.certified}
+                onChange={(e) => setFormData({ ...formData, certified: e.target.checked })}
+                required
               />
+              <label htmlFor="certified">Je certifie que les coordonnées fournies sont correctes *</label>
             </div>
-          )}
+          </div>
 
           <div className="form-actions">
             <button 
               type="submit" 
               className="submit-button"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !formData.certified}
             >
               {isSubmitting ? 'Envoi en cours...' : 'Envoyer le signalement'}
             </button>

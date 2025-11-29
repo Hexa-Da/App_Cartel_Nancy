@@ -145,9 +145,10 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     { value: 'Ultimate', label: 'Ultimate 🥏' },
     { value: 'Natation', label: 'Natation 🏊' },
     { value: 'Cross', label: 'Cross 👟' },
-    { value: 'Boxe', label: 'Boxe 🥊' },
+    { value: 'Echecs', label: 'Echecs ♟️' },
     { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
     { value: 'Spikeball', label: 'Spikeball ⚡️' },
+    { value: 'Pétanque', label: 'Pétanque 🍹' },
     { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
   ];
 

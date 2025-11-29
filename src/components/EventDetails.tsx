@@ -93,12 +93,12 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
       'Ping-pong': '🏓',
       'Ultimate': '🥏',
       'Natation': '🏊',
-      'Cross': '🏃',
-      'Boxe': '🥊',
+      'Cross': '👟',
+      'Echecs': '♟️',
       'Athlétisme': '🏃‍♂️',
+      'Spikeball': '⚡️',
       'Pétanque': '🍹',
       'Escalade': '🧗‍♂️',
-      'Jeux de société': '🎲',
       'Soirée': '🎉',
       'Défilé': '🎺'
     };

@@ -1277,10 +1277,11 @@ function App() {
     Ultimate: '🥏',
     Natation: '🏊',
     Cross: '👟',
-    Boxe: '🥊',
+    Echecs: '♟️',
     Athlétisme: '🏃‍♂️',
     Escalade: '🧗‍♂️',
     Spikeball: '⚡️',
+    Pétanque: '🍹',
     Pompom: '🎀',
     Defile: '🎺',
     Party: '🎉',
@@ -1302,6 +1303,10 @@ function App() {
     'Accès handicapé': '👨‍🦽',
     'Safe place': '🗣️',
     'Toilette': '🚾',
+    'Zone fumeur': '🚬',
+    'Vestiaire': '🧥',
+    'Stand de prévention': '⚠️',
+    'Stand entreprise': '👩‍💼',
   };
 
   // Fonction pour géocoder une adresse avec Nominatim
@@ -1350,9 +1355,10 @@ function App() {
       'Cross': '👟',
       'Volleyball': '🏐',
       'Ping-pong': '🏓',
-      'Boxe': '🥊',
+      'Echecs': '♟️',
       'Athlétisme': '🏃‍♂️',
       'Spikeball': '⚡️',
+      'Pétanque': '🍹',
       'Escalade': '🧗‍♂️',
     };
     return sportIcons[sport] || '🏆';
@@ -4451,9 +4457,10 @@ function App() {
                         <option value="Cross">Cross 👟</option>
                         <option value="Volleyball">Volleyball 🏐</option>
                         <option value="Ping-pong">Ping-pong 🏓</option>
-                        <option value="Boxe">Boxe 🥊</option>
+                        <option value="Echecs">Echecs ♟️</option>
                         <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
                         <option value="Spikeball">Spikeball ⚡️</option>
+                        <option value="Pétanque">Pétanque 🍹</option>
                         <option value="Escalade">Escalade 🧗‍♂️</option>
                       </select>
 
@@ -5035,9 +5042,10 @@ function App() {
                   <option value="Cross">Cross 👟</option>
                   <option value="Volleyball">Volleyball 🏐</option>
                   <option value="Ping-pong">Ping-pong 🏓</option>
-                  <option value="Boxe">Boxe 🥊</option>
+                  <option value="Echecs">Echecs ♟️</option>
                   <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
                   <option value="Spikeball">Spikeball ⚡️</option>
+                  <option value="Pétanque">Pétanque 🍹</option>
                   <option value="Escalade">Escalade 🧗‍♂️</option>
                 </select>
               </div>
@@ -5086,9 +5094,10 @@ function App() {
                     <option value="Cross">Cross 👟</option>
                     <option value="Volleyball">Volleyball 🏐</option>
                     <option value="Ping-pong">Ping-pong 🏓</option>
-                    <option value="Boxe">Boxe 🥊</option>
+                    <option value="Echecs">Echecs ♟️</option>
                     <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
                     <option value="Spikeball">Spikeball ⚡️</option>
+                    <option value="Pétanque">Pétanque 🍹</option>
                     <option value="Escalade">Escalade 🧗‍♂️</option>
                   </select>
               </div>
@@ -5406,6 +5415,10 @@ function App() {
                   <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
                   <option value="Safe place">Safe place 🗣️</option>
                   <option value="Toilette">Toilette 🚾</option>
+                  <option value="Zone fumeur">Zone fumeur 🚬</option>
+                  <option value="Vestiaire">Vestiaire 🧥</option>
+                  <option value="Stand de prévention">Stand de prévention ⚠️</option>
+                  <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                 </select>
               </div>
               <div className="modal-form-actions">
@@ -5452,6 +5465,10 @@ function App() {
                   <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
                   <option value="Safe place">Safe place 🗣️</option>
                   <option value="Toilette">Toilette 🚾</option>
+                  <option value="Zone fumeur">Zone fumeur 🚬</option>
+                  <option value="Vestiaire">Vestiaire 🧥</option>
+                  <option value="Stand de prévention">Stand de prévention ⚠️</option>
+                  <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                 </select>
               </div>
               <div className="modal-form-actions">

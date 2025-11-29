@@ -290,6 +290,10 @@ const PartyMap: React.FC = () => {
       'Accès handicapé': '👨‍🦽',
       'Safe place': '🗣️',
       'Toilette': '🚾',
+      'Zone fumeur': '🚬',
+      'Vestiaire': '🧥',
+      'Stand de prévention': '⚠️',
+      'Stand entreprise': '👩‍💼',
     };
 
     // Bounds pour l'image avec CRS.Simple
@@ -394,6 +398,10 @@ const PartyMap: React.FC = () => {
                   <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
                   <option value="Safe place">Safe place 🗣️</option>
                   <option value="Toilette">Toilette 🚾</option>
+                  <option value="Zone fumeur">Zone fumeur 🚬</option>
+                  <option value="Vestiaire">Vestiaire 🧥</option>
+                  <option value="Stand de prévention">Stand de prévention ⚠️</option>
+                  <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                 </select>
                 <button
                   onClick={() => setIsAddingMarker(true)}

@@ -44,9 +44,10 @@ const sportEmojis = {
   'Cross': '👟',
   'Volleyball': '🏐',
   'Ping-pong': '🏓',
-  'Boxe': '🥊',
+  'Echecs': '♟️',
   'Athlétisme': '🏃‍♂️',
   'Spikeball': '⚡️',
+  'Pétanque': '🍹',
   'Escalade': '🧗‍♂️',
 } as const;
 
@@ -63,7 +64,11 @@ const indicationTypeEmojis: { [key: string]: string } = {
   'Bar': '🍺',
   'Accès handicapé': '👨‍🦽',
   'Safe place': '🗣️',
-  'Toilette': '🚾'
+  'Toilette': '🚾',
+  'Zone fumeur': '🚬',
+  'Vestiaire': '🧥',
+  'Stand de prévention': '⚠️',
+  'Stand entreprise': '👩‍💼'
 };
 
 interface Message {
@@ -1126,9 +1131,10 @@ const Layout: React.FC = () => {
                   <option value="Cross">Cross 👟</option>
                   <option value="Volleyball">Volleyball 🏐</option>
                   <option value="Ping-pong">Ping-pong 🏓</option>
-                  <option value="Boxe">Boxe 🥊</option>
+                  <option value="Echecs">Echecs ♟️</option>
                   <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
                   <option value="Spikeball">Spikeball ⚡️</option>
+                  <option value="Pétanque">Pétanque 🍹</option>
                   <option value="Escalade">Escalade 🧗‍♂️</option>
                 </select>
               </div>
@@ -1336,6 +1342,10 @@ const Layout: React.FC = () => {
                   <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
                   <option value="Safe place">Safe place 🗣️</option>
                   <option value="Toilette">Toilette 🚾</option>
+                  <option value="Zone fumeur">Zone fumeur 🚬</option>
+                  <option value="Vestiaire">Vestiaire 🧥</option>
+                  <option value="Stand de prévention">Stand de prévention ⚠️</option>
+                  <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                 </select>
               </div>
               <div className="modal-form-actions">

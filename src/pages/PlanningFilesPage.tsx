@@ -77,14 +77,14 @@ const PlanningFilesPage: React.FC = () => {
           { value: 'Natation', label: 'Natation 🏊' },
           { value: 'Badminton', label: 'Badminton 🏸' },
           { value: 'Tennis', label: 'Tennis 🎾' },
-          { value: 'Cross', label: 'Cross 🏃' },
+          { value: 'Cross', label: 'Cross 👟' },
           { value: 'Volleyball', label: 'Volleyball 🏐' },
           { value: 'Ping-pong', label: 'Ping-pong 🏓' },
-          { value: 'Boxe', label: 'Boxe 🥊' },
+          { value: 'Echecs', label: 'Echecs ♟️' },
           { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
+          { value: 'Spikeball', label: 'Spikeball ⚡️' },
           { value: 'Pétanque', label: 'Pétanque 🍹' },
           { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-          { value: 'Jeux de société', label: 'Jeux de société 🎲' },
           { value: 'Pompom', label: 'Pompom 🎀' },
           { value: 'Defile', label: 'Défilé 🎺' }
         ];

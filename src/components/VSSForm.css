@@ -21,12 +21,13 @@ body.ios .vss-form-overlay {
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 95vh;
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .vss-form-header {
@@ -64,6 +65,10 @@ body.ios .vss-form-overlay {
 .vss-form-content {
   overflow-y: auto;
   padding: 1rem;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 2rem;
+  -webkit-overflow-scrolling: touch;
 }
 
 .form-group {
@@ -78,6 +83,7 @@ body.ios .vss-form-overlay {
 }
 
 .form-group input[type="text"],
+.form-group input[type="tel"],
 .form-group input[type="datetime-local"],
 .form-group textarea {
   width: 100%;
@@ -127,17 +133,26 @@ body.ios .vss-form-overlay {
   min-height: 100px;
 }
 
-.anonymous-checkbox {
+.anonymous-checkbox,
+.certification-checkbox {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.anonymous-checkbox input[type="checkbox"] {
+.anonymous-checkbox input[type="checkbox"],
+.certification-checkbox input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: var(--primary-color);
   filter: var(--checkbox-filter);
+  flex-shrink: 0;
+}
+
+.certification-checkbox label {
+  margin-bottom: 0;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .form-actions {
@@ -173,6 +188,7 @@ body.ios .vss-form-overlay {
 
 .form-note {
   margin-top: 1.5rem;
+  margin-bottom: 2rem;
   font-size: 0.8rem;
   color: var(--text-color-light);
   text-align: center;

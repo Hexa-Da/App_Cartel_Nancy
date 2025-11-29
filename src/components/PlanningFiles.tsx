@@ -183,12 +183,12 @@ export default function PlanningFiles({
     { value: 'Cross', label: 'Cross 👟' },
     { value: 'Volleyball', label: 'Volleyball 🏐' },
     { value: 'Ping-pong', label: 'Ping-pong 🏓' },
-    { value: 'Boxe', label: 'Boxe 🥊' },
+    { value: 'Echecs', label: 'Echecs ♟️' },
     { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
     { value: 'Spikeball', label: 'Spikeball ⚡️' },
+    { value: 'Pétanque', label: 'Pétanque 🍹' },
     { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
     { value: 'Pompom', label: 'Pompom 🎀' },
-    { value: 'Defile', label: 'Défilé 🎺' },
     { value: 'Hotel', label: 'Hôtel 🏢' },
     { value: 'Restaurant', label: 'Restaurant 🍽️' }
   ];
@@ -274,8 +274,8 @@ export default function PlanningFiles({
       // Afficher tous les sports
       const sportsTypes = [
         'Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
-        'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Boxe',
-        'Athlétisme', 'Spikeball', 'Escalade', 'Pompom', 'Defile'
+        'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Echecs',
+        'Athlétisme', 'Spikeball', 'Pétanque', 'Escalade', 'Pompom'
       ];
       filtered = filtered.filter(file => 
         sportsTypes.includes(file.eventType)

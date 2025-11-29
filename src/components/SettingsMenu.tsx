@@ -31,9 +31,10 @@ const sportOptions = [
   { value: 'Cross', label: '👟 Cross' },
   { value: 'Volleyball', label: '🏐 Volleyball' },
   { value: 'Ping-pong', label: '🏓 Ping-pong' },
-  { value: 'Boxe', label: '🥊 Boxe' },
+  { value: 'Echecs', label: '♟️ Echecs' },
   { value: 'Athlétisme', label: '🏃‍♂️ Athlétisme' },
   { value: 'Spikeball', label: '⚡️ Spikeball' },
+  { value: 'Pétanque', label: '🍹 Pétanque' },
   { value: 'Escalade', label: '🧗‍♂️ Escalade' },
 ];
 

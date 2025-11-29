@@ -17,7 +17,7 @@
 
 import React from 'react';
 import './Info.css';
-import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel, FaHotel, FaFileAlt, FaMoon, FaShieldAlt, FaGlassCheers, FaMusic, FaFileContract } from 'react-icons/fa';
+import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel, FaHotel, FaFileAlt, FaMoon, FaShieldAlt, FaGlassCheers, FaMusic, FaFileContract, FaRing, FaDice } from 'react-icons/fa';
 import { GiPartyPopper } from 'react-icons/gi';
 import { MdLeaderboard, MdEventNote } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -86,6 +86,18 @@ const Info: React.FC = () => {
           icon={<FaHotel />}
           title="Infos Hotels"
           onClick={() => handleCardClick('hotel')}
+        />
+        
+        <InfoCard
+          icon={<FaRing />}
+          title="Bracelet"
+          onClick={() => handleCardClick('bracelet')}
+        />
+        
+        <InfoCard
+          icon={<FaDice />}
+          title="Parie"
+          onClick={() => handleCardClick('parie')}
         />
         
         <InfoCard

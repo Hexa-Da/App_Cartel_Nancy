@@ -316,12 +316,12 @@ const Home: React.FC = () => {
       'Ping-pong': '🏓',
       'Ultimate': '🥏',
       'Natation': '🏊',
-      'Cross': '🏃',
-      'Boxe': '🥊',
+      'Cross': '👟',
+      'Echecs': '♟️',
       'Athlétisme': '🏃‍♂️',
+      'Spikeball': '⚡️',
       'Pétanque': '🍹',
-      'Escalade': '🧗‍♂️',
-      'Jeux de société': '🎲'
+      'Escalade': '🧗‍♂️'
     };
     return icons[sport] || '🏆';
   };
