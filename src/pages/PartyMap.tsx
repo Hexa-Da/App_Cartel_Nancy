@@ -92,12 +92,12 @@ const PartyMap: React.FC = () => {
         id: '3',
         name: "Parc Expo",
         position: [48.663481, 6.189737],
-        description: "Soirée DJ contest 17 avril, 20h-4h",
+        description: "Soirée Showcase 17 novembre, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         latitude: 48.663481,
         longitude: 6.189737,
-        date: '2026-04-17T20:00:00',
-        emoji: '🎧',
+        date: '2026-11-17T20:00:00',
+        emoji: '🎤',
         sport: 'Party',
         result: 'à venir'
       },
@@ -105,12 +105,12 @@ const PartyMap: React.FC = () => {
         id: '4',
         name: "Zénith",
         position: [48.711077, 6.139991],
-        description: "Soirée du 18 avril, 20h-4h",
+        description: "Soirée DJ Contest 18 novembre, 20h-4h",
         address: "Rue du Zénith, 54320 Maxéville",
         latitude: 48.711077,
         longitude: 6.139991,
-        date: '2026-04-18T20:00:00',
-        emoji: '🏆',
+        date: '2026-11-18T20:00:00',
+        emoji: '🎧',
         sport: 'Party',
         result: undefined
       }
@@ -126,8 +126,8 @@ const PartyMap: React.FC = () => {
             if (party.id === '2' && data['parc-expo-pompoms']?.result) {
               return { ...party, result: data['parc-expo-pompoms'].result };
             }
-            if (party.id === '3' && data['parc-expo-dj-contest']?.result) {
-              return { ...party, result: data['parc-expo-dj-contest'].result };
+            if (party.id === '4' && data['zenith-dj-contest']?.result) {
+              return { ...party, result: data['zenith-dj-contest'].result };
             }
             return party;
           })
@@ -214,7 +214,8 @@ const PartyMap: React.FC = () => {
         <h3>${party.name}</h3>
         <p>${party.description}</p>
         <p class="venue-address">${party.address}</p>
-        ${party.name === 'Parc Expo' && party.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.name === 'Parc Expo' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.name === 'Zénith' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         ${party.name === 'Parc Expo' && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
       `;
 

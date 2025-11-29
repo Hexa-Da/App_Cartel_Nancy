@@ -90,19 +90,19 @@ const Info: React.FC = () => {
         
         <InfoCard
           icon={<FaRing />}
-          title="Bracelet"
+          title="Infos Bracelet"
           onClick={() => handleCardClick('bracelet')}
         />
         
         <InfoCard
           icon={<FaDice />}
-          title="Parie"
+          title="Faites vos paris"
           onClick={() => handleCardClick('parie')}
         />
         
         <InfoCard
           icon={<FaFileAlt />}
-          title="Planning Files"
+          title="Fichiers Utiles"
           onClick={() => handleCardClick('planning')}
         />
         

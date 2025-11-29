@@ -23,7 +23,7 @@ import {
   FaCoffee, FaBreadSlice, FaUtensils, FaCalendarAlt, FaPizzaSlice, 
   FaBullhorn, FaMapMarkerAlt, FaBook, FaTrophy, FaMusic, FaGlassCheers, FaUsers, 
   FaBus, FaQuestionCircle, FaWrench, FaClock,
-  FaFileAlt, FaShieldAlt
+  FaFileAlt, FaShieldAlt, FaHotel, FaExclamationTriangle, FaFolderOpen
 } from 'react-icons/fa';
 import './InfoSection.css';
 
@@ -76,11 +76,15 @@ const sectionsData: { [key: string]: SectionData } = {
     ]
   },
   planning: {
-    title: 'PLANNING FILES',
+    title: 'FICHIERS',
     items: [
-      { icon: <FaTrophy />, text: 'Planning des différents sports' },
-      { icon: <FaUtensils />, text: 'Planning des restaurants' },
-      { icon: <FaBus />, text: 'Planning des bus fin de soirée' },
+      { icon: <FaFolderOpen />, text: 'Tous les fichiers' },
+      { icon: <FaTrophy />, text: 'Fichiers pour les différents sports' },
+      { icon: <FaUtensils />, text: 'Fichiers pour les restaurants' },
+      { icon: <FaHotel />, text: 'Fichiers pour les hôtels' },
+      { icon: <FaMusic />, text: 'Fichiers pour les soirées/défilé' },
+      { icon: <FaBus />, text: 'Fichiers pour les bus fin de soirée' },
+      { icon: <FaExclamationTriangle />, text: 'Fichiers HSE' },
     ]
   },
   legal: {
@@ -124,17 +128,29 @@ const InfoSection: React.FC = () => {
       }
     }
     
-    // Gestion spéciale pour Planning Files - navigation React Router
+    // Gestion spéciale pour Fichiers - navigation React Router
     if (sectionName === 'planning') {
-      if (item.text === 'Planning des différents sports') {
+      if (item.text === 'Tous les fichiers') {
+        // Naviguer vers PlanningFiles sans filtre (tous les fichiers)
+        navigate('/planning-files?all=true&from=info-section');
+      } else if (item.text === 'Fichiers pour les différents sports') {
         // Naviguer vers PlanningFiles avec filtre sports et provenance
         navigate('/planning-files?sports=true&from=info-section');
-      } else if (item.text === 'Planning des restaurants') {
+      } else if (item.text === 'Fichiers pour les restaurants') {
         // Naviguer vers PlanningFiles avec filtre restaurants et provenance
         navigate('/planning-files?restaurants=true&from=info-section');
-      } else if (item.text === 'Planning des bus fin de soirée') {
+      } else if (item.text === 'Fichiers pour les hôtels') {
+        // Naviguer vers PlanningFiles avec filtre hotel et provenance
+        navigate('/planning-files?hotel=true&from=info-section');
+      } else if (item.text === 'Fichiers pour les soirées/défilé') {
+        // Naviguer vers PlanningFiles avec filtre party et provenance
+        navigate('/planning-files?party=true&from=info-section');
+      } else if (item.text === 'Fichiers pour les bus fin de soirée') {
         // Naviguer vers PlanningFiles avec filtre bus et provenance
         navigate('/planning-files?bus=true&from=info-section');
+      } else if (item.text === 'Fichiers HSE') {
+        // Naviguer vers PlanningFiles avec filtre hse et provenance
+        navigate('/planning-files?hse=true&from=info-section');
       }
     }
   };

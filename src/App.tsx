@@ -1010,13 +1010,13 @@ function App() {
         id: '3',
         name: "Parc Expo",
         position: [48.663481, 6.189737],
-        description: "Soirée DJ contest 17 avril, 20h-4h",
+        description: "Soirée Showcase 17 novembre, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
-        date: '2026-04-17T20:00:00',
+        date: '2026-11-17T20:00:00',
         latitude: 48.663481,
         longitude: 6.189737,
-        emoji: '🎧',
+        emoji: '🎤',
         sport: 'Party',
         result: 'à venir'
       },
@@ -1024,13 +1024,13 @@ function App() {
         id: '4',
         name: "Zénith",
         position: [48.711077, 6.139991],
-        description: "Soirée du 18 avril, 20h-4h",
+        description: "Soirée DJ Contest 18 novembre, 20h-4h",
         address: "Rue du Zénith, 54320 Maxéville",
         type: 'party',
-        date: '2026-04-18T20:00:00',
+        date: '2026-11-18T20:00:00',
         latitude: 48.711077,
         longitude: 6.139991,
-        emoji: '🏆',
+        emoji: '🎧',
         sport: 'Party'
       }
     ];
@@ -1389,10 +1389,10 @@ function App() {
             )
           );
         }
-        if (data['parc-expo-dj-contest'] && data['parc-expo-dj-contest'].result) {
+        if (data['zenith-dj-contest'] && data['zenith-dj-contest'].result) {
           setParties((prevParties: Party[]) => 
             prevParties.map((party: Party) => 
-              party.id === '3' ? { ...party, result: data['parc-expo-dj-contest'].result } : party
+              party.id === '4' ? { ...party, result: data['zenith-dj-contest'].result } : party
             )
           );
         }
@@ -2761,8 +2761,7 @@ function App() {
           <h3>${party.name}</h3>
           <p>${party.description}</p>
           <p class="venue-address">${party.address}</p>
-          ${party.name === 'Parc Expo' && party.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
-          ${party.name === 'Parc Expo' && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+          ${party.sport !== 'Defile' ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         `;
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
@@ -2795,8 +2794,8 @@ function App() {
           buttonsContainer.appendChild(partyMapButton);
         }
         
-        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ contest) seulement si le mode édition est activé
-        if (isAdmin && isEditing && (party.name === 'Parc Expo' || (party.name === 'Parc Expo' && party.description.includes('DJ contest')))) {
+        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ Contest) seulement si le mode édition est activé
+        if (isAdmin && isEditing && ((party.name === 'Parc Expo' || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.includes('Soirée Pompoms')))) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
@@ -2833,8 +2832,7 @@ function App() {
             <h3>${currentParty.name}</h3>
             <p>${currentParty.description}</p>
             <p class="venue-address">${currentParty.address}</p>
-            ${currentParty.name === 'Parc Expo' && currentParty.description.includes('DJ contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
-            ${currentParty.name === 'Parc Expo' && currentParty.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
+            ${currentParty.sport !== 'Defile' ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
           `;
           
           // Réajouter les boutons
@@ -2870,7 +2868,7 @@ function App() {
           }
           
           // Réajouter les boutons admin si nécessaire
-          if (isAdmin && isEditing && (currentParty.name === 'Parc Expo' || (currentParty.name === 'Parc Expo' && currentParty.description.includes('DJ contest')))) {
+          if (isAdmin && isEditing && ((currentParty.name === 'Parc Expo' || currentParty.name === 'Zénith') && currentParty.description.includes('DJ Contest'))) {
             const editResultButton = document.createElement('button');
             editResultButton.className = 'edit-result-button';
             editResultButton.textContent = 'Modifier le résultat';
@@ -3273,13 +3271,15 @@ function App() {
         )
       );
       triggerMarkerUpdate();
-    } else if (partyId === '3') { // Parc Expo DJ Contest
+    } else if (partyId === '3') { // Parc Expo Showcase (pas de résultat pour Showcase)
+      // Note: Showcase n'a pas de résultat à afficher
+    } else if (partyId === '4') { // Zénith DJ Contest
       // Sauvegarder dans Firebase uniquement
-      saveToFirebase('editableData/partyResults/parc-expo-dj-contest', { result, updatedAt: new Date().toISOString() });
+      saveToFirebase('editableData/partyResults/zenith-dj-contest', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
         prevParties.map((party: Party) => 
-          party.id === '3' ? { ...party, result } : party
+          party.id === '4' ? { ...party, result } : party
         )
       );
       triggerMarkerUpdate();
@@ -3497,8 +3497,8 @@ function App() {
             result: party2?.result || 'à venir',
             updatedAt: new Date().toISOString()
           },
-          'parc-expo-dj-contest': {
-            result: party3?.result || 'à venir',
+          'zenith-dj-contest': {
+            result: party4?.result || 'à venir',
             updatedAt: new Date().toISOString()
           }
         },
@@ -3514,11 +3514,11 @@ function App() {
             updatedAt: new Date().toISOString()
           },
           '3': {
-            description: party3?.description || 'Soirée DJ contest 17 avril, 20h-4h',
+            description: party3?.description || 'Soirée Showcase 17 novembre, 20h-4h',
             updatedAt: new Date().toISOString()
           },
           '4': {
-            description: party4?.description || 'Soirée du 18 avril, 20h-4h',
+            description: party4?.description || 'Soirée DJ Contest 18 novembre, 20h-4h',
             updatedAt: new Date().toISOString()
           }
         }
@@ -3542,8 +3542,8 @@ function App() {
           if (!existingData.partyResults['parc-expo-pompoms']) {
             updates['partyResults/parc-expo-pompoms'] = initialStructure.partyResults['parc-expo-pompoms'];
           }
-          if (!existingData.partyResults['parc-expo-dj-contest']) {
-            updates['partyResults/parc-expo-dj-contest'] = initialStructure.partyResults['parc-expo-dj-contest'];
+          if (!existingData.partyResults['zenith-dj-contest']) {
+            updates['partyResults/zenith-dj-contest'] = initialStructure.partyResults['zenith-dj-contest'];
           }
         }
         
@@ -4550,15 +4550,15 @@ function App() {
                               <span>🎀</span>
                               <span>Pompom</span>
                             </>
-                          ) : event.name === 'Parc Expo' && event.description.includes('DJ contest') ? (
+                          ) : event.name === 'Parc Expo' && event.description.includes('Showcase') ? (
+                            <>
+                              <span>🎤</span>
+                              <span>SHOWCASE</span>
+                            </>
+                          ) : (event.name === 'Parc Expo' || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
                             <>
                               <span>🎧</span>
                               <span>DJ CONTEST</span>
-                            </>
-                          ) : event.name === 'Parc Expo' && event.description.includes('Soirée du 17 avril') ? (
-                            <>
-                              <span>🏆</span>
-                              <span>RÉSULTATS</span>
                             </>
                           ) : (
                             <>
@@ -4583,19 +4583,7 @@ function App() {
                         <>
                           <p className="event-description">{event.description}</p>
                           <p className="event-address">{event.address}</p>
-                          {event.name !== 'Place Stanislas' && (
-                            <div className="party-bus">
-                              <h4>Bus : <a href="/plannings/planning-bus.pdf" target="_blank" rel="noopener noreferrer">Voir le planning des bus 🚌 </a></h4>
-                            </div>
-                          )}
-                          {event.name === 'Parc Expo' && event.description.includes('Soirée Pompoms') && (
-                            <div className="party-results">
-                              <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
-                                Résultat : {event.result || 'à venir'}
-                              </h4>
-                            </div>
-                          )}
-                          {event.name === 'Parc Expo' && event.description.includes('DJ contest') && (
+                          {event.sport !== 'Defile' && (
                             <div className="party-results">
                               <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
                                 Résultat : {event.result || 'à venir'}
@@ -5543,7 +5531,8 @@ function App() {
               <div className="modal-form-header">
                 <h2>
                   {editingPartyResult.partyId === '2' ? 'Résultat du show pompom' : 
-                   editingPartyResult.partyId === '3' ? 'Résultat du DJ Contest' : 
+                   editingPartyResult.partyId === '3' ? 'Résultat du Showcase' : 
+                   editingPartyResult.partyId === '4' ? 'Résultat du DJ Contest' : 
                    'Résultat de la soirée'}
                 </h2>
                 <button className="close-button" onClick={closeEditResultModal}>×</button>
@@ -5583,7 +5572,8 @@ function App() {
               <div className="modal-form-header">
                 <h2>
                   {editingPartyDescription.partyId === '2' ? 'Show pompom' : 
-                   editingPartyDescription.partyId === '3' ? 'DJ Contest' : 
+                   editingPartyDescription.partyId === '3' ? 'Showcase' : 
+                   editingPartyDescription.partyId === '4' ? 'DJ Contest' : 
                    'Description de la soirée'}
                 </h2>
                 <button className="close-button" onClick={closeEditDescriptionModal}>×</button>

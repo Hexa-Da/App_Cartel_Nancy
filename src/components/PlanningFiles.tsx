@@ -126,6 +126,23 @@ const compressImage = (file: File, maxSizeKB = 500, quality = 0.8): Promise<File
   });
 };
 
+interface Hotel {
+  id: string;
+  name: string;
+}
+
+interface Restaurant {
+  id: string;
+  name: string;
+}
+
+interface Party {
+  id: string;
+  name: string;
+  sport?: string;
+  description?: string;
+}
+
 interface PlanningFilesProps {
   isAdmin?: boolean;
   filter?: string;
@@ -134,6 +151,9 @@ interface PlanningFilesProps {
   setUploading?: (uploading: boolean) => void;
   uploadProgress?: number;
   setUploadProgress?: (progress: number) => void;
+  hotels?: Hotel[];
+  restaurants?: Restaurant[];
+  parties?: Party[];
 }
 
 export default function PlanningFiles({ 
@@ -143,12 +163,17 @@ export default function PlanningFiles({
   uploading: externalUploading,
   setUploading: externalSetUploading,
   uploadProgress: externalUploadProgress,
-  setUploadProgress: externalSetUploadProgress
+  setUploadProgress: externalSetUploadProgress,
+  hotels = [],
+  restaurants = [],
+  parties = []
 }: PlanningFilesProps) {
   const [files, setFiles] = useState<PlanningFile[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<PlanningFile[]>([]);
   const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [fileCategory, setFileCategory] = useState<string>(''); // sports, hotel, restaurant, party, hse
+  const [specificItem, setSpecificItem] = useState<string>(''); // ID ou nom de l'élément spécifique
   const [newFile, setNewFile] = useState({
     name: '',
     type: 'image' as const,
@@ -170,7 +195,7 @@ export default function PlanningFiles({
 
   // Liste des types d'événements disponibles
   const eventTypes = [
-    { value: 'all', label: 'Tous les événements' },
+    { value: 'all', label: 'Tous les fichiers' },
     { value: 'party', label: 'Soirées et Défilé ⭐' },
     { value: 'Football', label: 'Football ⚽' },
     { value: 'Basketball', label: 'Basketball 🏀' },
@@ -188,9 +213,9 @@ export default function PlanningFiles({
     { value: 'Spikeball', label: 'Spikeball ⚡️' },
     { value: 'Pétanque', label: 'Pétanque 🍹' },
     { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-    { value: 'Pompom', label: 'Pompom 🎀' },
     { value: 'Hotel', label: 'Hôtel 🏢' },
-    { value: 'Restaurant', label: 'Restaurant 🍽️' }
+    { value: 'Restaurant', label: 'Restaurant 🍽️' },
+    { value: 'HSE', label: 'HSE 🛡️' }
   ];
 
   // Helper pour détecter mobile
@@ -204,8 +229,14 @@ export default function PlanningFiles({
         setEventTypeFilter('sports');
       } else if (filter === 'restaurants') {
         setEventTypeFilter('Restaurant');
+      } else if (filter === 'hotel') {
+        setEventTypeFilter('Hotel');
+      } else if (filter === 'party') {
+        setEventTypeFilter('party');
       } else if (filter === 'bus') {
         setEventTypeFilter('party'); // Les bus sont liés aux soirées
+      } else if (filter === 'hse') {
+        setEventTypeFilter('HSE');
       } else if (filter === 'all') {
         setEventTypeFilter('all');
       }
@@ -275,7 +306,7 @@ export default function PlanningFiles({
       const sportsTypes = [
         'Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
         'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Echecs',
-        'Athlétisme', 'Spikeball', 'Pétanque', 'Escalade', 'Pompom'
+        'Athlétisme', 'Spikeball', 'Pétanque', 'Escalade'
       ];
       filtered = filtered.filter(file => 
         sportsTypes.includes(file.eventType)
@@ -304,22 +335,94 @@ export default function PlanningFiles({
         file.eventType.toLowerCase().includes('navette') ||
         file.eventType.toLowerCase().includes('zenith')
       );
-    } else if (eventTypeFilter === 'hotel') {
+    } else if (eventTypeFilter === 'hotel' || eventTypeFilter === 'Hotel') {
       // Afficher les hôtels
       filtered = filtered.filter(file => 
         file.eventType === 'Hotel' ||
         file.eventType.toLowerCase().includes('hôtel') ||
         file.eventType.toLowerCase().includes('hotel')
       );
-    } else if (eventTypeFilter !== 'all') {
-      // Filtre exact par type d'événement (pour les filtres spécifiques)
+    } else if (eventTypeFilter === 'hse' || eventTypeFilter === 'HSE') {
+      // Afficher les fichiers HSE
       filtered = filtered.filter(file => 
-        file.eventType === eventTypeFilter
+        file.eventType === 'HSE' ||
+        file.eventType.toLowerCase().includes('hse')
       );
+    } else if (eventTypeFilter !== 'all') {
+      // Vérifier si c'est un ID d'hôtel, restaurant ou soirée
+      const hotel = hotels.find(h => h.id === eventTypeFilter);
+      const restaurant = restaurants.find(r => r.id === eventTypeFilter);
+      const party = parties.find(p => p.id === eventTypeFilter);
+      
+      if (hotel) {
+        // Filtrer par ID ou nom d'hôtel
+        filtered = filtered.filter(file => {
+          const fileAny = file as any;
+          // Vérifier si le fichier a un specificItemId correspondant
+          if (fileAny.specificItemId === hotel.id) {
+            return true;
+          }
+          // Sinon, chercher dans le nom du fichier ou dans specificItemName
+          const fileNameLower = file.name.toLowerCase();
+          const hotelNameLower = hotel.name.toLowerCase();
+          return (file.eventType === 'Hotel' ||
+                  file.eventType.toLowerCase().includes('hôtel') ||
+                  file.eventType.toLowerCase().includes('hotel')) &&
+                 (fileAny.specificItemName?.toLowerCase() === hotelNameLower ||
+                  fileNameLower.includes(hotelNameLower) ||
+                  hotelNameLower.includes(fileNameLower) ||
+                  fileNameLower.includes(hotel.id));
+        });
+      } else if (restaurant) {
+        // Filtrer par ID ou nom de restaurant
+        filtered = filtered.filter(file => {
+          const fileAny = file as any;
+          // Vérifier si le fichier a un specificItemId correspondant
+          if (fileAny.specificItemId === restaurant.id) {
+            return true;
+          }
+          // Sinon, chercher dans le nom du fichier ou dans specificItemName
+          const fileNameLower = file.name.toLowerCase();
+          const restaurantNameLower = restaurant.name.toLowerCase();
+          return (file.eventType === 'Restaurant' ||
+                  file.eventType.toLowerCase().includes('restaurant')) &&
+                 (fileAny.specificItemName?.toLowerCase() === restaurantNameLower ||
+                  fileNameLower.includes(restaurantNameLower) ||
+                  restaurantNameLower.includes(fileNameLower) ||
+                  fileNameLower.includes(restaurant.id));
+        });
+      } else if (party) {
+        // Filtrer par ID ou nom de soirée
+        filtered = filtered.filter(file => {
+          const fileAny = file as any;
+          // Vérifier si le fichier a un specificItemId correspondant
+          if (fileAny.specificItemId === party.id) {
+            return true;
+          }
+          // Sinon, chercher dans le nom du fichier ou dans specificItemName
+          const fileNameLower = file.name.toLowerCase();
+          const partyNameLower = party.name.toLowerCase();
+          const isPartyType = file.eventType === 'party' ||
+                             file.eventType.toLowerCase().includes('soirée') ||
+                             file.eventType.toLowerCase().includes('gala') ||
+                             file.eventType.toLowerCase().includes('navette');
+          return isPartyType &&
+                 (fileAny.specificItemName?.toLowerCase() === partyNameLower ||
+                  fileNameLower.includes(partyNameLower) ||
+                  partyNameLower.includes(fileNameLower) ||
+                  fileNameLower.includes(party.id) ||
+                  (party.sport && fileNameLower.includes(party.sport.toLowerCase())));
+        });
+      } else {
+        // Filtre exact par type d'événement (pour les filtres spécifiques)
+        filtered = filtered.filter(file => 
+          file.eventType === eventTypeFilter
+        );
+      }
     }
 
     setFilteredFiles(filtered);
-  }, [eventTypeFilter, files]);
+  }, [eventTypeFilter, files, hotels, restaurants, parties]);
 
   const handleDeleteFile = async (fileId: string) => {
     if (!isAdmin) return;
@@ -443,7 +546,7 @@ export default function PlanningFiles({
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
             // Calculer la taille des données de la base
-            const fileData = {
+            const fileData: any = {
               ...newFile,
               url: downloadURL,
               uploadDate: Date.now(),
@@ -452,6 +555,30 @@ export default function PlanningFiles({
               compressedSize: fileToUpload.size,
               compressionRatio: file.type.startsWith('image/') ? Math.round((1 - fileToUpload.size / file.size) * 100) : 0
             };
+            
+            // Ajouter l'ID de l'élément spécifique si disponible
+            if (specificItem) {
+              fileData.specificItemId = specificItem;
+              fileData.fileCategory = fileCategory;
+              
+              // Pour les hôtels, restaurants et soirées, ajouter aussi le nom pour faciliter le filtrage
+              if (fileCategory === 'hotel') {
+                const hotel = hotels.find(h => h.id === specificItem);
+                if (hotel) {
+                  fileData.specificItemName = hotel.name;
+                }
+              } else if (fileCategory === 'restaurant') {
+                const restaurant = restaurants.find(r => r.id === specificItem);
+                if (restaurant) {
+                  fileData.specificItemName = restaurant.name;
+                }
+              } else if (fileCategory === 'party') {
+                const party = parties.find(p => p.id === specificItem);
+                if (party) {
+                  fileData.specificItemName = party.name;
+                }
+              }
+            }
             
             const dataSize = JSON.stringify(fileData).length;
             optimizer.trackTransfer(dataSize);
@@ -466,6 +593,8 @@ export default function PlanningFiles({
         url: '',
         eventType: ''
       });
+      setFileCategory('');
+      setSpecificItem('');
       setShowAddForm(false);
 
             // Reset file input
@@ -512,9 +641,7 @@ export default function PlanningFiles({
   // Supprimé l'écran de chargement complet pour laisser place à la barre améliorée
 
   return (
-    <div className="planning-files">
-      <h2 style={{ marginTop: 0, marginBottom: '10px' }}>Plannings</h2>
-      
+    <div className="planning-files">      
       {showFilterSelector && (
       <div className="filters">
         <div className="filter-group">
@@ -539,9 +666,17 @@ export default function PlanningFiles({
         <div className="admin-controls">
           <button
             className="add-file-button"
-            onClick={() => setShowAddForm(!showAddForm)}
+            onClick={() => {
+              setShowAddForm(!showAddForm);
+              if (showAddForm) {
+                // Réinitialiser les états si on ferme le formulaire
+                setFileCategory('');
+                setSpecificItem('');
+                setNewFile({ name: '', type: 'image', url: '', eventType: '' });
+              }
+            }}
           >
-              {showAddForm ? 'Annuler' : 'Ajouter un planning'}
+              {showAddForm ? 'Annuler' : 'Ajouter un fichier'}
           </button>
         </div>
       )}
@@ -579,10 +714,15 @@ export default function PlanningFiles({
                 position: 'relative'
               }}>
                 <h3 style={{ margin: 0, color: 'var(--text-color)', fontSize: '1.2rem' }}>
-                  Ajouter un planning
+                  Ajouter un fichier
                 </h3>
               <button 
-                onClick={() => setShowAddForm(false)}
+                onClick={() => {
+                  setShowAddForm(false);
+                  setFileCategory('');
+                  setSpecificItem('');
+                  setNewFile({ name: '', type: 'image', url: '', eventType: '' });
+                }}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -614,14 +754,14 @@ export default function PlanningFiles({
                 boxSizing: 'border-box',
               }}>
           <div className="form-group">
-                  <label htmlFor="fileName">Nom du planning</label>
+                  <label htmlFor="fileName">Nom du fichier</label>
             <input
               type="text"
               id="fileName"
               value={newFile.name}
               onChange={(e) => setNewFile({ ...newFile, name: e.target.value })}
               required
-              placeholder="Ex: Planning Basketball M"
+              placeholder="Ex: Fichier Basketball M"
                     style={{
                       width: '100%',
                       padding: isMobile ? '0.4rem' : '0.5rem',
@@ -636,11 +776,14 @@ export default function PlanningFiles({
           </div>
 
           <div className="form-group">
-                  <label htmlFor="eventType">Type d'événement</label>
+                  <label htmlFor="fileCategory">Catégorie de fichier</label>
                   <select
-                    id="eventType"
-                    value={newFile.eventType}
-                    onChange={(e) => setNewFile({ ...newFile, eventType: e.target.value })}
+                    id="fileCategory"
+                    value={fileCategory}
+                    onChange={(e) => {
+                      setFileCategory(e.target.value);
+                      setSpecificItem(''); // Réinitialiser l'élément spécifique quand la catégorie change
+                    }}
                     required
                     style={{
                       width: '100%',
@@ -653,14 +796,87 @@ export default function PlanningFiles({
                       boxSizing: 'border-box',
                     }}
                   >
-                    <option value="">Sélectionnez un type</option>
-                    {eventTypes.filter(type => type.value !== 'all').map(type => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
+                    <option value="">Sélectionnez une catégorie</option>
+                    <option value="sports">Sports</option>
+                    <option value="hotel">Hôtels</option>
+                    <option value="restaurant">Restaurants</option>
+                    <option value="party">Soirées/Défilé</option>
+                    <option value="hse">HSE</option>
                   </select>
                 </div>
+
+                {fileCategory && (
+                  <div className="form-group">
+                    <label htmlFor="specificItem">
+                      {fileCategory === 'sports' ? 'Sport :' :
+                       fileCategory === 'hotel' ? 'Hôtel :' :
+                       fileCategory === 'restaurant' ? 'Restaurant :' :
+                       fileCategory === 'party' ? 'Soirée/Défilé :' :
+                       fileCategory === 'hse' ? 'Type HSE :' : 'Élément :'}
+                    </label>
+                    <select
+                      id="specificItem"
+                      value={specificItem}
+                      onChange={(e) => {
+                        setSpecificItem(e.target.value);
+                        // Mettre à jour eventType selon la sélection
+                        if (fileCategory === 'sports') {
+                          setNewFile({ ...newFile, eventType: e.target.value });
+                        } else if (fileCategory === 'hotel') {
+                          setNewFile({ ...newFile, eventType: 'Hotel' });
+                        } else if (fileCategory === 'restaurant') {
+                          setNewFile({ ...newFile, eventType: 'Restaurant' });
+                        } else if (fileCategory === 'party') {
+                          setNewFile({ ...newFile, eventType: 'party' });
+                        } else if (fileCategory === 'hse') {
+                          setNewFile({ ...newFile, eventType: 'HSE' });
+                        }
+                      }}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: isMobile ? '0.4rem' : '0.5rem',
+                        borderRadius: '4px',
+                        border: '1px solid var(--border-color)',
+                        background: 'var(--bg-primary)',
+                        color: 'var(--text-primary)',
+                        fontSize: isMobile ? '0.98rem' : '1rem',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <option value="">Sélectionnez un élément</option>
+                      {fileCategory === 'sports' && eventTypes
+                        .filter(type => 
+                          ['Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
+                           'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Echecs',
+                           'Athlétisme', 'Spikeball', 'Pétanque', 'Escalade'].includes(type.value)
+                        )
+                        .map(type => (
+                          <option key={type.value} value={type.value}>
+                            {type.label}
+                          </option>
+                        ))}
+                      {fileCategory === 'hotel' && hotels.map(hotel => (
+                        <option key={hotel.id} value={hotel.id}>
+                          {hotel.name}
+                        </option>
+                      ))}
+                      {fileCategory === 'restaurant' && restaurants.map(restaurant => (
+                        <option key={restaurant.id} value={restaurant.id}>
+                          {restaurant.name}
+                        </option>
+                      ))}
+                      {fileCategory === 'party' && parties.map(party => (
+                        <option key={party.id} value={party.id}>
+                          {party.name} {party.sport === 'Defile' ? '🎺' : party.sport === 'Pompom' ? '🎀' : party.sport === 'Party' && party.description?.includes('DJ Contest') ? '🎧' : party.sport === 'Party' && party.description?.includes('Showcase') ? '🎤' : '🎉'}
+                        </option>
+                      ))}
+                      {fileCategory === 'hse' && (
+                        <option value="HSE">HSE</option>
+                      )}
+                    </select>
+                  </div>
+                )}
 
                 <div className="form-group">
                   <label htmlFor="fileInput">Fichier</label>
@@ -687,7 +903,12 @@ export default function PlanningFiles({
           <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '1rem', justifyContent: 'space-between', marginTop: '1rem', flexWrap: isMobile ? 'wrap' : 'nowrap', width: '100%' }}>
                   <button 
                     type="button"
-                    onClick={() => setShowAddForm(false)}
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setFileCategory('');
+                      setSpecificItem('');
+                      setNewFile({ name: '', type: 'image', url: '', eventType: '' });
+                    }}
                     style={{
                       padding: isMobile ? '0.4rem 1rem' : '0.5rem 1.5rem',
                       borderRadius: '4px',
@@ -726,7 +947,7 @@ export default function PlanningFiles({
                     onMouseOver={(e) => !uploading && (e.currentTarget.style.transform = 'translateY(-1px)')}
                     onMouseOut={(e) => !uploading && (e.currentTarget.style.transform = 'translateY(0)')}
                   >
-                    {uploading ? 'Upload en cours...' : 'Ajouter le planning'}
+                    {uploading ? 'Upload en cours...' : 'Ajouter le fichier'}
           </button>
                 </div>
         </form>
@@ -736,7 +957,7 @@ export default function PlanningFiles({
       )}
 
       {filteredFiles.length === 0 ? (
-          <p className="no-files">Aucun planning disponible</p>
+          <p className="no-files">Aucun fichier disponible</p>
       ) : (
           <div className="files-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '40vh', overflowY: 'auto', width: '100%', minWidth: 0, alignItems: 'center' }}>
           {filteredFiles.map((file) => {

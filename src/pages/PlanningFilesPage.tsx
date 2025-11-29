@@ -1,16 +1,16 @@
 /**
- * @fileoverview Page dédiée pour l'affichage des plannings
+ * @fileoverview Page dédiée pour l'affichage des fichiers
  * 
  * Cette page gère :
- * - Affichage des plannings filtrés par catégorie (sports, restaurants, bus)
- * - Interface admin pour la gestion des plannings
+ * - Affichage des fichiers filtrés par catégorie (sports, restaurants, bus)
+ * - Interface admin pour la gestion des fichiers
  * - Navigation avec paramètres URL pour les filtres
- * - Consultation et téléchargement des plannings
+ * - Consultation et téléchargement des fichiers
  * 
  * Nécessaire car :
- * - Centralise l'accès aux plannings
+ * - Centralise l'accès aux fichiers
  * - Permet un filtrage direct par URL
- * - Interface dédiée pour la gestion des plannings
+ * - Interface dédiée pour la gestion des fichiers
  * - Séparation claire des fonctionnalités
  */
 
@@ -44,12 +44,20 @@ const PlanningFilesPage: React.FC = () => {
 
   // Déterminer le filtre initial basé sur les paramètres URL
   useEffect(() => {
-    if (searchParams.get('sports') === 'true') {
+    if (searchParams.get('all') === 'true') {
+      setEventType('all');
+    } else if (searchParams.get('sports') === 'true') {
       setEventType('sports');
     } else if (searchParams.get('restaurants') === 'true') {
       setEventType('restaurants');
-    } else if (searchParams.get('bus') === 'true') {
+    } else if (searchParams.get('hotel') === 'true') {
+      setEventType('hotel');
+    } else if (searchParams.get('party') === 'true') {
       setEventType('party');
+    } else if (searchParams.get('bus') === 'true') {
+      setEventType('bus');
+    } else if (searchParams.get('hse') === 'true') {
+      setEventType('hse');
     }
   }, [searchParams]);
 
@@ -60,7 +68,8 @@ const PlanningFilesPage: React.FC = () => {
     { value: 'party', label: 'Soirées' },
     { value: 'restaurants', label: 'Restaurants' },
     { value: 'bus', label: 'Transport' },
-    { value: 'hotel', label: 'Hôtels' }
+    { value: 'hotel', label: 'Hôtels' },
+    { value: 'hse', label: 'HSE' }
   ];
 
   // Options spécifiques selon le type d'événement
@@ -85,8 +94,7 @@ const PlanningFilesPage: React.FC = () => {
           { value: 'Spikeball', label: 'Spikeball ⚡️' },
           { value: 'Pétanque', label: 'Pétanque 🍹' },
           { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-          { value: 'Pompom', label: 'Pompom 🎀' },
-          { value: 'Defile', label: 'Défilé 🎺' }
+          { value: 'Pompom', label: 'Pompom 🎀' }
         ];
       case 'party':
         return [
@@ -116,6 +124,11 @@ const PlanningFilesPage: React.FC = () => {
           { value: 'localisation', label: 'Localisation' },
           { value: 'horaires', label: 'Horaires réception' },
           { value: 'services', label: 'Services disponibles' }
+        ];
+      case 'hse':
+        return [
+          { value: 'all', label: 'Tous les fichiers HSE' },
+          { value: 'HSE', label: 'HSE' }
         ];
       default:
         return [{ value: 'all', label: 'Tous' }];
@@ -329,7 +342,7 @@ const PlanningFilesPage: React.FC = () => {
         fontSize: '1rem',
         fontWeight: '600'
       }}>
-        Chargement des plannings...
+        Chargement des fichiers...
       </div>
     </div>
   ) : null;
@@ -374,7 +387,8 @@ const PlanningFilesPage: React.FC = () => {
                  eventType === 'party' ? 'Soirée :' :
                  eventType === 'restaurants' ? 'Restaurant :' :
                  eventType === 'bus' ? 'Transport :' :
-                 eventType === 'hotel' ? 'Hôtel :' : 'Spécifique :'}
+                 eventType === 'hotel' ? 'Hôtel :' :
+                 eventType === 'hse' ? 'HSE :' : 'Spécifique :'}
               </label>
               <select
                 className="filter-select"
