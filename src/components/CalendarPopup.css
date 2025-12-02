@@ -229,22 +229,29 @@ body.ios .calendar-panel-header .filter-toggle-button {
 }
 
 .calendar-hours {
-  display: grid;
-  grid-template-rows: auto repeat(16, 1fr);
-  gap: 2px;
+  display: flex;
+  flex-direction: column;
   padding-right: 10px;
   border-right: 1px var(--border-color);
 }
 
 .calendar-hour-header {
-  height: 40px;
-  border-bottom: 1px var(--border-color);
+  height: 51px; /* Aligné avec .calendar-day-header */
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-end;
-  gap: 2px;
   padding-right: 4px;
-  margin-right: 10px;
+  padding-bottom: 5px;
+  margin-bottom: 10px; /* Espace entre le header et les heures (aligné avec .calendar-day-header) */
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.calendar-hours-container {
+  height: 650px; /* Même hauteur que .calendar-events */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .calendar-filter-buttons-row {
@@ -273,13 +280,14 @@ body.ios .calendar-panel-header .filter-toggle-button {
 }
 
 .calendar-hour {
-  height: 40px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
   padding-right: 10px;
   color: var(--text-color);
   font-size: 0.9rem;
+  line-height: 1;
+  transform: translateY(-0.45em); /* Décaler le texte vers le haut pour aligner la ligne de texte avec la position */
 }
 
 .calendar-days {
@@ -289,20 +297,23 @@ body.ios .calendar-panel-header .filter-toggle-button {
 }
 
 .calendar-day-column {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 2px;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendar-day-header {
-  padding: 10px;
+  height: 51px; /* Aligné avec .calendar-hour-header */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 5px;
+  margin-bottom: 8px; /* Espace entre le header et les événements */
   background-color: var(--bg-secondary);
   color: var(--text-color);
   text-align: center;
   font-weight: 600;
   border-radius: 4px;
-  margin-bottom: 5px;
-  margin-top: 10px;
+  box-sizing: border-box;
 }
 
 .calendar-events {

@@ -130,27 +130,27 @@ const InfoSection: React.FC = () => {
     
     // Gestion spéciale pour Fichiers - navigation React Router
     if (sectionName === 'planning') {
+      let targetUrl = '';
+      
       if (item.text === 'Tous les fichiers') {
-        // Naviguer vers PlanningFiles sans filtre (tous les fichiers)
-        navigate('/planning-files?all=true&from=info-section');
+        targetUrl = '/planning-files?all=true&from=info-section';
       } else if (item.text === 'Fichiers pour les différents sports') {
-        // Naviguer vers PlanningFiles avec filtre sports et provenance
-        navigate('/planning-files?sports=true&from=info-section');
+        targetUrl = '/planning-files?sports=true&from=info-section';
       } else if (item.text === 'Fichiers pour les restaurants') {
-        // Naviguer vers PlanningFiles avec filtre restaurants et provenance
-        navigate('/planning-files?restaurants=true&from=info-section');
+        targetUrl = '/planning-files?restaurants=true&from=info-section';
       } else if (item.text === 'Fichiers pour les hôtels') {
-        // Naviguer vers PlanningFiles avec filtre hotel et provenance
-        navigate('/planning-files?hotel=true&from=info-section');
+        targetUrl = '/planning-files?hotel=true&from=info-section';
       } else if (item.text === 'Fichiers pour les soirées/défilé') {
-        // Naviguer vers PlanningFiles avec filtre party et provenance
-        navigate('/planning-files?party=true&from=info-section');
+        targetUrl = '/planning-files?party=true&from=info-section';
       } else if (item.text === 'Fichiers pour les bus fin de soirée') {
-        // Naviguer vers PlanningFiles avec filtre bus et provenance
-        navigate('/planning-files?bus=true&from=info-section');
+        targetUrl = '/planning-files?bus=true&from=info-section';
       } else if (item.text === 'Fichiers HSE') {
-        // Naviguer vers PlanningFiles avec filtre hse et provenance
-        navigate('/planning-files?hse=true&from=info-section');
+        targetUrl = '/planning-files?hse=true&from=info-section';
+      }
+      
+      if (targetUrl) {
+        // Naviguer avec React Router (ajoute automatiquement une entrée dans l'historique)
+        navigate(targetUrl, { state: { from: 'info-section' } });
       }
     }
   };

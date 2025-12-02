@@ -156,6 +156,11 @@ interface PlanningFilesProps {
   parties?: Party[];
 }
 
+// Tableaux vides stables pour éviter les re-renders infinis
+const EMPTY_HOTELS: Hotel[] = [];
+const EMPTY_RESTAURANTS: Restaurant[] = [];
+const EMPTY_PARTIES: Party[] = [];
+
 export default function PlanningFiles({ 
   isAdmin = false, 
   filter, 
@@ -164,9 +169,9 @@ export default function PlanningFiles({
   setUploading: externalSetUploading,
   uploadProgress: externalUploadProgress,
   setUploadProgress: externalSetUploadProgress,
-  hotels = [],
-  restaurants = [],
-  parties = []
+  hotels = EMPTY_HOTELS,
+  restaurants = EMPTY_RESTAURANTS,
+  parties = EMPTY_PARTIES
 }: PlanningFilesProps) {
   const [files, setFiles] = useState<PlanningFile[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<PlanningFile[]>([]);

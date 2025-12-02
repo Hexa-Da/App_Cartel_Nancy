@@ -1010,10 +1010,10 @@ function App() {
         id: '3',
         name: "Parc Expo",
         position: [48.663481, 6.189737],
-        description: "Soirée Showcase 17 novembre, 20h-4h",
+        description: "Soirée Showcase 17 avril, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
-        date: '2026-11-17T20:00:00',
+        date: '2026-04-17T20:00:00',
         latitude: 48.663481,
         longitude: 6.189737,
         emoji: '🎤',
@@ -1023,13 +1023,13 @@ function App() {
       {
         id: '4',
         name: "Zénith",
-        position: [48.711077, 6.139991],
-        description: "Soirée DJ Contest 18 novembre, 20h-4h",
+        position: [48.710136, 6.139169],
+        description: "Soirée DJ Contest 18 avril, 20h-4h",
         address: "Rue du Zénith, 54320 Maxéville",
         type: 'party',
-        date: '2026-11-18T20:00:00',
-        latitude: 48.711077,
-        longitude: 6.139991,
+        date: '2026-04-18T20:00:00',
+        latitude: 48.710136,
+        longitude: 6.139169,
         emoji: '🎧',
         sport: 'Party'
       }
@@ -3514,11 +3514,11 @@ function App() {
             updatedAt: new Date().toISOString()
           },
           '3': {
-            description: party3?.description || 'Soirée Showcase 17 novembre, 20h-4h',
+            description: party3?.description || 'Soirée Showcase 17 avril, 20h-4h',
             updatedAt: new Date().toISOString()
           },
           '4': {
-            description: party4?.description || 'Soirée DJ Contest 18 novembre, 20h-4h',
+            description: party4?.description || 'Soirée DJ Contest 18 avril, 20h-4h',
             updatedAt: new Date().toISOString()
           }
         }

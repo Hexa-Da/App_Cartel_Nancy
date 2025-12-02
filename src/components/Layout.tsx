@@ -191,10 +191,14 @@ const Layout: React.FC = () => {
       if (isHandlingPopState) return;
       isHandlingPopState = true;
 
+      // Utiliser window.location pour avoir la vraie URL actuelle du navigateur
+      const currentPath = window.location.pathname;
+      const currentSearch = window.location.search;
+
       // Fermer EventDetails en premier si ouvert
       if (selectedEvent) {
         setSelectedEvent(null);
-        window.history.replaceState({ path: location.pathname, eventDetails: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, eventDetails: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -202,7 +206,7 @@ const Layout: React.FC = () => {
       // Si RestaurantDescriptionModal est ouvert, le fermer
       if (showEditRestaurantDescriptionModal) {
         setShowEditRestaurantDescriptionModal(false);
-        window.history.replaceState({ path: location.pathname, restaurantDescription: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, restaurantDescription: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -210,7 +214,7 @@ const Layout: React.FC = () => {
       // Si HotelDescriptionModal est ouvert, le fermer
       if (showEditHotelDescriptionModal) {
         setShowEditHotelDescriptionModal(false);
-        window.history.replaceState({ path: location.pathname, hotelDescription: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, hotelDescription: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -218,7 +222,7 @@ const Layout: React.FC = () => {
       // Si DescriptionModal est ouvert, le fermer
       if (showEditDescriptionModal) {
         setShowEditDescriptionModal(false);
-        window.history.replaceState({ path: location.pathname, description: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, description: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -226,7 +230,7 @@ const Layout: React.FC = () => {
       // Si ResultModal est ouvert, le fermer
       if (showEditResultModal) {
         setShowEditResultModal(false);
-        window.history.replaceState({ path: location.pathname, result: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, result: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -234,7 +238,7 @@ const Layout: React.FC = () => {
       // Si VenueModal est ouvert, le fermer
       if (showEditVenueModal) {
         setShowEditVenueModal(false);
-        window.history.replaceState({ path: location.pathname, venue: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, venue: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -242,7 +246,7 @@ const Layout: React.FC = () => {
       // Si MatchModal est ouvert, le fermer
       if (showEditMatchModal) {
         setShowEditMatchModal(false);
-        window.history.replaceState({ path: location.pathname, match: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, match: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -250,7 +254,7 @@ const Layout: React.FC = () => {
       // Si AddPlaceModal est ouvert, le fermer
       if (isAddingPlace) {
         setIsAddingPlace(false);
-        window.history.replaceState({ path: location.pathname, addPlace: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, addPlace: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -258,7 +262,7 @@ const Layout: React.FC = () => {
       // Si AdminModal est ouvert, le fermer
       if (showAdminModal) {
         setShowAdminModal(false);
-        window.history.replaceState({ path: location.pathname, admin: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, admin: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -266,7 +270,7 @@ const Layout: React.FC = () => {
       // Si VSSForm est ouvert, le fermer
       if (showVSSForm) {
         setShowVSSForm(false);
-        window.history.replaceState({ path: location.pathname, vssForm: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, vssForm: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -274,7 +278,7 @@ const Layout: React.FC = () => {
       // Si SettingsMenu est ouvert, le fermer
       if (showSettings) {
         setShowSettings(false);
-        window.history.replaceState({ path: location.pathname, settings: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, settings: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -282,7 +286,7 @@ const Layout: React.FC = () => {
       // Si EmergencyPopup est ouvert, le fermer
       if (showEmergency) {
         setShowEmergency(false);
-        window.history.replaceState({ path: location.pathname, emergency: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, emergency: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -293,7 +297,7 @@ const Layout: React.FC = () => {
         setNewMessage('');
         setNewMessageSender('');
         setShowChat(false);
-        window.history.replaceState({ path: location.pathname, chat: false }, '', location.pathname);
+        window.history.replaceState({ path: currentPath, chat: false }, '', currentPath);
         isHandlingPopState = false;
         return;
       }
@@ -306,11 +310,22 @@ const Layout: React.FC = () => {
         return;
       }
 
-      const currentPath = location.pathname;
-      
-      // Pour les navigations de routes (/info, /info/planning, /planning-files)
-      if (currentPath.startsWith('/info') || currentPath === '/planning-files') {
-        // React Router a déjà mis à jour l'URL lors du popstate
+      // Si on est sur /planning-files, naviguer vers la page d'origine
+      if (currentPath === '/planning-files') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromParam = urlParams.get('from');
+        
+        if (fromParam === 'info-section') {
+          navigate('/info/planning');
+        } else {
+          navigate('/info');
+        }
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Pour les navigations de routes /info et sous-routes, laisser React Router gérer
+      if (currentPath.startsWith('/info')) {
         isHandlingPopState = false;
         return;
       }
@@ -749,7 +764,9 @@ const Layout: React.FC = () => {
 
     
     // Gestion de la navigation selon l'URL actuelle
-    const currentPath = location.pathname;
+    // Utiliser window.location pour avoir la vraie URL actuelle du navigateur
+    const currentPath = window.location.pathname;
+    const currentSearch = window.location.search;
     
     // Navigation spécifique selon les routes
     if (currentPath.startsWith('/info/')) {
@@ -760,7 +777,7 @@ const Layout: React.FC = () => {
     
     if (currentPath === '/planning-files') {
       // Vérifier s'il y a un paramètre indiquant la provenance
-      const urlParams = new URLSearchParams(location.search);
+      const urlParams = new URLSearchParams(currentSearch);
       const fromParam = urlParams.get('from');
       
       if (fromParam === 'info-section') {

@@ -298,29 +298,29 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             time: '13:00',
             endTime: '17:00',
             name: 'Place Stanislas',
-            description: 'Défilé',
+            description: 'Rendez vous 12h puis départ du Défilé à 13h',
             color: '#673AB7',
             type: 'party',
             venue: 'Pl. Stanislas, 54000 Nancy'
           },
           {
-            id: 'centre-prouve',
+            id: 'parc-expo-pompoms',
             date: '2026-04-16',
             time: '21:00',
-            endTime: '23:00',
-            name: 'Centre Prouvé',
-            description: 'Show Pompoms',
+            endTime: '03:00',
+            name: 'Parc Expo',
+            description: 'Soirée Pompoms du 16 avril, 21h-3h',
             color: '#673AB7',
             type: 'party',
-            venue: '1 Pl. de la République, 54000 Nancy'
+            venue: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy'
           },
           {
-            id: 'parc-expo',
+            id: 'parc-expo-showcase',
             date: '2026-04-17',
-            time: '22:00',
-            endTime: '23:00',
-            name: 'Parc des Expositions',
-            description: 'Soirée',
+            time: '20:00',
+            endTime: '04:00',
+            name: 'Parc Expo',
+            description: 'Soirée Showcase 17 novembre, 20h-4h',
             color: '#673AB7',
             type: 'party',
             venue: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy'
@@ -329,9 +329,9 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             id: 'zenith',
             date: '2026-04-18',
             time: '20:00',
-            endTime: '23:00',
+            endTime: '04:00',
             name: 'Zénith',
-            description: 'Soirée',
+            description: 'Soirée DJ Contest 18 novembre, 20h-4h',
             color: '#673AB7',
             type: 'party',
             venue: 'Rue du Zénith, 54320 Maxéville'
@@ -399,34 +399,67 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     return groups;
   };
 
-  const getEventPosition = (time: string, endTime: string | undefined, index: number, total: number) => {
+  const getEventPosition = (time: string, endTime: string | undefined, index: number, total: number, eventType?: 'match' | 'party', eventName?: string) => {
     const [startHour, startMinute] = time.split(':').map(Number);
-    let endHour = startHour + 1;
-    let endMinute = 0;
+    const isDefile = eventName === 'Place Stanislas';
+    
+    // Limite du calendrier : 8h à 23h (15 heures affichées)
+    const CALENDAR_START_HOUR = 8;
+    const CALENDAR_END_HOUR = 23;
+    const PIXELS_PER_HOUR = 43.33;
+    
+    let endHour: number;
+    let endMinute: number;
     
     if (endTime) {
       const [parsedEndHour, parsedEndMinute] = endTime.split(':').map(Number);
       if (!isNaN(parsedEndHour) && !isNaN(parsedEndMinute)) {
         endHour = parsedEndHour;
         endMinute = parsedEndMinute;
+        
+        // Si l'heure de fin est après minuit (0-7h) ou > 23h, limiter à 23h
+        // Cela gère les soirées qui finissent à 3h, 4h, etc.
+        if (endHour < CALENDAR_START_HOUR || endHour > CALENDAR_END_HOUR) {
+          endHour = CALENDAR_END_HOUR;
+          endMinute = 0;
+        }
+      } else {
+        // Parsing échoué, utiliser valeur par défaut
+        endHour = Math.min(startHour + 1, CALENDAR_END_HOUR);
+        endMinute = startMinute;
+      }
+    } else {
+      // Pas d'heure de fin spécifiée
+      if (eventType === 'party' && !isDefile) {
+        // Pour les soirées (sauf défilé), utiliser 23:00
+        endHour = CALENDAR_END_HOUR;
+        endMinute = 0;
+      } else {
+        // Pour les matchs/défilé sans heure de fin, ajouter 1h par défaut (limité à 23h)
+        endHour = Math.min(startHour + 1, CALENDAR_END_HOUR);
+        endMinute = startMinute;
       }
     }
-
-    if (!endTime) {
-      endHour = 23;
+    
+    // S'assurer que l'heure de fin ne dépasse jamais 23h
+    if (endHour > CALENDAR_END_HOUR) {
+      endHour = CALENDAR_END_HOUR;
       endMinute = 0;
     }
-
-    const startPosition = (startHour - 8) + (startMinute / 60);
-    const endPosition = (endHour - 8) + (endMinute / 60);
-    const duration = endPosition - startPosition;
+    
+    // Calculer les positions en heures depuis 8h
+    const startPosition = (startHour - CALENDAR_START_HOUR) + (startMinute / 60);
+    const endPosition = (endHour - CALENDAR_START_HOUR) + (endMinute / 60);
+    
+    // Calculer la durée avec un minimum de 15 minutes pour la lisibilité
+    const duration = Math.max(0.25, endPosition - startPosition);
 
     const width = total === 1 ? '100%' : `${100 / total}%`;
     const left = total === 1 ? '0%' : `${(100 / total) * index}%`;
 
     return {
-      top: `${startPosition * 43.33}px`,
-      height: `${duration * 43.33}px`,
+      top: `${startPosition * PIXELS_PER_HOUR}px`,
+      height: `${duration * PIXELS_PER_HOUR}px`,
       width,
       left
     };
@@ -791,9 +824,11 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             <div className="calendar-grid">
               <div className="calendar-hours">
                 <div className="calendar-hour-header"></div>
-                {hours.map(hour => (
-                  <div key={hour} className="calendar-hour">{hour}</div>
-                ))}
+                <div className="calendar-hours-container">
+                  {hours.map(hour => (
+                    <div key={hour} className="calendar-hour">{hour}</div>
+                  ))}
+                </div>
               </div>
               <div className="calendar-days">
                 {days.map(day => {
@@ -812,7 +847,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                           return (
                             <div key={groupIndex} className="event-group">
                               {group.map((event, index) => {
-                                const position = getEventPosition(event.time, event.endTime, index, group.length);
+                                const position = getEventPosition(event.time, event.endTime, index, group.length, event.type, event.name);
                                 const isPassed = isEventPassed(`${day.date}T${event.time}`, event.endTime ? `${day.date}T${event.endTime}` : undefined, event.type);
                                 return (
                                   <div 
