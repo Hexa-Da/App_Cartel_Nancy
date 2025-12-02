@@ -238,12 +238,13 @@ export default function PlanningFiles({
         setEventTypeFilter('Hotel');
       } else if (filter === 'party') {
         setEventTypeFilter('party');
-      } else if (filter === 'bus') {
-        setEventTypeFilter('party'); // Les bus sont liés aux soirées
       } else if (filter === 'hse') {
         setEventTypeFilter('HSE');
       } else if (filter === 'all') {
         setEventTypeFilter('all');
+      } else {
+        // Pour les IDs spécifiques (hôtels, restaurants, soirées)
+        setEventTypeFilter(filter);
       }
     }
   }, [filter]);
@@ -320,38 +321,30 @@ export default function PlanningFiles({
       // Afficher les soirées et événements liés
       filtered = filtered.filter(file => 
         file.eventType === 'party' || 
-        file.eventType.toLowerCase().includes('soirée') ||
-        file.eventType.toLowerCase().includes('gala') ||
-        file.eventType.toLowerCase().includes('navette')
+        (file.eventType?.toLowerCase().includes('soirée')) ||
+        (file.eventType?.toLowerCase().includes('gala')) ||
+        (file.eventType?.toLowerCase().includes('navette'))
       );
     } else if (eventTypeFilter === 'restaurants') {
       // Afficher les restaurants
       filtered = filtered.filter(file => 
         file.eventType === 'Restaurant' ||
-        file.eventType.toLowerCase().includes('restaurant') ||
-        file.eventType.toLowerCase().includes('crous') ||
-        file.eventType.toLowerCase().includes('artem')
-      );
-    } else if (eventTypeFilter === 'bus') {
-      // Afficher les transports
-      filtered = filtered.filter(file => 
-        file.eventType.toLowerCase().includes('bus') ||
-        file.eventType.toLowerCase().includes('transport') ||
-        file.eventType.toLowerCase().includes('navette') ||
-        file.eventType.toLowerCase().includes('zenith')
+        (file.eventType?.toLowerCase().includes('restaurant')) ||
+        (file.eventType?.toLowerCase().includes('crous')) ||
+        (file.eventType?.toLowerCase().includes('artem'))
       );
     } else if (eventTypeFilter === 'hotel' || eventTypeFilter === 'Hotel') {
       // Afficher les hôtels
       filtered = filtered.filter(file => 
         file.eventType === 'Hotel' ||
-        file.eventType.toLowerCase().includes('hôtel') ||
-        file.eventType.toLowerCase().includes('hotel')
+        (file.eventType?.toLowerCase().includes('hôtel')) ||
+        (file.eventType?.toLowerCase().includes('hotel'))
       );
     } else if (eventTypeFilter === 'hse' || eventTypeFilter === 'HSE') {
       // Afficher les fichiers HSE
       filtered = filtered.filter(file => 
         file.eventType === 'HSE' ||
-        file.eventType.toLowerCase().includes('hse')
+        (file.eventType?.toLowerCase().includes('hse'))
       );
     } else if (eventTypeFilter !== 'all') {
       // Vérifier si c'est un ID d'hôtel, restaurant ou soirée
@@ -368,11 +361,11 @@ export default function PlanningFiles({
             return true;
           }
           // Sinon, chercher dans le nom du fichier ou dans specificItemName
-          const fileNameLower = file.name.toLowerCase();
+          const fileNameLower = file.name?.toLowerCase() || '';
           const hotelNameLower = hotel.name.toLowerCase();
           return (file.eventType === 'Hotel' ||
-                  file.eventType.toLowerCase().includes('hôtel') ||
-                  file.eventType.toLowerCase().includes('hotel')) &&
+                  (file.eventType?.toLowerCase().includes('hôtel')) ||
+                  (file.eventType?.toLowerCase().includes('hotel'))) &&
                  (fileAny.specificItemName?.toLowerCase() === hotelNameLower ||
                   fileNameLower.includes(hotelNameLower) ||
                   hotelNameLower.includes(fileNameLower) ||
@@ -387,10 +380,10 @@ export default function PlanningFiles({
             return true;
           }
           // Sinon, chercher dans le nom du fichier ou dans specificItemName
-          const fileNameLower = file.name.toLowerCase();
+          const fileNameLower = file.name?.toLowerCase() || '';
           const restaurantNameLower = restaurant.name.toLowerCase();
           return (file.eventType === 'Restaurant' ||
-                  file.eventType.toLowerCase().includes('restaurant')) &&
+                  (file.eventType?.toLowerCase().includes('restaurant'))) &&
                  (fileAny.specificItemName?.toLowerCase() === restaurantNameLower ||
                   fileNameLower.includes(restaurantNameLower) ||
                   restaurantNameLower.includes(fileNameLower) ||
@@ -405,12 +398,12 @@ export default function PlanningFiles({
             return true;
           }
           // Sinon, chercher dans le nom du fichier ou dans specificItemName
-          const fileNameLower = file.name.toLowerCase();
+          const fileNameLower = file.name?.toLowerCase() || '';
           const partyNameLower = party.name.toLowerCase();
           const isPartyType = file.eventType === 'party' ||
-                             file.eventType.toLowerCase().includes('soirée') ||
-                             file.eventType.toLowerCase().includes('gala') ||
-                             file.eventType.toLowerCase().includes('navette');
+                             (file.eventType?.toLowerCase().includes('soirée')) ||
+                             (file.eventType?.toLowerCase().includes('gala')) ||
+                             (file.eventType?.toLowerCase().includes('navette'));
           return isPartyType &&
                  (fileAny.specificItemName?.toLowerCase() === partyNameLower ||
                   fileNameLower.includes(partyNameLower) ||

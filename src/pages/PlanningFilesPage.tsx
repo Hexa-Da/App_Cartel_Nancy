@@ -21,6 +21,52 @@ import { useApp } from '../AppContext';
 import { useAppPanels } from '../AppPanelsContext';
 import './PlanningFilesPage.css';
 
+// Données hardcodées des hôtels (synchronisées avec App.tsx)
+const HOTELS = [
+  { id: '1', name: "Ibis Styles Nancy Sud" },
+  { id: '2', name: "Nemea Home Suite Nancy Centre" },
+  { id: '3', name: "Nemea Grand Coeur Nancy Centre" },
+  { id: '4', name: "Hotel Ibis Nancy Brabois" },
+  { id: '5', name: "Hotel Residome Nancy" },
+  { id: '6', name: "Ibis Budget Nancy Laxou" },
+  { id: '7', name: "Hotel Revotel Nancy Centre" },
+  { id: '8', name: "Hotel Cerise Nancy" }
+];
+
+// Données hardcodées des restaurants (synchronisées avec App.tsx)
+const RESTAURANTS = [
+  { id: '1', name: "Crous ARTEM" },
+  { id: '2', name: "Parc Saint-Marie" }
+];
+
+// Données hardcodées des soirées (synchronisées avec App.tsx)
+const PARTIES = [
+  { id: '1', name: "Place Stanislas", sport: 'Defile', description: "Défilé" },
+  { id: '2', name: "Parc Expo - Pompoms", sport: 'Pompom', description: "Soirée Pompoms" },
+  { id: '3', name: "Parc Expo - Showcase", sport: 'Party', description: "Soirée Showcase" },
+  { id: '4', name: "Zénith - DJ Contest", sport: 'Party', description: "Soirée DJ Contest" }
+];
+
+// Sports disponibles (synchronisés avec PlanningFiles.tsx)
+const SPORTS = [
+  { value: 'Football', label: 'Football ⚽' },
+  { value: 'Basketball', label: 'Basketball 🏀' },
+  { value: 'Handball', label: 'Handball 🤾' },
+  { value: 'Rugby', label: 'Rugby 🏉' },
+  { value: 'Ultimate', label: 'Ultimate 🥏' },
+  { value: 'Natation', label: 'Natation 🏊' },
+  { value: 'Badminton', label: 'Badminton 🏸' },
+  { value: 'Tennis', label: 'Tennis 🎾' },
+  { value: 'Cross', label: 'Cross 👟' },
+  { value: 'Volleyball', label: 'Volleyball 🏐' },
+  { value: 'Ping-pong', label: 'Ping-pong 🏓' },
+  { value: 'Echecs', label: 'Echecs ♟️' },
+  { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
+  { value: 'Spikeball', label: 'Spikeball ⚡️' },
+  { value: 'Pétanque', label: 'Pétanque 🍹' },
+  { value: 'Escalade', label: 'Escalade 🧗‍♂️' }
+];
+
 const PlanningFilesPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [eventType, setEventType] = useState<string>('all');
@@ -54,8 +100,6 @@ const PlanningFilesPage: React.FC = () => {
       setEventType('hotel');
     } else if (searchParams.get('party') === 'true') {
       setEventType('party');
-    } else if (searchParams.get('bus') === 'true') {
-      setEventType('bus');
     } else if (searchParams.get('hse') === 'true') {
       setEventType('hse');
     }
@@ -65,9 +109,8 @@ const PlanningFilesPage: React.FC = () => {
   const eventTypeOptions = [
     { value: 'all', label: 'Tous les événements' },
     { value: 'sports', label: 'Sports' },
-    { value: 'party', label: 'Soirées' },
+    { value: 'party', label: 'Soirées/Défilé' },
     { value: 'restaurants', label: 'Restaurants' },
-    { value: 'bus', label: 'Transport' },
     { value: 'hotel', label: 'Hôtels' },
     { value: 'hse', label: 'HSE' }
   ];
@@ -78,57 +121,36 @@ const PlanningFilesPage: React.FC = () => {
       case 'sports':
         return [
           { value: 'all', label: 'Tous les sports' },
-          { value: 'Football', label: 'Football ⚽' },
-          { value: 'Basketball', label: 'Basketball 🏀' },
-          { value: 'Handball', label: 'Handball 🤾' },
-          { value: 'Rugby', label: 'Rugby 🏉' },
-          { value: 'Ultimate', label: 'Ultimate 🥏' },
-          { value: 'Natation', label: 'Natation 🏊' },
-          { value: 'Badminton', label: 'Badminton 🏸' },
-          { value: 'Tennis', label: 'Tennis 🎾' },
-          { value: 'Cross', label: 'Cross 👟' },
-          { value: 'Volleyball', label: 'Volleyball 🏐' },
-          { value: 'Ping-pong', label: 'Ping-pong 🏓' },
-          { value: 'Echecs', label: 'Echecs ♟️' },
-          { value: 'Athlétisme', label: 'Athlétisme 🏃‍♂️' },
-          { value: 'Spikeball', label: 'Spikeball ⚡️' },
-          { value: 'Pétanque', label: 'Pétanque 🍹' },
-          { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-          { value: 'Pompom', label: 'Pompom 🎀' }
+          ...SPORTS
         ];
       case 'party':
         return [
-          { value: 'all', label: 'Toutes les soirées' },
-          { value: 'jeudi', label: 'Soirée du jeudi' },
-          { value: 'vendredi', label: 'Soirée du vendredi' },
-          { value: 'samedi', label: 'Soirée du samedi - Gala' },
-          { value: 'navettes', label: 'Infos navettes' }
+          { value: 'all', label: 'Toutes les soirées/défilé' },
+          ...PARTIES.map(party => ({
+            value: party.id,
+            label: `${party.name} ${party.sport === 'Defile' ? '🎺' : party.sport === 'Pompom' ? '🎀' : party.description?.includes('DJ Contest') ? '🎧' : party.description?.includes('Showcase') ? '🎤' : '🎉'}`
+          }))
         ];
       case 'restaurants':
         return [
           { value: 'all', label: 'Tous les restaurants' },
-          { value: 'crous', label: 'CROUS' },
-          { value: 'artem', label: 'Artem' },
-          { value: 'autres', label: 'Autres restaurants' }
-        ];
-      case 'bus':
-        return [
-          { value: 'all', label: 'Tous les transports' },
-          { value: 'zenith', label: 'Bus Zénith' },
-          { value: 'retour', label: 'Bus de retour' },
-          { value: 'navettes', label: 'Navettes' }
+          ...RESTAURANTS.map(restaurant => ({
+            value: restaurant.id,
+            label: `${restaurant.name} 🍽️`
+          }))
         ];
       case 'hotel':
         return [
           { value: 'all', label: 'Tous les hôtels' },
-          { value: 'localisation', label: 'Localisation' },
-          { value: 'horaires', label: 'Horaires réception' },
-          { value: 'services', label: 'Services disponibles' }
+          ...HOTELS.map(hotel => ({
+            value: hotel.id,
+            label: `${hotel.name} 🏢`
+          }))
         ];
       case 'hse':
         return [
           { value: 'all', label: 'Tous les fichiers HSE' },
-          { value: 'HSE', label: 'HSE' }
+          { value: 'HSE', label: 'HSE 🛡️' }
         ];
       default:
         return [{ value: 'all', label: 'Tous' }];
@@ -417,6 +439,9 @@ const PlanningFilesPage: React.FC = () => {
             setUploading={handleSetUploading}
             uploadProgress={uploadProgress}
             setUploadProgress={handleSetUploadProgress}
+            hotels={HOTELS}
+            restaurants={RESTAURANTS}
+            parties={PARTIES}
           />
         </div>
       )}

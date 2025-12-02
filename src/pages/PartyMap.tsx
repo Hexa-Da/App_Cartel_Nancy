@@ -126,6 +126,9 @@ const PartyMap: React.FC = () => {
             if (party.id === '2' && data['parc-expo-pompoms']?.result) {
               return { ...party, result: data['parc-expo-pompoms'].result };
             }
+            if (party.id === '3' && data['parc-expo-showcase']?.result) {
+              return { ...party, result: data['parc-expo-showcase'].result };
+            }
             if (party.id === '4' && data['zenith-dj-contest']?.result) {
               return { ...party, result: data['zenith-dj-contest'].result };
             }
@@ -466,7 +469,7 @@ const PartyMap: React.FC = () => {
             onMapClick={handleMapClick}
             isAddingMarker={isAddingMarker}
           />
-          {planMarkers.map((marker) => (
+          {planMarkers.filter(marker => marker.position && Array.isArray(marker.position)).map((marker) => (
             <Marker
               key={marker.id}
               position={[marker.position[0], marker.position[1]]}

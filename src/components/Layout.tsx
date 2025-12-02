@@ -28,6 +28,7 @@ import { useAppPanels } from '../AppPanelsContext';
 import { useApp } from '../AppContext';
 import VSSForm from './VSSForm';
 import EmergencyPopup from './EmergencyPopup';
+import HSECharterPopup from './HSECharterPopup';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import './ModalForm.css';
@@ -114,6 +115,20 @@ interface Venue {
 
 const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
+  
+  // État pour le popup HSE - vérifie si la charte a déjà été acceptée
+  const [showHSECharter, setShowHSECharter] = useState(() => {
+    const hasAccepted = localStorage.getItem('hseCharterAccepted');
+    return hasAccepted !== 'true';
+  });
+
+  // Fonction pour gérer l'acceptation de la charte HSE
+  const handleHSEAccept = (braceletNumber: string) => {
+    localStorage.setItem('hseCharterAccepted', 'true');
+    localStorage.setItem('userBraceletNumber', braceletNumber);
+    setShowHSECharter(false);
+  };
+  
   const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, showPlaceTypeModal, setShowPlaceTypeModal, selectedPlaceType, setSelectedPlaceType, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, // États du formulaire de lieu
     newVenueName, setNewVenueName, newVenueDescription, setNewVenueDescription, newVenueAddress, setNewVenueAddress,     selectedSport, setSelectedSport, selectedEmoji, setSelectedEmoji, selectedEventType, setSelectedEventType, selectedIndicationType, setSelectedIndicationType, tempMarker, setTempMarker, editingVenue, setEditingVenue, // États du formulaire de match
     editingMatch, setEditingMatch, newMatch, setNewMatch, selectedEvent, setSelectedEvent, selectedPartyForMap, setSelectedPartyForMap } = useAppPanels();
@@ -574,24 +589,19 @@ const Layout: React.FC = () => {
       const venue = snapshot.val();
       if (!venue) return;
 
+      // Extraire latitude/longitude de position si non définis
+      const lat = venue.latitude ?? (venue.position ? venue.position[0] : 0);
+      const lng = venue.longitude ?? (venue.position ? venue.position[1] : 0);
+
       const matchId = uuidv4();
-      const match: Match = {
+      const match = {
         id: matchId,
         name: `${venue.name} - Match`,
         description: newMatch.description || '',
-        address: venue.address,
-        latitude: venue.latitude,
-        longitude: venue.longitude,
-        position: [venue.latitude, venue.longitude],
         date: newMatch.date || '',
-        type: 'match',
         teams: newMatch.teams || '',
-        sport: venue.sport,
-        time: newMatch.date ? new Date(newMatch.date).toTimeString().split(' ')[0] : '',
         endTime: newMatch.endTime || '',
-        result: newMatch.result || '',
-        venueId: venue.id,
-        emoji: venue.emoji
+        result: newMatch.result || ''
       };
 
       const updatedMatches = [...(venue.matches || []), match];
@@ -1045,6 +1055,11 @@ const Layout: React.FC = () => {
       {/* Formulaire VSS */}
       {showVSSForm && (
         <VSSForm onClose={() => setShowVSSForm(false)} />
+      )}
+
+      {/* Popup Charte HSE - Affichée à la première ouverture */}
+      {showHSECharter && (
+        <HSECharterPopup onAccept={handleHSEAccept} />
       )}
 
       {/* Fenêtre modale pour l'administration */}

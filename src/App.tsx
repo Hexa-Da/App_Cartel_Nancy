@@ -1389,6 +1389,13 @@ function App() {
             )
           );
         }
+        if (data['parc-expo-showcase'] && data['parc-expo-showcase'].result) {
+          setParties((prevParties: Party[]) => 
+            prevParties.map((party: Party) => 
+              party.id === '3' ? { ...party, result: data['parc-expo-showcase'].result } : party
+            )
+          );
+        }
         if (data['zenith-dj-contest'] && data['zenith-dj-contest'].result) {
           setParties((prevParties: Party[]) => 
             prevParties.map((party: Party) => 
@@ -2036,15 +2043,16 @@ function App() {
     
     // Déterminer le type de lieu selon le type stocké ou les propriétés
     let placeType: string | null = null;
+    const venueAny = venue as any;
+    
     if (venue.type === 'hotel') {
       placeType = 'hotel';
     } else if (venue.type === 'restaurant') {
       placeType = 'resto';
     } else if (venue.type === 'party') {
       placeType = 'soirée';
-    } else if (venue.type === 'venue') {
-      // Pour les venues, vérifier s'il y a des propriétés supplémentaires
-      const venueAny = venue as any;
+    } else if (venue.type === 'venue' || !venue.type) {
+      // Pour les venues sans type ou type 'venue', vérifier les propriétés supplémentaires
       if (venueAny.placeType) {
         placeType = venueAny.placeType;
       } else if (venueAny.eventType) {
@@ -2057,18 +2065,18 @@ function App() {
       }
     }
     
-    if (placeType) {
-      setSelectedPlaceType(placeType);
+    // S'assurer qu'un type est toujours défini
+    if (!placeType) {
+      placeType = 'sport';
     }
+    
+    setSelectedPlaceType(placeType);
     
     setNewVenueName(venue.name || '');
     setNewVenueDescription(venue.description || '');
     setNewVenueAddress(venue.address || '');
     setSelectedSport(venue.sport || 'Football');
     setTempMarker([venue.latitude, venue.longitude]);
-    
-    // Charger les valeurs spécifiques selon le type
-    const venueAny = venue as any;
     
     // Gérer les types d'événements pour les soirées
     if (placeType === 'soirée') {
@@ -2794,8 +2802,8 @@ function App() {
           buttonsContainer.appendChild(partyMapButton);
         }
         
-        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ Contest) seulement si le mode édition est activé
-        if (isAdmin && isEditing && ((party.name === 'Parc Expo' || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.includes('Soirée Pompoms')))) {
+        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom, Showcase et DJ Contest) seulement si le mode édition est activé
+        if (isAdmin && isEditing && ((party.name === 'Parc Expo' || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.toLowerCase().includes('pompom') || party.description.toLowerCase().includes('showcase')))) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
@@ -2868,7 +2876,7 @@ function App() {
           }
           
           // Réajouter les boutons admin si nécessaire
-          if (isAdmin && isEditing && ((currentParty.name === 'Parc Expo' || currentParty.name === 'Zénith') && currentParty.description.includes('DJ Contest'))) {
+          if (isAdmin && isEditing && ((currentParty.name === 'Parc Expo' || currentParty.name === 'Zénith') && (currentParty.description.includes('DJ Contest') || currentParty.description.toLowerCase().includes('pompom') || currentParty.description.toLowerCase().includes('showcase')))) {
             const editResultButton = document.createElement('button');
             editResultButton.className = 'edit-result-button';
             editResultButton.textContent = 'Modifier le résultat';
@@ -3259,9 +3267,9 @@ function App() {
     triggerMarkerUpdate();
   };
 
-  // Fonction pour sauvegarder le résultat de la soirée pompom
+  // Fonction pour sauvegarder le résultat de la soirée
   const savePartyResult = (partyId: string, result: string) => {
-    if (partyId === '2') { // // Parc Expo
+    if (partyId === '2') { // Parc Expo Pompoms
       // Sauvegarder dans Firebase uniquement
       saveToFirebase('editableData/partyResults/parc-expo-pompoms', { result, updatedAt: new Date().toISOString() });
       // Mettre à jour l'état local
@@ -3271,8 +3279,16 @@ function App() {
         )
       );
       triggerMarkerUpdate();
-    } else if (partyId === '3') { // Parc Expo Showcase (pas de résultat pour Showcase)
-      // Note: Showcase n'a pas de résultat à afficher
+    } else if (partyId === '3') { // Parc Expo Showcase
+      // Sauvegarder dans Firebase
+      saveToFirebase('editableData/partyResults/parc-expo-showcase', { result, updatedAt: new Date().toISOString() });
+      // Mettre à jour l'état local
+      setParties((prevParties: Party[]) => 
+        prevParties.map((party: Party) => 
+          party.id === '3' ? { ...party, result } : party
+        )
+      );
+      triggerMarkerUpdate();
     } else if (partyId === '4') { // Zénith DJ Contest
       // Sauvegarder dans Firebase uniquement
       saveToFirebase('editableData/partyResults/zenith-dj-contest', { result, updatedAt: new Date().toISOString() });
