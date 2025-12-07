@@ -220,15 +220,22 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   };
 
   // Fonction pour obtenir toutes les délégations uniques
+  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur)
   const getAllDelegations = () => {
     const delegations = new Set<string>();
+    const excludedKeywords = ['poule', 'perdant', 'vainqueur'];
+    
     venues.forEach(venue => {
       if (venue.matches) {
         venue.matches.forEach(match => {
           const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map(team => team.trim());
           teams.forEach(team => {
-            // Exclure les "..." et les chaînes vides
-            if (team && team !== "..." && team !== "…") delegations.add(team);
+            const teamLower = team.toLowerCase();
+            const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
+            // Exclure les "...", les chaînes vides et les mots-clés de phases finales
+            if (team && team !== "..." && team !== "…" && !isExcluded) {
+              delegations.add(team);
+            }
           });
         });
       }
@@ -301,6 +308,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             description: 'Rendez vous 12h puis départ du Défilé à 13h',
             color: '#673AB7',
             type: 'party',
+            sport: 'Défilé',
             venue: 'Pl. Stanislas, 54000 Nancy'
           },
           {
@@ -312,6 +320,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             description: 'Soirée Pompoms du 16 avril, 21h-3h',
             color: '#673AB7',
             type: 'party',
+            sport: 'Show Pompom',
             venue: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy'
           },
           {
@@ -323,6 +332,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             description: 'Soirée Showcase 17 novembre, 20h-4h',
             color: '#673AB7',
             type: 'party',
+            sport: 'Showcase',
             venue: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy'
           },
           {
@@ -334,6 +344,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             description: 'Soirée DJ Contest 18 novembre, 20h-4h',
             color: '#673AB7',
             type: 'party',
+            sport: 'DJ Contest',
             venue: 'Rue du Zénith, 54320 Maxéville'
           }
         ];
@@ -351,7 +362,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                 name: party.name,
                 description: party.description,
                 venue: party.venue,
-                color: party.color
+                color: party.color,
+                sport: party.sport
               });
             }
           }

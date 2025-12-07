@@ -118,14 +118,21 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Fonction pour obtenir toutes les délégations
+  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur)
   const getAllDelegations = () => {
     const delegations = new Set<string>();
+    const excludedKeywords = ['poule', 'perdant', 'vainqueur'];
+    
     venues.forEach(venue => {
       if (venue.matches) {
         venue.matches.forEach((match: any) => {
           const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
           teams.forEach((team: string) => {
-            if (team && team !== "..." && team !== "…") delegations.add(team);
+            const teamLower = team.toLowerCase();
+            const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
+            if (team && team !== "..." && team !== "…" && !isExcluded) {
+              delegations.add(team);
+            }
           });
         });
       }
@@ -134,18 +141,19 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Fonction pour vérifier les championnats disponibles pour un sport
+  // Note: Le championnat (féminin/masculin/mixte) est défini au niveau de la venue, pas du match
   const hasGenderMatches = (sport: string): { hasFemale: boolean, hasMale: boolean, hasMixed: boolean } => {
     let hasFemale = false;
     let hasMale = false;
     let hasMixed = false;
 
     venues.forEach(venue => {
-      if (venue.sport === sport && venue.matches) {
-        venue.matches.forEach((match: any) => {
-          if (match.description?.toLowerCase().includes('féminin')) hasFemale = true;
-          if (match.description?.toLowerCase().includes('masculin')) hasMale = true;
-          if (match.description?.toLowerCase().includes('mixte')) hasMixed = true;
-        });
+      if (venue.sport === sport && venue.matches && venue.matches.length > 0) {
+        // Vérifier la description de la venue (pas des matchs)
+        const venueDescription = venue.description?.toLowerCase() || '';
+        if (venueDescription.includes('féminin')) hasFemale = true;
+        if (venueDescription.includes('masculin')) hasMale = true;
+        if (venueDescription.includes('mixte')) hasMixed = true;
       }
     });
 

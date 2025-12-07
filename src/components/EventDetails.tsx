@@ -100,7 +100,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
       'Pétanque': '🍹',
       'Escalade': '🧗‍♂️',
       'Soirée': '🎉',
-      'Défilé': '🎺'
+      'Défilé': '🎺',
+      'DJ Contest': '🎧',
+      'Showcase': '🎤',
+      'Show Pompom': '🎀'
     };
     return icons[sport] || '🏆';
   };

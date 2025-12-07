@@ -396,8 +396,12 @@ const Layout: React.FC = () => {
       const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`);
       const data = await response.json();
       
-      if (data && data[0] && data[0][0]) {
-        const translatedText = data[0][0][0];
+      if (data && data[0]) {
+        // Concaténer tous les segments traduits pour obtenir le texte complet
+        const translatedText = data[0]
+          .filter((segment: any) => segment && segment[0])
+          .map((segment: any[]) => segment[0])
+          .join('');
         // Stocker la traduction dans l'état
         setTranslatedMessages(prev => ({
           ...prev,

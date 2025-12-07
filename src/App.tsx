@@ -789,8 +789,12 @@ function App() {
       const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`);
       const data = await response.json();
       
-      if (data && data[0] && data[0][0]) {
-        const translatedText = data[0][0][0];
+      if (data && data[0]) {
+        // Concaténer tous les segments traduits pour obtenir le texte complet
+        const translatedText = data[0]
+          .filter((segment: any) => segment && segment[0])
+          .map((segment: any[]) => segment[0])
+          .join('');
         // Stocker la traduction dans l'état
         setTranslatedMessages(prev => ({
           ...prev,
@@ -3755,15 +3759,22 @@ function App() {
   };
 
   // Fonction pour obtenir toutes les délégations uniques
+  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur)
   const getAllDelegations = () => {
     const delegations = new Set<string>();
+    const excludedKeywords = ['poule', 'perdant', 'vainqueur'];
+    
     venues.forEach(venue => {
       if (venue.matches) {
         venue.matches.forEach(match => {
           const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map(team => team.trim());
           teams.forEach(team => {
-            // Exclure les "..." et les chaînes vides
-            if (team && team !== "..." && team !== "…") delegations.add(team);
+            const teamLower = team.toLowerCase();
+            const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
+            // Exclure les "...", les chaînes vides et les mots-clés de phases finales
+            if (team && team !== "..." && team !== "…" && !isExcluded) {
+              delegations.add(team);
+            }
           });
         });
       }

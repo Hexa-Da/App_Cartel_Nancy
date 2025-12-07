@@ -257,27 +257,33 @@ const Home: React.FC = () => {
 
   const getMatchesByDelegationAndSport = (places: Place[], delegation: string, sport: string) => {
     return places.flatMap(place => {
+      // Vérifier le sport au niveau de la venue (pas du match)
+      if (place.sport !== sport) return [];
+      
       if ('matches' in place && Array.isArray(place.matches)) {
+        // Vérifier le championnat au niveau de la venue (pas du match)
+        const venueDescription = place.description?.toLowerCase() || '';
+        const isFemale = venueDescription.includes('féminin');
+        const isMale = venueDescription.includes('masculin');
+        const isMixed = venueDescription.includes('mixte');
+        
+        let championshipMatch = true;
+        if (userPreferences.championship !== 'none') {
+          championshipMatch = 
+            (userPreferences.championship === 'female' && isFemale) ||
+            (userPreferences.championship === 'male' && isMale) ||
+            (userPreferences.championship === 'mixed' && isMixed);
+        }
+        
+        // Si le championnat ne correspond pas, ne pas retourner de matchs de cette venue
+        if (!championshipMatch) return [];
+        
         return place.matches.filter((match: Match) => {
           const teams = match.teams.toLowerCase();
           const delegationLower = delegation.toLowerCase();
-          const sportMatch = match.sport === sport;
           const delegationMatch = teams.includes(delegationLower);
           
-          // Vérifier le championnat
-          const isFemale = match.description?.toLowerCase().includes('féminin');
-          const isMale = match.description?.toLowerCase().includes('masculin');
-          const isMixed = match.description?.toLowerCase().includes('mixte');
-          
-          let championshipMatch = true;
-          if (userPreferences.championship !== 'none') {
-            championshipMatch = 
-              (userPreferences.championship === 'female' && isFemale) ||
-              (userPreferences.championship === 'male' && isMale) ||
-              (userPreferences.championship === 'mixed' && isMixed);
-          }
-
-          return sportMatch && delegationMatch && championshipMatch;
+          return delegationMatch;
         }).map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,
