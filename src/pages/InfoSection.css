@@ -55,117 +55,6 @@
   font-weight: 500;
 }
 
-/* Section Bracelet */
-.bracelet-content {
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.bracelet-info-card {
-  background-color: var(--bg-secondary);
-  padding: 1.5rem;
-  border-radius: 12px;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.bracelet-info-card h2 {
-  font-size: 1.2rem;
-  margin: 0 0 1rem;
-  color: var(--text-color);
-}
-
-.bracelet-activated {
-  padding: 1rem;
-  background-color: rgba(46, 204, 113, 0.1);
-  border-radius: 8px;
-}
-
-.bracelet-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 0.5rem;
-}
-
-.bracelet-status {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.bracelet-status.active {
-  color: var(--success-color);
-}
-
-.bracelet-status.inactive {
-  color: var(--text-color-light);
-}
-
-.bracelet-not-activated p {
-  margin: 0.5rem 0 0;
-  font-size: 0.9rem;
-  color: var(--text-color-light);
-}
-
-.bracelet-rules {
-  background-color: var(--bg-secondary);
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-}
-
-.bracelet-rules h3 {
-  font-size: 1.1rem;
-  margin: 0 0 1rem;
-  color: var(--text-color);
-}
-
-.bracelet-rules ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.bracelet-rules li {
-  margin-bottom: 0.75rem;
-  line-height: 1.5;
-  color: var(--text-color);
-  font-size: 0.9rem;
-  padding-left: 1rem;
-  position: relative;
-}
-
-.bracelet-rules li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: var(--primary-color);
-}
-
-.bracelet-contact {
-  background-color: var(--bg-secondary);
-  padding: 1.5rem;
-  border-radius: 12px;
-  text-align: center;
-}
-
-.bracelet-contact h3 {
-  font-size: 1.1rem;
-  margin: 0 0 0.5rem;
-  color: var(--text-color);
-}
-
-.bracelet-contact p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--text-color-light);
-}
-
 @media (max-width: 600px) {
   .info-section-header h1 {
     font-size: 1.8rem;
@@ -180,8 +69,142 @@
     font-size: 1.5rem;
     margin-right: 15px;
   }
+}
 
-  .bracelet-number {
-    font-size: 1.5rem;
+/* ================================
+   FAQ Accordéon Styles
+   ================================ */
+
+.faq-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}
+
+.faq-section {
+  margin-bottom: 1rem;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.faq-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.faq-section-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.faq-section-icon {
+  font-size: 1.5rem;
+  color: white;
+  display: flex;
+  align-items: center;
+}
+
+.faq-section-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.faq-section-chevron {
+  color: var(--text-color-light);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.faq-list {
+  padding: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  background-color: var(--bg-color);
+}
+
+.faq-question span {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-color);
+  flex: 1;
+  padding-right: 1rem;
+  line-height: 1.4;
+}
+
+.faq-question svg {
+  color: var(--text-color-light);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.faq-answer {
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-color-light);
+  background-color: var(--bg-color);
+}
+
+/* Responsive FAQ */
+@media (max-width: 600px) {
+  .faq-container {
+    padding: 0 5px;
+    padding-bottom: 100px;
+  }
+
+  .faq-section {
+    margin-bottom: 0.75rem;
+  }
+
+  .faq-section-header {
+    padding: 0.85rem 1rem;
+  }
+
+  .faq-section-icon {
+    font-size: 1.3rem;
+  }
+
+  .faq-section-header h2 {
+    font-size: 1rem;
+  }
+
+  .faq-question {
+    padding: 0.85rem 1rem;
+  }
+
+  .faq-question span {
+    font-size: 0.9rem;
+  }
+
+  .faq-answer {
+    padding: 0 1rem 1rem 1rem;
+    font-size: 0.85rem;
   }
 }
