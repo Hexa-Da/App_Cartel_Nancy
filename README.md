@@ -38,7 +38,7 @@ npm install
 
 # 3. Créer le fichier de configuration
 cp .env.example .env
-# Éditer .env avec vos clés Firebase et EmailJS
+# Éditer .env avec vos clés Firebase et Telegram
 
 # 4. Démarrer en développement
 npm run dev
@@ -61,10 +61,9 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=votre_sender_id
 VITE_FIREBASE_APP_ID=votre_app_id
 VITE_FIREBASE_DATABASE_URL=votre_database_url
 
-# 📧 EmailJS Configuration
-VITE_EMAILJS_PUBLIC_KEY=votre_public_key
-VITE_EMAILJS_SERVICE_ID=votre_service_id
-VITE_EMAILJS_TEMPLATE_ID=votre_template_id
+# 🤖 Telegram Bot Configuration (pour signalements VSS)
+VITE_TELEGRAM_BOT_TOKEN=votre_bot_token
+VITE_TELEGRAM_CHAT_ID=votre_chat_id
 ```
 
 ## 🏗️ Architecture du projet
@@ -122,7 +121,7 @@ App_Cartel_Nancy/
 - **Firebase Realtime Database** pour les données temps réel
 - **Firebase Cloud Messaging** pour les notifications
 - **Firebase Storage** pour les fichier pdf
-- **EmailJS** pour l'envoi d'emails depuis le frontend
+- **Telegram Bot** pour les notifications de signalements VSS
 
 ### Mobile
 - **Capacitor** pour la compilation cross-platform

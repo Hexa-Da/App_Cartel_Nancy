@@ -3,7 +3,7 @@
  * 
  * Ce fichier définit la configuration de confidentialité avec :
  * - Informations de contact et URLs légales
- * - Services tiers utilisés (Firebase, Google, EmailJS)
+ * - Services tiers utilisés (Firebase, Google, Telegram)
  * - Types de données collectées et leur utilisation
  * - Conformité réglementaire (RGPD, loi française)
  * 
@@ -51,10 +51,10 @@ export const PRIVACY_CONFIG = {
       privacyPolicy: 'https://operations.osmfoundation.org/policies/nominatim/'
     },
     {
-      name: 'EmailJS',
-      purpose: 'Envoi d\'emails pour les signalements VSS',
+      name: 'Telegram Bot',
+      purpose: 'Notification des signalements VSS',
       dataType: 'Contenu des signalements VSS',
-      privacyPolicy: 'https://www.emailjs.com/privacy-policy/'
+      privacyPolicy: 'https://telegram.org/privacy'
     }
   ],
 
@@ -92,9 +92,9 @@ export const PRIVACY_CONFIG = {
     vssReports: {
       collected: true,
       purpose: 'Transmission des signalements aux autorités compétentes',
-      storage: 'email_transmission',
+      storage: 'telegram_transmission',
       shared: true,
-      sharedWith: 'Destinataires des signalements VSS',
+      sharedWith: 'Destinataires des signalements VSS (via Telegram)',
       consentRequired: true
     }
   },

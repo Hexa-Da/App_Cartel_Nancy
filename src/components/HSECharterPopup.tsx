@@ -5,11 +5,12 @@
  * - La charte HSE complète à la première ouverture de l'application
  * - Un champ pour saisir le numéro de bracelet de l'utilisateur
  * - Validation du numéro contre la base de données Firebase
+ * - Vérification que le bracelet n'est pas déjà utilisé sur un autre appareil
  * - Stocke l'acceptation dans le localStorage
  */
 
 import React, { useState } from 'react';
-import { ref, get } from 'firebase/database';
+import { ref, get, set } from 'firebase/database';
 import { database } from '../firebase';
 import './HSECharterPopup.css';
 
@@ -23,6 +24,21 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
   const [error, setError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
 
+  // Générer ou récupérer l'identifiant unique de l'appareil
+  const getDeviceId = (): string => {
+    let deviceId = localStorage.getItem('deviceId');
+    if (!deviceId) {
+      // Générer un UUID v4
+      deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+      localStorage.setItem('deviceId', deviceId);
+    }
+    return deviceId;
+  };
+
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const element = e.target as HTMLDivElement;
     const isAtBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 50;
@@ -31,6 +47,7 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
     }
   };
 
+  // Vérifier si le bracelet existe dans la base participants
   const validateBraceletNumber = async (number: string): Promise<boolean> => {
     try {
       const participantRef = ref(database, `participants/${number}`);
@@ -38,6 +55,58 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
       return snapshot.exists();
     } catch (error) {
       console.error('Erreur lors de la validation du bracelet:', error);
+      return false;
+    }
+  };
+
+  // Vérifier si le bracelet est déjà activé sur un autre appareil
+  const checkBraceletActivation = async (number: string, deviceId: string): Promise<{ canActivate: boolean; reason?: string }> => {
+    try {
+      const participantRef = ref(database, `participants/${number}`);
+      const snapshot = await get(participantRef);
+      
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Si le bracelet a déjà un deviceId enregistré
+        if (data.deviceId) {
+          // Si c'est le même appareil, on autorise
+          if (data.deviceId === deviceId) {
+            return { canActivate: true };
+          }
+          // Sinon, bracelet déjà utilisé sur un autre appareil
+          return { canActivate: false, reason: 'Ce bracelet est déjà utilisé sur un autre appareil.' };
+        }
+        // Pas encore de deviceId, on peut activer
+        return { canActivate: true };
+      }
+      
+      // Participant n'existe pas
+      return { canActivate: false, reason: 'Numéro de bracelet invalide.' };
+    } catch (error) {
+      console.error('Erreur lors de la vérification d\'activation:', error);
+      return { canActivate: false, reason: 'Erreur de vérification. Réessayez.' };
+    }
+  };
+
+  // Enregistrer l'activation du bracelet dans le profil participant
+  const registerBraceletActivation = async (number: string, deviceId: string): Promise<boolean> => {
+    try {
+      const participantRef = ref(database, `participants/${number}`);
+      const snapshot = await get(participantRef);
+      
+      if (snapshot.exists()) {
+        const currentData = snapshot.val();
+        // Mettre à jour avec le deviceId et la date d'activation
+        await set(participantRef, {
+          ...currentData,
+          deviceId: deviceId,
+          activatedAt: Date.now()
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement de l\'activation:', error);
       return false;
     }
   };
@@ -55,16 +124,35 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
     setIsValidating(true);
     setError('');
 
-    const isValid = await validateBraceletNumber(braceletNumber.trim());
+    const trimmedNumber = braceletNumber.trim();
+    const deviceId = getDeviceId();
 
+    // 1. Vérifier que le bracelet existe dans la base participants
+    const isValid = await validateBraceletNumber(trimmedNumber);
     if (!isValid) {
       setError('Numéro de bracelet invalide. Vérifiez votre numéro et réessayez.');
       setIsValidating(false);
       return;
     }
 
+    // 2. Vérifier que le bracelet n'est pas déjà utilisé sur un autre appareil
+    const activationCheck = await checkBraceletActivation(trimmedNumber, deviceId);
+    if (!activationCheck.canActivate) {
+      setError(activationCheck.reason || 'Bracelet non disponible.');
+      setIsValidating(false);
+      return;
+    }
+
+    // 3. Enregistrer l'activation du bracelet sur cet appareil
+    const registered = await registerBraceletActivation(trimmedNumber, deviceId);
+    if (!registered) {
+      setError('Erreur lors de l\'activation. Réessayez.');
+      setIsValidating(false);
+      return;
+    }
+
     setIsValidating(false);
-    onAccept(braceletNumber.trim());
+    onAccept(trimmedNumber);
   };
 
   return (
