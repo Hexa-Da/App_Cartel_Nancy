@@ -128,7 +128,7 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
     ]
   },
   party: {
-    title: 'SOIRÉES',
+      title: 'SOIRÉES',
     sections: [
       {
         icon: <FaMusic />,
@@ -170,7 +170,7 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
           { question: "Et si je rate la dernière navette ?", answer: "Des taxis partenaires sont disponibles à tarif préférentiel. Numéro dans l'onglet Infos de l'app." },
         ]
       },
-    ]
+      ]
   },
   hotel: {
     title: 'HÔTELS',
@@ -224,7 +224,7 @@ const SectionAccordion: React.FC<{ section: SectionFAQ; isOpen: boolean; onToggl
   const [openQuestionIndex, setOpenQuestionIndex] = useState<number | null>(null);
 
   return (
-    <div className="faq-section">
+    <div className={`faq-section ${isOpen ? 'open' : ''}`}>
       <div className="faq-section-header" onClick={onToggle}>
         <div className="faq-section-left">
           <span className="faq-section-icon">{section.icon}</span>
@@ -375,7 +375,7 @@ const InfoSection: React.FC = () => {
   const { isEditing } = useAppPanels();
   const { isAdmin } = useApp();
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     const adminStatus = localStorage.getItem('isAdmin') === 'true';
     if (adminStatus !== isAdmin) {
@@ -422,9 +422,9 @@ const InfoSection: React.FC = () => {
 
   if (!section) {
     return (
-      <div className="info-section-page">
+        <div className="info-section-page">
         <div className="info-section-header"><h1>Section non trouvée</h1></div>
-        <p>Cette section n'existe pas.</p>
+            <p>Cette section n'existe pas.</p>
       </div>
     );
   }
@@ -446,4 +446,4 @@ const InfoSection: React.FC = () => {
   );
 };
 
-export default InfoSection;
+export default InfoSection; 
