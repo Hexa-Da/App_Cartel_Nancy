@@ -1,6 +1,7 @@
 {
-  "short_name": "CumMap",
-  "name": "CumMap - Cartel Nancy 2026",
+  "short_name": "Cartel Nancy",
+  "name": "Cartel Nancy 2026",
+  "description": "Application officielle de l'événement sportif et culturel Cartel Nancy 2026",
   "icons": [
     {
       "src": "logo.jpg",
@@ -12,7 +13,10 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff",
+  "background_color": "#000000",
   "gcm_sender_id": "103953800507",
-  "permissions": ["notifications"]
-} 
+  "permissions": ["notifications"],
+  "orientation": "portrait",
+  "lang": "fr-FR",
+  "categories": ["events", "sports", "entertainment"]
+}

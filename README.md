@@ -15,8 +15,10 @@ Application React/TypeScript avec Capacitor pour Android et iOS, utilisant Fireb
 - **📅 Gestion d'événements** avec filtres avancés
 - **🔐 Mode administrateur** avec édition des contenus
 - **📋 Informations pratiques** (restauration, transport, etc.)
-- **⚠️ Signalements VSS** avec formulaire sécurisé
+- **⚠️ Signalements VSS** avec formulaire sécurisé et système anti-spam
 - **📱 Application native** pour Android et iOS
+- **🔒 Activation unique** par appareil (un bracelet = un seul téléphone)
+- **🎰 Paris sur les matchs** avec système de points
 
 ## 🚀 Démarrage rapide
 
@@ -92,13 +94,14 @@ App_Cartel_Nancy/
 
 | Composant | Rôle |
 |-----------|------|
-| **App.tsx** | Composant racine avec routage |
+| **App.tsx** | Composant racine avec routage et carte |
 | **Layout.tsx** | Structure commune de l'app |
 | **Header.tsx** | Barre d'état |
 | **BottomNav.tsx** | Barre de navigation principale |
-| **SettingsMenu.tsx** | Paramètre et choix des préférances |
+| **SettingsMenu.tsx** | Paramètres et choix des préférences |
 | **CalendarPopup.tsx** | Calendrier des événements |
 | **PlanningFilesPage.tsx** | Répertoire de tous les fichiers |
+| **VSSForm.tsx** | Formulaire de signalement VSS sécurisé |
 
 ### 📄 Pages principales
 
@@ -108,6 +111,7 @@ App_Cartel_Nancy/
 | **Map** | Carte interactive avec géolocalisation | `/map` |
 | **Info** | Menu informations pratiques | `/info` |
 | **InfoSection** | Sections détaillées (dynamique) | `/info/:section` |
+| **Parie** | Activation bracelet et paris | `/info/parie` |
 
 ## 🛠️ Technologies utilisées
 
@@ -120,7 +124,7 @@ App_Cartel_Nancy/
 ### Backend & Services
 - **Firebase Realtime Database** pour les données temps réel
 - **Firebase Cloud Messaging** pour les notifications
-- **Firebase Storage** pour les fichier pdf
+- **Firebase Storage** pour les fichiers PDF
 - **Telegram Bot** pour les notifications de signalements VSS
 
 ### Mobile
@@ -128,6 +132,29 @@ App_Cartel_Nancy/
 - **Plugins Capacitor** pour les fonctionnalités natives
 - **Android Gradle** pour le build Android
 - **Xcode** pour le build iOS
+
+## 🔒 Sécurité et validation
+
+### Charte HSE (premier lancement)
+- Lecture obligatoire de la charte Hygiène, Sécurité, Environnement
+- Case à cocher pour accepter les engagements
+- Stockage de l'acceptation dans le localStorage
+
+### Système d'authentification par bracelet (section Paris)
+- Saisie du numéro de bracelet dans la page "Faites vos paris"
+- Validation du numéro contre la base Firebase
+- Activation unique par appareil (deviceId)
+- Impossible d'utiliser le même bracelet sur deux téléphones
+
+### Protection anti-spam VSS
+- Rate limiting (max 5 signalements/heure)
+- Détection de contenu suspect (trolls)
+- Blocage automatique après 3 violations (24h)
+- Alertes Telegram pour les tentatives de spam
+
+### Validation des participants
+- Vérification nom/prénom/téléphone avec Firebase
+- Certification obligatoire avant envoi
 
 ## 🚀 Scripts de développement
 
@@ -184,8 +211,19 @@ npm run build && npm run deploy  # GitHub Pages
 
 ### Signalements VSS
 - **Formulaire dédié** avec envoi sécurisé
-- **Protection des victimes** avec option d'anonymat
+- **Protection des victimes** avec validation d'identité
+- **Système anti-abus** pour éviter les faux signalements
 - **Conformité légale** pour les événements publics
+
+### Charte HSE
+- **Lecture obligatoire** au premier lancement de l'app
+- **Case à cocher** pour valider l'acceptation
+- **Engagement** sur les règles de sécurité et respect
+
+### Système de Paris
+- **Activation du bracelet** dans la section "Faites vos paris"
+- **Un bracelet = un appareil** (activation irréversible)
+- **Paris gratuits** sur les matchs pour gagner des points
 
 ## 📞 Support et contact
 
@@ -195,10 +233,10 @@ npm run build && npm run deploy  # GitHub Pages
 
 ## 📄 Licence
 
-Projet développé pour le Cartel  Nancy 2026. Tous droits réservés.
+Projet développé pour le Cartel Nancy 2026. Tous droits réservés.
 
 ---
 
 **Cartel Nancy 2026** - Application officielle de l'événement sportif et culturel
 
-*Dernière mise à jour : Octobre 2025*
+*Dernière mise à jour : Décembre 2025*

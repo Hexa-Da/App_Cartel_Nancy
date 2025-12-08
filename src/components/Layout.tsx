@@ -123,9 +123,8 @@ const Layout: React.FC = () => {
   });
 
   // Fonction pour gérer l'acceptation de la charte HSE
-  const handleHSEAccept = (braceletNumber: string) => {
+  const handleHSEAccept = () => {
     localStorage.setItem('hseCharterAccepted', 'true');
-    localStorage.setItem('userBraceletNumber', braceletNumber);
     setShowHSECharter(false);
   };
   

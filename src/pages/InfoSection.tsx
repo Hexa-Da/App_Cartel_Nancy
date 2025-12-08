@@ -1,21 +1,8 @@
 /**
- * @fileoverview Composant pour l'affichage des sections détaillées d'informations
- * 
- * Ce composant gère :
- * - Affichage dynamique des sections selon l'URL (restauration, sport, soirées, etc.)
- * - Navigation vers les sous-éléments de chaque section
- * - Gestion spéciale des mentions légales avec liens externes
- * - Interface cohérente pour toutes les sections d'information
- * - Gestion des clics pour les documents légaux (politique, CGU)
- * 
- * Nécessaire car :
- * - Centralise la logique d'affichage des sections
- * - Évite la duplication de code entre sections
- * - Gère la navigation dynamique basée sur l'URL
- * - Assure l'accès aux documents légaux obligatoires
+ * @fileoverview Sections détaillées d'informations pratiques
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppPanels } from '../AppPanelsContext';
 import { useApp } from '../AppContext';
@@ -23,8 +10,9 @@ import {
   FaCoffee, FaBreadSlice, FaUtensils, FaCalendarAlt, FaPizzaSlice, 
   FaBullhorn, FaMapMarkerAlt, FaBook, FaTrophy, FaMusic, FaGlassCheers, FaUsers, 
   FaBus, FaQuestionCircle, FaWrench, FaClock,
-  FaFileAlt, FaShieldAlt, FaHotel, FaExclamationTriangle, FaFolderOpen
+  FaFileAlt, FaShieldAlt, FaHotel, FaExclamationTriangle, FaFolderOpen, FaCheckCircle
 } from 'react-icons/fa';
+import Parie from './Parie';
 import './InfoSection.css';
 
 interface SectionItem {
@@ -32,12 +20,7 @@ interface SectionItem {
   text: string;
 }
 
-interface SectionData {
-  title: string;
-  items: SectionItem[];
-}
-
-const sectionsData: { [key: string]: SectionData } = {
+const sectionsData: { [key: string]: { title: string; items: SectionItem[] } } = {
   restauration: {
     title: 'RESTAURATION',
     items: [
@@ -58,13 +41,13 @@ const sectionsData: { [key: string]: SectionData } = {
     ]
   },
   party: {
-      title: 'SOIRÉES',
-      items: [
-        { icon: <FaMusic />, text: 'Jeudi soir' },
-        { icon: <FaGlassCheers />, text: 'Vendredi soir' },
-        { icon: <FaUsers />, text: 'Samedi soir - Gala' },
-        { icon: <FaBus />, text: 'Infos navettes' },
-      ]
+    title: 'SOIRÉES',
+    items: [
+      { icon: <FaMusic />, text: 'Jeudi soir' },
+      { icon: <FaGlassCheers />, text: 'Vendredi soir' },
+      { icon: <FaUsers />, text: 'Samedi soir - Gala' },
+      { icon: <FaBus />, text: 'Infos navettes' },
+    ]
   },
   hotel: {
     title: 'HOTELS',
@@ -96,72 +79,100 @@ const sectionsData: { [key: string]: SectionData } = {
   }
 };
 
+// Section Bracelet
+const BraceletSection: React.FC = () => {
+  const [storedBracelet, setStoredBracelet] = useState<string | null>(null);
+
+  useEffect(() => {
+    setStoredBracelet(localStorage.getItem('userBraceletNumber'));
+  }, []);
+
+  return (
+    <div className="info-section-page">
+      <div className="info-section-header">
+        <h1>INFOS BRACELET</h1>
+      </div>
+      <div className="bracelet-content">
+        <div className="bracelet-info-card">
+          <h2>Votre bracelet participant</h2>
+          {storedBracelet ? (
+            <div className="bracelet-activated">
+              <p className="bracelet-number">N° {storedBracelet}</p>
+              <p className="bracelet-status active"><FaCheckCircle /> Activé</p>
+            </div>
+          ) : (
+            <div className="bracelet-not-activated">
+              <p className="bracelet-status inactive">Non activé</p>
+              <p>Rendez-vous dans "Faites vos paris" pour activer votre bracelet.</p>
+            </div>
+          )}
+        </div>
+        <div className="bracelet-rules">
+          <h3>À propos du bracelet</h3>
+          <ul>
+            <li><strong>Port obligatoire :</strong> Gardez-le visible en permanence</li>
+            <li><strong>Pass d'accès :</strong> Accès à toutes les zones de l'événement</li>
+            <li><strong>Ne pas perdre :</strong> En cas de perte, contactez l'organisation</li>
+            <li><strong>Non cessible :</strong> Bracelet personnel, ne peut pas être prêté</li>
+          </ul>
+        </div>
+        <div className="bracelet-contact">
+          <h3>En cas de problème</h3>
+          <p>Contactez l'organisation au point accueil de chaque site.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const InfoSection: React.FC = () => {
   const { sectionName } = useParams<{ sectionName: string }>();
   const { isEditing } = useAppPanels();
   const { isAdmin } = useApp();
   const navigate = useNavigate();
   const section = sectionsData[sectionName || ''];
-  
-  // Forcer la synchronisation des états sur iOS
+
   useEffect(() => {
-    // Vérifier et synchroniser l'état admin depuis localStorage
     const adminStatus = localStorage.getItem('isAdmin') === 'true';
     if (adminStatus !== isAdmin) {
-      console.log('InfoSection - Synchronisation admin depuis localStorage:', adminStatus);
-    }
-    
-    // Vérifier et synchroniser l'état editing depuis localStorage
-    const editingStatus = localStorage.getItem('isEditing') === 'true';
-    if (editingStatus !== isEditing) {
-      console.log('InfoSection - Synchronisation editing depuis localStorage:', editingStatus);
+      console.log('InfoSection - Sync admin:', adminStatus);
     }
   }, [isAdmin, isEditing]);
 
+  // Sections spéciales
+  if (sectionName === 'parie') return <Parie />;
+  if (sectionName === 'bracelet') return <BraceletSection />;
+
   const handleItemClick = (item: SectionItem) => {
-    // Gestion spéciale pour les mentions légales
     if (sectionName === 'legal') {
       if (item.text === 'Politique de Confidentialité') {
         window.open('/privacy-policy.html', '_blank');
       } else if (item.text === 'Conditions Générales d\'Utilisation') {
         window.open('/terms-of-service.html', '_blank');
       }
+      return;
     }
     
-    // Gestion spéciale pour Fichiers - navigation React Router
     if (sectionName === 'planning') {
-      let targetUrl = '';
-      
-      if (item.text === 'Tous les fichiers') {
-        targetUrl = '/planning-files?all=true&from=info-section';
-      } else if (item.text === 'Fichiers pour les différents sports') {
-        targetUrl = '/planning-files?sports=true&from=info-section';
-      } else if (item.text === 'Fichiers pour les restaurants') {
-        targetUrl = '/planning-files?restaurants=true&from=info-section';
-      } else if (item.text === 'Fichiers pour les hôtels') {
-        targetUrl = '/planning-files?hotel=true&from=info-section';
-      } else if (item.text === 'Fichiers pour les soirées/défilé') {
-        targetUrl = '/planning-files?party=true&from=info-section';
-      } else if (item.text === 'Fichiers pour les bus fin de soirée') {
-        targetUrl = '/planning-files?bus=true&from=info-section';
-      } else if (item.text === 'Fichiers HSE') {
-        targetUrl = '/planning-files?hse=true&from=info-section';
-      }
-      
-      if (targetUrl) {
-        // Naviguer avec React Router (ajoute automatiquement une entrée dans l'historique)
-        navigate(targetUrl, { state: { from: 'info-section' } });
-      }
+      const routes: { [key: string]: string } = {
+        'Tous les fichiers': '/planning-files?all=true&from=info-section',
+        'Fichiers pour les différents sports': '/planning-files?sports=true&from=info-section',
+        'Fichiers pour les restaurants': '/planning-files?restaurants=true&from=info-section',
+        'Fichiers pour les hôtels': '/planning-files?hotel=true&from=info-section',
+        'Fichiers pour les soirées/défilé': '/planning-files?party=true&from=info-section',
+        'Fichiers pour les bus fin de soirée': '/planning-files?bus=true&from=info-section',
+        'Fichiers HSE': '/planning-files?hse=true&from=info-section',
+      };
+      const targetUrl = routes[item.text];
+      if (targetUrl) navigate(targetUrl, { state: { from: 'info-section' } });
     }
   };
 
   if (!section) {
     return (
-        <div className="info-section-page">
-            <div className="info-section-header">
-                <h1>Section non trouvée</h1>
-            </div>
-            <p>Cette section n'existe pas.</p>
+      <div className="info-section-page">
+        <div className="info-section-header"><h1>Section non trouvée</h1></div>
+        <p>Cette section n'existe pas.</p>
       </div>
     );
   }
@@ -183,4 +194,4 @@ const InfoSection: React.FC = () => {
   );
 };
 
-export default InfoSection; 
+export default InfoSection;

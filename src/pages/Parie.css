@@ -1,0 +1,231 @@
+/* Page Paris */
+.parie-page {
+  padding: 20px;
+  margin-top: 40px;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+}
+
+.parie-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.parie-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.parie-content {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* État non activé */
+.parie-setup {
+  text-align: center;
+}
+
+.parie-icon {
+  font-size: 4rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.parie-setup h2 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+  color: var(--text-color);
+}
+
+.parie-description {
+  color: var(--text-color-light);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Formulaire */
+.parie-form {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.parie-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.parie-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  text-align: center;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+.parie-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.parie-input:disabled {
+  opacity: 0.6;
+}
+
+.parie-error {
+  color: var(--danger-color);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.parie-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--success-color);
+  color: white;
+}
+
+.parie-button:hover:not(:disabled) {
+  background-color: var(--success-hover);
+}
+
+.parie-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Avertissement */
+.parie-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgba(241, 196, 15, 0.1);
+  border: 1px solid rgba(241, 196, 15, 0.3);
+  border-radius: 8px;
+}
+
+.parie-warning .warning-icon {
+  color: #f1c40f;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.parie-warning p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-color);
+}
+
+/* État activé */
+.parie-activated {
+  text-align: center;
+}
+
+.parie-activated .success-icon {
+  font-size: 4rem;
+  color: var(--success-color);
+  margin-bottom: 1rem;
+}
+
+.parie-activated h2 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+  color: var(--success-color);
+}
+
+.parie-activated .bracelet-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0.5rem 0;
+}
+
+.parie-info {
+  color: var(--text-color-light);
+  margin-bottom: 2rem;
+}
+
+/* Instructions */
+.parie-instructions {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.parie-instructions h3 {
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  color: var(--text-color);
+}
+
+.parie-instructions ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.parie-instructions li {
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+/* Note */
+.parie-note {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgba(52, 152, 219, 0.1);
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  border-radius: 8px;
+}
+
+.parie-note .note-icon {
+  color: #3498db;
+  font-size: 1.5rem;
+}
+
+.parie-note p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+@media (max-width: 600px) {
+  .parie-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .parie-icon,
+  .parie-activated .success-icon {
+    font-size: 3rem;
+  }
+
+  .parie-activated .bracelet-number {
+    font-size: 1.5rem;
+  }
+}

@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
+    <title>Cartel Nancy 2026 - Application Officielle</title>
+    <meta name="description" content="Application officielle de l'événement sportif et culturel Cartel Nancy 2026. Consultez les événements, la carte interactive et les informations pratiques.">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Cartel Nancy 2026">
+    <meta property="og:description" content="Application officielle de l'événement sportif et culturel Cartel Nancy 2026">
+    <meta property="og:image" content="/logo.jpg">
+    
+    <!-- Firebase SDK -->
     <script defer src="/__/firebase/12.1.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
     <script defer src="/__/firebase/12.1.0/firebase-auth-compat.js"></script>
     <script defer src="/__/firebase/12.1.0/firebase-database-compat.js"></script>
     <script defer src="/__/firebase/12.1.0/firebase-firestore-compat.js"></script>
@@ -17,54 +24,172 @@
     <script defer src="/__/firebase/12.1.0/firebase-analytics-compat.js"></script>
     <script defer src="/__/firebase/12.1.0/firebase-remote-config-compat.js"></script>
     <script defer src="/__/firebase/12.1.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=false"></script>
 
     <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+      * { box-sizing: border-box; }
+      body { 
+        background: black;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        text-align: center;
+        padding: 40px 20px;
+        max-width: 500px;
+      }
+      .logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+        background: orange;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .subtitle {
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.7);
+        margin: 0 0 32px;
+      }
+      .features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+      .feature {
+        background: rgba(255,255,255,0.1);
+        padding: 16px;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+      }
+      .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+      .feature-text {
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.9);
+      }
+      .cta-button {
+        display: inline-block;
+        background: orange;
+        color: white;
+        text-decoration: none;
+        padding: 16px 32px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 20px rgba(255,161,0,0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(255,161,0,0.5);
+      }
+      .stores {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+      .store-badge {
+        height: 50px;
+        border-radius: 8px;
+        opacity: 0.9;
+        transition: opacity 0.2s;
+      }
+      .store-badge:hover {
+        opacity: 1;
+      }
+      .footer {
+        margin-top: 40px;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.5);
+      }
+      .footer a {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+      #load {
+        color: rgba(255,255,255,0.4);
+        font-size: 0.8rem;
+        margin-top: 16px;
+      }
+      @media (max-width: 480px) {
+        h1 { font-size: 2rem; }
+        .features { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <div class="container">
+      <img src="/logo.jpg" alt="Cartel Nancy Logo" class="logo">
+      <h1>Cartel Nancy 2026</h1>
+      <p class="subtitle">Événement sportif et culturel</p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🗺️</div>
+          <div class="feature-text">Carte interactive</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📅</div>
+          <div class="feature-text">Calendrier événements</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💬</div>
+          <div class="feature-text">Chat en direct</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🎫</div>
+          <div class="feature-text">Charte HSE</div>
+        </div>
+      </div>
+
+      <a href="/" class="cta-button">Accéder à l'application</a>
+
+      <div class="stores">
+        <a href="#" title="Bientôt sur Google Play">
+          <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" class="store-badge">
+        </a>
+        <a href="#" title="Bientôt sur App Store">
+          <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Télécharger sur l'App Store" class="store-badge">
+        </a>
+      </div>
+
+      <div class="footer">
+        <p>
+          <a href="/privacy-policy.html">Politique de confidentialité</a> · 
+          <a href="/terms-of-service.html">CGU</a>
+        </p>
+        <p>© 2025 Cartel Nancy - Tous droits réservés</p>
+      </div>
+
+      <p id="load">Chargement Firebase...</p>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
         try {
           let app = firebase.app();
           let features = [
@@ -78,10 +203,12 @@
             'remoteConfig',
             'performance',
           ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+          loadEl.textContent = `Firebase connecté (${features.length} services)`;
+          loadEl.style.color = 'rgba(100, 255, 100, 0.6)';
         } catch (e) {
           console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          loadEl.textContent = 'Erreur de connexion Firebase';
+          loadEl.style.color = 'rgba(255, 100, 100, 0.6)';
         }
       });
     </script>

@@ -1,159 +1,39 @@
 /**
- * @fileoverview Popup de la charte HSE (Hygiène, Sécurité, Environnement)
- * 
- * Ce composant affiche :
- * - La charte HSE complète à la première ouverture de l'application
- * - Un champ pour saisir le numéro de bracelet de l'utilisateur
- * - Validation du numéro contre la base de données Firebase
- * - Vérification que le bracelet n'est pas déjà utilisé sur un autre appareil
- * - Stocke l'acceptation dans le localStorage
+ * @fileoverview Popup de la charte HSE - Acceptation obligatoire au premier lancement
  */
 
 import React, { useState } from 'react';
-import { ref, get, set } from 'firebase/database';
-import { database } from '../firebase';
 import './HSECharterPopup.css';
 
 interface HSECharterPopupProps {
-  onAccept: (braceletNumber: string) => void;
+  onAccept: () => void;
 }
 
 const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
-  const [braceletNumber, setBraceletNumber] = useState('');
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+  const [hasAccepted, setHasAccepted] = useState(false);
   const [error, setError] = useState('');
-  const [isValidating, setIsValidating] = useState(false);
-
-  // Générer ou récupérer l'identifiant unique de l'appareil
-  const getDeviceId = (): string => {
-    let deviceId = localStorage.getItem('deviceId');
-    if (!deviceId) {
-      // Générer un UUID v4
-      deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-      localStorage.setItem('deviceId', deviceId);
-    }
-    return deviceId;
-  };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const element = e.target as HTMLDivElement;
-    const isAtBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 50;
-    if (isAtBottom) {
+    const el = e.target as HTMLDivElement;
+    if (el.scrollHeight - el.scrollTop <= el.clientHeight + 50) {
       setHasScrolledToBottom(true);
     }
   };
 
-  // Vérifier si le bracelet existe dans la base participants
-  const validateBraceletNumber = async (number: string): Promise<boolean> => {
-    try {
-      const participantRef = ref(database, `participants/${number}`);
-      const snapshot = await get(participantRef);
-      return snapshot.exists();
-    } catch (error) {
-      console.error('Erreur lors de la validation du bracelet:', error);
-      return false;
-    }
-  };
-
-  // Vérifier si le bracelet est déjà activé sur un autre appareil
-  const checkBraceletActivation = async (number: string, deviceId: string): Promise<{ canActivate: boolean; reason?: string }> => {
-    try {
-      const participantRef = ref(database, `participants/${number}`);
-      const snapshot = await get(participantRef);
-      
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        // Si le bracelet a déjà un deviceId enregistré
-        if (data.deviceId) {
-          // Si c'est le même appareil, on autorise
-          if (data.deviceId === deviceId) {
-            return { canActivate: true };
-          }
-          // Sinon, bracelet déjà utilisé sur un autre appareil
-          return { canActivate: false, reason: 'Ce bracelet est déjà utilisé sur un autre appareil.' };
-        }
-        // Pas encore de deviceId, on peut activer
-        return { canActivate: true };
-      }
-      
-      // Participant n'existe pas
-      return { canActivate: false, reason: 'Numéro de bracelet invalide.' };
-    } catch (error) {
-      console.error('Erreur lors de la vérification d\'activation:', error);
-      return { canActivate: false, reason: 'Erreur de vérification. Réessayez.' };
-    }
-  };
-
-  // Enregistrer l'activation du bracelet dans le profil participant
-  const registerBraceletActivation = async (number: string, deviceId: string): Promise<boolean> => {
-    try {
-      const participantRef = ref(database, `participants/${number}`);
-      const snapshot = await get(participantRef);
-      
-      if (snapshot.exists()) {
-        const currentData = snapshot.val();
-        // Mettre à jour avec le deviceId et la date d'activation
-        await set(participantRef, {
-          ...currentData,
-          deviceId: deviceId,
-          activatedAt: Date.now()
-        });
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Erreur lors de l\'enregistrement de l\'activation:', error);
-      return false;
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!braceletNumber.trim()) {
-      setError('Veuillez saisir votre numéro de bracelet');
-      return;
-    }
+  const handleSubmit = () => {
     if (!hasScrolledToBottom) {
-      setError('Veuillez lire la charte HSE en entier avant de valider');
+      setError('Veuillez lire la charte en entier');
       return;
     }
-
-    setIsValidating(true);
-    setError('');
-
-    const trimmedNumber = braceletNumber.trim();
-    const deviceId = getDeviceId();
-
-    // 1. Vérifier que le bracelet existe dans la base participants
-    const isValid = await validateBraceletNumber(trimmedNumber);
-    if (!isValid) {
-      setError('Numéro de bracelet invalide. Vérifiez votre numéro et réessayez.');
-      setIsValidating(false);
+    if (!hasAccepted) {
+      setError('Veuillez accepter la charte');
       return;
     }
-
-    // 2. Vérifier que le bracelet n'est pas déjà utilisé sur un autre appareil
-    const activationCheck = await checkBraceletActivation(trimmedNumber, deviceId);
-    if (!activationCheck.canActivate) {
-      setError(activationCheck.reason || 'Bracelet non disponible.');
-      setIsValidating(false);
-      return;
-    }
-
-    // 3. Enregistrer l'activation du bracelet sur cet appareil
-    const registered = await registerBraceletActivation(trimmedNumber, deviceId);
-    if (!registered) {
-      setError('Erreur lors de l\'activation. Réessayez.');
-      setIsValidating(false);
-      return;
-    }
-
-    setIsValidating(false);
-    onAccept(trimmedNumber);
+    onAccept();
   };
+
+  const canSubmit = hasScrolledToBottom && hasAccepted;
 
   return (
     <div className="hse-popup-overlay">
@@ -166,39 +46,29 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
         <div className="hse-popup-content" onScroll={handleScroll}>
           <section className="hse-section">
             <h3>Préambule</h3>
-            <p>
-              Bienvenue au CARTEL Nancy ! Cette charte a pour objectif de garantir la sécurité 
-              et le bien-être de tous les participants pendant l'événement. En validant cette 
-              charte, vous vous engagez à respecter l'ensemble des règles énoncées ci-dessous.
-            </p>
+            <p>Bienvenue au CARTEL Nancy ! En validant cette charte, vous vous engagez à respecter les règles ci-dessous.</p>
           </section>
 
           <section className="hse-section">
             <h3>1. Hygiène</h3>
             <ul>
-              <li><strong>Hydratation :</strong> Pensez à vous hydrater régulièrement, surtout lors des efforts physiques. Des points d'eau potable sont disponibles sur l'ensemble des sites.</li>
-              <li><strong>Alimentation :</strong> Des espaces de restauration sont prévus. Évitez de consommer des aliments en dehors des zones dédiées.</li>
-              <li><strong>Propreté des lieux :</strong> Utilisez les poubelles mises à disposition et triez vos déchets. Respectez les espaces communs.</li>
-              <li><strong>Sanitaires :</strong> Des toilettes sont accessibles sur tous les sites. Merci de les maintenir propres pour le confort de tous.</li>
-              <li><strong>Soins médicaux :</strong> En cas de besoin, des postes de secours sont identifiés sur la carte de l'application. N'hésitez pas à vous y rendre ou à alerter un organisateur.</li>
+              <li><strong>Hydratation :</strong> Points d'eau disponibles sur tous les sites</li>
+              <li><strong>Propreté :</strong> Utilisez les poubelles et triez vos déchets</li>
+              <li><strong>Soins :</strong> Postes de secours identifiés sur la carte</li>
             </ul>
           </section>
 
           <section className="hse-section">
             <h3>2. Sécurité</h3>
             <ul>
-              <li><strong>Port du bracelet obligatoire :</strong> Votre bracelet est votre pass pour accéder aux différentes zones. Ne le perdez pas et gardez-le visible en permanence.</li>
-              <li><strong>Respect des consignes :</strong> Suivez les instructions des organisateurs et des équipes de sécurité. En cas d'évacuation, restez calmes et suivez les indications.</li>
-              <li><strong>Comportement responsable :</strong> Tout comportement violent, discriminatoire ou dangereux entraînera une exclusion immédiate de l'événement.</li>
-              <li><strong>Alcool et substances :</strong> La consommation d'alcool est autorisée dans les espaces prévus à cet effet et pour les personnes majeures uniquement. Toute substance illicite est strictement interdite.</li>
-              <li><strong>Objets interdits :</strong> Les objets dangereux (armes, objets contondants, bouteilles en verre...) sont interdits sur l'ensemble des sites.</li>
-              <li><strong>Numéros d'urgence :</strong> 
+              <li><strong>Bracelet obligatoire :</strong> Gardez-le visible en permanence</li>
+              <li><strong>Consignes :</strong> Suivez les instructions des organisateurs</li>
+              <li><strong>Comportement :</strong> Violence et discrimination = exclusion immédiate</li>
+              <li><strong>Alcool :</strong> Autorisé dans les espaces prévus (majeurs uniquement)</li>
+              <li><strong>Objets interdits :</strong> Armes, objets dangereux, bouteilles en verre</li>
+              <li><strong>Urgences :</strong>
                 <ul className="emergency-list">
-                  <li>SAMU : <strong>15</strong></li>
-                  <li>Police/Gendarmerie : <strong>17</strong></li>
-                  <li>Pompiers : <strong>18</strong></li>
-                  <li>Numéro d'urgence européen : <strong>112</strong></li>
-                  <li>Référent sécurité CARTEL : consultez l'application</li>
+                  <li>SAMU : <strong>15</strong> | Police : <strong>17</strong> | Pompiers : <strong>18</strong> | Européen : <strong>112</strong></li>
                 </ul>
               </li>
             </ul>
@@ -207,80 +77,51 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
           <section className="hse-section">
             <h3>3. Environnement</h3>
             <ul>
-              <li><strong>Éco-responsabilité :</strong> Le CARTEL s'engage dans une démarche éco-responsable. Nous vous encourageons à minimiser votre impact environnemental.</li>
-              <li><strong>Tri sélectif :</strong> Des poubelles de tri sont disponibles. Merci de respecter les consignes de tri (plastique, papier, verre, déchets organiques).</li>
-              <li><strong>Covoiturage :</strong> Privilégiez les transports en commun ou le covoiturage pour vous rendre sur les différents sites.</li>
-              <li><strong>Respect de la nature :</strong> Ne jetez rien par terre, respectez les espaces verts et la faune locale.</li>
-              <li><strong>Économie d'énergie :</strong> Éteignez les lumières et équipements lorsque vous quittez un espace.</li>
+              <li><strong>Tri sélectif :</strong> Respectez les consignes de tri</li>
+              <li><strong>Transports :</strong> Privilégiez covoiturage et transports en commun</li>
             </ul>
           </section>
 
           <section className="hse-section">
-            <h3>4. Respect et vivre-ensemble</h3>
+            <h3>4. Respect</h3>
             <ul>
-              <li><strong>Inclusion :</strong> Le CARTEL est un événement ouvert à tous. Toute forme de discrimination est proscrite.</li>
-              <li><strong>Consentement :</strong> Respectez l'espace personnel de chacun. Toute forme de harcèlement sera sanctionnée.</li>
-              <li><strong>Safe Place :</strong> Des espaces "Safe Place" sont identifiés sur la carte pour toute personne ayant besoin d'aide ou de soutien.</li>
-              <li><strong>Stand de prévention :</strong> Des stands de prévention sont présents pour vous informer et vous accompagner.</li>
-            </ul>
-          </section>
-
-          <section className="hse-section">
-            <h3>5. Contacts utiles</h3>
-            <ul>
-              <li><strong>Organisation CARTEL :</strong> Consultez l'onglet "Infos" de l'application</li>
-              <li><strong>Objets trouvés :</strong> Rendez-vous au point accueil de chaque site</li>
-              <li><strong>Réclamations :</strong> Adressez-vous à un membre de l'organisation</li>
+              <li><strong>Inclusion :</strong> Toute discrimination est proscrite</li>
+              <li><strong>Consentement :</strong> Respectez l'espace personnel de chacun</li>
+              <li><strong>Safe Place :</strong> Espaces d'aide identifiés sur la carte</li>
             </ul>
           </section>
 
           <section className="hse-section hse-final">
             <h3>Engagement</h3>
-            <p>
-              En validant cette charte et en saisissant mon numéro de bracelet, je m'engage à :
-            </p>
-            <ul>
-              <li>Respecter l'ensemble des règles énoncées dans cette charte</li>
-              <li>Adopter un comportement responsable et respectueux</li>
-              <li>Contribuer à la sécurité et au bien-être de tous les participants</li>
-              <li>Signaler tout incident ou comportement inapproprié aux organisateurs</li>
-            </ul>
+            <p>En validant, je m'engage à respecter ces règles et signaler tout incident.</p>
           </section>
 
-          <section className="hse-section bracelet-section">
-            <h3>Numéro de bracelet</h3>
-            <p className="bracelet-info">
-              Ce numéro sert d'identifiant unique et vous permettra de participer aux paris sur les matchs.
-            </p>
-            <input
-              type="text"
-              id="bracelet-number"
-              value={braceletNumber}
-              onChange={(e) => setBraceletNumber(e.target.value)}
-              placeholder="Ex: 12345"
-              className="bracelet-input"
-            />
+          <section className="hse-section acceptance-section">
+            <div className="hse-checkbox-container">
+              <input
+                type="checkbox"
+                id="accept-charter"
+                checked={hasAccepted}
+                onChange={(e) => setHasAccepted(e.target.checked)}
+                className="hse-checkbox"
+              />
+              <label htmlFor="accept-charter" className="hse-checkbox-label">
+                J'ai lu et j'accepte la charte HSE
+              </label>
+            </div>
           </section>
         </div>
 
         <div className="hse-popup-footer">
           {error && <p className="hse-error">{error}</p>}
-
           <button 
-            className={`hse-accept-button ${hasScrolledToBottom && braceletNumber.trim() ? 'active' : ''}`}
+            className={`hse-accept-button ${canSubmit ? 'active' : ''}`}
             onClick={handleSubmit}
-            disabled={isValidating}
+            disabled={!canSubmit}
           >
-            {isValidating 
-              ? "Vérification en cours..." 
-              : hasScrolledToBottom 
-                ? "J'accepte la charte HSE" 
-                : "Lisez la charte jusqu'en bas"}
+            {hasScrolledToBottom ? "Valider" : "Lisez jusqu'en bas"}
           </button>
-
-          <p className="hse-scroll-hint">
-            {!hasScrolledToBottom && "Faites défiler pour lire toute la charte"}
-          </p>
+          {!hasScrolledToBottom && <p className="hse-scroll-hint">Faites défiler pour lire toute la charte</p>}
         </div>
       </div>
     </div>

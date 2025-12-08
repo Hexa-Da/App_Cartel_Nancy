@@ -36,15 +36,11 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
 .info-section-list-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .info-section-list-item .item-icon {
@@ -59,18 +55,133 @@
   font-weight: 500;
 }
 
+/* Section Bracelet */
+.bracelet-content {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.bracelet-info-card {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.bracelet-info-card h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1rem;
+  color: var(--text-color);
+}
+
+.bracelet-activated {
+  padding: 1rem;
+  background-color: rgba(46, 204, 113, 0.1);
+  border-radius: 8px;
+}
+
+.bracelet-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 0.5rem;
+}
+
+.bracelet-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.bracelet-status.active {
+  color: var(--success-color);
+}
+
+.bracelet-status.inactive {
+  color: var(--text-color-light);
+}
+
+.bracelet-not-activated p {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+}
+
+.bracelet-rules {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.bracelet-rules h3 {
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  color: var(--text-color);
+}
+
+.bracelet-rules ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bracelet-rules li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.bracelet-rules li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+}
+
+.bracelet-contact {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.bracelet-contact h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: var(--text-color);
+}
+
+.bracelet-contact p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+}
+
 @media (max-width: 600px) {
-    .info-section-header h1 {
-        font-size: 1.8rem;
-    }
+  .info-section-header h1 {
+    font-size: 1.8rem;
+  }
 
-    .info-section-list-item {
-        font-size: 1rem;
-        padding: 15px 5px;
-    }
+  .info-section-list-item {
+    font-size: 1rem;
+    padding: 15px 5px;
+  }
 
-    .info-section-list-item .item-icon {
-        font-size: 1.5rem;
-        margin-right: 15px;
-    }
-} 
+  .info-section-list-item .item-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+  }
+
+  .bracelet-number {
+    font-size: 1.5rem;
+  }
+}

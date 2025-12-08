@@ -12,6 +12,8 @@
  * - Centralise la configuration des services tiers
  * - Définit clairement l'utilisation des données
  * - Facilite la mise à jour de la politique
+ * 
+ * Dernière mise à jour : Décembre 2025
  */
 
 // Configuration de la politique de confidentialité
@@ -28,8 +30,8 @@ export const PRIVACY_CONFIG = {
   thirdPartyServices: [
     {
       name: 'Firebase',
-      purpose: 'Base de données pour les événements publics',
-      dataType: 'Données publiques des événements (non personnelles)',
+      purpose: 'Base de données pour les événements publics et validation des participants',
+      dataType: 'Données publiques des événements, numéros de bracelet, deviceId d\'activation',
       privacyPolicy: 'https://firebase.google.com/support/privacy'
     },
     {
@@ -52,8 +54,8 @@ export const PRIVACY_CONFIG = {
     },
     {
       name: 'Telegram Bot',
-      purpose: 'Notification des signalements VSS',
-      dataType: 'Contenu des signalements VSS',
+      purpose: 'Notification des signalements VSS et alertes anti-spam',
+      dataType: 'Contenu des signalements VSS, alertes de tentatives d\'abus',
       privacyPolicy: 'https://telegram.org/privacy'
     }
   ],
@@ -89,13 +91,46 @@ export const PRIVACY_CONFIG = {
       shared: false,
       consentRequired: true
     },
+    deviceId: {
+      collected: true,
+      purpose: 'Garantir l\'unicité de l\'activation du bracelet (un bracelet = un appareil)',
+      storage: 'local + firebase',
+      shared: false,
+      consentRequired: true,
+      description: 'Identifiant unique généré pour votre appareil lors de l\'activation du bracelet'
+    },
+    braceletNumber: {
+      collected: true,
+      purpose: 'Identification du participant, accès aux fonctionnalités de l\'événement, paris sur les matchs',
+      storage: 'local + firebase',
+      shared: false,
+      consentRequired: true,
+      description: 'Numéro de bracelet saisi dans la section "Faites vos paris"'
+    },
+    braceletActivation: {
+      collected: true,
+      purpose: 'Traçabilité de l\'activation du bracelet',
+      storage: 'firebase',
+      shared: false,
+      consentRequired: true,
+      description: 'Horodatage de l\'activation du bracelet (champ activatedAt)'
+    },
     vssReports: {
       collected: true,
       purpose: 'Transmission des signalements aux autorités compétentes',
       storage: 'telegram_transmission',
       shared: true,
       sharedWith: 'Destinataires des signalements VSS (via Telegram)',
-      consentRequired: true
+      consentRequired: true,
+      validation: 'Vérification de l\'identité avec les données participant Firebase'
+    },
+    spamData: {
+      collected: true,
+      purpose: 'Protection anti-spam du formulaire VSS',
+      storage: 'local',
+      shared: false,
+      consentRequired: false,
+      description: 'Compteur de soumissions et violations pour le système anti-abus'
     }
   },
 
@@ -118,7 +153,9 @@ export const PRIVACY_CONFIG = {
   dataRetention: {
     localData: 'Supprimée lors de la désinstallation de l\'application',
     analyticsData: 'Anonymisée et conservée selon les politiques Google Analytics',
-    serverData: 'Aucune donnée personnelle stockée sur nos serveurs'
+    serverData: 'deviceId et données d\'activation conservées pendant la durée de l\'événement',
+    participantData: 'Conservées pendant la durée de l\'événement Cartel Nancy 2026',
+    vssReports: 'Transmis via Telegram aux autorités compétentes'
   }
 };
 

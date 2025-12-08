@@ -82,7 +82,7 @@
 <body>
     <div class="container">
         <h1>Politique de Confidentialité</h1>
-        <p class="last-updated">Dernière mise à jour : 22 septembre 2025</p>
+        <p class="last-updated">Dernière mise à jour : 8 décembre 2025</p>
 
         <div class="highlight">
             <strong>Application Cartel Nancy</strong><br>
@@ -137,20 +137,48 @@
             <strong>Partage :</strong> Non
         </div>
 
+        <h4>Identifiant d'Appareil (deviceId)</h4>
+        <div class="data-type">
+            <strong>Collecte :</strong> Oui (lors de l'activation du bracelet)<br>
+            <strong>Usage :</strong> Garantir l'unicité de l'activation du bracelet (un bracelet = un appareil)<br>
+            <strong>Stockage :</strong> Local sur votre appareil + Firebase (associé à votre numéro de bracelet)<br>
+            <strong>Partage :</strong> Non (utilisé uniquement pour la validation interne)
+        </div>
+
+        <h4>Numéro de Bracelet Participant</h4>
+        <div class="data-type">
+            <strong>Collecte :</strong> Oui (dans la section "Faites vos paris")<br>
+            <strong>Usage :</strong> Identification du participant, accès aux fonctionnalités de l'événement, paris sur les matchs<br>
+            <strong>Stockage :</strong> Local sur votre appareil + Firebase<br>
+            <strong>Partage :</strong> Non
+        </div>
+
+        <h4>Données d'Activation</h4>
+        <div class="data-type">
+            <strong>Collecte :</strong> Oui (horodatage de l'activation)<br>
+            <strong>Usage :</strong> Traçabilité de l'activation du bracelet<br>
+            <strong>Stockage :</strong> Firebase (champ activatedAt)<br>
+            <strong>Partage :</strong> Non
+        </div>
+
         <h4>Signalements VSS</h4>
         <div class="data-type">
             <strong>Collecte :</strong> Oui (si vous utilisez le formulaire)<br>
             <strong>Usage :</strong> Transmission des signalements aux autorités compétentes<br>
             <strong>Stockage :</strong> Envoyé via Telegram Bot<br>
-            <strong>Partage :</strong> Oui (avec les destinataires désignés)
+            <strong>Partage :</strong> Oui (avec les destinataires désignés)<br>
+            <strong>Validation :</strong> Vérification de l'identité avec les données participant Firebase
         </div>
 
         <h3>Utilisation de Vos Données Personnelles</h3>
         <p>La Société peut utiliser les Données Personnelles aux fins suivantes :</p>
         <ul>
+            <li><strong>Valider votre identité</strong> en tant que participant à l'événement Cartel Nancy</li>
+            <li><strong>Garantir l'unicité</strong> de l'utilisation de votre bracelet (un bracelet par appareil)</li>
             <li><strong>Vous contacter</strong> concernant les signalements VSS ou les fonctionnalités d'administration</li>
             <li><strong>Gérer vos demandes</strong> et signalements</li>
             <li><strong>Améliorer notre Service</strong> grâce à l'analyse des données d'utilisation anonymisées</li>
+            <li><strong>Prévenir les abus</strong> via le système anti-spam des signalements VSS</li>
         </ul>
 
         <h3>Partage de Vos Informations</h3>
@@ -163,8 +191,8 @@
         <h2>Services Tiers Utilisés</h2>
         <div class="service-list">
             <h4>Firebase</h4>
-            <p><strong>Usage :</strong> Base de données pour les événements publics<br>
-            <strong>Données :</strong> Données publiques des événements (non personnelles)<br>
+            <p><strong>Usage :</strong> Base de données pour les événements publics et validation des participants<br>
+            <strong>Données :</strong> Données publiques des événements, numéros de bracelet, deviceId d'activation<br>
             <strong>Politique :</strong> <a href="https://firebase.google.com/support/privacy" target="_blank">Politique Firebase</a></p>
 
             <h4>Google Analytics</h4>
@@ -183,8 +211,8 @@
             <strong>Politique :</strong> <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">Politique OpenStreetMap</a></p>
 
             <h4>Telegram Bot</h4>
-            <p><strong>Usage :</strong> Notification des signalements VSS<br>
-            <strong>Données :</strong> Contenu des signalements VSS<br>
+            <p><strong>Usage :</strong> Notification des signalements VSS et alertes anti-spam<br>
+            <strong>Données :</strong> Contenu des signalements VSS, alertes de tentatives d'abus<br>
             <strong>Politique :</strong> <a href="https://telegram.org/privacy" target="_blank">Politique Telegram</a></p>
         </div>
 
@@ -192,8 +220,9 @@
         <ul>
             <li><strong>Données locales :</strong> Supprimées lors de la désinstallation de l'application</li>
             <li><strong>Données d'analyse :</strong> Anonymisées et conservées selon les politiques Google Analytics</li>
-            <li><strong>Données serveur :</strong> Aucune donnée personnelle stockée sur nos serveurs</li>
-            <li><strong>Signalements VSS :</strong> Transmis via Telegram aux autorités compétentes (anonymisées à votre demande)</li>
+            <li><strong>Données serveur :</strong> deviceId et données d'activation conservées pendant la durée de l'événement</li>
+            <li><strong>Signalements VSS :</strong> Transmis via Telegram aux autorités compétentes</li>
+            <li><strong>Données participant :</strong> Conservées pendant la durée de l'événement Cartel Nancy 2026</li>
         </ul>
 
         <h2>Sécurité de Vos Données Personnelles</h2>
@@ -202,7 +231,9 @@
             <li>Stockage local chiffré pour les données sensibles</li>
             <li>Anonymisation des données d'analyse</li>
             <li>Transmission sécurisée via HTTPS</li>
-            <li>Pas de stockage de données personnelles sur nos serveurs</li>
+            <li>Validation de l'identité avant envoi de signalement VSS</li>
+            <li>Système anti-spam pour prévenir les abus</li>
+            <li>Activation unique par appareil pour éviter les usurpations</li>
         </ul>
 
         <h2>Confidentialité des Enfants</h2>
