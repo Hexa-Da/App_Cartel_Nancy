@@ -39,6 +39,8 @@ const sportEmojis: { [key: string]: string } = {
   Escalade: '🧗‍♂️',
   Spikeball: '⚡️',
   Pétanque: '🍹',
+  'Show Pompom': '🎀',
+  'DJ Contest': '🎧',
 };
 
 // Interface pour les votes agrégés d'une délégation
@@ -50,13 +52,92 @@ interface DelegationVotes {
   };
 }
 
+// Modal pour la saisie du bracelet (défini en dehors du composant pour éviter les re-renders)
+interface BraceletModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  braceletNumber: string;
+  setBraceletNumber: (value: string) => void;
+  error: string;
+  isValidating: boolean;
+  onActivate: () => void;
+}
+
+const BraceletModal: React.FC<BraceletModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  braceletNumber, 
+  setBraceletNumber, 
+  error, 
+  isValidating, 
+  onActivate 
+}) => {
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onActivate();
+  };
+
+  return (
+    <div className="bracelet-modal-overlay" onClick={onClose}>
+      <div className="bracelet-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="bracelet-modal-header">
+          <h2>Activation du bracelet</h2>
+          <button className="bracelet-modal-close" onClick={onClose} type="button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="bracelet-login-form">
+          <div className="form-group">
+            <label htmlFor="bracelet-input-modal">Numéro de bracelet</label>
+            <input
+              type="text"
+              id="bracelet-input-modal"
+              value={braceletNumber}
+              onChange={(e) => setBraceletNumber(e.target.value)}
+              placeholder="Ex: 12345"
+              required
+              autoFocus
+              disabled={isValidating}
+            />
+            <p className="bracelet-help-text">
+              Le numéro de série est disponible au dos de la puce du bracelet.
+            </p>
+          </div>
+          
+          {error && <p className="parie-error">{error}</p>}
+
+          <div className="parie-warning-modal">
+            <FaExclamationTriangle className="warning-icon" />
+            <p><strong>Attention :</strong> Un bracelet = un seul appareil. Action irréversible.</p>
+          </div>
+          
+          <button 
+            type="submit" 
+            className="bracelet-login-button"
+            disabled={isValidating || !braceletNumber.trim()}
+          >
+            {isValidating ? 'Vérification...' : 'Activer'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const Parie: React.FC = () => {
-  const { venues } = useApp();
+  const { venues, getAllDelegations } = useApp();
   const [braceletNumber, setBraceletNumber] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState('');
   const [isActivated, setIsActivated] = useState(false);
   const [storedBracelet, setStoredBracelet] = useState<string | null>(null);
+  const [showBraceletModal, setShowBraceletModal] = useState(false);
   
   // États pour les paris
   const [bets, setBets] = useState<{ [sportKey: string]: string | null }>({});
@@ -78,6 +159,13 @@ const Parie: React.FC = () => {
   const [timeRemaining, setTimeRemaining] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [bettingClosed, setBettingClosed] = useState(false);
 
+  // Callback pour fermer le modal (mémorisé pour éviter les re-renders)
+  const handleCloseModal = useCallback(() => {
+    setShowBraceletModal(false);
+    setError('');
+    setBraceletNumber('');
+  }, []);
+
   // Charger les données initiales
   useEffect(() => {
     const stored = localStorage.getItem('userBraceletNumber');
@@ -87,6 +175,7 @@ const Parie: React.FC = () => {
       // Charger les paris depuis Firebase
       loadBetsFromFirebase(stored);
     }
+    // Ne pas ouvrir automatiquement le modal pour éviter les bugs de re-render
     
     // Activer le scroll sur cette page
     document.body.classList.add('parie-page-active');
@@ -134,13 +223,13 @@ const Parie: React.FC = () => {
           }
         }
         
-        // Synchroniser tous les votes après le chargement
-        await syncAllDelegationVotes();
-        
-        // Charger les votes de sa délégation après synchronisation
+        // Charger les votes de sa délégation
         if (participantData.delegation) {
           await loadDelegationVotes(participantData.delegation);
         }
+        
+        // Synchroniser tous les votes après le chargement
+        await syncAllDelegationVotes();
       }
     } catch (err) {
       console.error('Erreur chargement paris:', err);
@@ -154,7 +243,7 @@ const Parie: React.FC = () => {
   };
 
   // Charger les votes agrégés de la délégation
-  const loadDelegationVotes = async (delegation: string) => {
+  const loadDelegationVotes = useCallback(async (delegation: string) => {
     try {
       // Charger depuis Firebase
       const delegationBetsRef = ref(database, `delegationBets/${delegation}`);
@@ -162,14 +251,11 @@ const Parie: React.FC = () => {
       
       if (snapshot.exists()) {
         setDelegationVotes(snapshot.val());
-      } else {
-        // Si pas de données, synchroniser pour créer les données initiales
-        await syncAllDelegationVotes();
       }
     } catch (err) {
       console.error('Erreur chargement votes délégation:', err);
     }
-  };
+  }, []);
 
   // Sauvegarder les paris dans Firebase et mettre à jour les votes de la délégation
   const saveBetsToFirebase = async (braceletNum: string, betsData: { [key: string]: string | null }) => {
@@ -348,7 +434,7 @@ const Parie: React.FC = () => {
     return deviceId;
   };
 
-  const handleActivateBracelet = async () => {
+  const handleActivateBracelet = useCallback(async () => {
     if (!braceletNumber.trim()) {
       setError('Veuillez saisir votre numéro de bracelet');
       return;
@@ -392,12 +478,14 @@ const Parie: React.FC = () => {
       localStorage.setItem('userBraceletNumber', trimmedNumber);
       setStoredBracelet(trimmedNumber);
       setIsActivated(true);
+      setShowBraceletModal(false); // Fermer le modal après activation réussie
+      setBraceletNumber(''); // Réinitialiser le champ
     } catch (err) {
       setError('Erreur de connexion. Réessayez.');
     } finally {
       setIsValidating(false);
     }
-  };
+  }, [braceletNumber, loadDelegationVotes]);
 
   // Fonction pour obtenir les sports avec leurs délégations
   // Le genre est détecté dans match.description (comme dans App.tsx)
@@ -446,6 +534,25 @@ const Parie: React.FC = () => {
       });
     });
 
+    // Ajouter Show Pompom et DJ Contest avec toutes les délégations
+    const allDelegations = getAllDelegations();
+    
+    // Show Pompom - toutes les délégations participent
+    const showPompomKey = 'Show Pompom_mixte';
+    sportsMap.set(showPompomKey, {
+      sport: 'Show Pompom',
+      gender: 'mixte',
+      delegations: new Set(allDelegations)
+    });
+
+    // DJ Contest - toutes les délégations participent
+    const djContestKey = 'DJ Contest_mixte';
+    sportsMap.set(djContestKey, {
+      sport: 'DJ Contest',
+      gender: 'mixte',
+      delegations: new Set(allDelegations)
+    });
+
     // Convertir en tableau et filtrer les sports sans délégations
     return Array.from(sportsMap.entries())
       .map(([sportKey, data]) => ({
@@ -474,6 +581,10 @@ const Parie: React.FC = () => {
   };
   
   const getSportLabel = (sport: string, gender: string): string => {
+    // Ne pas afficher le suffixe "Mixte" pour Show Pompom et DJ Contest
+    if (sport === 'Show Pompom' || sport === 'DJ Contest') {
+      return sport;
+    }
     return `${sport} ${getGenderLabel(gender)}`;
   };
 
@@ -641,39 +752,30 @@ const Parie: React.FC = () => {
       <div className="parie-content">
         <TimerDisplay />
         
-        <div className="parie-setup">
-          <p className="parie-description">
-            Pour participer aux paris, entrez d'abord votre numéro de bracelet.
-          </p>
-
-          <div className="parie-form">
-            <label htmlFor="bracelet-input">Numéro de bracelet</label>
-            <input
-              type="text"
-              id="bracelet-input"
-              value={braceletNumber}
-              onChange={(e) => setBraceletNumber(e.target.value)}
-              placeholder="Ex: 12345"
-              className="parie-input"
-              disabled={isValidating}
-            />
-            
-            {error && <p className="parie-error">{error}</p>}
+        {!isActivated && (
+          <div className="parie-setup">
+            <p className="parie-description">
+              Pour participer aux paris, activez d'abord votre bracelet.
+            </p>
 
             <button 
               className="parie-button"
-              onClick={handleActivateBracelet}
-              disabled={isValidating || !braceletNumber.trim()}
+              onClick={() => setShowBraceletModal(true)}
             >
-              {isValidating ? 'Vérification...' : 'Activer'}
+              Activer mon bracelet
             </button>
           </div>
+        )}
 
-          <div className="parie-warning">
-            <FaExclamationTriangle className="warning-icon" />
-            <p><strong>Attention :</strong> Un bracelet = un seul appareil. Action irréversible.</p>
-          </div>
-        </div>
+        <BraceletModal 
+          isOpen={showBraceletModal} 
+          onClose={handleCloseModal}
+          braceletNumber={braceletNumber}
+          setBraceletNumber={setBraceletNumber}
+          error={error}
+          isValidating={isValidating}
+          onActivate={handleActivateBracelet}
+        />
       </div>
     </div>
   );

@@ -213,14 +213,43 @@
   z-index: 1000;
 }
 
+/* Modal overlay pour ajouter un fichier */
+.modal-overlay {
+  position: fixed;
+  top: 40px; /* Commence juste après le header */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+body.ios .modal-overlay {
+  top: 40px !important; /* Commence juste après le header sur iOS */
+}
+
 .modal-content {
   position: relative;
   max-width: 90%;
-  max-height: 90vh;
+  max-height: calc(100vh - 40px); /* Prend en compte le header */
+  max-height: calc(100svh - 40px); /* Support viewport units modernes */
   background-color: var(--bg-primary);
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid var(--accent-color);
+  display: flex;
+  flex-direction: column;
+}
+
+body.ios .modal-content {
+  max-height: calc(100vh - 40px) !important;
+  max-height: calc(100svh - 40px) !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .modal-content img {
@@ -382,6 +411,7 @@ body.ios .add-file-button:active {
 body.ios .modal-overlay {
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  top: 40px !important; /* Commence juste après le header sur iOS */
 }
 
 body.ios .modal-content {
@@ -389,6 +419,22 @@ body.ios .modal-content {
   backdrop-filter: blur(20px);
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  max-height: calc(100vh - 40px) !important;
+  max-height: calc(100svh - 40px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Contenu scrollable du modal sur iOS */
+body.ios .modal-content > div:last-child {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  max-height: calc(100vh - 140px) !important;
+  max-height: calc(100svh - 140px) !important;
 }
 
 body.ios .modal-content input[type="file"] {

@@ -682,7 +682,6 @@ export default function PlanningFiles({
       {showAddForm && isAdmin && (
           <div className="modal-overlay" style={{
             position: 'fixed',
-            top: 0,
             left: 0,
             right: 0,
             bottom: 0,
@@ -698,10 +697,13 @@ export default function PlanningFiles({
               borderRadius: '12px',
               width: '90%',
               maxWidth: '400px',
+              maxHeight: 'calc(100vh - 40px)',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
               overflow: 'hidden',
               position: 'relative',
               border: '1px solid var(--border-color)',
+              display: 'flex',
+              flexDirection: 'column',
             }}>
               <div style={{
                 display: 'flex',
@@ -741,7 +743,12 @@ export default function PlanningFiles({
 
               <div style={{
                 padding: '1rem',
-                backgroundColor: 'var(--bg-color)'
+                backgroundColor: 'var(--bg-color)',
+                overflowY: 'auto',
+                flex: 1,
+                minHeight: 0,
+                maxHeight: 'calc(100vh - 140px)',
+                WebkitOverflowScrolling: 'touch',
               }}>
 
               <form onSubmit={handleAddFile} style={{ 

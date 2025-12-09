@@ -537,3 +537,254 @@
     gap: 0.5rem;
   }
 }
+
+/* Modal pour l'activation du bracelet */
+.bracelet-modal-overlay {
+  position: fixed;
+  top: 40px; /* Commence juste après le header */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+body.ios .bracelet-modal-overlay {
+  top: 40px !important; /* Commence juste après le header sur iOS */
+}
+
+.bracelet-modal-content {
+  background-color: var(--bg-color);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  max-height: calc(100vh - 40px);
+  max-height: calc(100svh - 40px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border-color);
+  animation: modalSlideIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+body.ios .bracelet-modal-content {
+  max-height: calc(100vh - 40px) !important;
+  max-height: calc(100svh - 40px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.bracelet-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.bracelet-modal-header h2 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.bracelet-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bracelet-login-form {
+  padding: 1rem;
+  background-color: var(--bg-color);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+  flex: 1;
+  min-height: 0;
+}
+
+body.ios .bracelet-login-form {
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+}
+
+.bracelet-login-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.bracelet-login-form .form-group label {
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.bracelet-login-form .form-group input {
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.bracelet-login-form .form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.bracelet-login-form .form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bracelet-help-text {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.7;
+  margin: 0.5rem 0 0 0;
+  font-style: italic;
+}
+
+.bracelet-login-form .parie-error {
+  color: var(--danger-color);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.parie-warning-modal {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: rgba(241, 196, 15, 0.1);
+  border: 1px solid rgba(241, 196, 15, 0.3);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.parie-warning-modal .warning-icon {
+  color: #f1c40f;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.parie-warning-modal p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-color);
+}
+
+.bracelet-login-button {
+  background-color: var(--success-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.bracelet-login-button:hover:not(:disabled) {
+  background-color: #27ae60;
+}
+
+.bracelet-login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bracelet-login-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Suppression des effets de focus et de sélection */
+.bracelet-modal-content * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.bracelet-modal-content button:focus,
+.bracelet-modal-content input:focus {
+  outline: none !important;
+}
+
+/* Permettre la sélection de texte pour les labels */
+.bracelet-modal-content label {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles spécifiques pour iOS */
+body.ios .parie-page {
+  position: relative !important;
+  z-index: 1 !important;
+  margin-top: 0 !important;
+  padding-top: 0px !important;
+  height: auto !important;
+  overflow: visible !important;
+  min-height: auto !important;
+  padding-bottom: 120px !important; /* Espace pour la BottomNav */
+}
+
+/* Contourner les contraintes du app-main sur iOS */
+body.ios .app-main.scrollable {
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+body.ios .app-main.scrollable > * {
+  height: auto !important;
+  overflow: visible !important;
+}

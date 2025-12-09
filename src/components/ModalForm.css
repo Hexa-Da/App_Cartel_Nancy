@@ -1,7 +1,7 @@
 /* Overlay flouté et centré */
 .modal-form-overlay {
   position: fixed;
-  top: 0rem;
+  top: 40px; /* Commence juste après le header */
   left: 0;
   right: 0;
   bottom: 0;
@@ -14,7 +14,7 @@
 }
 
 body.ios .modal-form-overlay {
-  top: 4rem !important;
+  top: 40px !important; /* Commence juste après le header sur iOS */
 }
 
 /* Container arrondi, max-width, padding */
@@ -23,7 +23,8 @@ body.ios .modal-form-overlay {
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: calc(100vh - 40px); /* Prend en compte le header */
+  max-height: calc(100svh - 40px); /* Support viewport units modernes */
   position: relative;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   border: 1px solid var(--border-color);

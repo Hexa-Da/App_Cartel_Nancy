@@ -118,7 +118,8 @@ const Info: React.FC = () => {
       <style>{`
         .info-page {
           padding: 20px;
-          margin-top: 40px;
+          margin-top: 0px;
+          padding-top: 10px;
           background-color: var(--bg-color);
           min-height: 100vh;
         }

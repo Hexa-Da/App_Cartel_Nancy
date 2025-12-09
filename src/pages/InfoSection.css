@@ -214,3 +214,26 @@
     font-size: 0.85rem;
   }
 }
+
+/* Styles spécifiques pour iOS */
+body.ios .info-section-page {
+  position: relative !important;
+  z-index: 1 !important;
+  margin-top: 0 !important;
+  padding-top: 0px !important;
+  height: auto !important;
+  overflow: visible !important;
+  min-height: auto !important;
+  padding-bottom: 100px !important; /* Espace pour la BottomNav */
+}
+
+/* Contourner les contraintes du app-main sur iOS */
+body.ios .app-main {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+body.ios .app-main > * {
+  height: auto !important;
+  overflow: visible !important;
+}

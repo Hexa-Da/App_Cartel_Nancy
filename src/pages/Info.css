@@ -1,7 +1,9 @@
 .info-page {
   padding: 20px;
+  padding-top: 0px;
   max-width: 800px;
   margin: 0 auto;
+  margin-top: 0;
   position: relative !important;
   z-index: 1 !important;
   margin-bottom: 80px !important; /* Espace pour la BottomNav */
@@ -46,4 +48,20 @@ body.ios .info-page {
   z-index: 1 !important;
   margin-bottom: 100px !important; /* Plus d'espace pour iOS */
   padding-bottom: 20px !important;
+  margin-top: 0 !important;
+  padding-top: 0px !important; /* Réduit pour remonter le contenu */
+  height: auto !important;
+  overflow: visible !important;
+  min-height: auto !important;
+}
+
+/* Contourner les contraintes du app-main sur iOS */
+body.ios .app-main {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+body.ios .app-main > * {
+  height: auto !important;
+  overflow: visible !important;
 } 
