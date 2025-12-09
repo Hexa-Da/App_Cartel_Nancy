@@ -40,6 +40,17 @@ const InfoCard: React.FC<InfoCardProps> = ({ icon, title, onClick }) => {
 const Info: React.FC = () => {
   const navigate = useNavigate();
 
+  // Réinitialiser le scroll au chargement de la page
+  React.useEffect(() => {
+    const appMain = document.querySelector('.app-main');
+    if (appMain) {
+      appMain.scrollTop = 0;
+    }
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, []);
+
   // Écouter la connexion admin réussie pour rafraîchir la page
   React.useEffect(() => {
     const handleAdminLoginSuccess = () => {
