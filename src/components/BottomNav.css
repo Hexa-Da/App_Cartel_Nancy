@@ -8,6 +8,8 @@
   pointer-events: none;
   height: 0;
   overflow: visible;
+  /* Gestion des safe areas pour Android */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Barre de navigation simplifiée */
@@ -29,6 +31,8 @@
   transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
   will-change: transform;
+  /* Gestion des safe areas pour la barre de navigation */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .nav-button {

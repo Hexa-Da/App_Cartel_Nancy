@@ -541,7 +541,7 @@
 /* Modal pour l'activation du bracelet */
 .bracelet-modal-overlay {
   position: fixed;
-  top: 40px; /* Commence juste après le header */
+  top: var(--below-header); /* Utilise la variable CSS */
   left: 0;
   right: 0;
   bottom: 0;
@@ -554,8 +554,9 @@
 }
 
 body.ios .bracelet-modal-overlay {
-  top: 40px !important; /* Commence juste après le header sur iOS */
+  top: var(--below-header) !important; /* Utilise la variable CSS */
 }
+
 
 .bracelet-modal-content {
   background-color: var(--bg-color);

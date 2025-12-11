@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<string>fr</string>
 	<key>CFBundleDisplayName</key>
 	<string>Cartel Nancy</string>
 	<key>CFBundleExecutable</key>
@@ -47,13 +47,13 @@
 		</dict>
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	<string>Cette application nécessite l&apos;accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	<string>Cette application nécessite l&apos;accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Cette application nécessite l'accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
+	<string>Cette application nécessite l&apos;accès à votre position pour afficher votre localisation sur la carte et vous fournir des informations pertinentes.</string>
 	<key>NSUserNotificationUsageDescription</key>
-	<string>Cette application nécessite l'autorisation d'envoyer des notifications pour vous informer des nouveaux messages dans le chat.</string>
+	<string>Cette application nécessite l&apos;autorisation d&apos;envoyer des notifications pour vous informer des nouveaux messages dans le chat.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

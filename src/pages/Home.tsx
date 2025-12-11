@@ -31,7 +31,7 @@ interface ExtendedMatch extends Match {
 }
 
 const Home: React.FC = () => {
-  const { getFilteredEvents, getAllDelegations } = useApp();
+  const { getFilteredEvents, getAllDelegations, delegationMatches } = useApp();
   const { selectedEvent, setSelectedEvent } = useAppPanels();
   const [events, setEvents] = useState<Place[]>([]);
   const navigate = useNavigate();
@@ -244,7 +244,7 @@ const Home: React.FC = () => {
     return places.flatMap(place => {
       if ('matches' in place && Array.isArray(place.matches)) {
         return place.matches.filter((match: Match) => 
-          match.teams.toLowerCase().includes(delegation.toLowerCase())
+          delegationMatches(match.teams, delegation)
         ).map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,
@@ -279,11 +279,7 @@ const Home: React.FC = () => {
         if (!championshipMatch) return [];
         
         return place.matches.filter((match: Match) => {
-          const teams = match.teams.toLowerCase();
-          const delegationLower = delegation.toLowerCase();
-          const delegationMatch = teams.includes(delegationLower);
-          
-          return delegationMatch;
+          return delegationMatches(match.teams, delegation);
         }).map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,

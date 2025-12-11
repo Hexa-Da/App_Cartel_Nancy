@@ -31,6 +31,7 @@ import EmergencyPopup from './EmergencyPopup';
 import HSECharterPopup from './HSECharterPopup';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
+import { StatusBar, Style } from '@capacitor/status-bar';
 import './ModalForm.css';
 
 const sportEmojis = {
@@ -122,10 +123,53 @@ const Layout: React.FC = () => {
     return hasAccepted !== 'true';
   });
 
-  // Fonction pour gérer l'acceptation de la charte HSE
-  const handleHSEAccept = () => {
+  // Fonction pour gérer l'acceptation de la charte HSE et activer le bracelet
+  const handleHSEAccept = async (braceletNumber: string) => {
     localStorage.setItem('hseCharterAccepted', 'true');
     setShowHSECharter(false);
+    
+    // Activer le bracelet dans Firebase
+    try {
+      const getDeviceId = (): string => {
+        let deviceId = localStorage.getItem('deviceId');
+        if (!deviceId) {
+          deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+          localStorage.setItem('deviceId', deviceId);
+        }
+        return deviceId;
+      };
+
+      const trimmedNumber = braceletNumber.trim();
+      const deviceId = getDeviceId();
+      
+      const participantRef = ref(database, `participants/${trimmedNumber}`);
+      const snapshot = await get(participantRef);
+      
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.deviceId && data.deviceId !== deviceId) {
+          // Le bracelet est déjà utilisé sur un autre appareil
+          console.warn('Ce bracelet est déjà utilisé sur un autre appareil');
+        }
+        
+        // Utiliser update pour préserver les champs existants
+        await update(participantRef, {
+          deviceId: deviceId,
+          activatedAt: Date.now()
+        });
+        
+        // Stocker le numéro de bracelet dans localStorage
+        localStorage.setItem('userBraceletNumber', trimmedNumber);
+      } else {
+        console.warn('Numéro de bracelet invalide');
+      }
+    } catch (err) {
+      console.error('Erreur activation bracelet:', err);
+    }
   };
   
   const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, showPlaceTypeModal, setShowPlaceTypeModal, selectedPlaceType, setSelectedPlaceType, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, // États du formulaire de lieu
@@ -169,10 +213,24 @@ const Layout: React.FC = () => {
       }
     }, [location.pathname]);
 
-  // Ajoute la classe de la plateforme au body
+  // Ajoute la classe de la plateforme au body et configure la barre de statut
   useEffect(() => {
     const platform = Capacitor.getPlatform();
     document.body.classList.add(platform);
+    
+    // Configuration de la barre de statut et de navigation pour Android
+    if (platform === 'android') {
+      const setupStatusBar = async () => {
+        try {
+          await StatusBar.setStyle({ style: Style.Dark });
+          await StatusBar.setBackgroundColor({ color: '#00000000' }); // Transparent
+          await StatusBar.setOverlaysWebView({ overlay: true });
+        } catch (error) {
+          console.log('StatusBar plugin not available:', error);
+        }
+      };
+      setupStatusBar();
+    }
   }, []);
 
   // Pas de gestion JavaScript du clavier - utilisation CSS pure uniquement
@@ -312,6 +370,20 @@ const Layout: React.FC = () => {
         setNewMessageSender('');
         setShowChat(false);
         window.history.replaceState({ path: currentPath, chat: false }, '', currentPath);
+        isHandlingPopState = false;
+        return;
+      }
+
+      // Si on est sur le calendrier, revenir à l'onglet d'origine
+      if (activeTab === 'calendar') {
+        const calendarOriginTab = localStorage.getItem('calendarOriginTab') as TabType | null;
+        if (calendarOriginTab === 'events' || calendarOriginTab === 'map') {
+          setActiveTab(calendarOriginTab);
+          localStorage.removeItem('calendarOriginTab'); // Nettoyer après utilisation
+        } else {
+          // Fallback: revenir à map par défaut
+          setActiveTab('map');
+        }
         isHandlingPopState = false;
         return;
       }
@@ -809,7 +881,16 @@ const Layout: React.FC = () => {
         setActiveTab('map');
         break;
       case 'calendar':
-        setActiveTab('events');
+        // Revenir à l'onglet d'origine (map ou events)
+        // Récupérer l'onglet d'origine depuis localStorage
+        const calendarOriginTab = localStorage.getItem('calendarOriginTab') as TabType | null;
+        if (calendarOriginTab === 'events' || calendarOriginTab === 'map') {
+          setActiveTab(calendarOriginTab);
+          localStorage.removeItem('calendarOriginTab'); // Nettoyer après utilisation
+        } else {
+          // Fallback: revenir à map par défaut
+          setActiveTab('map');
+        }
         break;
       case 'party-map':
         setSelectedPartyForMap(null);

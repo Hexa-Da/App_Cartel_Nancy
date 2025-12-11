@@ -6,12 +6,12 @@ import React, { useState } from 'react';
 import './HSECharterPopup.css';
 
 interface HSECharterPopupProps {
-  onAccept: () => void;
+  onAccept: (braceletNumber: string) => void;
 }
 
 const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
-  const [hasAccepted, setHasAccepted] = useState(false);
+  const [braceletNumber, setBraceletNumber] = useState('');
   const [error, setError] = useState('');
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -26,14 +26,14 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
       setError('Veuillez lire la charte en entier');
       return;
     }
-    if (!hasAccepted) {
-      setError('Veuillez accepter la charte');
+    if (!braceletNumber.trim()) {
+      setError('Veuillez saisir votre numéro de bracelet');
       return;
     }
-    onAccept();
+    onAccept(braceletNumber.trim());
   };
 
-  const canSubmit = hasScrolledToBottom && hasAccepted;
+  const canSubmit = hasScrolledToBottom && braceletNumber.trim().length > 0;
 
   return (
     <div className="hse-popup-overlay">
@@ -96,19 +96,18 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
             <p>En validant, je m'engage à respecter ces règles et signaler tout incident.</p>
           </section>
 
-          <section className="hse-section acceptance-section">
-            <div className="hse-checkbox-container">
-              <input
-                type="checkbox"
-                id="accept-charter"
-                checked={hasAccepted}
-                onChange={(e) => setHasAccepted(e.target.checked)}
-                className="hse-checkbox"
-              />
-              <label htmlFor="accept-charter" className="hse-checkbox-label">
-                J'ai lu et j'accepte la charte HSE
-              </label>
-            </div>
+          <section className="hse-section bracelet-section">
+            <h3>Numéro de bracelet</h3>
+            <p className="bracelet-info">
+              Veuillez saisir votre numéro de bracelet pour valider la charte
+            </p>
+            <input
+              type="text"
+              className="bracelet-input"
+              placeholder="Ex: 12345"
+              value={braceletNumber}
+              onChange={(e) => setBraceletNumber(e.target.value)}
+            />
           </section>
         </div>
 

@@ -43,6 +43,7 @@ interface AppContextType {
   getFilteredEvents: () => Venue[];
   getAllDelegations: () => string[];
   hasGenderMatches: (sport: string) => { hasFemale: boolean, hasMale: boolean, hasMixed: boolean };
+  delegationMatches: (teamsString: string, delegation: string) => boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -117,6 +118,22 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return venues;
   };
 
+  // Fonction utilitaire pour vérifier si une délégation est présente dans une chaîne de teams
+  // Utilise une correspondance exacte pour éviter que "Nancy" matche "Télécom Nancy"
+  const delegationMatches = (teamsString: string, delegation: string): boolean => {
+    if (!teamsString || !delegation) return false;
+    
+    const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
+    const delegationLower = delegation.toLowerCase();
+    
+    // Vérifier chaque équipe pour une correspondance exacte
+    return teams.some((team: string) => {
+      const teamLower = team.toLowerCase();
+      // Correspondance exacte (insensible à la casse)
+      return teamLower === delegationLower;
+    });
+  };
+
   // Fonction pour obtenir toutes les délégations
   // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur)
   const getAllDelegations = () => {
@@ -172,7 +189,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       setMessages,
       getFilteredEvents,
       getAllDelegations,
-      hasGenderMatches
+      hasGenderMatches,
+      delegationMatches
     }}>
       {children}
     </AppContext.Provider>

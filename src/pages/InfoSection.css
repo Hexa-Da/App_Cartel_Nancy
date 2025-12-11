@@ -1,10 +1,11 @@
 .info-section-page {
   padding: 20px;
-  margin-top: 40px;
+  margin-top: var(--below-header); /* Utilise la variable CSS */
   background-color: var(--bg-color);
   color: var(--text-color);
   min-height: 100vh;
 }
+
 
 .info-section-header {
   display: flex;

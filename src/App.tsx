@@ -603,6 +603,8 @@ function App() {
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const indicationMarkersRef = useRef<L.Marker[]>([]);
+  const eventsButtonRef = useRef<HTMLButtonElement | null>(null);
+  const calendarButtonRef = useRef<HTMLButtonElement | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(13);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -618,6 +620,25 @@ function App() {
   useEffect(() => {
     isEditingRef.current = isEditing;
   }, [isEditing]);
+
+  // Synchroniser la largeur du bouton Calendrier avec celui d'Événements
+  useEffect(() => {
+    const syncButtonWidths = () => {
+      if (activeTab === 'map' && eventsButtonRef.current && calendarButtonRef.current) {
+        const eventsWidth = eventsButtonRef.current.offsetWidth;
+        calendarButtonRef.current.style.width = `${eventsWidth}px`;
+      }
+    };
+
+    // Synchroniser immédiatement
+    syncButtonWidths();
+
+    // Synchroniser après un court délai pour s'assurer que le DOM est mis à jour
+    const timeoutId = setTimeout(syncButtonWidths, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [activeTab]);
+
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -2198,6 +2219,22 @@ function App() {
     return end < now;
   };
 
+  // Fonction utilitaire pour vérifier si une délégation est présente dans une chaîne de teams
+  // Utilise une correspondance exacte pour éviter que "Nancy" matche "Télécom Nancy"
+  const delegationMatches = (teamsString: string, delegation: string): boolean => {
+    if (!teamsString || !delegation) return false;
+    
+    const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
+    const delegationLower = delegation.toLowerCase();
+    
+    // Vérifier chaque équipe pour une correspondance exacte
+    return teams.some((team: string) => {
+      const teamLower = team.toLowerCase();
+      // Correspondance exacte (insensible à la casse)
+      return teamLower === delegationLower;
+    });
+  };
+
   // Fonction optimisée pour récupérer tous les événements (matchs et soirées)
   const getAllEvents = useMemo(() => {
     const events: Array<{
@@ -2283,7 +2320,7 @@ function App() {
       // Filtre par délégation
       const delegationMatch = event.type === 'party' 
   ? true 
-  : (delegationFilter === 'all' || (event.teams && event.teams.toLowerCase().includes(delegationFilter.toLowerCase())));
+  : (delegationFilter === 'all' || (event.teams && delegationMatches(event.teams, delegationFilter)));
 
       // Filtre par lieu
       let venueMatch = true;
@@ -2482,7 +2519,7 @@ function App() {
         const delegationMatch =
           delegationFilter === 'all' ||
           (venue.matches && venue.matches.some(match =>
-            match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
+            delegationMatches(match.teams, delegationFilter)
           ));
 
         // Filtrage par genre : au moins un match du lieu doit correspondre au filtre de genre
@@ -2773,7 +2810,7 @@ function App() {
           <h3>${party.name}</h3>
           <p>${party.description}</p>
           <p class="venue-address">${party.address}</p>
-          ${party.sport !== 'Defile' ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+          ${party.sport !== 'Defile' && !party.description?.toLowerCase().includes('showcase') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         `;
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
@@ -2806,8 +2843,8 @@ function App() {
           buttonsContainer.appendChild(partyMapButton);
         }
         
-        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom, Showcase et DJ Contest) seulement si le mode édition est activé
-        if (isAdmin && isEditing && ((party.name === 'Parc Expo' || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.toLowerCase().includes('pompom') || party.description.toLowerCase().includes('showcase')))) {
+        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ Contest, mais pas Showcase) seulement si le mode édition est activé
+        if (isAdmin && isEditing && ((party.name === 'Parc Expo' || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.toLowerCase().includes('pompom')) && !party.description.toLowerCase().includes('showcase'))) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
@@ -2844,7 +2881,7 @@ function App() {
             <h3>${currentParty.name}</h3>
             <p>${currentParty.description}</p>
             <p class="venue-address">${currentParty.address}</p>
-            ${currentParty.sport !== 'Defile' ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
+            ${currentParty.sport !== 'Defile' && !currentParty.description?.toLowerCase().includes('showcase') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
           `;
           
           // Réajouter les boutons
@@ -2880,7 +2917,7 @@ function App() {
           }
           
           // Réajouter les boutons admin si nécessaire
-          if (isAdmin && isEditing && ((currentParty.name === 'Parc Expo' || currentParty.name === 'Zénith') && (currentParty.description.includes('DJ Contest') || currentParty.description.toLowerCase().includes('pompom') || currentParty.description.toLowerCase().includes('showcase')))) {
+          if (isAdmin && isEditing && ((currentParty.name === 'Parc Expo' || currentParty.name === 'Zénith') && (currentParty.description.includes('DJ Contest') || currentParty.description.toLowerCase().includes('pompom')) && !currentParty.description.toLowerCase().includes('showcase'))) {
             const editResultButton = document.createElement('button');
             editResultButton.className = 'edit-result-button';
             editResultButton.textContent = 'Modifier le résultat';
@@ -3882,7 +3919,7 @@ function App() {
         const delegationMatch =
           delegationFilter === 'all' ||
           (venue.matches && venue.matches.some(match =>
-            match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
+            delegationMatches(match.teams, delegationFilter)
           ));
         // Filtrage par genre
         let genderMatch = true;
@@ -4109,7 +4146,16 @@ function App() {
         setActiveTab('map');
         break;
       case 'calendar':
-        setActiveTab('events');
+        // Revenir à l'onglet d'origine (map ou events)
+        // Récupérer l'onglet d'origine depuis localStorage
+        const calendarOriginTab = localStorage.getItem('calendarOriginTab') as TabType | null;
+        if (calendarOriginTab === 'events' || calendarOriginTab === 'map') {
+          setActiveTab(calendarOriginTab);
+          localStorage.removeItem('calendarOriginTab'); // Nettoyer après utilisation
+        } else {
+          // Fallback: revenir à map par défaut
+          setActiveTab('map');
+        }
         break;
       case 'chat':
         setActiveTab(chatOriginTab);
@@ -4132,14 +4178,18 @@ function App() {
       window.history.pushState({ tab }, '', window.location.pathname);
     }
     setPreviousTab(activeTab);
-    setActiveTab(tab);
-    if (tab === 'party-map') {
-      // Ne rien faire de spécial pour party-map
-    }
+    
+    // Si on ouvre le calendrier, stocker l'onglet d'origine dans localStorage
     if (tab === 'calendar') {
+      localStorage.setItem('calendarOriginTab', activeTab);
       setFromEvents(activeTab === 'events');
     } else {
       setFromEvents(false);
+    }
+    
+    setActiveTab(tab);
+    if (tab === 'party-map') {
+      // Ne rien faire de spécial pour party-map
     }
     if (tab === 'events') {
       setTimeout(() => {
@@ -4339,6 +4389,7 @@ function App() {
             
             {/* Bouton flottant pour afficher les événements */}
             <button 
+              ref={eventsButtonRef}
               className={`events-toggle-button ${activeTab === 'events' ? 'active' : ''}`}
               onClick={() => {
                 // Tracker le changement d'onglet
@@ -4366,37 +4417,32 @@ function App() {
                 </>
               )}
                   </button>
+
+            {/* Bouton Calendrier en dessous du bouton Événements sur la map */}
+            {activeTab === 'map' && (
+              <button 
+                ref={calendarButtonRef}
+                className="calendar-toggle-button"
+                onClick={() => {
+                  ReactGA.event({
+                    category: 'navigation',
+                    action: 'change_tab',
+                    label: 'calendar'
+                  });
+                  handleTabChange('calendar');
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+                  <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                </svg>
+                Calendrier
+              </button>
+            )}
             
             {activeTab === 'events' && (
               <div className="events-panel">
                 <div className="events-panel-header">
-                  <button 
-                    className="calendar-button"
-                    onClick={() => handleTabChange('calendar')}
-                    title="Voir le calendrier"
-                    style={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '8px 12px',
-                      margin: '0px',
-                      border: 'none',
-                      borderRadius: '8px',
-                      backgroundColor: 'var(--bg-secondary)',
-                      color: 'var(--text-color)',
-                      cursor: 'pointer',
-                      fontSize: '0.9rem',
-                      fontWeight: '500',
-                      transition: 'all 0.2s ease',
-                      minWidth: 'auto',
-                      width: 'auto'
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
-                      <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                    </svg>
-                    Calendrier
-                  </button>
+                    <h3>Événements</h3>
                     <button 
                       className="filter-toggle-button"
                       onClick={() => setShowFilters(!showFilters)}
@@ -4610,7 +4656,7 @@ function App() {
                         <>
                           <p className="event-description">{event.description}</p>
                           <p className="event-address">{event.address}</p>
-                          {event.sport !== 'Defile' && (
+                          {event.sport !== 'Defile' && !event.description?.toLowerCase().includes('showcase') && (
                             <div className="party-results">
                               <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
                                 Résultat : {event.result || 'à venir'}

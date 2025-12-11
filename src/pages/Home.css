@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: 60px;
+  padding-top: calc(var(--below-header) + 20px); /* Utilise la variable CSS */
 }
 
 .welcome-title {
@@ -882,18 +882,6 @@
   }
 }
 
-/* Gestion du clavier sur Android */
-body.android .home-page {
-  min-height: calc(100vh - 120px);
-  height: auto;
-  overflow-y: auto;
-}
-
-/* Empêcher le zoom automatique sur les inputs Android */
-body.android input,
-body.android textarea {
-  font-size: 16px;
-}
 
 /* Ajustements spécifiques pour iOS - remonter modérément les listes horizontales */
 body.ios .home-page {

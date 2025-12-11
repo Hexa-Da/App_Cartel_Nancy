@@ -44,7 +44,7 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  margin-top: 60px; /* Espace pour le Header */
+  margin-top: calc(var(--below-header) + 20px); /* Utilise la variable CSS */
 }
 
 .calendar-popup .planning-panel-header h3 {
@@ -186,7 +186,7 @@ body.ios .calendar-panel-header .filter-toggle-button {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  margin-top: 60px; /* Espace pour le Header */
+  margin-top: calc(var(--below-header) + 20px); /* Utilise la variable CSS */
 }
 
 .calendar-popup-header h3 {
@@ -200,7 +200,7 @@ body.ios .calendar-panel-header .filter-toggle-button {
 .close-button {
   position: absolute;
   right: 10px;
-  bottom: 80px; /* Au-dessus de la barre de navigation */
+  bottom: var(--above-bottom-nav-ios); /* Utilise la variable CSS */
   background-color: var(--danger-color);
   color: white;
   border: none;
@@ -216,6 +216,7 @@ body.ios .calendar-panel-header .filter-toggle-button {
   font-size: 14px;
   z-index: 1000;
 }
+
 
 .close-button:hover {
   background-color: var(--danger-hover);

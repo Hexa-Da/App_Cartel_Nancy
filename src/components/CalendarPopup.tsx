@@ -219,6 +219,22 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     return venueOptions;
   };
 
+  // Fonction utilitaire pour vérifier si une délégation est présente dans une chaîne de teams
+  // Utilise une correspondance exacte pour éviter que "Nancy" matche "Télécom Nancy"
+  const delegationMatches = (teamsString: string, delegation: string): boolean => {
+    if (!teamsString || !delegation) return false;
+    
+    const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
+    const delegationLower = delegation.toLowerCase();
+    
+    // Vérifier chaque équipe pour une correspondance exacte
+    return teams.some((team: string) => {
+      const teamLower = team.toLowerCase();
+      // Correspondance exacte (insensible à la casse)
+      return teamLower === delegationLower;
+    });
+  };
+
   // Fonction pour obtenir toutes les délégations uniques
   // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur)
   const getAllDelegations = () => {
@@ -272,7 +288,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
 
                 // Filtre par délégation
                 const delegationMatch = delegationFilter === 'all' || 
-                  (match.teams && match.teams.toLowerCase().includes(delegationFilter.toLowerCase()));
+                  (match.teams && delegationMatches(match.teams, delegationFilter));
                 
                 if (sportMatch && venueMatch && genderMatch && delegationMatch) {
                   const eventEndTime = match.endTime ? match.endTime.split('T')[1].split('.')[0] : undefined;

@@ -1,31 +1,26 @@
 .party-map-container {
   position: fixed;
-  top: 80px;
+  top: calc(var(--below-header) + 40px); /* Utilise la variable CSS */
   left: 0;
   width: 100%;
-  height: calc(100vh - 80px - 60px);
+  height: calc(100vh - var(--below-header) - 40px - var(--bottom-nav-total-height));
   z-index: 1000;
   background-color: var(--bg-color);
 }
 
 /* Ajustement pour iOS avec safe-area */
 body.ios .party-map-container {
-  top: calc(80px + env(safe-area-inset-top, 0px));
-  height: calc(100vh - 80px - env(safe-area-inset-top, 0px) - 70px);
-  height: calc(100svh - 80px - env(safe-area-inset-top, 0px) - 70px);
+  top: calc(var(--below-header) + 40px);
+  height: calc(100vh - var(--below-header) - 40px - var(--bottom-nav-total-height-ios));
+  height: calc(100svh - var(--below-header) - 40px - var(--bottom-nav-total-height-ios));
 }
 
-/* Ajustement pour Android */
-body.android .party-map-container {
-  top: 80px;
-  height: calc(100vh - 80px - 50px);
-}
 
 /* Ajustement pour tenir compte du header et de la BottomNav */
 @media (max-width: 600px) {
   .party-map-container {
-    top: 80px;
-    height: calc(100vh - 80px - 50px);
+    top: calc(var(--below-header) + 40px);
+    height: calc(100vh - var(--below-header) - 40px - var(--bottom-nav-total-height));
   }
   
   body.ios .party-map-container {

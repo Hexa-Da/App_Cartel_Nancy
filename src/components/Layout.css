@@ -7,65 +7,110 @@
   overflow: hidden;
 }
 
+/* ============================================
+   HEADER - Placement et alignement centralisés
+   ============================================ */
+
 .app-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 40px;
+  min-height: 40px;
   background-color: var(--bg-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 24px var(--shadow-color);
   z-index: 1001;
-  padding: 5px 20px;
+  padding: 5px 10px;
   padding-top: 5px;
+  padding-bottom: 5px;
 }
 
-/* Pour Android spécifiquement, ajouter un padding supplémentaire */
-body.android .app-header {
-  padding-top: max(5px, env(safe-area-inset-top, 24px));
-  min-height: calc(40px + env(safe-area-inset-top, 24px));
+/* Tous les boutons du header */
+.app-header button {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.header-left,
+.app-header button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Boutons du header - alignement vertical centré */
+.chat-button,
+.emergency-button,
+.header-settings-button,
+.admin-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: var(--text-color);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.chat-button svg,
+.emergency-button svg,
+.header-settings-button svg,
+.admin-button svg {
+  width: 24px;
+  height: 24px;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 1px 2px var(--shadow-color));
+}
+
+/* Conteneurs gauche et droite du header */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
 .header-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 5px;
+  margin-right: 0;
+  position: relative;
+  flex-shrink: 0;
 }
 
-.header-left .header-back-button,
-.header-right button {
+/* Styles pour les boutons dans header-left */
+.header-left .header-back-button {
   background: none;
   border: none;
-  font-size: 36px;
   cursor: pointer;
-  padding: 0;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-color);
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 }
 
 .header-back-button:disabled {
   cursor: not-allowed;
 }
 
-.header-back-button {
-  background: none;
-  margin-left: -10px;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-color);
-}
-
 .header-back-button svg {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   stroke: var(--text-primary);
 }
 
@@ -82,11 +127,13 @@ body.android .app-header {
   stroke: var(--text-primary);
 }
 
-.chat-button {
-  position: relative;
-  transform: scale(1);
-  transition: transform 0.2s ease;
-  margin-top: -30px;
+/* État actif du chat-button */
+.chat-button.active {
+  transform: scale(1.1);
+}
+
+.chat-button.active svg {
+  filter: drop-shadow(0 2px 4px var(--shadow-color));
 }
 
 .unread-badge {
@@ -108,26 +155,43 @@ body.android .app-header {
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
+/* Styles spécifiques pour emergency-button */
 .emergency-button {
   color: #e74c3c !important;
-  margin-top: -30px;
 }
 
+.emergency-button svg {
+  color: #e74c3c;
+}
+
+.emergency-button:hover svg {
+  color: #c0392b;
+}
+
+/* Bouton d'édition dans le header */
 .edit-button {
-  font-size: 16px !important;
-  font-weight: bold;
-  color: var(--warning-color);
-  margin-top: -30px;
-}
-
-
-
-.edit-button:button  {
-  color: var(--warning-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.2rem 0.4rem;
+  background-color: var(--warning-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  margin-left: 0;
+  height: auto;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .edit-button.active {
-  color: var(--warning-color);
+  background-color: var(--danger-color);
+  color: white;
 }
 
 .app-main {
@@ -137,8 +201,8 @@ body.android .app-header {
   height: calc(100vh - 120px);
   margin: 0;
   padding: 0;
-  padding-top: env(safe-area-inset-top);
-  margin-top: 40px;
+  padding-top: var(--safe-area-top);
+  margin-top: var(--header-height);
 }
 
 /* Assurer que le contenu principal reste dans les limites */
@@ -172,39 +236,7 @@ body {
   overflow: hidden;
 }
 
-/* Styles pour les boutons du header */
-.chat-button,
-.emergency-button,
-.admin-button {
-  transition: transform 0.2s;
-  margin-top: -30px;
-}
-
-
-/* Styles pour les SVG du header */
-.emergency-button svg,
-.chat-button svg,
-.header-settings-button svg,
-.admin-button svg {
-  transition: all 0.2s ease;
-  filter: drop-shadow(0 1px 2px var(--shadow-color));
-}
-
-.emergency-button svg {
-  color: #e74c3c;
-}
-
-.emergency-button:hover svg {
-  color: #c0392b;
-}
-
-.chat-button.active svg {
-  filter: drop-shadow(0 2px 4px var(--shadow-color));
-}
-
-.chat-button.active {
-  transform: scale(1.1);
-}
+/* Les styles pour les boutons et SVG sont déjà définis plus haut */
 
 /* Ajuster le contenu des pages pour tenir compte du header */
 .home-page,
@@ -354,26 +386,34 @@ body {
   }
 }
 
-.header-right {
+/* Logo et texte dans le header */
+.header-logo {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-right: -8px;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  height: 100%;
 }
 
-.header-settings-button {
-  margin-top: -30px;
+.header-logo img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  margin: 0;
+  padding: 0;
 }
 
-
-/* Styles pour le texte "Cartel Nancy" selon le thème */
 .header-logo-text {
-  color: white;
   font-size: 1rem;
   font-weight: bold;
   white-space: nowrap;
-  margin-top: -7px;
-  margin-left: -15px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 /* Mode clair - Texte noir */

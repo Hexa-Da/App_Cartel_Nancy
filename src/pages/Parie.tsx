@@ -1,5 +1,6 @@
 /**
- * @fileoverview Page Paris - Activation du bracelet et système de paris
+ * @fileoverview Page Paris - Système de paris
+ * Le bracelet est activé lors de l'acceptation de la charte HSE
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -53,93 +54,12 @@ interface DelegationVotes {
   };
 }
 
-// Modal pour la saisie du bracelet (défini en dehors du composant pour éviter les re-renders)
-interface BraceletModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  braceletNumber: string;
-  setBraceletNumber: (value: string) => void;
-  error: string;
-  isValidating: boolean;
-  onActivate: () => void;
-}
-
-const BraceletModal: React.FC<BraceletModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  braceletNumber, 
-  setBraceletNumber, 
-  error, 
-  isValidating, 
-  onActivate 
-}) => {
-  if (!isOpen) return null;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onActivate();
-  };
-
-  return (
-    <div className="bracelet-modal-overlay" onClick={onClose}>
-      <div className="bracelet-modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="bracelet-modal-header">
-          <h2>Activation du bracelet</h2>
-          <button className="bracelet-modal-close" onClick={onClose} type="button">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="bracelet-login-form">
-          <div className="form-group">
-            <label htmlFor="bracelet-input-modal">Numéro de bracelet</label>
-            <input
-              type="text"
-              id="bracelet-input-modal"
-              value={braceletNumber}
-              onChange={(e) => setBraceletNumber(e.target.value)}
-              placeholder="Ex: 12345"
-              required
-              autoFocus
-              disabled={isValidating}
-            />
-            <p className="bracelet-help-text">
-              Le numéro de série est disponible au dos de la puce du bracelet.
-            </p>
-          </div>
-          
-          {error && <p className="parie-error">{error}</p>}
-
-          <div className="parie-warning-modal">
-            <FaExclamationTriangle className="warning-icon" />
-            <p><strong>Attention :</strong> Un bracelet = un seul appareil. Action irréversible.</p>
-          </div>
-          
-          <button 
-            type="submit" 
-            className="bracelet-login-button"
-            disabled={isValidating || !braceletNumber.trim()}
-          >
-            {isValidating ? 'Vérification...' : 'Activer'}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
 
 const Parie: React.FC = () => {
   const { venues, getAllDelegations, isAdmin } = useApp();
   const { isEditing } = useAppPanels();
-  const [braceletNumber, setBraceletNumber] = useState('');
-  const [isValidating, setIsValidating] = useState(false);
-  const [error, setError] = useState('');
-  const [isActivated, setIsActivated] = useState(false);
   const [storedBracelet, setStoredBracelet] = useState<string | null>(null);
-  const [showBraceletModal, setShowBraceletModal] = useState(false);
+  const [isActivated, setIsActivated] = useState(false);
   
   // États pour les paris
   const [bets, setBets] = useState<{ [sportKey: string]: string | null }>({});
@@ -165,13 +85,6 @@ const Parie: React.FC = () => {
   const [timeRemaining, setTimeRemaining] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [bettingClosed, setBettingClosed] = useState(false);
 
-  // Callback pour fermer le modal (mémorisé pour éviter les re-renders)
-  const handleCloseModal = useCallback(() => {
-    setShowBraceletModal(false);
-    setError('');
-    setBraceletNumber('');
-  }, []);
-
   // Charger les données initiales
   useEffect(() => {
     const stored = localStorage.getItem('userBraceletNumber');
@@ -181,7 +94,6 @@ const Parie: React.FC = () => {
       // Charger les paris depuis Firebase
       loadBetsFromFirebase(stored);
     }
-    // Ne pas ouvrir automatiquement le modal pour éviter les bugs de re-render
     
     // Activer le scroll sur cette page
     document.body.classList.add('parie-page-active');
@@ -507,71 +419,6 @@ const Parie: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const getDeviceId = (): string => {
-    let deviceId = localStorage.getItem('deviceId');
-    if (!deviceId) {
-      deviceId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-      localStorage.setItem('deviceId', deviceId);
-    }
-    return deviceId;
-  };
-
-  const handleActivateBracelet = useCallback(async () => {
-    if (!braceletNumber.trim()) {
-      setError('Veuillez saisir votre numéro de bracelet');
-      return;
-    }
-
-    setIsValidating(true);
-    setError('');
-
-    const trimmedNumber = braceletNumber.trim();
-    const deviceId = getDeviceId();
-
-    try {
-      const participantRef = ref(database, `participants/${trimmedNumber}`);
-      const snapshot = await get(participantRef);
-      
-      if (!snapshot.exists()) {
-        setError('Numéro de bracelet invalide');
-        setIsValidating(false);
-        return;
-      }
-
-      const data = snapshot.val();
-      if (data.deviceId && data.deviceId !== deviceId) {
-        setError('Ce bracelet est déjà utilisé sur un autre appareil');
-        setIsValidating(false);
-        return;
-      }
-
-      // Utiliser update pour préserver les champs existants (nom, prenom, telephone, braceletNumber, delegation)
-      await update(participantRef, {
-        deviceId: deviceId,
-        activatedAt: Date.now()
-      });
-      
-      // Si le participant a une délégation, charger les votes
-      if (data.delegation) {
-        setUserDelegation(data.delegation);
-        await loadDelegationVotes(data.delegation);
-      }
-
-      localStorage.setItem('userBraceletNumber', trimmedNumber);
-      setStoredBracelet(trimmedNumber);
-      setIsActivated(true);
-      setShowBraceletModal(false); // Fermer le modal après activation réussie
-      setBraceletNumber(''); // Réinitialiser le champ
-    } catch (err) {
-      setError('Erreur de connexion. Réessayez.');
-    } finally {
-      setIsValidating(false);
-    }
-  }, [braceletNumber, loadDelegationVotes]);
 
   // Fonction pour obtenir les sports avec leurs délégations
   // Le genre est détecté dans match.description (comme dans App.tsx)
@@ -922,27 +769,10 @@ const Parie: React.FC = () => {
         {!isActivated && (
           <div className="parie-setup">
             <p className="parie-description">
-              Pour participer aux paris, activez d'abord votre bracelet.
+              Pour participer aux paris, vous devez d'abord accepter la charte HSE et saisir votre numéro de bracelet.
             </p>
-
-            <button 
-              className="parie-button"
-              onClick={() => setShowBraceletModal(true)}
-            >
-              Activer mon bracelet
-            </button>
           </div>
         )}
-
-        <BraceletModal 
-          isOpen={showBraceletModal} 
-          onClose={handleCloseModal}
-          braceletNumber={braceletNumber}
-          setBraceletNumber={setBraceletNumber}
-          error={error}
-          isValidating={isValidating}
-          onActivate={handleActivateBracelet}
-        />
 
         {/* Boutons admin */}
         {isAdmin && isEditing && (

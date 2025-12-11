@@ -6,7 +6,7 @@
   margin-top: 0;
   position: relative !important;
   z-index: 1 !important;
-  margin-bottom: 80px !important; /* Espace pour la BottomNav */
+  margin-bottom: var(--bottom-nav-total-height) !important; /* Utilise la variable CSS */
 }
 
 .info-section {
@@ -46,7 +46,7 @@
 body.ios .info-page {
   position: relative !important;
   z-index: 1 !important;
-  margin-bottom: 100px !important; /* Plus d'espace pour iOS */
+  margin-bottom: calc(var(--bottom-nav-height-ios) + var(--safe-area-bottom) + 20px) !important; /* Plus d'espace pour iOS */
   padding-bottom: 20px !important;
   margin-top: 0 !important;
   padding-top: 0px !important; /* Réduit pour remonter le contenu */
@@ -54,6 +54,7 @@ body.ios .info-page {
   overflow: visible !important;
   min-height: auto !important;
 }
+
 
 /* Contourner les contraintes du app-main sur iOS */
 body.ios .app-main {

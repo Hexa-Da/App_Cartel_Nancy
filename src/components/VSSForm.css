@@ -1,6 +1,6 @@
 .vss-form-overlay {
   position: fixed;
-  top: 40px; /* Commence juste après le header */
+  top: var(--below-header); /* Utilise la variable CSS */
   left: 0;
   right: 0;
   bottom: 0;
@@ -13,16 +13,17 @@
 }
 
 body.ios .vss-form-overlay {
-  top: 40px !important; /* Commence juste après le header sur iOS */
+  top: var(--below-header) !important; /* Utilise la variable CSS */
 }
+
 
 .vss-form-container {
   background-color: var(--bg-color);
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  max-height: calc(100vh - 40px); /* Prend en compte le header */
-  max-height: calc(100svh - 40px); /* Support viewport units modernes */
+  max-height: calc(100vh - var(--below-header)); /* Utilise la variable CSS */
+  max-height: calc(100svh - var(--below-header)); /* Support viewport units modernes */
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border-color);
@@ -222,9 +223,10 @@ body.ios .vss-form-overlay {
 
 /* Styles spécifiques pour iOS - ajustement du formulaire VSS */
 body.ios .vss-form-container {
-  max-height: calc(100vh - 40px) !important;
-  max-height: calc(100svh - 40px) !important;
+  max-height: calc(100vh - var(--below-header)) !important;
+  max-height: calc(100svh - var(--below-header)) !important;
 }
+
 
 body.ios .vss-form-content {
   -webkit-overflow-scrolling: touch !important;
