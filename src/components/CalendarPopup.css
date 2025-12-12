@@ -14,11 +14,14 @@
 .calendar-popup {
   background-color: var(--bg-color);
   position: fixed;
-  top: 0;
+  /* ✅ Utiliser les variables globales : Header + safe-top */
+  top: calc(var(--header-height) + var(--safe-top));
   left: 0;
-  border-radius: 8px;
+  right: 0;
+  /* ✅ Aller jusqu'en bas en tenant compte de la nav et safe-bottom */
+  bottom: calc(var(--nav-height) + var(--safe-bottom));
+  border-radius: 0;
   width: 100%;
-  height: 100%;
   overflow-y: auto;
   box-shadow: 0 4px 20px var(--shadow-color);
   display: flex;
@@ -30,12 +33,14 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  margin-bottom: 45px; /* Espace pour le BottomNav */
+  /* ✅ Pas de margin-bottom, le conteneur parent gère déjà l'espace pour la nav */
+  margin-bottom: 0;
 }
 
 .calendar-popup .planning-panel-header {
   padding: 5rem;
-  margin-top: 5rem;
+  /* ✅ Copier exactement la logique Event : juste après le Header (sans le +20px) */
+  margin-top: calc(var(--header-height) + var(--safe-top));
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
@@ -44,7 +49,6 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  margin-top: calc(var(--below-header) + 20px); /* Utilise la variable CSS */
 }
 
 .calendar-popup .planning-panel-header h3 {
@@ -59,7 +63,8 @@
   padding: 0.5rem;
   background-color: var(--bg-color);
   position: sticky;
-  top: 4.5rem; /* Juste en dessous du Header du Layout */
+  /* ✅ Utiliser les variables globales : Header + safe-top */
+  top: calc(var(--header-height) + var(--safe-top));
   z-index: 3;
   display: flex;
   align-items: center;
@@ -77,7 +82,8 @@
 
 .calendar-panel-header {
   padding: 0.7rem;
-  margin-top: 2.5rem;
+  /* ✅ Pas de margin-top car le conteneur parent (.calendar-popup) est déjà positionné */
+  margin-top: 0;
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
@@ -99,29 +105,102 @@
   font-weight: 700;
 }
 
+body.ios .calendar-panel-header {
+  /* ✅ Pas de margin-top car le conteneur parent (.calendar-popup) est déjà positionné */
+  margin-top: 0;
+}
+
+body.ios .calendar-panel-header .filter-toggle-button {
+  top: 0.85rem;
+}
+
+
+.calendar-panel-header .filter-reset-button {
+  position: absolute !important;
+  top: 0.825rem !important;
+  /* Gap : toggle (30px) + gap (12px) + star (30px) + gap (14px) */
+  right: calc(10px + 30px + 12px + 30px + 14px) !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: none !important;
+  height: 24px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  box-sizing: border-box !important;
+  z-index: 995 !important;
+  transition: all 0.3s ease !important;
+  opacity: 1 !important;
+}
+
+.calendar-panel-header .filter-reset-button svg {
+  width: 28px !important;
+  height: 28px !important;
+  flex-shrink: 0 !important;
+}
+
+.calendar-panel-header button.filter-reset-button.star,
 .calendar-panel-header .filter-reset-button.star {
-  transition: all 0.3s ease;
-  opacity: 1;
+  position: absolute !important;
+  top: 0.825rem !important;
+  /* Gap uniforme de 12px : toggle (30px) + gap (12px) */
+  right: calc(10px + 30px + 12px) !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: none !important;
+  height: 24px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  box-sizing: border-box !important;
+  z-index: 995 !important;
+  transition: all 0.3s ease !important;
+  opacity: 1 !important;
+}
+
+.calendar-panel-header .filter-reset-button.star svg {
+  width: 30px !important;
+  height: 30px !important;
+  flex-shrink: 0 !important;
 }
 
 .calendar-panel-header .filter-toggle-button {
-  position: absolute;
-  top: 0.825rem;
-  right: 10px;
-  padding: 8px 16px;
-  background-color: var(--warning-color);
-  color: var(--text-color);
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  transition: all 0.3s ease;
-  height: 24px;
-  width: 70px;
-  justify-content: center;
-  z-index: 995;
+  position: absolute !important;
+  top: 0.825rem !important;
+  right: 10px !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  transition: all 0.3s ease !important;
+  height: 24px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  justify-content: center !important;
+  z-index: 995 !important;
+  box-sizing: border-box !important;
+}
+
+.calendar-panel-header .filter-toggle-button svg {
+  width: 30px !important;
+  height: 30px !important;
+  flex-shrink: 0 !important;
 }
 
 body.ios .calendar-panel-header .filter-toggle-button {
@@ -144,11 +223,14 @@ body.ios .calendar-panel-header .filter-toggle-button {
 }
 
 .calendar-filters-section .filter-buttons-row {
+  /* ✅ Alignement des boutons de filtre avec flexbox */
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 0rem;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
+  align-items: center;
 }
 
 .calendar-filters-section .filter-select {
@@ -180,13 +262,15 @@ body.ios .calendar-panel-header .filter-toggle-button {
   padding: 0.7rem;
   background-color: var(--bg-color);
   position: sticky;
+  /* ✅ Top: 0 car le panel est déjà positionné sous le Header */
   top: 0;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  margin-top: calc(var(--below-header) + 20px); /* Utilise la variable CSS */
+  /* ✅ Copier exactement la logique Event : juste après le Header (sans le +20px) */
+  margin-top: calc(var(--header-height) + var(--safe-top));
 }
 
 .calendar-popup-header h3 {
@@ -205,8 +289,9 @@ body.ios .calendar-panel-header .filter-toggle-button {
   color: white;
   border: none;
   border-radius: 4px;
-  width: 80px;
-  height: 24px;
+  /* Changé: Dimensions adaptatives */
+  width: clamp(70px, 12vw, 80px);
+  height: clamp(22px, 3.5vh, 24px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,27 +322,33 @@ body.ios .calendar-panel-header .filter-toggle-button {
 }
 
 .calendar-hour-header {
-  height: 51px; /* Aligné avec .calendar-day-header */
+  /* Changé: Hauteur adaptative */
+  height: clamp(45px, 6vh, 51px);
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
   padding-right: 4px;
   padding-bottom: 5px;
-  margin-bottom: 10px; /* Espace entre le header et les heures (aligné avec .calendar-day-header) */
+  margin-bottom: clamp(8px, 1.5vh, 10px);
   box-sizing: border-box;
   flex-shrink: 0;
 }
 
 .calendar-hours-container {
-  height: 650px; /* Même hauteur que .calendar-events */
+  /* Changé: Hauteur adaptative - s'adapte au conteneur parent */
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .calendar-filter-buttons-row {
+  /* ✅ Alignement des boutons de filtre avec flexbox */
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
 }
 
 .filter-row {
@@ -303,12 +394,13 @@ body.ios .calendar-panel-header .filter-toggle-button {
 }
 
 .calendar-day-header {
-  height: 51px; /* Aligné avec .calendar-hour-header */
+  /* Changé: Hauteur adaptative */
+  height: clamp(45px, 6vh, 51px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 5px;
-  margin-bottom: 8px; /* Espace entre le header et les événements */
+  margin-bottom: clamp(6px, 1.2vh, 8px);
   background-color: var(--bg-secondary);
   color: var(--text-color);
   text-align: center;
@@ -319,7 +411,9 @@ body.ios .calendar-panel-header .filter-toggle-button {
 
 .calendar-events {
   position: relative;
-  height: 650px; /* 15 heures * 43.33px (de 8h à 23h) */
+  /* Changé: Utilise la variable CSS responsive */
+  height: var(--calendar-height);
+  max-height: var(--calendar-height);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   margin: 0px;
@@ -328,7 +422,9 @@ body.ios .calendar-panel-header .filter-toggle-button {
 
 .time-slot {
   position: relative;
-  height: 43.33px;
+  /* Changé: Hauteur adaptative proportionnelle */
+  height: clamp(35px, calc((100% - var(--header-height)) / 15), 45px);
+  min-height: 35px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -406,7 +502,8 @@ body.ios .calendar-panel-header .filter-toggle-button {
   box-shadow: 0 4px 8px var(--shadow-color);
   z-index: 1000;
   max-width: 90%;
-  width: 400px;
+  /* Changé: Largeur adaptative */
+  width: min(400px, 90vw);
   color: var(--text-color);
 }
 
@@ -504,7 +601,3 @@ body.ios .calendar-panel-header .filter-toggle-button {
 }
 
 /* Styles de scrollbars uniformes - gérés par les styles globaux */
-
-.calendar-popup .filter-reset-button {
-  margin-top: -27px;
-} 

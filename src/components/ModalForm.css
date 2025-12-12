@@ -1,7 +1,7 @@
 /* Overlay flouté et centré */
 .modal-form-overlay {
   position: fixed;
-  top: var(--below-header); /* Utilise la variable CSS */
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -9,12 +9,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  /* ✅ z-index: 1 pour rester sous le Header/Nav (z-index: 1000) */
+  z-index: 1;
   backdrop-filter: blur(5px);
 }
 
 body.ios .modal-form-overlay {
-  top: var(--below-header) !important; /* Utilise la variable CSS */
+  top: 0 !important;
 }
 
 
@@ -22,15 +23,27 @@ body.ios .modal-form-overlay {
 .modal-form-container {
   background-color: var(--bg-color);
   border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  max-height: calc(100vh - var(--below-header)); /* Utilise la variable CSS */
-  max-height: calc(100svh - var(--below-header)); /* Support viewport units modernes */
+  /* ✅ Plein écran : largeur 100% */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  left: 0;
+  right: 0;
+  /* ✅ Utiliser les variables globales pour le nouveau système responsive */
+  /* Padding pour ne pas être caché par Header et Nav (réduit à 5px d'air) */
+  padding-top: calc(var(--header-height) + var(--safe-top) + 5px);
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
+  /* ✅ max-height avec variables CSS */
+  max-height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom) - 40px);
+  max-height: calc(100svh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom) - 40px);
   position: relative;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  /* ✅ Box-sizing pour inclure le padding */
+  box-sizing: border-box;
 }
 
 /* Header avec titre et bouton fermer */
@@ -39,7 +52,6 @@ body.ios .modal-form-overlay {
   justify-content: space-between;
   align-items: center;
   padding: 0 1rem;
-  margin-top: 10px;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
   z-index: 1;
@@ -48,8 +60,7 @@ body.ios .modal-form-overlay {
 }
 
 .modal-form-header h2 {
-  margin-top: -10px;
-  padding: 10px;
+  margin: 0;
   color: var(--text-color);
   font-size: 1.3rem;
 }
@@ -64,14 +75,19 @@ body.ios .modal-form-overlay {
   border-radius: 4px;
   transition: background-color 0.2s ease;
   position: static;
-  margin-top: -10px;
+  margin-right: -10px;
   z-index: auto;
 }
 
 /* Contenu scrollable */
 .modal-form-content {
+  /* ✅ Scroll activé sur ce conteneur précis */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 1rem;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 2rem;
 }
 
 /* Champs */
@@ -101,7 +117,7 @@ body.ios .modal-form-overlay {
 }
 .modal-form-group textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: clamp(80px, 15vh, 150px);
 }
 
 
@@ -142,7 +158,7 @@ body.ios .modal-form-overlay {
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 12px;
 }
 .modal-form-submit {
   width: 100%;
@@ -155,6 +171,7 @@ body.ios .modal-form-overlay {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  min-height: 44px;
 }
 .modal-form-submit:hover {
   background-color: #c0392b;
@@ -175,20 +192,18 @@ body.ios .modal-form-overlay {
 @media (max-width: 480px) {
   .modal-form-container {
     width: 100%;
+    max-width: 100%;
     height: 100%;
     max-height: 100%;
     border-radius: 0;
     border: none;
+    margin: 0;
+    left: 0;
+    right: 0;
   }
+
   .modal-form-group {
     margin-bottom: 1rem;
-  }
-  .modal-form-header {
-    height: 50px;
-    padding: 0 0.5rem;
-  }
-  .modal-form-content {
-    padding: 0.5rem;
   }
 }
 
@@ -205,13 +220,15 @@ body.ios .modal-form-overlay {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  /* Changé: Padding adaptatif */
+  padding: clamp(1rem, 2.5vh, 1.5rem);
   background-color: var(--bg-secondary);
   border: 2px solid var(--border-color);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 100px;
+  /* Changé: min-height adaptatif */
+  min-height: clamp(80px, 12vh, 100px);
 }
 
 .place-type-button:hover {
@@ -226,33 +243,50 @@ body.ios .modal-form-overlay {
 }
 
 .place-type-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  /* Changé: Taille d'icône adaptative */
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  margin-bottom: clamp(0.4rem, 1vh, 0.5rem);
 }
 
 .place-type-label {
-  font-size: 1rem;
+  /* Changé: Taille de texte adaptative */
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   font-weight: 500;
   color: var(--text-color);
   text-align: center;
+  /* Changé: Protection contre débordement */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 @media (max-width: 480px) {
   .place-type-selection {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    gap: clamp(0.6rem, 1.5vw, 0.75rem);
   }
   
   .place-type-button {
-    padding: 1rem;
-    min-height: 80px;
+    padding: clamp(0.75rem, 2vh, 1rem);
+    min-height: clamp(70px, 10vh, 80px);
   }
   
   .place-type-icon {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
   }
   
   .place-type-label {
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, 2.5vw, 0.9rem);
   }
+}
+
+/* Styles spécifiques pour iOS - ajustement du formulaire Modal */
+body.ios .modal-form-container {
+  max-height: calc(100vh - var(--below-header)) !important;
+  max-height: calc(100svh - var(--below-header)) !important;
+}
+
+body.ios .modal-form-content {
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-x pan-y !important;
 } 

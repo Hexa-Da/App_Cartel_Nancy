@@ -22,12 +22,15 @@ import Info from './pages/Info';
 import InfoSection from './pages/InfoSection';
 import PlanningFilesPage from './pages/PlanningFilesPage';
 import Layout from './components/Layout';
+import OrientationLock from './components/OrientationLock';
+import './styles/responsive-tokens.css';
 import './index.css';
 import { AppPanelsProvider } from './AppPanelsContext';
 import { AppProvider } from './AppContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <OrientationLock />
     <AppProvider>
       <AppPanelsProvider>
         <Router>

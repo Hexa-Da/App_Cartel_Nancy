@@ -144,21 +144,11 @@ body {
   border-bottom: none;
 }
 
-html, body, #root {
-  height: 100vh;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
-  /* Gestion des safe areas pour Android */
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
-}
+/* ============================================
+   NOTE: Les styles html, body, #root sont maintenant
+   gérés dans src/index.css pour éviter les conflits.
+   Ce fichier App.css se concentre sur les composants.
+   ============================================ */
 
 
 .app {
@@ -218,18 +208,21 @@ html, body, #root {
 
 .edit-form {
   position: fixed;
-  top: 30%;
+  top: 50%;
   left: 50%;
-  transform: translate(-50%, -30%);
+  transform: translate(-50%, -50%);
   background-color: var(--bg-color);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  width: 350px;
-  max-width: 90vw;
+  /* Changé: Utilise la variable CSS responsive */
+  width: var(--modal-width);
+  max-width: var(--modal-width);
   z-index: 3000;
-  max-height: 90vh;
+  /* Changé: max-height avec calc() pour gérer les safe areas */
+  max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
   overflow-y: auto;
-  padding: 20px;
+  /* Changé: Padding adaptatif */
+  padding: clamp(15px, 3vw, 20px);
 }
 
 .edit-form-header {
@@ -290,7 +283,8 @@ html, body, #root {
 .form-actions {
   margin-top: 1rem;
   display: flex;
-  gap: 1rem;
+  /* Changé: Espacement de sécurité tactile (12px minimum) */
+  gap: 12px;
   justify-content: flex-end;
 }
 
@@ -302,7 +296,11 @@ html, body, #root {
   font-weight: 500;
   transition: all 0.3s;
   width: 100%;
-  max-width: 200px;
+  /* Changé: Largeur adaptative */
+  max-width: min(200px, 40vw);
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .add-button {
@@ -357,13 +355,14 @@ html, body, #root {
 
 @media (max-width: 768px) {
   .edit-form {
-    width: 90vw;
-    max-height: 80vh;
-    padding: 15px;
+    /* Changé: Utilise la variable CSS responsive */
+    width: var(--modal-width);
+    max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
+    padding: clamp(12px, 2.5vw, 15px);
     position: fixed !important;
-    top: 30% !important;
+    top: 50% !important;
     left: 50% !important;
-    transform: translate(-50%, -30%) !important;
+    transform: translate(-50%, -50%) !important;
   }
   
   .edit-form-header {
@@ -397,22 +396,16 @@ html, body, #root {
   margin: 0;
 }
 
-.app-main {
-  flex: 1;
-  position: relative;
-  min-height: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: -2rem;
-}
+/* ============================================
+   NOTE: Les styles .app-main sont maintenant gérés dans Layout.css
+   pour une meilleure cohérence avec le layout flexbox standardisé.
+   ============================================ */
 
-.map-container {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  margin-bottom: -2rem;
-}
+/* ============================================
+   CAS B : Conteneur de la Map - Hauteur exacte 80vh
+   ============================================ */
+/* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré dans Layout.css
+   avec position absolute et top/bottom pour remplir l'espace entre Header et Nav */
 
 .leaflet-container {
   height: 100%;
@@ -517,6 +510,11 @@ html, body, #root {
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
+  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 /* Styles pour la liste de matchs */
@@ -524,7 +522,8 @@ html, body, #root {
   margin-top: 1rem;
   margin-bottom: 1rem;
   padding-top: 0.5rem;
-  max-height: 300px; /* Hauteur maximale avant le scroll */
+  /* Changé: Hauteur adaptative */
+  max-height: clamp(200px, 40vh, 300px);
   overflow-y: auto; /* Ajoute le scroll vertical si nécessaire */
   /* Propriétés pour faire disparaître les scrollbars automatiquement */
   scrollbar-gutter: stable;
@@ -648,19 +647,23 @@ html, body, #root {
 
 .edit-buttons {
   display: flex;
-  gap: 0.5rem;
+  /* Changé: Espacement de sécurité tactile (12px minimum) */
+  gap: 12px;
   margin-top: 0.5rem;
 }
 
 .save-button,
 .cancel-button {
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.75rem 1rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .save-button {
@@ -714,7 +717,8 @@ html, body, #root {
 
 .location-error {
   position: fixed;
-  bottom: var(--above-bottom-nav); /* Utilise la variable CSS pour la position */
+  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 15px (remonté) + 20px d'air - même hauteur que AddVenue */
+  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
   left: 20px;
   background-color: var(--danger-color);
   color: white;
@@ -724,35 +728,43 @@ html, body, #root {
   box-shadow: 0 2px 6px var(--shadow-color);
   z-index: 2000;
   font-size: 0.75rem;
-  min-width: 180px;
-  max-width: 250px;
+  /* Changé: Dimensions adaptatives */
+  min-width: min(180px, 35vw);
+  max-width: min(250px, 50vw);
   pointer-events: auto;
 }
 
 body.ios .location-error {
-  bottom: var(--above-bottom-nav-ios); /* Utilise la variable CSS pour iOS */
+  /* ✅ Même calcul pour iOS - remonté - même hauteur que AddVenue */
+  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
 }
 
 
 .location-error-buttons {
   margin-top: 0.3rem;
   display: flex;
-  gap: 0.3rem;
+  /* Changé: Espacement de sécurité tactile (12px minimum) */
+  gap: 12px;
   justify-content: flex-start;
   pointer-events: auto;
 }
 
 .retry-button {
-  font-size: 0.75rem;
-  padding: 0.2rem 0.6rem;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  padding: 0.5rem;
   border-radius: 4px;
   border: none;
   cursor: pointer;
   background: white;
   color: var(--danger-color);
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.3s ease;
   pointer-events: auto;
   z-index: 2001;
+  /* ✅ Harmonisé avec les autres boutons */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .retry-button:hover {
@@ -831,7 +843,8 @@ body.ios .location-error {
   background: var(--bg-color);
   border-radius: 6px;
   border: 1px solid var(--border-color);
-  max-height: 200px;
+  /* Changé: Hauteur adaptative */
+  max-height: clamp(150px, 25vh, 250px);
   overflow-y: auto;
 }
 
@@ -904,7 +917,8 @@ body.ios .location-error {
 .popup-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  /* Changé: Espacement de sécurité tactile (12px minimum) */
+  gap: 12px;
   margin-top: 0.5rem;
 }
 
@@ -918,6 +932,11 @@ body.ios .location-error {
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
+  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .call-button {
@@ -930,6 +949,11 @@ body.ios .location-error {
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
+  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .popup-buttons .modif-button {
@@ -942,6 +966,11 @@ body.ios .location-error {
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
   transition: all 0.3s ease;
+  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .popup-buttons .modif-button:active {
@@ -959,6 +988,11 @@ body.ios .location-error {
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
   transition: all 0.3s ease;
+  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 
@@ -1176,7 +1210,8 @@ body.ios .location-error {
 }
 
 .calendar-toggle-button {
-  top: calc(var(--below-header-with-margin) + 50px) !important; /* 50px en dessous du bouton events */
+  /* ✅ 50px en dessous du bouton events */
+  top: calc(var(--header-height) + var(--safe-top) + 10px + 50px) !important;
 }
 
 
@@ -1203,7 +1238,8 @@ body.ios .location-error {
 
 .events-panel-header {
   padding: 0.7rem;
-  margin-top: 2.5rem;
+  /* ✅ Réduire le padding-top : juste après le Header (sans le +20px) */
+  margin-top: calc(var(--header-height) + var(--safe-top));
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
@@ -1225,33 +1261,39 @@ body.ios .location-error {
   font-weight: 700;
 }
 
-.events-panel-header .filter-reset-button.star {
-  transition: all 0.3s ease;
-  opacity: 1;
-}
 
 .events-panel-header .filter-toggle-button {
-  position: absolute;
-  top: 0.825rem;
-  right: 10px;
-  padding: 8px 16px;
-  background-color: var(--warning-color);
-  color: var(--text-color);
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  transition: all 0.3s ease;
-  height: 24px;
-  width: 70px;
-  justify-content: center;
-  z-index: 995;
+  position: absolute !important;
+  top: 0.825rem !important;
+  right: 10px !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  transition: all 0.3s ease !important;
+  height: 24px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  justify-content: center !important;
+  z-index: 995 !important;
+  box-sizing: border-box !important;
+}
+
+.events-panel-header .filter-toggle-button svg {
+  width: 30px !important;
+  height: 30px !important;
+  flex-shrink: 0 !important;
 }
 
 body.ios .events-panel-header {
-  margin-top: 2.48rem;
+  /* ✅ Même calcul pour iOS (sans le +20px) */
+  margin-top: calc(var(--header-height) + var(--safe-top));
 }
 
 body.ios .events-panel-header .filter-toggle-button {
@@ -1265,6 +1307,8 @@ body.ios .events-panel-header .filter-toggle-button {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  /* ✅ Alignement des boutons de filtre */
+  align-items: stretch;
   height: 0;
   overflow: hidden;
   transition: height 0.3s ease;
@@ -1284,11 +1328,14 @@ body.ios .events-panel-header .filter-toggle-button {
 }
 
 .filter-buttons-row {
+  /* ✅ Alignement des boutons de filtre avec flexbox */
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 0rem;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
+  align-items: center;
 }
 
 .filter-row {
@@ -1323,35 +1370,92 @@ body.ios .filter-toggle-button {
 }
 
 .filter-reset-button {
-  position: absolute;
+  /* Styles de base - seront surchargés par les styles spécifiques du header */
   padding: 0;
   border: none;
   font-size: 24px;
   cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
   background: none;
-  height: 24px;
-  width: 24px;
-  z-index: 995;
   transition: all 0.3s ease;
   opacity: 1;
 }
 
+/* Styles spécifiques pour les boutons dans events-panel-header (alignés avec le toggle filter) */
+.events-panel-header .filter-reset-button {
+  position: absolute !important;
+  top: 0.825rem !important;
+  /* Gap : toggle (30px) + gap (12px) + star (30px) + gap (14px) */
+  right: calc(10px + 30px + 12px + 30px + 14px) !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: none !important;
+  height: 24px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  box-sizing: border-box !important;
+  z-index: 995 !important;
+  transition: all 0.3s ease !important;
+  opacity: 1 !important;
+}
+
+.events-panel-header .filter-reset-button svg {
+  width: 28px !important;
+  height: 28px !important;
+  flex-shrink: 0 !important;
+}
+
+.events-panel-header button.filter-reset-button.star,
+.events-panel-header .filter-reset-button.star {
+  position: absolute !important;
+  top: 0.825rem !important;
+  /* Gap uniforme de 12px : toggle (30px) + gap (12px) */
+  right: calc(10px + 30px + 12px) !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: none !important;
+  height: 24px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  box-sizing: border-box !important;
+  z-index: 995 !important;
+  transition: all 0.3s ease !important;
+  opacity: 1 !important;
+}
+
+.events-panel-header .filter-reset-button.star svg {
+  width: 30px !important;
+  height: 30px !important;
+  flex-shrink: 0 !important;
+}
+
 .filter-reset-button.star {
-  position: absolute;
+  /* Styles de base pour star - seront surchargés par les styles spécifiques du header */
   padding: 0;
   border: none;
   font-size: 24px;
   cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
   background: none;
-  height: 24px;
-  width: 24px;
-  z-index: 995;
   transition: all 0.3s ease;
   opacity: 1;
+  /* Pas de largeur définie ici - sera définie par les styles spécifiques du header */
 }
 
 .filter-reset-button.star.active {
@@ -1616,12 +1720,13 @@ body.ios .filter-toggle-button {
 /* Styles personnalisés pour les contrôles de zoom */
 .leaflet-control-zoom {
   position: fixed !important;
-  top: 35px !important;
-  right: 0px !important;
+  /* ✅ Aligné strictement avec le bouton "Événements" : même valeur exacte */
+  top: var(--below-header-with-margin) !important;
+  right: 10px !important;
   z-index: 2000;
   border: none !important;
   box-shadow: 0 2px 8px var(--shadow-color) !important;
-  margin: 15px !important;
+  margin: 0 !important;
   background: var(--bg-primary) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
@@ -1698,13 +1803,14 @@ body.ios .filter-toggle-button {
   }
   
   .edit-form {
-    width: 90vw;
-    max-height: 80vh;
-    padding: 15px;
+    /* Changé: Utilise la variable CSS responsive */
+    width: var(--modal-width);
+    max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
+    padding: clamp(12px, 2.5vw, 15px);
     position: fixed !important;
-    top: 30% !important;
+    top: 50% !important;
     left: 50% !important;
-    transform: translate(-50%, -30%) !important;
+    transform: translate(-50%, -50%) !important;
   }
   
   .leaflet-control-container {
@@ -1850,10 +1956,12 @@ body.ios .filter-toggle-button {
 /* Styles unifiés pour le chat sur toutes les pages */
 .chat-panel {
   position: fixed;
-  top: var(--below-header); /* Utilise la variable CSS */
+  /* ✅ Utiliser les variables globales : Header + safe-top */
+  top: calc(var(--header-height) + var(--safe-top));
   left: 0;
   width: 100vw;
-  height: calc(100vh - var(--below-header));
+  /* ✅ Hauteur : 100vh - header - safe-top - nav - safe-bottom */
+  height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom));
   background-color: var(--bg-color);
   z-index: 1003;
   display: flex;
@@ -1864,8 +1972,9 @@ body.ios .filter-toggle-button {
 
 /* CSS pur pour iOS - pas de JavaScript */
 body.ios .chat-panel {
-  top: var(--below-header) !important;
-  height: calc(100vh - var(--below-header)) !important;
+  top: calc(var(--header-height) + var(--safe-top)) !important;
+  height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom)) !important;
+  height: calc(100svh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom)) !important;
   width: 100vw !important;
   position: fixed !important;
   overflow: hidden !important;
@@ -1879,6 +1988,8 @@ body.ios .chat-panel {
   padding: 0.7rem;
   background-color: var(--bg-color);
   position: sticky;
+  /* ✅ Top: 0 car le panel est déjà positionné sous le Header */
+  top: 0;
   z-index: 2;
   display: flex;
   align-items: center;
@@ -2065,12 +2176,14 @@ body.ios.keyboard-open .chat-container {
   padding: 0.7rem;
   background-color: var(--bg-color);
   position: sticky;
+  top: 0;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  margin-top: 2.5rem;
+  /* ✅ Utiliser les variables globales : Header + safe-top + 20px d'air */
+  margin-top: calc(var(--header-height) + var(--safe-top) + 20px);
   padding-top: 0.7rem;
 }
 
@@ -2095,7 +2208,8 @@ body.ios.keyboard-open .chat-container {
 }
 
 body.ios .home-info-chat .chat-panel-header {
-  margin-top: 0rem;
+  /* ✅ Même calcul pour iOS */
+  margin-top: calc(var(--header-height) + var(--safe-top) + 20px);
 }
 
 /* Agrandissement du conteneur de chat pour Home et Info quand le clavier apparaît */
@@ -2156,7 +2270,8 @@ body.ios .home-info-chat .chat-panel-header {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   max-width: 90%;
-  width: 400px;
+  /* Changé: Largeur adaptative */
+  width: min(400px, 90vw);
   position: relative;
 }
 
@@ -2378,12 +2493,13 @@ body.ios .home-info-chat .chat-panel-header {
 }
 
 .form-group textarea {
-  min-height: 100px;
+  /* Changé: Hauteur adaptative */
+  min-height: clamp(80px, 15vh, 150px);
   resize: vertical;
 }
 
 .submit-button {
-  padding: 10px 20px;
+  padding: 0.75rem 1.25rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
@@ -2391,6 +2507,9 @@ body.ios .home-info-chat .chat-panel-header {
   cursor: pointer;
   font-size: 1em;
   transition: background-color 0.2s;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .filters {
@@ -2650,7 +2769,8 @@ body.ios {
 
 .add-venue-button {
   position: fixed;  
-  bottom: var(--above-bottom-nav); /* Utilise la variable CSS */
+  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 15px (remonté) + 20px d'air */
+  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
   left: 20px;
   width: 48px;
   height: 48px;
@@ -2671,7 +2791,8 @@ body.ios {
 }
 
 body.ios .add-venue-button {
-  bottom: var(--above-bottom-nav-ios); /* Utilise la variable CSS pour iOS */
+  /* ✅ Même calcul pour iOS - remonté */
+  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
 }
 
 
@@ -2716,19 +2837,10 @@ body.ios .leaflet-container {
 }
 
 
-.app-main {
-  position: relative;
-  height: calc(100vh - 120px); /* Ajuster selon la hauteur de votre header et bottom nav */
-  overflow: hidden;
-}
+/* ✅ SUPPRIMÉ : Les styles .app-main sont maintenant gérés dans Layout.css
+   avec les proportions strictes 5/90/5 et les règles de Flex Rescue */
 
-.map-container {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
+/* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré plus haut avec height: 80vh */
 
 /* Ajuster la position des popups pour qu'elles ne soient pas coupées */
 .leaflet-popup {
@@ -2748,12 +2860,14 @@ body.ios .leaflet-container {
 .location-loading {
   position: fixed;
   right: 20px;
-  bottom: var(--above-bottom-nav); /* Utilise la variable CSS */
+  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 20px d'air */
+  bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
   z-index: 2000;
 }
 
 body.ios .location-loading {
-  bottom: var(--above-bottom-nav-ios); /* Utilise la variable CSS pour iOS */
+  /* ✅ Même calcul pour iOS */
+  bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
 }
 
 
@@ -2788,7 +2902,8 @@ body.ios .leaflet-container {
 .file-preview {
   margin: 10px 0;
   width: 100%;
-  max-width: 300px;
+  /* Changé: Largeur adaptative */
+  max-width: min(300px, 85vw);
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -2830,7 +2945,8 @@ body.ios .leaflet-container {
 
 .recenter-button {
   position: fixed;
-  bottom: var(--above-bottom-nav); /* Utilise la variable CSS */
+  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 15px (remonté) + 20px (même hauteur que AddVenue) */
+  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
   right: 20px;
   width: 48px;
   height: 48px;
@@ -2860,7 +2976,8 @@ body.ios .leaflet-container {
 }
 
 body.ios .recenter-button {
-  bottom: var(--above-bottom-nav-ios); /* Utilise la variable CSS pour iOS */
+  /* ✅ Même calcul pour iOS - même hauteur que AddVenue - remonté */
+  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
 }
 
 /* Suppression des effets de focus par défaut */

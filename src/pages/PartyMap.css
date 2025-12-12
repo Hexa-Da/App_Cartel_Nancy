@@ -1,34 +1,23 @@
+/* ============================================
+   PARTY MAP - Layout Flexbox Standardisé
+   ============================================ */
 .party-map-container {
-  position: fixed;
-  top: calc(var(--below-header) + 40px); /* Utilise la variable CSS */
-  left: 0;
+  /* ✅ Classe page-content.no-scroll appliquée via composant */
+  /* ✅ Flexbox: Remplit l'espace disponible */
+  flex: 1;
   width: 100%;
-  height: calc(100vh - var(--below-header) - 40px - var(--bottom-nav-total-height));
+  height: 100%;
+  min-height: 0;
+  position: relative;
   z-index: 1000;
   background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
 }
 
-/* Ajustement pour iOS avec safe-area */
-body.ios .party-map-container {
-  top: calc(var(--below-header) + 40px);
-  height: calc(100vh - var(--below-header) - 40px - var(--bottom-nav-total-height-ios));
-  height: calc(100svh - var(--below-header) - 40px - var(--bottom-nav-total-height-ios));
-}
-
-
-/* Ajustement pour tenir compte du header et de la BottomNav */
-@media (max-width: 600px) {
-  .party-map-container {
-    top: calc(var(--below-header) + 40px);
-    height: calc(100vh - var(--below-header) - 40px - var(--bottom-nav-total-height));
-  }
-  
-  body.ios .party-map-container {
-    top: calc(80px + env(safe-area-inset-top, 0px));
-    height: calc(100vh - 80px - env(safe-area-inset-top, 0px) - 70px);
-    height: calc(100svh - 80px - env(safe-area-inset-top, 0px) - 70px);
-  }
-}
+/* NOTE: Les styles iOS et media queries pour PartyMap sont maintenant
+   gérés par le layout flexbox standardisé. Plus besoin de calculs manuels.
+*/
 
 .party-map-header {
   position: absolute;

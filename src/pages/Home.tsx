@@ -364,7 +364,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="home-page">
+    <div className="page-content scrollable home-page">
       {/* <h1 className="welcome-title">Bienvenue Au Cartel de Nancy</h1> */}
       <div className="matches-section">
         <section className="matches-section">

@@ -1,6 +1,6 @@
 .vss-form-overlay {
   position: fixed;
-  top: var(--below-header); /* Utilise la variable CSS */
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -8,28 +8,40 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  /* ✅ z-index: 1 pour rester sous le Header/Nav (z-index: 1000) */
+  z-index: 1;
   backdrop-filter: blur(5px);
 }
 
 body.ios .vss-form-overlay {
-  top: var(--below-header) !important; /* Utilise la variable CSS */
+  top: 0 !important;
 }
 
 
 .vss-form-container {
   background-color: var(--bg-color);
   border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  max-height: calc(100vh - var(--below-header)); /* Utilise la variable CSS */
-  max-height: calc(100svh - var(--below-header)); /* Support viewport units modernes */
+  /* ✅ Plein écran : largeur 100% */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  left: 0;
+  right: 0;
+  /* ✅ Utiliser les variables globales pour le nouveau système responsive */
+  /* Padding pour ne pas être caché par Header et Nav (réduit à 5px d'air) */
+  padding-top: calc(var(--header-height) + var(--safe-top) + 5px);
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
+  /* ✅ max-height avec variables CSS */
+  max-height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom) - 40px);
+  max-height: calc(100svh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom) - 40px);
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* ✅ Box-sizing pour inclure le padding */
+  box-sizing: border-box;
 }
 
 .vss-form-header {
@@ -65,12 +77,13 @@ body.ios .vss-form-overlay {
 }
 
 .vss-form-content {
+  /* ✅ Scroll activé sur ce conteneur précis */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 1rem;
   flex: 1;
   min-height: 0;
   padding-bottom: 2rem;
-  -webkit-overflow-scrolling: touch;
 }
 
 .form-group {
@@ -132,7 +145,8 @@ body.ios .vss-form-overlay {
 
 .form-group textarea {
   resize: vertical;
-  min-height: 100px;
+  /* Changé: Hauteur adaptative */
+  min-height: clamp(80px, 15vh, 150px);
 }
 
 .anonymous-checkbox,
@@ -161,7 +175,8 @@ body.ios .vss-form-overlay {
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  /* Changé: Espacement de sécurité tactile (12px minimum) */
+  gap: 12px;
 }
 
 .submit-button {
@@ -175,6 +190,8 @@ body.ios .vss-form-overlay {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
 }
 
 .submit-button:hover:not(:disabled) {
@@ -210,10 +227,14 @@ body.ios .vss-form-overlay {
 @media (max-width: 480px) {
   .vss-form-container {
     width: 100%;
+    max-width: 100%;
     height: 100%;
     max-height: 100%;
     border-radius: 0;
     border: none;
+    margin: 0;
+    left: 0;
+    right: 0;
   }
 
   .form-group {

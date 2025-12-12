@@ -83,17 +83,8 @@ const Header: React.FC<HeaderProps> = ({
               onClick={isBackDisabled ? undefined : (onBack || (() => navigate(-1)))}
               title={isBackDisabled ? "Retour non disponible" : "Retour"}
               disabled={isBackDisabled}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '32px',
-                height: '32px'
-              }}
             >
               <svg 
-                width="24" 
-                height="24" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
@@ -111,11 +102,6 @@ const Header: React.FC<HeaderProps> = ({
               <img 
                 src="/logo-Photoroom.png" 
                 alt="Cartel Nancy Logo" 
-                style={{
-                  height: '32px',
-                  width: 'auto',
-                  objectFit: 'contain'
-                }}
               />
               <span className="header-logo-text">Cartel Nancy</span>
             </div>
@@ -125,18 +111,11 @@ const Header: React.FC<HeaderProps> = ({
             <button
               className={`edit-button${isEditing ? ' active' : ''}`}
               style={{ 
-                marginTop: '2px',
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
                 backgroundColor: isEditing ? 'var(--danger-color)' : 'var(--warning-color)', 
-                padding: '0.2rem 0.5rem', 
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '0.9rem',
-                fontWeight: '500'
+                cursor: 'pointer'
               }}
               onClick={onEditModeToggle}
               title={isEditing ? 'Quitter le mode édition' : 'Activer le mode édition'}

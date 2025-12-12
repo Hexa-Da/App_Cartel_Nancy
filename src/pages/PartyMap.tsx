@@ -361,7 +361,7 @@ const PartyMap: React.FC = () => {
     };
 
     return (
-      <div className="party-map-container">
+      <div className="page-content no-scroll party-map-container">
         {isAdmin && isEditing && (
           <div style={{
             position: 'fixed',

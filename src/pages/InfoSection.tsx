@@ -265,7 +265,7 @@ const FAQPage: React.FC<{ sectionKey: string }> = ({ sectionKey }) => {
   if (!data) return null;
 
   return (
-    <div className="info-section-page">
+    <div className="page-content scrollable info-section-page">
       <div className="info-section-header">
         <h1>{data.title}</h1>
       </div>
@@ -329,7 +329,7 @@ const BraceletSection: React.FC = () => {
   const [openSectionIndex, setOpenSectionIndex] = useState<number | null>(null);
 
   return (
-    <div className="info-section-page">
+    <div className="page-content scrollable info-section-page">
       <div className="info-section-header">
         <h1>INFOS BRACELET</h1>
       </div>
@@ -422,7 +422,7 @@ const InfoSection: React.FC = () => {
 
   if (!section) {
     return (
-        <div className="info-section-page">
+        <div className="page-content scrollable info-section-page">
         <div className="info-section-header"><h1>Section non trouvée</h1></div>
             <p>Cette section n'existe pas.</p>
       </div>
@@ -430,7 +430,7 @@ const InfoSection: React.FC = () => {
   }
 
   return (
-    <div className="info-section-page">
+    <div className="page-content scrollable info-section-page">
       <div className="info-section-header">
         <h1>{section.title}</h1>
       </div>

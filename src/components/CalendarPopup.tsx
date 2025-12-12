@@ -689,46 +689,10 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
         <div className="calendar-popup-content">
           <div className="calendar-panel-header">
             <h3>Calendrier</h3>
-            <button 
-              className={`filter-toggle-button`}
-              onClick={() => onShowFiltersChange(!showFilters)}
-              style={{ 
-                backgroundColor: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0px',
-                margin: '0px',
-                border: 'none',
-                minWidth: 'auto',
-                width: 'auto'
-              }}
-            >
-              <svg 
-                width="28" 
-                height="28" 
-                viewBox="0 0 24 24" 
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ 
-                  transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.3s ease'
-                }}
-              >
-                <path d="M18 4H6l5 6.5v4.5l2 2v-6.5L18 4Z"/>
-              </svg>
-            </button>
-          </div>
-          
-          {showFilters && (
-            <div className="calendar-filters-section">
-              <div className="filter-row">
+            {showFilters && (
+              <>
                 <button
                   className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
-                  style={{ right: '80px', top: '82px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   onClick={handleStarFilterClick}
                   title="Appliquer vos préférences"
                 >
@@ -738,7 +702,6 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                 </button>
                 <button
                   className="filter-reset-button"
-                  style={{ right: '45px', top: '82px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   onClick={() => {
                     // Vérifier si on est déjà dans l'état initial
                     const isAlreadyReset = 
@@ -772,6 +735,34 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                     <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
                   </svg>
                 </button>
+              </>
+            )}
+            <button 
+              className={`filter-toggle-button`}
+              onClick={() => onShowFiltersChange(!showFilters)}
+            >
+              <svg 
+                width="28" 
+                height="28" 
+                viewBox="0 0 24 24" 
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ 
+                  transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s ease'
+                }}
+              >
+                <path d="M18 4H6l5 6.5v4.5l2 2v-6.5L18 4Z"/>
+              </svg>
+            </button>
+          </div>
+          
+          {showFilters && (
+            <div className="calendar-filters-section">
+              <div className="filter-row">
                 <div className="filter-buttons-row"></div>
                 <select 
                   className="filter-select"

@@ -16,7 +16,8 @@
   background-color: var(--bg-color);
   border-radius: 12px;
   width: 90%;
-  max-width: 400px;
+  /* Changé: Largeur adaptative */
+  max-width: min(400px, 90vw);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   position: relative;
@@ -131,7 +132,8 @@ input:checked + .slider:before {
 
 /* Style pour le select */
 .settings-select {
-  width: 150px;
+  /* Changé: Largeur adaptative */
+  width: min(150px, 30vw);
   padding: 8px;
   border: 1px solid var(--border-color);
   border-radius: 4px;

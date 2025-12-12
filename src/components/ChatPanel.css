@@ -1,0 +1,19 @@
+/**
+ * @fileoverview Styles pour le composant ChatPanel
+ * 
+ * Note: La plupart des styles sont définis globalement dans App.css
+ * Ce fichier contient uniquement les styles spécifiques au composant si nécessaire
+ */
+
+/* Les styles principaux sont dans App.css :
+ * - .chat-panel
+ * - .chat-panel-header
+ * - .chat-container
+ * - .chat-message
+ * - .chat-message-header
+ * - .chat-message-content
+ * - .translate-button
+ * - .chat-admin-buttons
+ * - .add-message-button
+ * - .add-message-form
+ */

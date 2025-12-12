@@ -44,19 +44,32 @@
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23181818' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
 }
 
+/* ============================================
+   PLANNING FILES PAGE - Layout Flexbox Standardisé
+   ============================================ */
 .planning-files-page {
-  padding-top: 100px;
+  /* ✅ Classe page-content.scrollable appliquée via composant */
+  /* ✅ Padding-top ajusté pour correspondre au nouveau positionnement du filters-container */
+  padding-top: calc(var(--header-height) + var(--safe-top) + 130px);
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 80px;
   background-color: var(--bg-color);
-  min-height: 100vh;
   transition: opacity 0.3s ease;
+  /* ✅ Flexbox: Remplit l'espace disponible */
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  /* ✅ Scroll vertical pour le contenu */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .filters-container {
   position: fixed;
-  top: 50px;
+  top: calc(var(--header-height) + var(--safe-top) + 25px);
   left: 0;
   right: 0;
   z-index: 100;
@@ -76,7 +89,8 @@
   flex-direction: column;
   gap: 5px;
   width: 100%;
-  max-width: 300px;
+  /* Changé: Largeur adaptative */
+  max-width: min(300px, 85vw);
 }
 
 .filter-label {
@@ -117,7 +131,7 @@
 
 /* Détection iOS et application des styles */
 body.ios .filters-container {
-  top: 60px !important; /* Descendu encore plus de 100px à 60px */
+  top: calc(var(--header-height) + var(--safe-top) + 25px) !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
   -webkit-tap-highlight-color: transparent !important;
@@ -133,7 +147,8 @@ body.ios .filter-group {
   display: flex !important;
   flex-direction: column !important;
   width: 100% !important;
-  max-width: 300px !important;
+  /* Changé: Largeur adaptative */
+  max-width: min(300px, 85vw) !important;
   gap: 12px !important; /* Augmenté de 8px à 12px */
   margin: 0 !important;
   padding: 0 !important;
@@ -186,8 +201,9 @@ body.ios[data-theme="light"] .planning-files-page .filter-select {
   transition: all 0.3s;
   border-radius: 12px;
   border: 2px solid var(--accent-color);
-  min-width: 300px;
-  max-width: 500px;
+  /* Changé: Dimensions adaptatives */
+  min-width: min(300px, 90vw);
+  max-width: min(500px, 90vw);
 }
 
 .page-loading-indicator {
@@ -220,14 +236,16 @@ body.ios .page-loading-indicator {
 }
 
 body.ios .upload-progress-bar {
-  min-width: 320px;
-  max-width: 480px;
+  /* Changé: Dimensions adaptatives */
+  min-width: min(280px, 85vw);
+  max-width: min(480px, 90vw);
   padding: 24px;
 }
 
 body.ios .page-loading-indicator {
-  min-width: 280px;
-  max-width: 400px;
+  /* Changé: Dimensions adaptatives */
+  min-width: min(260px, 80vw);
+  max-width: min(400px, 90vw);
   padding: 24px;
 }
 
@@ -315,7 +333,8 @@ body.ios .filters-container > * {
   display: flex !important;
   flex-direction: column !important;
   width: 100% !important;
-  max-width: 300px !important;
+  /* Changé: Largeur adaptative */
+  max-width: min(300px, 85vw) !important;
 }
 
 /* Évite les problèmes de zoom sur iOS */
@@ -333,13 +352,13 @@ body.ios .filter-select {
 body.ios .planning-files-page {
   position: relative !important;
   z-index: 1 !important;
-  padding-top: 100px !important; /* Valeur fixe de fallback ajustée */
+  padding-top: calc(var(--header-height) + var(--safe-top) + 130px) !important;
 }
 
 body.ios .filters-container {
   position: fixed !important;
   z-index: 100 !important;
-  top: 60px !important; /* Cohérent avec le style principal */
+  top: calc(var(--header-height) + var(--safe-top) + 25px) !important;
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;

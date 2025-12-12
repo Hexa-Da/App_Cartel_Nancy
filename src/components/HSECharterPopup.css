@@ -21,7 +21,8 @@
   background-color: var(--bg-color);
   border-radius: 12px;
   width: 95%;
-  max-width: 550px;
+  /* Changé: Largeur adaptative */
+  max-width: min(550px, 90vw);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -190,6 +191,8 @@
   transition: background-color 0.2s ease;
   background-color: #95a5a6;
   color: white;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
 }
 
 .hse-accept-button.active {

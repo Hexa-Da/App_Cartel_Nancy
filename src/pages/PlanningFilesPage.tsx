@@ -375,7 +375,7 @@ const PlanningFilesPage: React.FC = () => {
 
   return (
     <div 
-      className={`planning-files-page ${isPageLoading ? 'loading' : 'loaded'}`}
+      className={`page-content scrollable planning-files-page ${isPageLoading ? 'loading' : 'loaded'}`}
       style={{
         paddingTop: isIOS ? `${filtersHeight + 10}px` : `${filtersHeight + 20}px`
       }}>

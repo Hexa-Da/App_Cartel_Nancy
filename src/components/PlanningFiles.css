@@ -1,6 +1,7 @@
 .planning-files {
   padding: 10px 20px 20px 20px;
-  max-width: 1400px;
+  /* Changé: Largeur adaptative */
+  max-width: min(1400px, 95vw);
   margin: 0 auto;
   text-align: center;
   color: var(--text-primary);
@@ -23,7 +24,8 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  max-width: 300px;
+  /* Changé: Largeur adaptative */
+  max-width: min(300px, 85vw);
 }
 
 .filter-select {
@@ -64,7 +66,8 @@
   padding: 20px;
   border-radius: 8px;
   margin: 20px auto;
-  max-width: 600px;
+  /* Changé: Largeur adaptative */
+  max-width: min(600px, 95vw);
   width: 100%;
 }
 
@@ -98,12 +101,13 @@
 }
 
 .form-group textarea {
-  min-height: 100px;
+  /* Changé: Hauteur adaptative */
+  min-height: clamp(80px, 15vh, 150px);
   resize: vertical;
 }
 
 .submit-button {
-  padding: 10px 20px;
+  padding: 0.75rem 1.25rem;
   background: linear-gradient(45deg, var(--accent-color), #4CAF50);
   color: white;
   border: none;
@@ -111,6 +115,9 @@
   cursor: pointer;
   font-size: 16px;
   transition: all 0.2s;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .submit-button:hover {

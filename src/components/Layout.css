@@ -1,32 +1,51 @@
+/* ============================================
+   LAYOUT SHELL - Architecture "Position Fixed"
+   ============================================ */
 .layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100%;
+  /* ✅ Structure simple : pas de flexbox, juste un conteneur */
   position: relative;
-  overflow: hidden;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh; /* Mobile moderne */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Empêche le scroll horizontal */
 }
 
 /* ============================================
    HEADER - Placement et alignement centralisés
    ============================================ */
 
+/* ============================================
+   HEADER - "Cloué" en Position Fixed
+   ============================================ */
 .app-header {
+  /* ✅ POSITION FIXED : Cloué en haut de l'écran */
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  height: 40px;
-  min-height: 40px;
+  width: 100%;
+  /* ✅ Utiliser la variable globale */
+  height: var(--header-height);
+  /* ✅ Sécurité tactile : min-height 44px */
+  min-height: 44px;
+  /* ✅ Vérification Visuelle (Z-Index) : Header au-dessus du contenu */
+  z-index: 1000;
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
+  margin: 0;
+  /* ✅ Fond explicite : Empêche la transparence */
   background-color: var(--bg-primary);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* ✅ Alignement "Magnétique" : Boutons collés en BAS */
+  align-items: flex-end;
   box-shadow: 0 2px 24px var(--shadow-color);
-  z-index: 1001;
-  padding: 5px 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  /* ✅ Padding : horizontal normal, bottom 5px pour ne pas toucher la bordure */
+  padding: 0 clamp(8px, 2vw, 10px) 5px;
+  /* ✅ Safe Areas gérées dans le padding-top (ne casse pas la hauteur) */
+  padding-top: calc(var(--safe-top) + 0px);
 }
 
 /* Tous les boutons du header */
@@ -51,21 +70,26 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px;
+  /* Changé: Padding adaptatif */
+  padding: clamp(4px, 1vh, 6px);
   color: var(--text-color);
   transition: transform 0.2s ease, opacity 0.2s ease;
   position: relative;
-  width: 36px;
-  height: 36px;
+  /* Changé: Dimensions adaptatives avec clamp - Augmentées */
+  width: clamp(40px, 5vw, 48px);
+  height: clamp(40px, 5vw, 48px);
   flex-shrink: 0;
+  /* Augmentation du font-size */
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
 }
 
 .chat-button svg,
 .emergency-button svg,
 .header-settings-button svg,
 .admin-button svg {
-  width: 24px;
-  height: 24px;
+  /* Changé: SVG adaptatif - Augmenté */
+  width: clamp(26px, 4vw, 30px);
+  height: clamp(26px, 4vw, 30px);
   transition: all 0.2s ease;
   filter: drop-shadow(0 1px 2px var(--shadow-color));
 }
@@ -73,7 +97,7 @@
 /* Conteneurs gauche et droite du header */
 .header-left {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 5px;
   position: relative;
   flex: 1;
@@ -82,8 +106,8 @@
 
 .header-right {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  align-items: flex-end;
+  gap: 2px;
   margin-right: 0;
   position: relative;
   flex-shrink: 0;
@@ -94,14 +118,19 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  /* Changé: Padding adaptatif */
+  padding: clamp(3px, 0.8vh, 4px);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-color);
-  width: 32px;
-  height: 32px;
+  /* Changé: Dimensions adaptatives - Augmentées */
+  width: clamp(36px, 4.5vw, 44px);
+  height: clamp(36px, 4.5vw, 44px);
   flex-shrink: 0;
+  /* Remonté un peu */
+  position: relative;
+  top: clamp(-3px, -0.8vh, -5px);
 }
 
 .header-back-button:disabled {
@@ -109,8 +138,9 @@
 }
 
 .header-back-button svg {
-  width: 26px;
-  height: 26px;
+  /* Changé: SVG adaptatif - Augmenté */
+  width: clamp(28px, 4vw, 32px);
+  height: clamp(28px, 4vw, 32px);
   stroke: var(--text-primary);
 }
 
@@ -170,9 +200,9 @@
 
 /* Bouton d'édition dans le header */
 .edit-button {
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0.2rem 0.4rem;
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  font-weight: 600;
+  padding: clamp(4px, 1vh, 8px) clamp(8px, 1.5vw, 12px);
   background-color: var(--warning-color);
   color: white;
   border: none;
@@ -184,9 +214,14 @@
   justify-content: center;
   margin-top: 0;
   margin-left: 0;
-  height: auto;
+  /* Aligné avec le bouton back */
+  height: clamp(32px, 3.3vw, 38px);
   width: auto;
+  min-width: clamp(50px, 6vw, 70px);
   flex-shrink: 0;
+  /* Aligné avec le bouton back */
+  position: relative;
+  top: clamp(-4px, -0.8vh, -6px);
 }
 
 .edit-button.active {
@@ -194,55 +229,138 @@
   color: white;
 }
 
+/* ============================================
+   CONTENEUR PRINCIPAL - "Plein Écran" avec Marges de Sécurité
+   ============================================ */
 .app-main {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  height: calc(100vh - 120px);
+  /* ✅ PLEIN ÉCRAN : Prend toute la largeur */
+  width: 100vw;
+  /* ✅ Règle Globale : Le Rembourrage */
+  min-height: 100vh;
+  min-height: 100dvh; /* Mobile moderne */
+  /* ✅ ÉTAPE 2 : Utiliser les Variables Globales pour le "Sandwich" Parfait */
+  /* Pour les pages scrollables (Home, Info, Formulaires) : Padding sur le conteneur QUI SCROLL */
+  padding-top: calc(var(--header-height) + var(--safe-top) + 20px); /* Header + encoche + 20px d'air */
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px); /* Nav + barre home + 20px d'air */
+  /* ✅ Box-sizing : Le padding est inclus dans la hauteur */
+  box-sizing: border-box;
+  /* ✅ Pas de marge latérale */
   margin: 0;
-  padding: 0;
-  padding-top: var(--safe-area-top);
-  margin-top: var(--header-height);
+  position: relative;
+  /* ✅ Fond explicite : Élimine les bandes noires latérales */
+  background-color: var(--bg-color);
+  /* ✅ Overflow géré par les pages individuelles */
+  overflow-x: hidden;
+  /* ✅ Le scroll natif se fait sur .app-main pour les pages scrollables */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Assurer que le contenu principal reste dans les limites */
-.app-main > * {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
+/* ✅ Exception pour la Page Home : Réduire le padding-top pour occuper toute la hauteur */
+.app-main:has(.home-page) {
+  padding-top: calc(var(--header-height) + var(--safe-top) + 10px);
 }
 
-/* Style pour le conteneur de la carte */
-.map-container {
-  height: 100%;
+/* ✅ Exception pour la Page Map : Le .map-container ignore le padding du parent */
+.app-main .map-container {
+  /* ✅ La carte ne doit pas avoir de padding (sinon on voit du blanc) */
+  /* Le padding de .app-main est ignoré car .map-container est en position absolute */
+  position: absolute;
+  top: calc(var(--header-height) + var(--safe-top));
+  bottom: calc(var(--nav-height) + var(--safe-bottom));
+  left: 0;
+  right: 0;
+  height: auto; /* ✅ Pour qu'elle remplisse l'espace entre le top et le bottom */
   width: 100%;
-  position: relative;
+  margin: 0;
+  padding: 0; /* ✅ Pas de padding (sinon blanc visible) */
+  /* ✅ Vérification Visuelle (Z-Index) : Contenu sous le Header et Nav */
+  z-index: 1;
+}
+
+/* ============================================
+   PAGE CONTENT - Classe standardisée pour toutes les pages
+   ============================================ */
+.page-content {
+  /* ✅ PLEIN ÉCRAN : Largeur 100%, pas de marge ni padding */
+  width: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
+  position: relative;
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
+  /* ✅ Background-color hérité de .app-main */
+  background-color: inherit;
+  /* ✅ Vérification Visuelle (Z-Index) : Contenu sous le Header et Nav */
+  z-index: 1;
+  /* Overflow géré par type de page (voir ci-dessous) */
 }
+
+/* ============================================
+   CAS A : Pages Scrollables (Home, Info, VSSForm)
+   ============================================ */
+.page-content.scrollable {
+  /* ✅ CAS A : height auto et overflow visible (pas de double scroll) */
+  height: auto;
+  overflow: visible;
+  overflow-x: hidden;
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
+  /* ✅ PLEIN ÉCRAN : Pas de marge ni padding sur le conteneur */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  /* ✅ Le scroll se fait sur .app-main, pas ici */
+}
+
+/* ============================================
+   CAS B : Page Map (Spécial)
+   ============================================ */
+.page-content.no-scroll {
+  /* ✅ CAS B : Pas de scroll, overflow hidden */
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
+  /* ✅ PLEIN ÉCRAN : Pas de marge ni padding sur le conteneur */
+  margin: 0;
+  padding: 0;
+  /* ✅ Position relative pour permettre le positionnement absolu de .map-container */
+  position: relative;
+}
+
+/* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré plus haut
+   avec position absolute et top/bottom pour remplir l'espace entre Header et Nav */
 
 /* Assurer que les popups sont toujours au-dessus du contenu */
 .leaflet-popup {
   z-index: 2000;
 }
 
-/* Gestion simplifiée du body */
+/* ============================================
+   BODY - Pas de scroll global, scroll dans .page-content
+   ============================================ */
 body {
   margin: 0;
   padding: 0;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
+  height: 100dvh; /* Mobile moderne */
+  /* ✅ Empêche le scroll global */
   overflow: hidden;
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
 }
 
 /* Les styles pour les boutons et SVG sont déjà définis plus haut */
 
-/* Ajuster le contenu des pages pour tenir compte du header */
-.home-page,
-.info-page {
-  padding-top: 20px;
-}
+/* NOTE: Les styles .home-page et .info-page sont maintenant gérés
+   dans leurs fichiers CSS respectifs (Home.css, Info.css) avec
+   la classe .page-content.scrollable pour une meilleure cohérence.
+*/
 
 /* Styles pour les fenêtres modales */
 .modal-overlay {
@@ -261,7 +379,8 @@ body {
 .modal-content {
   border-radius: 8px;
   width: 90%;
-  max-width: 500px;
+  /* Changé: Largeur adaptative */
+  max-width: min(500px, 90vw);
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -321,7 +440,8 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   max-width: 90%;
-  width: 400px;
+  /* Changé: Largeur adaptative */
+  width: min(400px, 90vw);
   position: relative;
 }
 
@@ -398,22 +518,29 @@ body {
 }
 
 .header-logo img {
-  height: 32px;
+  /* Changé: Logo adaptatif avec contraintes - Augmenté */
+  height: clamp(32px, 5vh, 48px);
   width: auto;
+  max-width: 100%;
   object-fit: contain;
   margin: 0;
   padding: 0;
 }
 
 .header-logo-text {
-  font-size: 1rem;
+  /* Changé: Taille de police adaptative - Augmentée */
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
   font-weight: bold;
   white-space: nowrap;
+  /* Changé: Protection contre débordement */
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin: 0;
   padding: 0;
   display: flex;
   align-items: center;
   height: 100%;
+  max-width: 100%;
 }
 
 /* Mode clair - Texte noir */

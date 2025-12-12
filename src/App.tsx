@@ -36,9 +36,11 @@ import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
+import { StatusBar, Style } from '@capacitor/status-bar';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
 import PartyMap from './pages/PartyMap';
+import ChatPanel from './components/ChatPanel';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -141,6 +143,23 @@ function LocationMarker() {
 
   // Écouter les changements de l'état de localisation
   useEffect(() => {
+    // ✅ Configuration StatusBar pour activer le mode Edge-to-Edge (Plein écran réel)
+    const configureStatusBar = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          // 1. Rend la barre d'état transparente (ou sombre selon le thème)
+          await StatusBar.setStyle({ style: Style.Dark });
+          
+          // 2. CRUCIAL : Dit à l'app de passer SOUS la barre d'état
+          await StatusBar.setOverlaysWebView({ overlay: true });
+        } catch (e) {
+          console.warn('Erreur StatusBar:', e);
+        }
+      }
+    };
+    
+    configureStatusBar();
+
     // Initialiser le service de notifications au démarrage
     const initNotifications = async () => {
       try {
@@ -558,10 +577,20 @@ function App() {
   // Pas de gestion JavaScript du clavier - utilisation CSS pure uniquement
 
   // Forcer l'orientation portrait au démarrage
+  // Note: Le verrouillage principal est géré par OrientationLock dans main.tsx
+  // Ce code est conservé pour compatibilité mais peut être supprimé si redondant
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      ScreenOrientation.lock({ orientation: 'portrait-primary' });
-    }
+    const lockOrientation = async () => {
+      try {
+        await ScreenOrientation.lock({ orientation: 'portrait' });
+      } catch (error) {
+        // Le verrouillage d'orientation n'est pas supporté sur ce device ou navigateur
+        if (Capacitor.isNativePlatform()) {
+          console.warn("Le verrouillage d'orientation n'est pas supporté sur ce device");
+        }
+      }
+    };
+    lockOrientation();
   }, []);
 
   // Effet pour gérer le changement de route et forcer la recréation des marqueurs
@@ -598,8 +627,6 @@ function App() {
     return () => window.removeEventListener('storage', handleLocationChange);
   }, [location.pathname]);
 
-  const [newMessage, setNewMessage] = useState('');
-  const [newMessageSender, setNewMessageSender] = useState(''); 
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const indicationMarkersRef = useRef<L.Marker[]>([]);
@@ -642,9 +669,6 @@ function App() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [editingMessageIndex, setEditingMessageIndex] = useState<number | null>(null);
-  const [editingMessageValue, setEditingMessageValue] = useState('');
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [previousTab, setPreviousTab] = useState<TabType>('map');
   const [appAction, setAppAction] = useState(0);
   
@@ -744,7 +768,7 @@ function App() {
     };
   }, []);
 
-  // Lecture en temps réel des messages depuis Firebase
+  // Lecture en temps réel des messages depuis Firebase (uniquement pour le calcul du nombre de messages non lus)
   useEffect(() => {
     const messagesRef = ref(database, 'chatMessages');
     const unsubscribe = onValue(messagesRef, (snapshot) => {
@@ -755,80 +779,10 @@ function App() {
       // Trier les messages par timestamp décroissant (plus récents en premier)
       const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
       
-      // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
-      if (!localStorage.getItem('lastSeenChatTimestamp')) {
-        const now = Date.now();
-        localStorage.setItem('lastSeenChatTimestamp', String(now));
-      }
-      
       setMessages(sortedMessages);
     });
     return () => unsubscribe();
   }, []);
-
-  // Ajout d'un message dans Firebase (avec nom personnalisé)
-  const handleAddMessage = async (msg: string, sender: string) => {
-    const newMsgRef = push(ref(database, 'chatMessages'));
-    await set(newMsgRef, {
-      content: msg,
-      sender: sender || 'Organisation',
-      timestamp: Date.now(),
-      isAdmin: true
-    });
-
-    const notificationService = NotificationService.getInstance();
-    await notificationService.notifyChatMessage(msg, sender);
-  };
-
-  // Modification d'un message dans Firebase (texte et nom)
-  const handleEditMessage = (id: string, newContent: string, newSender: string) => {
-    update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender});
-  };
-
-  // Suppression d'un message dans Firebase
-  const handleDeleteMessage = (id: string) => {
-    remove(ref(database, `chatMessages/${id}`));
-  };
-
-  // État pour gérer les traductions des messages
-  const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
-
-  // Fonction pour traduire un message en anglais
-  const translateMessage = async (messageId: string, text: string) => {
-    try {
-      // Si le message est déjà traduit, on revient au français
-      if (translatedMessages[messageId]) {
-        setTranslatedMessages(prev => {
-          const newState = { ...prev };
-          delete newState[messageId];
-          return newState;
-        });
-        return;
-      }
-
-      // Utilisation de l'API de traduction gratuite
-      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`);
-      const data = await response.json();
-      
-      if (data && data[0]) {
-        // Concaténer tous les segments traduits pour obtenir le texte complet
-        const translatedText = data[0]
-          .filter((segment: any) => segment && segment[0])
-          .map((segment: any[]) => segment[0])
-          .join('');
-        // Stocker la traduction dans l'état
-        setTranslatedMessages(prev => ({
-          ...prev,
-          [messageId]: translatedText
-        }));
-      } else {
-        alert('Erreur lors de la traduction');
-      }
-    } catch (error) {
-      console.error('Erreur de traduction:', error);
-      alert('Erreur lors de la traduction. Veuillez réessayer.');
-    }
-  };
 
   // Fonction pour vérifier les droits d'administration avant d'exécuter une action
   const checkAdminRights = () => {
@@ -4328,7 +4282,7 @@ function App() {
         {locationLoading ? (
           <div className="loading">Chargement de la carte...</div>
         ) : (
-          <div className="map-container" style={{ marginTop: 0, paddingTop: 0 }}>
+          <div className="page-content no-scroll map-container" style={{ marginTop: 0, paddingTop: 0 }}>
         <MapContainer
           center={[48.686881, 6.1880492]}
           zoom={12}
@@ -4443,20 +4397,41 @@ function App() {
               <div className="events-panel">
                 <div className="events-panel-header">
                     <h3>Événements</h3>
+                    {showFilters && (
+                      <>
+                        <button
+                          className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
+                          onClick={handleStarFilterClick}
+                          title="Appliquer vos préférences"
+                        >
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 1.5L14.5 8.5L22 9L16 14.5L17.5 22L12 18L6.5 22L8 14.5L2 9L9.5 8.5L12 1.5Z"/>
+                          </svg>
+                        </button>
+                        <button
+                          className="filter-reset-button"
+                          onClick={() => {
+                            setEventFilterWithSave('all');
+                            setDelegationFilterWithSave('all');
+                            setVenueFilterWithSave('Tous');
+                            setShowFemaleWithSave(true);
+                            setShowMaleWithSave(true);
+                            setShowMixedWithSave(true);
+                            setIsStarFilterActive(false);
+                            localStorage.setItem('starFilterActive', 'false');
+                            triggerMarkerUpdate();
+                            setTimeout(scrollToFirstNonPassedEvent, 100);
+                          }}
+                        >
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                          </svg>
+                        </button>
+                      </>
+                    )}
                     <button 
                       className="filter-toggle-button"
                       onClick={() => setShowFilters(!showFilters)}
-                      style={{ 
-                        backgroundColor: 'transparent',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '0px',
-                        margin: '0px',
-                        border: 'none',
-                        minWidth: 'auto',
-                        width: 'auto'
-                      }}
                     >
                       <svg 
                         width="28" 
@@ -4479,36 +4454,6 @@ function App() {
                 <div className={`event-filters ${showFilters ? 'show' : ''}`}>
                     {showFilters && (
                     <>
-                      <button
-                        className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
-                        style={{ right: '80px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
-                        onClick={handleStarFilterClick}
-                        title="Appliquer vos préférences"
-                      >
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 1.5L14.5 8.5L22 9L16 14.5L17.5 22L12 18L6.5 22L8 14.5L2 9L9.5 8.5L12 1.5Z"/>
-                        </svg>
-                      </button>
-                      <button
-                        className="filter-reset-button"
-                        style={{ right: '45px', top: '50px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}
-                        onClick={() => {
-                          setEventFilterWithSave('all');
-                          setDelegationFilterWithSave('all');
-                          setVenueFilterWithSave('Tous');
-                          setShowFemaleWithSave(true);
-                          setShowMaleWithSave(true);
-                          setShowMixedWithSave(true);
-                          setIsStarFilterActive(false);
-                          localStorage.setItem('starFilterActive', 'false');
-                          triggerMarkerUpdate();
-                          setTimeout(scrollToFirstNonPassedEvent, 100);
-                        }}
-                      >
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                        </svg>
-                      </button>
                       <div className="filter-buttons-row"></div>
                       <select 
                         className="filter-select"
@@ -4691,203 +4636,10 @@ function App() {
               </div>
             )}
             {activeTab === 'chat' && (
-              <div className="chat-panel">
-                <div className="chat-panel-header">
-                  <h3>Messages de l'orga</h3>
-                  <div style={{ display: 'flex', alignItems: 'center', position: 'relative'}}>
-                    {isAdmin && isEditing && (
-                      <button
-                        className="add-message-button"
-                        onClick={() => setShowAddMessage((v) => !v)}
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center', 
-                          height: 20, 
-                          width: 70, 
-                          position: 'absolute',
-                          top: '-0.5rem',
-                          right: 0,
-                          zIndex: 10
-                        }}
-                      >
-                        {showAddMessage ? 'Annuler' : 'Ajouter'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-                {showAddMessage && (
-                  <form
-                    className="add-message-form"
-                    style={{ 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      gap: '12px', 
-                      padding: '1.5rem', 
-                      alignItems: 'stretch',
-                      background: 'var(--bg-color)', 
-                      borderBottom: '1px solid var(--border-color)',
-                      width: '100%',
-                      maxWidth: '800px',
-                      margin: '0 auto'
-                    }}
-                    onSubmit={e => {
-                      e.preventDefault();
-                      if (newMessage.trim()) {
-                        if (editingMessageId) {
-                          // Si on édite un message existant
-                          handleEditMessage(editingMessageId, newMessage, newMessageSender);
-                        } else {
-                          // Sinon, on ajoute un nouveau message
-                          handleAddMessage(newMessage, newMessageSender);
-                        }
-                        setNewMessage('');
-                        setNewMessageSender('');
-                        setShowAddMessage(false);
-                        setEditingMessageId(null);
-                      }
-                    }}
-                  >
-                    {/* Champ pour le nom de l'expéditeur (admin uniquement) */}
-                    {isAdmin && (
-                      <input
-                        type="text"
-                        value={newMessageSender}
-                        onChange={e => setNewMessageSender(e.target.value)}
-                        placeholder="Nom (ex: Organisation, Prénom...)"
-                        style={{ 
-                          width: 280,
-                          height: 25,
-                          padding: '8px',
-                          borderRadius: '4px',
-                          border: '1px solid var(--border-color)',
-                          background: 'var(--bg-color)',
-                          position: 'fixed',
-                          top: '7rem',
-                          left: '1.5rem'
-                        }}
-                      />
-                    )}
-                    <textarea
-                      value={newMessage}
-                      onChange={e => {
-                        setNewMessage(e.target.value);
-                        e.target.style.height = 'auto';
-                        e.target.style.height = `${e.target.scrollHeight}px`;
-                      }}
-                      placeholder="Votre message..."
-                      style={{
-                        flex: 1,
-                        height: '25px',
-                        minHeight: '25px', 
-                        maxHeight: '200px',
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid var(--border-color)',
-                        background: 'var(--bg-color)',
-                        resize: 'none',
-                        overflow: 'hidden',
-                        marginTop: '2rem'
-                      }}
-                      autoFocus
-                    />
-                    <button 
-                      type="submit" 
-                      style={{ 
-                        background: 'none',
-                        border: 'none', 
-                        cursor: 'pointer',
-                        padding: 0,
-                        position: 'fixed',
-                        top: '7rem',
-                        fontSize: '22px',
-                        right: '1.5rem'
-                      }}
-                    >
-                      ➡️
-                    </button>
-                  </form>
-                )}
-                <div className="chat-container">
-                  {messages.map((message, index) => (
-                    <div key={message.id || index} className={`chat-message ${message.isAdmin ? 'admin' : ''}`} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                      {/* Header du message : affiche le nom de l'expéditeur */}
-                      <div className="chat-message-header" style={{ justifyContent: 'space-between' }}>
-                        <span>{message.sender}</span>
-                        <span>{new Date(message.timestamp).toLocaleString()}</span>
-                      </div>
-                      {/* Contenu du message */}
-                      <div className="chat-message-content" style={{ textAlign: 'left' }}>
-                        {/* Si ce message est en cours d'édition, affiche un input */}
-                        {isAdmin && editingMessageIndex === index ? (
-                          <form
-                            style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
-                            onSubmit={e => {
-                              e.preventDefault();
-                              if (message.id) {
-                                handleEditMessage(message.id, editingMessageValue, newMessageSender);
-                              }
-                              setEditingMessageIndex(null);
-                              setEditingMessageValue('');
-                            }}
-                          >
-                            <input
-                              type="text"
-                              value={editingMessageValue}
-                              onChange={e => setEditingMessageValue(e.target.value)}
-                              style={{ flex: 1, padding: '6px', borderRadius: '4px', border: '1px solid var(--border-color)' }}
-                              autoFocus
-                            />
-                            <button type="submit" className="add-message-button">Valider</button>
-                            <button type="button" className="close-chat-button" onClick={() => { setEditingMessageIndex(null); setEditingMessageValue(''); }}>Annuler</button>
-                          </form>
-                        ) : (
-                          <>
-                            {translatedMessages[message.id || `msg-${index}`] || message.content}
-                          </>
-                        )}
-                        {/* Bouton de traduction en bas à droite */}
-                        <button
-                          className="translate-button"
-                          onClick={() => translateMessage(message.id || `msg-${index}`, message.content)}
-                          title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
-                        >
-                          {translatedMessages[message.id || `msg-${index}`] ? "Original" : "🌐 Translate"}
-                        </button>
-                      </div>
-                                             {/* Boutons admin en bas à droite */}
-                       {isAdmin && isEditing && editingMessageIndex !== index && (
-                         <div className="chat-admin-buttons">
-                           <button
-                             className="edit-message-button"
-                             title="Modifier"
-                             onClick={() => {
-                               // Ouvre le formulaire d'ajout en haut, pré-rempli
-                               setShowAddMessage(true);
-                               setNewMessage(message.content);
-                               setNewMessageSender(message.sender);
-                               setEditingMessageId(message.id || null);
-                             }}
-                           >
-                             ✏️
-                           </button>
-                           <button
-                             className="delete-message-button"
-                             title="Supprimer"
-                             onClick={() => {
-                               if (window.confirm('Supprimer ce message ?') && message.id) {
-                                 handleDeleteMessage(message.id);
-                               }
-                             }}
-                           >
-                             🗑️
-                           </button>
-                         </div>
-                       )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <ChatPanel 
+                isAdmin={isAdmin}
+                isEditing={isEditing}
+              />
             )}
           </div>
         )}

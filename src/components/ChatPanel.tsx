@@ -1,0 +1,342 @@
+/**
+ * @fileoverview Composant réutilisable pour le panneau de chat
+ * 
+ * Ce composant fournit :
+ * - Affichage des messages en temps réel depuis Firebase
+ * - Gestion de l'ajout/modification/suppression de messages (admin)
+ * - Traduction des messages en anglais
+ * - Formulaire d'ajout/modification de messages
+ * 
+ * Nécessaire car :
+ * - Centralise le rendu et la logique du chat
+ * - Assure un rendu cohérent dans toute l'application
+ * - Évite la duplication de code entre Layout.tsx et App.tsx
+ */
+
+import React, { useState, useEffect } from 'react';
+import { ref, onValue, set, push, remove, update } from 'firebase/database';
+import { database } from '../firebase';
+import NotificationService from '../services/NotificationService';
+import './ChatPanel.css';
+
+interface Message {
+  id?: string;
+  content: string;
+  sender: string;
+  timestamp: number;
+  isAdmin: boolean;
+}
+
+interface ChatPanelProps {
+  isAdmin: boolean;
+  isEditing: boolean;
+}
+
+const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
+  const [showAddMessage, setShowAddMessage] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [newMessageSender, setNewMessageSender] = useState('');
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+
+  // Annuler l'ajout de message si isEditing passe à false
+  useEffect(() => {
+    if (!isEditing && showAddMessage) {
+      setShowAddMessage(false);
+      setNewMessage('');
+      setNewMessageSender('');
+      setEditingMessageId(null);
+    }
+  }, [isEditing, showAddMessage]);
+
+  // Lecture en temps réel des messages depuis Firebase
+  useEffect(() => {
+    const messagesRef = ref(database, 'chatMessages');
+    const unsubscribe = onValue(messagesRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      // Transforme l'objet en tableau [{id, ...}]
+      const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
+      
+      // Trier les messages par timestamp décroissant (plus récents en premier)
+      const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
+      
+      // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
+      if (!localStorage.getItem('lastSeenChatTimestamp')) {
+        const now = Date.now();
+        localStorage.setItem('lastSeenChatTimestamp', String(now));
+      }
+      
+      setMessages(sortedMessages);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Mettre à jour le timestamp de dernière lecture quand le chat est ouvert
+  useEffect(() => {
+    if (messages.length > 0) {
+      const mostRecentMsg = messages[0];
+      const newTimestamp = mostRecentMsg.timestamp;
+      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
+    }
+  }, [messages]);
+
+  // Ajout d'un message dans Firebase (avec nom personnalisé)
+  const handleAddMessage = async (msg: string, sender: string) => {
+    const newMsgRef = push(ref(database, 'chatMessages'));
+    await set(newMsgRef, {
+      content: msg,
+      sender: sender || 'Organisation',
+      timestamp: Date.now(),
+      isAdmin: true
+    });
+
+    const notificationService = NotificationService.getInstance();
+    await notificationService.notifyChatMessage(msg, sender);
+  };
+
+  // Modification d'un message dans Firebase (texte et nom)
+  const handleEditMessage = (id: string, newContent: string, newSender: string) => {
+    update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender});
+  };
+
+  // Suppression d'un message dans Firebase
+  const handleDeleteMessage = (id: string) => {
+    remove(ref(database, `chatMessages/${id}`));
+  };
+
+  // Fonction pour traduire un message en anglais
+  const translateMessage = async (messageId: string, text: string) => {
+    try {
+      // Si le message est déjà traduit, on revient au français
+      if (translatedMessages[messageId]) {
+        setTranslatedMessages(prev => {
+          const newState = { ...prev };
+          delete newState[messageId];
+          return newState;
+        });
+        return;
+      }
+
+      // Utilisation de l'API de traduction gratuite
+      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`);
+      const data = await response.json();
+      
+      if (data && data[0]) {
+        // Concaténer tous les segments traduits pour obtenir le texte complet
+        const translatedText = data[0]
+          .filter((segment: any) => segment && segment[0])
+          .map((segment: any[]) => segment[0])
+          .join('');
+        // Stocker la traduction dans l'état
+        setTranslatedMessages(prev => ({
+          ...prev,
+          [messageId]: translatedText
+        }));
+      } else {
+        alert('Erreur lors de la traduction');
+      }
+    } catch (error) {
+      console.error('Erreur de traduction:', error);
+      alert('Erreur lors de la traduction. Veuillez réessayer.');
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMessage.trim()) {
+      if (editingMessageId) {
+        // Si on édite un message existant
+        handleEditMessage(editingMessageId, newMessage, newMessageSender);
+      } else {
+        // Sinon, on ajoute un nouveau message
+        handleAddMessage(newMessage, newMessageSender);
+      }
+      setNewMessage('');
+      setNewMessageSender('');
+      setShowAddMessage(false);
+      setEditingMessageId(null);
+    }
+  };
+
+  const handleEditClick = (message: Message) => {
+    setShowAddMessage(true);
+    setNewMessage(message.content);
+    setNewMessageSender(message.sender);
+    setEditingMessageId(message.id || null);
+  };
+
+  const handleDeleteClick = (messageId: string | undefined) => {
+    if (window.confirm('Supprimer ce message ?') && messageId) {
+      handleDeleteMessage(messageId);
+    }
+  };
+
+  return (
+    <div className="chat-panel">
+      <div className="chat-panel-header">
+        <h3>Messages de l'orga</h3>
+        <div style={{ display: 'flex', alignItems: 'center', position: 'relative'}}>
+          {isAdmin && isEditing && (
+            <button
+              className="add-message-button"
+              onClick={() => {
+                if (showAddMessage) {
+                  // Si on ferme le formulaire, réinitialiser les champs
+                  setNewMessage('');
+                  setNewMessageSender('');
+                  setEditingMessageId(null);
+                }
+                setShowAddMessage((v) => !v);
+              }}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: 20, 
+                width: 70, 
+                position: 'absolute',
+                top: '-0.5rem',
+                right: 0,
+                zIndex: 10
+              }}
+            >
+              {showAddMessage ? 'Annuler' : 'Ajouter'}
+            </button>
+          )}
+        </div>
+      </div>
+      
+      {showAddMessage && (
+        <form
+          className="add-message-form"
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            gap: '12px', 
+            padding: '1.5rem', 
+            alignItems: 'stretch',
+            background: 'var(--bg-color)', 
+            borderBottom: '1px solid var(--border-color)',
+            width: '100%',
+            maxWidth: '800px',
+            margin: '0 auto'
+          }}
+          onSubmit={handleSubmit}
+        >
+          {/* Ligne avec Nom et bouton d'envoi */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="text"
+              value={newMessageSender}
+              onChange={e => setNewMessageSender(e.target.value)}
+              placeholder="Nom (ex: Organisation, Prénom...)"
+              style={{ 
+                flex: 1,
+                height: '41px',
+                padding: '8px',
+                borderRadius: '4px',
+                border: '1px solid var(--border-color)',
+                background: 'var(--bg-color)',
+                color: 'var(--text-color)',
+                fontSize: '0.9rem',
+                boxSizing: 'border-box'
+              }}
+            />
+            <button 
+              type="submit" 
+              style={{ 
+                background: 'none',
+                border: 'none', 
+                cursor: 'pointer',
+                padding: '8px',
+                fontSize: '22px',
+                flexShrink: 0,
+                height: '41px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ➡️
+            </button>
+          </div>
+          {/* Textarea pour le message */}
+          <textarea
+            value={newMessage}
+            onChange={e => {
+              setNewMessage(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+            placeholder="Votre message..."
+            style={{
+              width: '100%',
+              height: '80px',
+              minHeight: '80px', 
+              maxHeight: '200px',
+              padding: '12px',
+              borderRadius: '4px',
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-color)',
+              color: 'var(--text-color)',
+              fontSize: '1rem',
+              resize: 'vertical',
+              overflow: 'auto',
+              lineHeight: '1.5',
+              boxSizing: 'border-box'
+            }}
+            autoFocus
+          />
+        </form>
+      )}
+      
+      <div className="chat-container">
+        {messages.map((message, index) => (
+          <div 
+            key={message.id || index} 
+            className={`chat-message ${message.isAdmin ? 'admin' : ''}`} 
+            style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}
+          >
+            <div className="chat-message-header" style={{ justifyContent: 'space-between' }}>
+              <span>{message.sender}</span>
+              <span>{new Date(message.timestamp).toLocaleString()}</span>
+            </div>
+            <div className="chat-message-content" style={{ textAlign: 'left' }}>
+              {translatedMessages[message.id || `msg-${index}`] || message.content}
+            </div>
+            {/* Bouton de traduction en bas à droite */}
+            <button
+              className="translate-button"
+              onClick={() => translateMessage(message.id || `msg-${index}`, message.content)}
+              title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
+            >
+              {translatedMessages[message.id || `msg-${index}`] ? "Original" : "🌐 Translate"}
+            </button>
+            {/* Boutons admin en bas à droite */}
+            {isAdmin && isEditing && (
+              <div className="chat-admin-buttons">
+                <button
+                  className="edit-message-button"
+                  title="Modifier"
+                  onClick={() => handleEditClick(message)}
+                >
+                  ✏️
+                </button>
+                <button
+                  className="delete-message-button"
+                  title="Supprimer"
+                  onClick={() => handleDeleteClick(message.id)}
+                >
+                  🗑️
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ChatPanel;

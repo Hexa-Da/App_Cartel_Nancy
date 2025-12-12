@@ -29,6 +29,7 @@ import { useApp } from '../AppContext';
 import VSSForm from './VSSForm';
 import EmergencyPopup from './EmergencyPopup';
 import HSECharterPopup from './HSECharterPopup';
+import ChatPanel from './ChatPanel';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { StatusBar, Style } from '@capacitor/status-bar';
@@ -172,34 +173,12 @@ const Layout: React.FC = () => {
     }
   };
   
-  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, showPlaceTypeModal, setShowPlaceTypeModal, selectedPlaceType, setSelectedPlaceType, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, // États du formulaire de lieu
+  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, showPlaceTypeModal, setShowPlaceTypeModal, selectedPlaceType, setSelectedPlaceType, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, closeAllModals, // États du formulaire de lieu
     newVenueName, setNewVenueName, newVenueDescription, setNewVenueDescription, newVenueAddress, setNewVenueAddress,     selectedSport, setSelectedSport, selectedEmoji, setSelectedEmoji, selectedEventType, setSelectedEventType, selectedIndicationType, setSelectedIndicationType, tempMarker, setTempMarker, editingVenue, setEditingVenue, // États du formulaire de match
     editingMatch, setEditingMatch, newMatch, setNewMatch, selectedEvent, setSelectedEvent, selectedPartyForMap, setSelectedPartyForMap } = useAppPanels();
   const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
-  const [showAddMessage, setShowAddMessage] = useState(false);
-  const [newMessage, setNewMessage] = useState('');
-
-  // Annuler l'ajout de message si isEditing passe à false
-  useEffect(() => {
-    if (!isEditing && showAddMessage) {
-      setShowAddMessage(false);
-      setNewMessage('');
-    }
-  }, [isEditing, showAddMessage]);
-
-  const [newMessageSender, setNewMessageSender] = useState('');
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Fermer le formulaire de message si on navigue vers une autre page
-  useEffect(() => {
-    if (showAddMessage && !showChat) {
-      setShowAddMessage(false);
-      setNewMessage('');
-      setNewMessageSender('');
-    }
-  }, [location.pathname, showChat, showAddMessage]);
 
     // Synchroniser activeTab avec location.pathname
     useEffect(() => {
@@ -243,17 +222,6 @@ const Layout: React.FC = () => {
     }
   }, []);
 
-  // Fonction utilitaire pour mettre à jour le timestamp de dernière lecture
-  // Cette fonction est appelée à chaque fois que le chat est fermé pour s'assurer
-  // que le macaron de notification n'apparaît que quand il y a de nouveaux messages
-  const updateLastSeenTimestamp = () => {
-    if (messages.length > 0) {
-      // Maintenant que les messages sont triés par ordre décroissant, le premier est le plus récent
-      const mostRecentMsg = messages[0];
-      const newTimestamp = mostRecentMsg.timestamp;
-      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
-    }
-  };
 
   // Gestion du bouton physique retour des téléphones
   useEffect(() => {
@@ -364,10 +332,6 @@ const Layout: React.FC = () => {
       }
 
       if (showChat) {
-        updateLastSeenTimestamp();
-        setShowAddMessage(false);
-        setNewMessage('');
-        setNewMessageSender('');
         setShowChat(false);
         window.history.replaceState({ path: currentPath, chat: false }, '', currentPath);
         isHandlingPopState = false;
@@ -439,53 +403,8 @@ const Layout: React.FC = () => {
     }
   }, [location.pathname]);
   
-  // Effet pour mettre à jour le timestamp de dernière lecture lors de la navigation
-  useEffect(() => {
-    // Si le chat était ouvert et qu'on navigue vers une autre page, mettre à jour le timestamp
-    if (showChat && messages.length > 0) {
-      updateLastSeenTimestamp();
-    }
-  }, [location.pathname, showChat, messages]);
+  // Le timestamp de dernière lecture est maintenant géré automatiquement par ChatPanel
 
-  // État pour gérer les traductions des messages
-  const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
-
-  // Fonction pour traduire un message en anglais
-  const translateMessage = async (messageId: string, text: string) => {
-    try {
-      // Si le message est déjà traduit, on revient au français
-      if (translatedMessages[messageId]) {
-        setTranslatedMessages(prev => {
-          const newState = { ...prev };
-          delete newState[messageId];
-          return newState;
-        });
-        return;
-      }
-
-      // Utilisation de l'API de traduction gratuite
-      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`);
-      const data = await response.json();
-      
-      if (data && data[0]) {
-        // Concaténer tous les segments traduits pour obtenir le texte complet
-        const translatedText = data[0]
-          .filter((segment: any) => segment && segment[0])
-          .map((segment: any[]) => segment[0])
-          .join('');
-        // Stocker la traduction dans l'état
-        setTranslatedMessages(prev => ({
-          ...prev,
-          [messageId]: translatedText
-        }));
-      } else {
-        alert('Erreur lors de la traduction');
-      }
-    } catch (error) {
-      console.error('Erreur de traduction:', error);
-      alert('Erreur lors de la traduction. Veuillez réessayer.');
-    }
-  };
 
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
@@ -779,54 +698,10 @@ const Layout: React.FC = () => {
     setEditingMatch({ venueId: null, match: null });
   };
 
-  // Ajout d'un message dans Firebase
-  const handleAddMessage = (msg: string, sender: string) => {
-    const newMsgRef = push(ref(database, 'chatMessages'));
-    set(newMsgRef, {
-      content: msg,
-      sender: sender,
-      timestamp: Date.now(),
-      isAdmin: true
-    });
-
-    // Notification locale (web)
-    if (window.Notification && Notification.permission === 'granted') {
-      new Notification('Nouveau message de l\'organisation', {
-        body: msg,
-        icon: '/favicon.png'
-      });
-    } else if (window.Notification && Notification.permission !== 'denied') {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          new Notification('Nouveau message de l\'organisation', {
-            body: msg,
-            icon: '/favicon.png'
-          });
-        }
-      });
-    }
-  };
-
-  // Modification d'un message dans Firebase
-  const handleEditMessage = (id: string, newContent: string, newSender: string) => {
-    update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender});
-  };
-
-  // Suppression d'un message dans Firebase
-  const handleDeleteMessage = (id: string) => {
-    remove(ref(database, `chatMessages/${id}`));
-  };
 
   // Fonction pour fermer les panneaux locaux (chat, urgence, admin)
   const closeLayoutPanels = () => {
-    // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
-    if (showChat) {
-      updateLastSeenTimestamp();
-      // Fermer le formulaire de message si on ferme le chat
-      setShowAddMessage(false);
-      setNewMessage('');
-      setNewMessageSender('');
-    }
+    // Le timestamp de dernière lecture est géré automatiquement par ChatPanel
     
     setShowChat(false);
     setShowEmergency(false);
@@ -835,13 +710,6 @@ const Layout: React.FC = () => {
 
   const handleBack = () => {
     if (showChat) {
-
-      // Mettre à jour le timestamp de dernière lecture avant de fermer le chat
-      updateLastSeenTimestamp();
-      // Fermer le formulaire de message si on ferme le chat
-      setShowAddMessage(false);
-      setNewMessage('');
-      setNewMessageSender('');
       setShowChat(false);
       // Ne pas changer activeTab - rester sur la page actuelle
       return;
@@ -921,15 +789,7 @@ const Layout: React.FC = () => {
       }, '', location.pathname);
     }
     
-    // Fermer le formulaire de message si on ferme le chat
-    if (wasChatOpen) {
-      setShowAddMessage(false);
-      setNewMessage('');
-      setNewMessageSender('');
-    }
-    
-    // Mettre à jour le timestamp de dernière lecture à l'ouverture ET à la fermeture
-    updateLastSeenTimestamp();
+    // Le timestamp de dernière lecture est géré automatiquement par ChatPanel
   };
 
 
@@ -959,171 +819,10 @@ const Layout: React.FC = () => {
 
       {/* Fenêtre modale pour le chat */}
       {showChat && (
-        <div className={`chat-panel ${location.pathname === '/home' || location.pathname === '/info' || location.pathname.startsWith('/info/') || location.pathname === '/planning-files' ? 'home-info-chat' : ''}`}>
-          <div className="chat-panel-header">
-            <h3>Messages de l'orga</h3>
-            <div style={{ display: 'flex', alignItems: 'center', position: 'relative'}}>
-              {isAdmin && isEditing && (
-                <button
-                  className="add-message-button"
-                  onClick={() => setShowAddMessage((v) => !v)}
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    height: 20, 
-                    width: 70, 
-                    position: 'absolute',
-                    top: '-0.5rem',
-                    right: 0,
-                    zIndex: 10
-                  }}
-                >
-                  {showAddMessage ? 'Annuler' : 'Ajouter'}
-                </button>
-              )}
-            </div>
-          </div>
-          {showAddMessage && (
-                  <form
-                    className="add-message-form"
-                    style={{ 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      gap: '12px', 
-                      padding: '1.5rem', 
-                      alignItems: 'stretch',
-                      background: 'var(--bg-color)', 
-                      borderBottom: '1px solid var(--border-color)',
-                      width: '100%',
-                      maxWidth: '800px',
-                      margin: '0 auto'
-                    }}
-                    onSubmit={e => {
-                      e.preventDefault();
-                      if (newMessage.trim()) {
-                        if (editingMessageId) {
-                          // Si on édite un message existant
-                          handleEditMessage(editingMessageId, newMessage, newMessageSender);
-                        } else {
-                          // Sinon, on ajoute un nouveau message
-                          handleAddMessage(newMessage, newMessageSender);
-                        }
-                        setNewMessage('');
-                        setNewMessageSender('');
-                        setShowAddMessage(false);
-                        setEditingMessageId(null);
-                      }
-                    }}
-                  >
-                    {isAdmin && (
-                      <input
-                        type="text"
-                        value={newMessageSender}
-                        onChange={e => setNewMessageSender(e.target.value)}
-                        placeholder="Nom (ex: Organisation, Prénom...)"
-                        style={{ 
-                          width: 280,
-                          height: 25,
-                          padding: '8px',
-                          borderRadius: '4px',
-                          border: '1px solid var(--border-color)',
-                          background: 'var(--bg-color)',
-                          position: 'fixed',
-                          top: '7rem',
-                          left: '1.5rem'
-                        }}
-                      />
-                    )}
-                    <textarea
-                      value={newMessage}
-                      onChange={e => {
-                        setNewMessage(e.target.value);
-                        e.target.style.height = 'auto';
-                        e.target.style.height = `${e.target.scrollHeight}px`;
-                      }}
-                      placeholder="Votre message..."
-                      style={{
-                        flex: 1,
-                        height: '25px',
-                        minHeight: '25px', 
-                        maxHeight: '200px',
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid var(--border-color)',
-                        background: 'var(--bg-color)',
-                        resize: 'none',
-                        overflow: 'hidden',
-                        marginTop: '2rem'
-                      }}
-                      autoFocus
-                    />
-                    <button 
-                      type="submit" 
-                      style={{ 
-                        background: 'none',
-                        border: 'none', 
-                        cursor: 'pointer',
-                        padding: 0,
-                        position: 'fixed',
-                        top: '7rem',
-                        fontSize: '22px',
-                        right: '1.5rem'
-                      }}
-                    >
-                      ➡️
-                    </button>
-                  </form>
-                )}
-          <div className="chat-container">
-            {messages.map((message, index) => (
-              <div key={message.id || index} className={`chat-message ${message.isAdmin ? 'admin' : ''}`} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                <div className="chat-message-header" style={{ justifyContent: 'space-between' }}>
-                  <span>{message.sender}</span>
-                  <span>{new Date(message.timestamp).toLocaleString()}</span>
-                </div>
-                <div className="chat-message-content" style={{ textAlign: 'left' }}>
-                  {translatedMessages[message.id || `msg-${index}`] || message.content}
-                </div>
-                {/* Bouton de traduction en bas à droite */}
-                <button
-                  className="translate-button"
-                  onClick={() => translateMessage(message.id || `msg-${index}`, message.content)}
-                  title={translatedMessages[message.id || `msg-${index}`] ? "Revenir au français" : "Traduire en anglais"}
-                >
-                  {translatedMessages[message.id || `msg-${index}`] ? "Original" : "🌐 Translate"}
-                </button>
-                                 {isAdmin && isEditing && (
-                   <div className="chat-admin-buttons">
-                     <button
-                       className="edit-message-button"
-                       title="Modifier"
-                       onClick={() => {
-                         setShowAddMessage(true);
-                         setNewMessage(message.content);
-                         setNewMessageSender(message.sender);
-                         setEditingMessageId(message.id || null);
-                       }}
-                     >
-                       ✏️
-                     </button>
-                     <button
-                       className="delete-message-button"
-                       title="Supprimer"
-                       onClick={() => {
-                         if (window.confirm('Supprimer ce message ?') && message.id) {
-                           handleDeleteMessage(message.id);
-                         }
-                       }}
-                     >
-                       🗑️
-                     </button>
-                   </div>
-                 )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <ChatPanel 
+          isAdmin={isAdmin}
+          isEditing={isEditing}
+        />
       )}
 
       {/* Fenêtre modale pour les contacts d'urgence */}
@@ -1131,6 +830,7 @@ const Layout: React.FC = () => {
         isOpen={showEmergency}
         onClose={() => setShowEmergency(false)}
         onShowVSS={() => {
+          closeAllModals();
           setShowVSSForm(true);
           window.history.pushState({ path: location.pathname, vssForm: true }, '', location.pathname);
         }}

@@ -1,25 +1,41 @@
+/* ============================================
+   HOME PAGE - Layout Flexbox Standardisé
+   ============================================ */
 .home-page {
-  padding: 10px;
-  margin-top: 0;
+  /* ✅ CAS A : Page scrollable - height auto, overflow visible */
+  height: auto;
+  overflow: visible;
+  overflow-x: hidden;
+  /* ✅ NE TOUCHE PAS au margin (ça ne marche pas bien avec le scroll) */
+  margin: 0;
+  /* ✅ Padding adaptatif (à l'intérieur du composant, pas sur le conteneur) */
+  padding: clamp(5px, 1.5vh, 10px);
+  /* ✅ Padding-top minimal pour que le titre de la première liste soit visible */
+  padding-top: clamp(5px, 1.5vh, 10px);
   background-color: var(--bg-color);
   color: var(--text-color);
-  min-height: calc(100vh - 120px);
-  overflow-x: hidden;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: calc(var(--below-header) + 20px); /* Utilise la variable CSS */
+  /* ✅ Pas de overflow-y: auto ici (le scroll se fait sur .app-main) */
+  /* NOTE: Les paddings top/bottom pour Header et Nav sont sur .app-main qui scroll */
 }
 
 .welcome-title {
+  /* ✅ Déjà bien fait avec clamp */
   font-size: clamp(2.2rem, 7vw, 3.5rem);
   font-weight: 700;
   color: var(--text-color);
-  margin: 0 0 12px 0;
-  margin-top: -10px;
-  padding: 0 10px 8px 10px;
+  margin: 0 0 clamp(8px, 1.5vh, 12px) 0;
+  margin-top: clamp(-8px, -1vh, -10px);
+  /* Changé: Padding adaptatif */
+  padding: 0 clamp(8px, 2vw, 10px) clamp(6px, 1vh, 8px) clamp(8px, 2vw, 10px);
   text-align: center;
   line-height: 1.1;
+  /* Changé: Protection contre débordement */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .matches-section {
@@ -28,7 +44,7 @@
 }
 
 .matches-section:first-of-type {
-  margin-top: -5px;
+  margin-top: 10px;
 }
 
 .matches-section:last-of-type {
@@ -36,20 +52,29 @@
 }
 
 .matches-section h2 {
+  /* ✅ Déjà bien fait avec clamp */
   font-size: clamp(0.9rem, 3vw, 1.2rem);
   font-weight: 600;
   color: var(--text-color);
-  margin: 0 0 12px 10px;
+  margin: 0 0 clamp(8px, 1.5vh, 12px) clamp(8px, 2vw, 10px);
   padding: 0;
+}
+
+.matches-section:first-of-type h2 {
+  /* ✅ Assurer que le premier titre est visible sous le header */
+  margin-top: clamp(8px, 1.5vh, 12px);
 }
 
 .horizontal-scroll {
   display: flex;
   overflow-x: auto;
-  gap: 8px;
-  padding: 0 10px;
+  /* Changé: Gap adaptatif */
+  gap: clamp(6px, 1.5vw, 8px);
+  /* Changé: Padding adaptatif */
+  padding: 0 clamp(8px, 2vw, 10px);
   -webkit-overflow-scrolling: touch;
-  min-height: 120px;
+  /* Changé: min-height adaptatif */
+  min-height: clamp(100px, 15vh, 120px);
   scroll-behavior: smooth;
   /* Propriétés pour faire disparaître les scrollbars automatiquement */
   scrollbar-gutter: stable;
@@ -69,8 +94,10 @@
 }
 
 .home-event-item {
-  width: 350px;
-  flex: 0 0 350px;
+  /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+  width: 70%;
+  max-width: var(--modal-width);
+  flex: 0 0 auto;
 }
 
 .event-item:hover {
@@ -313,12 +340,15 @@
   .horizontal-scroll {
     padding: 0 8px;
     gap: 6px;
-    min-height: 110px;
+    /* Changé: Hauteur adaptative */
+    min-height: clamp(90px, 15vh, 130px);
   }
 
   .home-event-item {
-    width: 300px;
-    flex: 0 0 300px;
+    /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+    width: 70%;
+    max-width: var(--modal-width);
+    flex: 0 0 auto;
   }
 
   .event-header {
@@ -374,12 +404,15 @@
   .horizontal-scroll {
     padding: 0 6px;
     gap: 5px;
-    min-height: 100px;
+    /* Changé: Hauteur adaptative */
+    min-height: clamp(80px, 12vh, 120px);
   }
 
   .home-event-item {
-    width: 300px;
-    flex: 0 0 300px;
+    /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+    width: 70%;
+    max-width: var(--modal-width);
+    flex: 0 0 auto;
   }
 
   .event-type-badge {
@@ -547,7 +580,8 @@
   }
 
   .horizontal-scroll {
-    min-height: 100px;
+    /* Changé: Hauteur adaptative */
+    min-height: clamp(80px, 12vh, 120px);
   }
 
   .event-item {
@@ -585,8 +619,10 @@
 
   .event-item {
     padding: 6px;
-    width: 170px;
-    flex: 0 0 170px;
+    /* Changé: Largeur adaptative */
+    width: min(170px, 50vw);
+    flex: 0 0 min(170px, 50vw);
+    max-width: 100%;
   }
 }
 
@@ -617,12 +653,15 @@
   .horizontal-scroll {
     gap: 10px;
     padding: 0 12px;
-    min-height: 130px;
+    /* Changé: Hauteur adaptative */
+    min-height: clamp(110px, 18vh, 150px);
   }
   
   .home-event-item {
-    width: 340px;
-    flex: 0 0 340px;
+    /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+    width: 70%;
+    max-width: var(--modal-width);
+    flex: 0 0 auto;
   }
   
   .event-name {
@@ -646,7 +685,8 @@
   .home-page {
     padding: 20px;
     margin-top: 50px;
-    max-width: 1200px;
+    /* Changé: Largeur adaptative */
+    max-width: min(1200px, 95vw);
     margin-left: auto;
     margin-right: auto;
     justify-content: flex-start;
@@ -672,12 +712,15 @@
   .horizontal-scroll {
     gap: 15px;
     padding: 0 15px;
-    min-height: 150px;
+    /* Changé: Hauteur adaptative */
+    min-height: clamp(130px, 20vh, 180px);
   }
   
   .home-event-item {
-    width: 360px;
-    flex: 0 0 360px;
+    /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+    width: 70%;
+    max-width: var(--modal-width);
+    flex: 0 0 auto;
   }
   
   .event-name {
@@ -704,8 +747,10 @@
   }
   
   .home-event-item {
-    width: 380px;
-    flex: 0 0 380px;
+    /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+    width: 70%;
+    max-width: var(--modal-width);
+    flex: 0 0 auto;
   }
 }
 
@@ -779,8 +824,10 @@
   }
   
   .home-event-item {
-    width: 240px;
-    flex: 0 0 240px;
+    /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+    width: 70%;
+    max-width: var(--modal-width);
+    flex: 0 0 auto;
   }
   
   .event-item {
@@ -848,8 +895,10 @@
   }
   
   .home-event-item {
-    width: 200px;
-    flex: 0 0 200px;
+    /* Changé: Largeur réduite à 70% de la largeur de l'écran */
+    width: 70%;
+    max-width: var(--modal-width);
+    flex: 0 0 auto;
   }
   
   .event-item {
@@ -895,25 +944,37 @@ body.ios .home-page {
   padding-top: 0px !important;
 }
 
-/* S'assurer que le contenu n'est pas caché par le header sur iOS */
+/* ✅ Layout Flexbox: Home page avec scroll sur iOS */
 body.ios .home-page {
-  position: relative !important;
-  z-index: 1 !important;
-  margin-top: 0 !important;
-  height: auto !important;
-  overflow: visible !important;
-  min-height: auto !important;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  /* ✅ Flexbox: Remplit l'espace disponible */
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  /* ✅ Scroll vertical pour le contenu */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Contourner les contraintes du app-main sur iOS */
+/* ✅ Layout Flexbox: Respecte les proportions strictes 10/80/10 */
 body.ios .app-main {
-  height: auto !important;
-  overflow: visible !important;
+  /* ✅ Hauteur stricte : 80% (flex: 1) */
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body.ios .app-main > * {
-  height: auto !important;
-  overflow: visible !important;
+  /* Les pages utilisent maintenant .page-content avec flex: 1 */
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Sections individuelles */

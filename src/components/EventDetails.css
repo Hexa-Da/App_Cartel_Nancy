@@ -19,7 +19,8 @@
   background: var(--bg-secondary);
   border-radius: 14px;
   max-width: 90vw;
-  width: 400px;
+  /* Changé: Largeur adaptative */
+  width: min(400px, 90vw);
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
@@ -174,7 +175,8 @@
 .event-actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* Changé: Espacement de sécurité tactile (12px minimum) */
+  gap: 12px;
   margin-top: 6px;
   position: relative;
 }
@@ -193,6 +195,9 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .action-button.primary {

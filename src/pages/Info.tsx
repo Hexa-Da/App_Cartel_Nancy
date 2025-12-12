@@ -71,7 +71,7 @@ const Info: React.FC = () => {
   };
 
   return (
-    <div className="info-page">
+    <div className="page-content scrollable info-page">
       <h1 className="info-title">INFOS PRATIQUES</h1>
       
       <div className="info-grid">
@@ -128,11 +128,12 @@ const Info: React.FC = () => {
 
       <style>{`
         .info-page {
+          /* ✅ Styles gérés par Info.css pour le centrage */
+          /* Padding et background conservés ici pour compatibilité */
           padding: 20px;
-          margin-top: 0px;
           padding-top: 10px;
           background-color: var(--bg-color);
-          min-height: 100vh;
+          min-height: 100%;
         }
 
         .info-title {
@@ -141,21 +142,29 @@ const Info: React.FC = () => {
           text-align: center;
           margin-bottom: 40px;
           color: var(--text-color);
+          /* ✅ Sécurité scroll : margin auto pour éviter la coupure */
+          margin-left: auto;
+          margin-right: auto;
+          width: 100%;
+          max-width: 800px;
         }
 
         .info-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 20px;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+          gap: 25px;
           padding: 0 10px;
-          max-width: 800px;
-          margin: 0 auto;
+          /* ✅ Correction syntaxe : max-width au lieu de maxWidth */
+          max-width: min(800px, 95vw);
+          width: 100%;
+          margin: auto; /* ✅ Sécurité scroll : centre la grille */
+          box-sizing: border-box;
         }
 
         .info-card {
           background-color: var(--bg-secondary);
           border-radius: 12px;
-          padding: 20px;
+          padding: 15px;
           text-align: center;
           cursor: pointer;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -163,7 +172,7 @@ const Info: React.FC = () => {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          min-height: 120px;
+          min-height: clamp(80px, 14vh, 120px);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           -webkit-tap-highlight-color: transparent;
           -webkit-touch-callout: none;
@@ -179,13 +188,13 @@ const Info: React.FC = () => {
         }
 
         .info-icon {
-          font-size: 2rem;
-          margin-bottom: 10px;
+          font-size: 1.6rem;
+          margin-bottom: 8px;
           color: var(--text-color);
         }
 
         .info-card-title {
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           margin: 0;
           color: var(--text-color);
           font-weight: 500;
@@ -194,21 +203,21 @@ const Info: React.FC = () => {
         @media (max-width: 600px) {
           .info-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 20px;
             padding: 0 5px;
           }
 
           .info-card {
-            padding: 15px;
-            min-height: 100px;
+            padding: 12px;
+            min-height: clamp(70px, 12vh, 100px);
           }
 
           .info-icon {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
           }
 
           .info-card-title {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
           }
 
           .info-title {

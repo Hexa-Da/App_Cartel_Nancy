@@ -1,12 +1,53 @@
+/* ============================================
+   INFO PAGE - Layout Flexbox Standardisé
+   ============================================ */
 .info-page {
+  /* ✅ Centrage de la Page Info : Centre verticalement et horizontalement */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centre horizontalement */
+  /* ✅ Justify-content: center avec protection scroll */
+  /* Sur grand écran : centre verticalement */
+  /* Sur petit écran : le scroll natif de .app-main permet de voir tout le contenu */
+  justify-content: center; /* Centre verticalement */
+  /* ✅ Largeur 100% */
+  width: 100%;
+  /* ✅ Min-height pour permettre le centrage vertical */
+  min-height: 100%;
+  /* ✅ NE TOUCHE PAS au margin (ça ne marche pas bien avec le scroll) */
+  margin: 0;
+  /* ✅ Padding à l'intérieur du composant (pas sur le conteneur) */
   padding: 20px;
   padding-top: 0px;
-  max-width: 800px;
-  margin: 0 auto;
-  margin-top: 0;
-  position: relative !important;
-  z-index: 1 !important;
-  margin-bottom: var(--bottom-nav-total-height) !important; /* Utilise la variable CSS */
+  position: relative;
+  z-index: 1;
+  /* ✅ Overflow visible pour permettre le scroll si le contenu dépasse */
+  overflow: visible;
+  overflow-x: hidden;
+  /* ✅ Pas de overflow-y: auto ici (le scroll se fait sur .app-main) */
+  /* ✅ Sécurité scroll : margin auto sur le contenu interne si nécessaire */
+  box-sizing: border-box;
+  /* NOTE: Les paddings top/bottom pour Header et Nav sont sur .app-main qui scroll */
+}
+
+/* ✅ Protection scroll : Si le contenu dépasse, on passe en mode flex-start */
+@media (max-height: 600px) {
+  .info-page {
+    justify-content: flex-start;
+    padding-top: 20px; /* Ajoute de l'air en haut sur petit écran */
+  }
+}
+
+/* ✅ Grille Info : Largeur 100% avec max-width pour tablette */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 800px; /* ✅ Ne pas être ridicule sur tablette */
+  margin: auto; /* ✅ Sécurité scroll : centre la grille */
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .info-section {
@@ -42,27 +83,38 @@
   gap: 10px;
 }
 
-/* Styles spécifiques pour iOS - s'assurer que la BottomNav reste visible */
+/* ✅ Layout Flexbox: Info page avec scroll sur iOS */
 body.ios .info-page {
-  position: relative !important;
-  z-index: 1 !important;
-  margin-bottom: calc(var(--bottom-nav-height-ios) + var(--safe-area-bottom) + 20px) !important; /* Plus d'espace pour iOS */
-  padding-bottom: 20px !important;
-  margin-top: 0 !important;
-  padding-top: 0px !important; /* Réduit pour remonter le contenu */
-  height: auto !important;
-  overflow: visible !important;
-  min-height: auto !important;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  /* ✅ Flexbox: Remplit l'espace disponible */
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  /* ✅ Scroll vertical pour le contenu */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px;
+  padding-top: 0px;
 }
 
 
-/* Contourner les contraintes du app-main sur iOS */
+/* ✅ Layout Flexbox: Respecte les proportions strictes 10/80/10 */
 body.ios .app-main {
-  height: auto !important;
-  overflow: visible !important;
+  /* ✅ Hauteur stricte : 80% (flex: 1) */
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body.ios .app-main > * {
-  height: auto !important;
-  overflow: visible !important;
+  /* Les pages utilisent maintenant .page-content avec flex: 1 */
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 } 

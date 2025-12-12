@@ -41,7 +41,7 @@
 /* Bouton "Voir les horaires" - Style copié-collé exact des boutons maps des venues */
 .schedule-button {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.75rem 1rem;
   background-color: var(--primary-color);
   color: white;
   border: none;
@@ -49,6 +49,8 @@
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
 }
 
 /* Media queries pour les petits écrans - Copié-collé exact des venues */

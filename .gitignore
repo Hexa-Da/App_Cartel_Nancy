@@ -46,3 +46,16 @@ ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
 # Capacitor
 android/capacitor-cordova-android-plugins/build/
 ios/capacitor-cordova-ios-plugins/build/
+
+# Cursor rules
+.cursor
+.cursorrules
+.cursor/docs/architecture.md
+.cursor/docs/coding-standards.md
+.cursor/docs/project-structure.md
+.cursor/docs/tech-stack.md
+.cursor/docs/testing-and-debugging.md
+.cursor/docs/deployment.md
+.cursor/docs/security.md
+.cursor/docs/best-practices.md
+.cursor/docs/performance.md

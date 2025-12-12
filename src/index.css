@@ -24,25 +24,28 @@
   --calendar-filter: none;
   --checkbox-filter: none;
   
-  /* Variables pour les hauteurs des barres système */
-  --header-height: 40px;
-  --bottom-nav-height: 60px;
-  --bottom-nav-height-ios: 80px;
+  /* ============================================
+     ÉTAPE 1 : Définir la Vérité (Variables Globales)
+     ============================================ */
+  /* ✅ Variables exactes pour les hauteurs fixes */
+  --header-height: 10vh; /* Hauteur exacte du Header (position fixed) */
+  --nav-height: 5vh; /* Hauteur exacte de la BottomNav (position fixed) - réduite */
   
-  /* Variables pour les safe areas */
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-area-left: env(safe-area-inset-left, 0px);
-  --safe-area-right: env(safe-area-inset-right, 0px);
+  /* ✅ Variables pour les Safe Areas (encoches) */
+  /* NOTE: Les variables --safe-area-* sont définies dans responsive-tokens.css
+     qui est importé avant ce fichier. Elles sont disponibles ici. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   
-  /* Variables calculées pour les positions */
-  --header-total-height: calc(var(--header-height) + var(--safe-area-top));
-  --bottom-nav-total-height: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
-  --bottom-nav-total-height-ios: calc(var(--bottom-nav-height-ios) + var(--safe-area-bottom));
+  /* ✅ Variables calculées pour les positions (compatibilité) */
+  --header-total-height: calc(var(--header-height) + var(--safe-top));
+  --bottom-nav-total-height: calc(var(--nav-height) + var(--safe-bottom));
+  --bottom-nav-height: var(--nav-height); /* Alias pour compatibilité */
+  --bottom-nav-height-ios: var(--nav-height); /* Alias pour compatibilité */
   
   /* Position au-dessus de la barre de navigation */
-  --above-bottom-nav: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
-  --above-bottom-nav-ios: calc(var(--bottom-nav-height-ios) + var(--safe-area-bottom));
+  --above-bottom-nav: calc(var(--nav-height) + var(--safe-bottom));
+  --above-bottom-nav-ios: calc(var(--nav-height) + var(--safe-bottom));
   
   /* Position en dessous du header */
   --below-header: var(--header-total-height);
@@ -79,12 +82,38 @@
   --checkbox-filter: invert(1);
 }
 
+/* ============================================
+   RESSENTI NATIF - Suppression des effets web
+   ============================================ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* ✅ Supprime le flash de sélection gris sur iOS et Android */
+  -webkit-tap-highlight-color: transparent;
+  /* ✅ Désactive le menu contextuel au long-click (sauf sur input) */
+  -webkit-touch-callout: none;
+  /* ✅ Désactive la sélection de texte globale */
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ✅ Réactive la sélection de texte uniquement là où c'est utile */
+input,
+textarea,
+.selectable-text {
+  user-select: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  /* Réactive le menu contextuel pour les champs de texte */
+  -webkit-touch-callout: default;
 }
 
 *::-webkit-scrollbar {
@@ -236,32 +265,70 @@ textarea {
 
 /* Toutes les scrollbars sont maintenant masquées sur tous les supports */
 
-html, body, #root {
+/* ============================================
+   FONDATIONS PHYSIQUES - HTML & Viewport
+   ============================================ */
+html {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  /* Pas de overflow: hidden sur html pour permettre le scroll natif */
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Utilise 100dvh (dynamic viewport height) pour mobile moderne */
+  height: 100dvh;
+  /* Fallback pour navigateurs non supportant dvh */
+  height: 100vh;
 }
 
+/* ============================================
+   STRUCTURE GLOBALE - Body avec proportions strictes
+   ============================================ */
 body {
   margin: 0;
+  padding: 0;
   min-width: 320px;
-  min-height: 100vh;
+  /* ✅ Largeur stricte : 100vw */
+  width: 100vw;
+  /* ✅ Hauteur stricte : 100vh/100dvh */
+  height: 100dvh; /* Mobile moderne */
+  height: 100vh; /* Fallback */
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* Gestion des safe areas pour Android */
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
+  
+  /* ✅ Empêche le scroll global (scroll dans .page-content) */
+  overflow: hidden;
+  /* Force le recalcul sur iOS */
+  -webkit-overflow-scrolling: touch;
+  
+  /* NOTE: Les Safe Areas sont gérées dans .app-header et .bottom-nav
+     pour ne pas casser les proportions strictes 10/80/10 */
 }
 
 
+/* ============================================
+   CONTENEUR RACINE - #root avec proportions strictes
+   ============================================ */
 #root {
   display: flex;
   flex-direction: column;
+  /* ✅ Largeur stricte : 100vw */
+  width: 100vw;
+  /* ✅ Hauteur stricte : 100vh/100dvh */
+  height: 100dvh; /* Mobile moderne */
+  height: 100vh; /* Fallback */
+  margin: 0;
+  padding: 0;
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
+  /* ✅ Empêche le scroll global (scroll dans .page-content) */
+  overflow: hidden;
+  /* Force le recalcul sur iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 h1, h2, h3, h4, h5, h6 {
