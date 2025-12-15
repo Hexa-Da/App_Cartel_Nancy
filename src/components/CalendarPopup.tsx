@@ -689,7 +689,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
         <div className="calendar-popup-content">
           <div className="calendar-panel-header">
             <h3>Calendrier</h3>
-            {showFilters && (
+          {showFilters && (
               <>
                 <button
                   className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}

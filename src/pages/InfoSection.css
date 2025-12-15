@@ -234,37 +234,6 @@
   }
 }
 
-/* ✅ Layout Flexbox: Info Section avec scroll sur iOS */
-body.ios .info-section-page {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  /* ✅ Flexbox: Remplit l'espace disponible */
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  /* ✅ Scroll vertical pour le contenu */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding: 20px;
-  padding-bottom: 100px; /* Espace pour la BottomNav */
-}
-
-/* ✅ Layout Flexbox: Respecte les proportions strictes 10/80/10 */
-body.ios .app-main {
-  /* ✅ Hauteur stricte : 80% (flex: 1) */
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-body.ios .app-main > * {
-  /* Les pages utilisent maintenant .page-content avec flex: 1 */
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
+/* ✅ SUPPRIMÉ : Toutes les règles iOS spécifiques pour .info-section-page et .app-main
+   Le système global avec variables CSS gère maintenant automatiquement le layout.
+   Le padding-bottom est géré par .app-main via calc(var(--nav-height) + var(--safe-bottom) + 20px). */

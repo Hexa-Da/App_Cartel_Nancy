@@ -105,14 +105,7 @@
   font-weight: 700;
 }
 
-body.ios .calendar-panel-header {
-  /* ✅ Pas de margin-top car le conteneur parent (.calendar-popup) est déjà positionné */
-  margin-top: 0;
-}
-
-body.ios .calendar-panel-header .filter-toggle-button {
-  top: 0.85rem;
-}
+/* ✅ SUPPRIMÉ : Règles iOS redondantes - les règles standard gèrent déjà le positionnement */
 
 
 .calendar-panel-header .filter-reset-button {
@@ -203,9 +196,7 @@ body.ios .calendar-panel-header .filter-toggle-button {
   flex-shrink: 0 !important;
 }
 
-body.ios .calendar-panel-header .filter-toggle-button {
-  top: 0.85rem;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .calendar-panel-header .filter-toggle-button gère déjà le positionnement */
 
 .calendar-filters-section {
   background-color: var(--bg-color);

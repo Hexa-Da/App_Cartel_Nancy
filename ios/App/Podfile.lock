@@ -24,7 +24,7 @@ PODS:
     - Capacitor
   - CapacitorSplashScreen (6.0.3):
     - Capacitor
-  - CapacitorStatusBar (6.0.2):
+  - CapacitorStatusBar (6.0.3):
     - Capacitor
   - CodetrixStudioCapacitorGoogleAuth (0.0.1):
     - Capacitor
@@ -97,7 +97,7 @@ SPEC CHECKSUMS:
   CapacitorPushNotifications: 1fc22ae360214a0ac0625c348d3aea217085163d
   CapacitorScreenOrientation: 3bb823f5d265190301cdc5d58a568a287d98972a
   CapacitorSplashScreen: 68893659d77b5f82d753b3a70475082845e3039c
-  CapacitorStatusBar: 3b9ac7d0684770522c532d1158a1434512ab1477
+  CapacitorStatusBar: 38665f1a18c55677098367a29f6b42126b72dc65
   CodetrixStudioCapacitorGoogleAuth: fcce058390347c1ce5d8ac4764bdf1f5c1ee233b
   GoogleSignIn: 5651ce3a61e56ca864160e79b484cd9ed3f49b7a
   GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd

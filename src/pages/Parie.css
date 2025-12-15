@@ -561,9 +561,7 @@
   z-index: 2000;
 }
 
-body.ios .bracelet-modal-overlay {
-  top: var(--below-header) !important; /* Utilise la variable CSS */
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bracelet-modal-overlay gère déjà le positionnement */
 
 
 .bracelet-modal-content {
@@ -583,12 +581,7 @@ body.ios .bracelet-modal-overlay {
   flex-direction: column;
 }
 
-body.ios .bracelet-modal-content {
-  max-height: calc(100vh - 40px) !important;
-  max-height: calc(100svh - 40px) !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bracelet-modal-content gère déjà max-height, display et flex-direction */
 
 .bracelet-modal-header {
   display: flex;
@@ -632,10 +625,7 @@ body.ios .bracelet-modal-content {
   min-height: 0;
 }
 
-body.ios .bracelet-login-form {
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: none !important;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bracelet-login-form gère déjà le scroll avec -webkit-overflow-scrolling: touch */
 
 .bracelet-login-form .form-group {
   display: flex;
@@ -778,26 +768,7 @@ body.ios .bracelet-login-form {
 }
 
 /* Styles spécifiques pour iOS */
-body.ios .parie-page {
-  position: relative !important;
-  z-index: 1 !important;
-  margin-top: 0 !important;
-  padding-top: 0px !important;
-  height: auto !important;
-  overflow: visible !important;
-  min-height: auto !important;
-  padding-bottom: 120px !important; /* Espace pour la BottomNav */
-}
-
-/* Contourner les contraintes du app-main sur iOS */
-body.ios .app-main.scrollable {
-  height: auto !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
-
-body.ios .app-main.scrollable > * {
-  height: auto !important;
+/* ✅ SUPPRIMÉ : Règles iOS redondantes pour .parie-page et .app-main - le système global gère déjà le layout */
   overflow: visible !important;
 }
 

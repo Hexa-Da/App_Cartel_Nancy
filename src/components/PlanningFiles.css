@@ -235,9 +235,7 @@
   z-index: 2000;
 }
 
-body.ios .modal-overlay {
-  top: var(--below-header) !important; /* Utilise la variable CSS */
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .modal-overlay gère déjà le positionnement */
 
 
 .modal-content {
@@ -253,12 +251,7 @@ body.ios .modal-overlay {
   flex-direction: column;
 }
 
-body.ios .modal-content {
-  max-height: calc(100vh - 40px) !important;
-  max-height: calc(100svh - 40px) !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .modal-content gère déjà max-height, display et flex-direction */
 
 .modal-content img {
   max-width: 100%;

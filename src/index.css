@@ -140,17 +140,7 @@ textarea,
 }
 
 /* Styles spécifiques pour iOS - masquer complètement */
-body.ios *::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-body.ios *::-webkit-scrollbar-thumb:hover {
-  display: none;
-}
-
-body.ios *::-webkit-scrollbar-track {
-  display: none;
-}
+/* ✅ SUPPRIMÉ : Règles iOS redondantes pour scrollbars - les règles globales (lignes 168-224) gèrent déjà le masquage pour tous les éléments */
 
 /* Masquer complètement les scrollbars sur tous les éléments scrollables */
 .horizontal-scroll,
@@ -223,39 +213,7 @@ body.ios *::-webkit-scrollbar-track {
   display: none;
 }
 
-/* Styles spécifiques pour iOS - masquer complètement sur les éléments */
-body.ios .horizontal-scroll::-webkit-scrollbar-thumb,
-body.ios .calendar-scrollable-content::-webkit-scrollbar-thumb,
-body.ios .matches-list::-webkit-scrollbar-thumb,
-body.ios .modal-form-content::-webkit-scrollbar-thumb,
-body.ios .vss-form-content::-webkit-scrollbar-thumb,
-body.ios .chat-container::-webkit-scrollbar-thumb,
-body.ios .emoji-selector::-webkit-scrollbar-thumb,
-body.ios .planning-files::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-body.ios .horizontal-scroll::-webkit-scrollbar-thumb:hover,
-body.ios .calendar-scrollable-content::-webkit-scrollbar-thumb:hover,
-body.ios .matches-list::-webkit-scrollbar-thumb:hover,
-body.ios .modal-form-content::-webkit-scrollbar-thumb:hover,
-body.ios .vss-form-content::-webkit-scrollbar-thumb:hover,
-body.ios .chat-container::-webkit-scrollbar-thumb:hover,
-body.ios .emoji-selector::-webkit-scrollbar-thumb:hover,
-body.ios .planning-files::-webkit-scrollbar-thumb:hover {
-  display: none;
-}
-
-body.ios .horizontal-scroll::-webkit-scrollbar-track,
-body.ios .calendar-scrollable-content::-webkit-scrollbar-track,
-body.ios .matches-list::-webkit-scrollbar-track,
-body.ios .modal-form-content::-webkit-scrollbar-track,
-body.ios .vss-form-content::-webkit-scrollbar-track,
-body.ios .chat-container::-webkit-scrollbar-track,
-body.ios .emoji-selector::-webkit-scrollbar-track,
-body.ios .planning-files::-webkit-scrollbar-track {
-  display: none;
-}
+/* ✅ SUPPRIMÉ : Règles iOS redondantes pour scrollbars - les règles globales (lignes 168-224) gèrent déjà le masquage pour tous les éléments, y compris iOS */
 
 /* Empêcher le zoom automatique sur les inputs */
 input,
@@ -386,8 +344,5 @@ button:focus-visible {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Support spécifique pour iOS */
-body.ios .app-container {
-  padding-bottom: var(--bottom-nav-total-height-ios);
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .app-container utilise déjà var(--bottom-nav-total-height) qui inclut les safe areas */
 

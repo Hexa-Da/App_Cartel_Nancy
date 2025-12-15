@@ -533,6 +533,25 @@ function App() {
   } = useAppPanels();
   const location = useLocation();
 
+  // ✅ Configuration StatusBar pour activer le mode Edge-to-Edge (Safe Areas)
+  useEffect(() => {
+    const configureStatusBar = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          // 1. Rend la barre transparente pour voir l'app dessous
+          await StatusBar.setStyle({ style: Style.Dark });
+          // 2. CRUCIAL : Force l'app à passer SOUS la barre d'état (iOS + Android)
+          // Note: Pour Android, la navigation bar est configurée dans MainActivity.java
+          await StatusBar.setOverlaysWebView({ overlay: true });
+        } catch (e) {
+          console.warn('Erreur StatusBar:', e);
+        }
+      }
+    };
+    
+    configureStatusBar();
+  }, []);
+
   // Ajoute la classe 'ios' au body si la plateforme est iOS
   useEffect(() => {
     const platform = Capacitor.getPlatform();
@@ -4398,35 +4417,35 @@ function App() {
                 <div className="events-panel-header">
                     <h3>Événements</h3>
                     {showFilters && (
-                      <>
-                        <button
-                          className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
-                          onClick={handleStarFilterClick}
-                          title="Appliquer vos préférences"
-                        >
-                          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 1.5L14.5 8.5L22 9L16 14.5L17.5 22L12 18L6.5 22L8 14.5L2 9L9.5 8.5L12 1.5Z"/>
-                          </svg>
-                        </button>
-                        <button
-                          className="filter-reset-button"
-                          onClick={() => {
-                            setEventFilterWithSave('all');
-                            setDelegationFilterWithSave('all');
-                            setVenueFilterWithSave('Tous');
-                            setShowFemaleWithSave(true);
-                            setShowMaleWithSave(true);
-                            setShowMixedWithSave(true);
-                            setIsStarFilterActive(false);
-                            localStorage.setItem('starFilterActive', 'false');
-                            triggerMarkerUpdate();
-                            setTimeout(scrollToFirstNonPassedEvent, 100);
-                          }}
-                        >
-                          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                          </svg>
-                        </button>
+                    <>
+                      <button
+                        className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
+                        onClick={handleStarFilterClick}
+                        title="Appliquer vos préférences"
+                      >
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 1.5L14.5 8.5L22 9L16 14.5L17.5 22L12 18L6.5 22L8 14.5L2 9L9.5 8.5L12 1.5Z"/>
+                        </svg>
+                      </button>
+                      <button
+                        className="filter-reset-button"
+                        onClick={() => {
+                          setEventFilterWithSave('all');
+                          setDelegationFilterWithSave('all');
+                          setVenueFilterWithSave('Tous');
+                          setShowFemaleWithSave(true);
+                          setShowMaleWithSave(true);
+                          setShowMixedWithSave(true);
+                          setIsStarFilterActive(false);
+                          localStorage.setItem('starFilterActive', 'false');
+                          triggerMarkerUpdate();
+                          setTimeout(scrollToFirstNonPassedEvent, 100);
+                        }}
+                      >
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                        </svg>
+                      </button>
                       </>
                     )}
                     <button 

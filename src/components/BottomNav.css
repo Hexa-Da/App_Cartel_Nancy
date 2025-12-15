@@ -2,38 +2,31 @@
    BOTTOM NAV CONTAINER - "Cloué" en Position Fixed
    ============================================ */
 .bottom-nav-container {
-  /* ✅ POSITION FIXED : Cloué en bas de l'écran - remonté encore plus */
+  /* ✅ POSITION FIXED : Cloué en bas de l'écran - Correctif iOS */
   position: fixed;
-  bottom: 15px;
+  bottom: 0;
   left: 0;
   width: 100%;
-  /* ✅ Utiliser la variable globale */
-  height: var(--nav-height);
-  /* ✅ Sécurité tactile : min-height 44px */
-  min-height: 44px;
+  /* ✅ Hauteur adaptative pour iOS (au lieu de var(--nav-height) rigide) */
+  height: auto;
+  min-height: 80px; /* Sécurité tactile */
   /* ✅ Vérification Visuelle (Z-Index) : Nav au-dessus du contenu */
   z-index: 1000;
-  /* ✅ Box-sizing pour éviter les débordements */
-  box-sizing: border-box;
+  /* ✅ Box-sizing : content-box pour que le padding s'ajoute à la hauteur */
+  box-sizing: content-box;
   margin: 0;
   padding: 0;
   overflow: visible;
   /* ✅ Pointer events activés pour le container */
   pointer-events: auto;
+  /* ✅ Force d'affichage iOS - Hack GPU */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  background-color: var(--bg-primary);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ✅ Fond noir pour remplir l'espace en bas de l'écran - sans démarcation */
-.bottom-nav-container::before {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: calc(15px + var(--nav-height) + var(--safe-bottom));
-  background-color: #000000;
-  z-index: 998;
-  pointer-events: none;
-}
+/* ✅ Fond noir supprimé selon demande utilisateur */
 
 /* ============================================
    BOTTOM NAV - Alignement "Magnétique" : Icônes collées en haut
@@ -42,24 +35,27 @@
   /* ✅ Remplit le container (100% de la hauteur du container) */
   width: 100%;
   height: 100%;
-  /* ✅ Box-sizing pour éviter les débordements */
-  box-sizing: border-box;
+  /* ✅ Box-sizing : content-box pour que le padding s'ajoute à la hauteur */
+  box-sizing: content-box;
   margin: 0;
-  padding: 0;
+  /* ✅ Gestion Safe Area iOS - Padding uniquement en bas */
+  padding-top: 10px; /* Petit espace au-dessus des icônes */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: 0;
+  padding-right: 0;
   /* ✅ Fond explicite : Empêche la transparence */
   background-color: var(--bg-primary);
   display: flex;
   justify-content: space-around;
-  /* ✅ Alignement "Magnétique" : Icônes centrées verticalement */
+  /* ✅ Alignement : Icônes centrées verticalement */
   align-items: center;
   box-shadow: 0 -2px 12px var(--shadow-color);
   /* ✅ Vérification Visuelle (Z-Index) : Nav au-dessus du contenu */
   z-index: 1000;
-  /* ✅ Pas de padding-top, les boutons sont centrés */
-  padding-top: 0;
-  /* ✅ Safe Areas gérées dans le padding-bottom (ne casse pas la hauteur) */
-  padding-bottom: var(--safe-bottom);
   pointer-events: auto;
+  /* ✅ Force d'affichage iOS - Hack GPU */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .nav-button {
@@ -68,6 +64,7 @@
   align-items: center;
   justify-content: center;
   flex: 1;
+  /* ✅ Hauteur 100% pour remplir l'espace disponible dans .bottom-nav */
   height: 100%;
   border: none;
   background: none;
@@ -90,6 +87,9 @@
   min-width: clamp(60px, 10vw, 80px);
   z-index: 1000;
   pointer-events: auto;
+  /* ✅ Force d'affichage iOS */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .nav-button.active {
@@ -136,72 +136,29 @@
   max-width: 100%;
 }
 
-/* S'assurer que la barre de navigation est toujours au-dessus de tout */
-.bottom-nav {
-  z-index: 1000;
-}
-
-.nav-button {
-  z-index: 1000;
-  position: relative;
-}
-
-/* Forcer la barre de navigation à être cliquable */
-.bottom-nav * {
-  pointer-events: auto;
-}
-
-.bottom-nav {
-  pointer-events: auto;
-  touch-action: manipulation;
-}
+/* ✅ Règles déjà définies dans .bottom-nav et .nav-button standard - pas de duplication nécessaire */
 
 /* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré dans Layout.css
    avec position absolute et top/bottom utilisant les variables globales */
 
 @media (max-width: 600px) {
   .bottom-nav-container {
-    /* ✅ POSITION FIXED : Utiliser la variable globale - remonté */
-    position: fixed;
-    bottom: 15px;
-    left: 0;
-    width: 100%;
-    height: var(--nav-height);
-    min-height: 44px; /* ✅ Sécurité tactile */
-    z-index: 1000;
-  }
-
-  /* ✅ Fond noir pour remplir l'espace en bas - sans démarcation */
-  .bottom-nav-container::before {
-    content: '';
-    position: fixed;
+    /* ✅ Correctif iOS : Hauteur adaptative */
+    height: auto;
+    min-height: 80px;
     bottom: 0;
-    left: 0;
-    width: 100%;
-    height: calc(15px + var(--nav-height) + var(--safe-bottom));
-    background-color: #000000;
-    z-index: 998;
-    pointer-events: none;
   }
 
   .bottom-nav {
     width: 100%;
     height: 100%;
-    /* ✅ Safe Areas dans le padding (ne casse pas la hauteur) */
-    padding-bottom: var(--safe-bottom);
+    /* ✅ Safe Areas iOS */
+    padding-top: 10px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: content-box;
   }
 
-  body.ios .bottom-nav-container {
-    /* ✅ POSITION FIXED : Utiliser la variable globale même sur iOS */
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: var(--nav-height) !important;
-    min-height: 44px !important; /* ✅ Sécurité tactile */
-    /* ✅ Vérification Visuelle (Z-Index) : Nav au-dessus du contenu */
-    z-index: 1000 !important;
-  }
+  /* ✅ SUPPRIMÉ : Règle iOS redondante - la règle globale .bottom-nav-container gère déjà le positionnement */
 
   body.ios .nav-button {
     min-height: auto;
@@ -229,121 +186,45 @@
 /* Styles simplifiés pour mobile */
 @media (max-width: 768px) {
   .bottom-nav-container {
-    /* ✅ POSITION FIXED : Utiliser la variable globale - remonté */
-    position: fixed;
-    bottom: 15px;
-    left: 0;
-    width: 100%;
-    height: var(--nav-height);
-    min-height: 44px; /* ✅ Sécurité tactile */
-    box-sizing: border-box;
-    z-index: 1000;
+    /* ✅ Correctif iOS : Hauteur adaptative */
+    height: auto;
+    min-height: 80px;
+    bottom: 0;
+    box-sizing: content-box;
   }
   
   .bottom-nav {
     width: 100%;
     height: 100%;
-    z-index: 1000;
+    padding-top: 10px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: content-box;
   }
 }
 
 /* Stabilisation de la BottomNav sur iOS - Position Fixed */
-body.ios .bottom-nav-container {
-  /* ✅ POSITION FIXED : Utiliser la variable globale - remonté */
-  position: fixed !important;
-  bottom: 15px !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: var(--nav-height) !important;
-  min-height: 44px !important; /* ✅ Sécurité tactile */
-  box-sizing: border-box !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  pointer-events: auto !important;
-  overflow: visible !important;
-  /* ✅ Vérification Visuelle (Z-Index) : Nav au-dessus du contenu */
-  z-index: 1000 !important;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bottom-nav-container gère déjà le positionnement */
 
-/* ✅ Fond noir pour iOS aussi - sans démarcation */
-body.ios .bottom-nav-container::before {
-  content: '';
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: calc(15px + var(--nav-height) + var(--safe-bottom)) !important;
-  background-color: #000000 !important;
-  z-index: 998 !important;
-  pointer-events: none !important;
-}
+/* ✅ Fond noir supprimé selon demande utilisateur */
 
-body.ios .bottom-nav {
-  width: 100% !important;
-  height: 100% !important;
-  box-sizing: border-box !important;
-  /* ✅ Fond explicite : Empêche la transparence */
-  background-color: var(--bg-primary) !important;
-  display: flex !important;
-  justify-content: space-around !important;
-  /* ✅ Alignement "Magnétique" : Icônes centrées verticalement */
-  align-items: center !important;
-  box-shadow: 0 -2px 12px var(--shadow-color) !important;
-  /* ✅ Vérification Visuelle (Z-Index) : Nav au-dessus du contenu */
-  z-index: 1000 !important;
-  margin: 0 !important;
-  padding-top: 0 !important; /* ✅ Pas de padding-top, les boutons sont centrés */
-  /* ✅ Safe Areas dans le padding (ne casse pas la hauteur) */
-  padding-bottom: var(--safe-bottom) !important;
-  pointer-events: auto !important;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bottom-nav gère déjà le layout */
 
-body.ios .nav-button {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 1 !important;
-  height: 100% !important;
-  border: none !important;
-  background: none !important;
-  cursor: pointer !important;
-  /* Changé: Padding réduit pour barre plus petite */
-  padding: clamp(3px, 0.5vh, 5px) clamp(16px, 3vw, 20px) !important;
-  color: var(--text-color) !important;
-  border-radius: 0 !important;
-  margin: 0 !important;
-  font-weight: 500 !important;
-  font-size: clamp(0.9rem, 2.5vw, 1rem) !important;
-  position: relative !important;
-  -webkit-tap-highlight-color: transparent !important;
-  touch-action: manipulation !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  /* Changé: Dimensions réduites pour barre plus petite */
-  min-height: auto !important;
-  min-width: clamp(75px, 12vw, 90px) !important;
-  z-index: 1000 !important;
-  pointer-events: auto !important;
-  transform: none !important;
-} 
+/* ✅ Code orphelin supprimé - règles déjà gérées dans .nav-button standard */ 
 
 /* Media query spécifique pour très petits écrans (iPhone 6, SE, etc.) */
 @media (max-width: 375px) {
   .bottom-nav-container {
-    /* ✅ POSITION FIXED : Utiliser la variable globale - remonté */
-    position: fixed;
-    bottom: 15px;
-    left: 0;
-    width: 100%;
-    height: var(--nav-height);
-    min-height: 44px; /* ✅ Sécurité tactile */
-    z-index: 1000;
+    /* ✅ Correctif iOS : Hauteur adaptative */
+    height: auto;
+    min-height: 80px;
+    bottom: 0;
   }
   
   .bottom-nav {
-    /* ✅ Safe Areas dans le padding (ne casse pas la hauteur) */
-    padding-bottom: var(--safe-bottom);
+    /* ✅ Safe Areas iOS */
+    padding-top: 10px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: content-box;
   }
 
   .nav-button {
@@ -370,19 +251,17 @@ body.ios .nav-button {
 /* Media query spécifique pour iPhone 5 et très petits écrans (320px) */
 @media (max-width: 320px) {
   .bottom-nav-container {
-    /* ✅ POSITION FIXED : Utiliser la variable globale - remonté */
-    position: fixed;
-    bottom: 15px;
-    left: 0;
-    width: 100%;
-    height: var(--nav-height);
-    min-height: 44px; /* ✅ Sécurité tactile */
-    z-index: 1000;
+    /* ✅ Correctif iOS : Hauteur adaptative */
+    height: auto;
+    min-height: 80px;
+    bottom: 0;
   }
   
   .bottom-nav {
-    /* ✅ Safe Areas dans le padding (ne casse pas la hauteur) */
-    padding-bottom: var(--safe-bottom);
+    /* ✅ Safe Areas iOS */
+    padding-top: 10px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: content-box;
   }
 
   .nav-button {
@@ -391,28 +270,7 @@ body.ios .nav-button {
     padding: clamp(2px, 0.4vh, 4px) clamp(3px, 1.2vw, 4px);
   }
 
-  body.ios .bottom-nav-container {
-    /* ✅ POSITION FIXED : Utiliser la variable globale même sur iOS - remonté */
-    position: fixed !important;
-    bottom: 15px !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: var(--nav-height) !important;
-    min-height: 44px !important; /* ✅ Sécurité tactile */
-    /* ✅ Vérification Visuelle (Z-Index) : Nav au-dessus du contenu */
-    z-index: 1000 !important;
-  }
-  
-  body.ios .bottom-nav {
-    /* ✅ Safe Areas dans le padding (ne casse pas la hauteur) */
-    padding-bottom: var(--safe-bottom);
-  }
-
-  body.ios .nav-button {
-    min-height: auto;
-    min-width: clamp(45px, 8vw, 50px);
-    padding: clamp(2px, 0.4vh, 4px) clamp(3px, 1.2vw, 4px);
-  }
+  /* ✅ SUPPRIMÉ : Règles iOS redondantes dans media query - les règles globales gèrent déjà le positionnement */
 
   .nav-icon {
     font-size: clamp(14px, 2.5vw, 16px);

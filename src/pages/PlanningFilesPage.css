@@ -130,8 +130,9 @@
 /* ===== STYLES iOS SPÉCIFIQUES ===== */
 
 /* Détection iOS et application des styles */
+/* ✅ SUPPRIMÉ : Règle iOS redondante pour top - la règle standard .filters-container gère déjà le positionnement */
 body.ios .filters-container {
-  top: calc(var(--header-height) + var(--safe-top) + 25px) !important;
+  /* ✅ Conservé : Ajustements visuels spécifiques iOS (backdrop-filter, tap-highlight, etc.) */
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
   -webkit-tap-highlight-color: transparent !important;
@@ -349,92 +350,9 @@ body.ios .filter-select {
 }
 
 /* Force le recalcul du positionnement sur iOS */
-body.ios .planning-files-page {
-  position: relative !important;
-  z-index: 1 !important;
-  padding-top: calc(var(--header-height) + var(--safe-top) + 130px) !important;
-}
-
-body.ios .filters-container {
-  position: fixed !important;
-  z-index: 100 !important;
-  top: calc(var(--header-height) + var(--safe-top) + 25px) !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  box-shadow: none !important;
-  border: none !important;
-  background: var(--bg-color) !important;
-}
-
-body.ios .planning-container {
-  position: relative !important;
-  z-index: 1 !important;
-  margin-top: -55px !important; /* Réduit de 20px à 10px pour remonter encore plus le conteneur */
-  clear: both !important;
-  transform: translateZ(0) !important;
-  -webkit-transform: translateZ(0) !important;
-}
-
-/* Force le recalcul avec des styles plus agressifs */
-body.ios .planning-files-page .planning-container {
-  margin-top: -55px !important;
-  transform: translateZ(0) !important;
-  -webkit-transform: translateZ(0) !important;
-}
-
-/* Styles de fallback pour iOS */
-.ios .planning-container,
-[data-ios="true"] .planning-container {
-  margin-top: -55px !important;
-  transform: translateZ(0) !important;
-  -webkit-transform: translateZ(0) !important;
-}
-
-/* Force le recalcul avec des media queries iOS */
-@media screen and (-webkit-min-device-pixel-ratio: 2) {
-  body.ios .planning-files-page {
-    padding-top: 120px !important; /* Ajusté pour les écrans Retina */
-  }
-}
-
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-  body.ios .planning-files-page {
-    padding-top: 80px !important; /* Ajusté pour le mode paysage */
-  }
-}
-
-@media screen and (orientation: portrait) and (max-width: 768px) {
-  body.ios .planning-files-page {
-    padding-top: 100px !important; /* Ajusté pour le mode portrait */
-  }
-}
-
-/* Force le recalcul avec des animations CSS sur iOS */
-@keyframes forceRecalculate {
-  0% { padding-top: 100px; }
-  1% { padding-top: 101px; }
-  100% { padding-top: 100px; }
-}
-
-body.ios .planning-files-page {
-  animation: forceRecalculate 0.1s ease-in-out;
-}
-
-/* Force le recalcul lors des changements de filtres */
-body.ios .filters-container:has(.filter-select:focus) ~ .planning-files-page,
-body.ios .filters-container:has(.filter-select:hover) ~ .planning-files-page {
-  padding-top: 120px !important; /* Ajusté pour les filtres remontés */
-  transition: padding-top 0.3s ease !important;
-}
-
-/* Force le recalcul avec des pseudo-éléments */
-body.ios .planning-files-page::before {
-  content: '';
-  display: block;
-  height: 0;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
+/* ✅ SUPPRIMÉ : Toutes les règles iOS spécifiques pour .planning-files-page, .filters-container, .planning-container
+   Le système global avec variables CSS gère maintenant automatiquement :
+   - Le padding-top via .planning-files-page (défini dans les règles standard)
+   - Le positionnement de .filters-container (défini dans les règles standard)
+   - Les hacks de recalcul (margin-top négatif, animations, pseudo-éléments) ne sont plus nécessaires
+   car le layout Fixed Shell gère correctement le positionnement. */

@@ -13,9 +13,7 @@
   backdrop-filter: blur(5px);
 }
 
-body.ios .vss-form-overlay {
-  top: 0 !important;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .vss-form-overlay gère déjà le positionnement */
 
 
 .vss-form-container {
@@ -243,14 +241,4 @@ body.ios .vss-form-overlay {
 }
 
 /* Styles spécifiques pour iOS - ajustement du formulaire VSS */
-body.ios .vss-form-container {
-  max-height: calc(100vh - var(--below-header)) !important;
-  max-height: calc(100svh - var(--below-header)) !important;
-}
-
-
-body.ios .vss-form-content {
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: none !important;
-  touch-action: pan-x pan-y !important;
-} 
+/* ✅ SUPPRIMÉ : Règles iOS redondantes - les règles standard gèrent déjà max-height et le scroll */ 

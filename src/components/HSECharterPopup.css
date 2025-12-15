@@ -250,6 +250,4 @@
 }
 
 /* iOS specific adjustments */
-body.ios .hse-popup {
-  max-height: 80vh;
-}
+/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .hse-popup gère déjà max-height */
