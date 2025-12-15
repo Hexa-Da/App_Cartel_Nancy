@@ -1,10 +1,12 @@
 import React from 'react';
 import { Venue } from '../types';
+import './EventDetails.css';
 
 export interface Event {
   type: 'match' | 'party';
   time: string;
   endTime?: string;
+  date?: string;
   name: string;
   teams?: string;
   description?: string;
@@ -113,6 +115,17 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
     return `${time[0]}:${time[1]}`;
   };
 
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const dayName = days[date.getDay()];
+    const day = date.getDate();
+    const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    const month = months[date.getMonth()];
+    return `${dayName} ${day} ${month}`;
+  };
+
   const handleViewOnMap = () => {
     if (event.type === 'match') {
       const venue = venues.find(v => v.name === event.venue);
@@ -139,11 +152,14 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
             <span className="sport-name">{event.sport || 'Événement'}</span>
           </div>
 
-          {/* Titre principal */}
-          <h2 className="event-title">{event.name}</h2>
-
-          {/* Horaires */}
+          {/* Horaires avec date */}
           <div className="event-time-section">
+            {event.date && (
+              <div className="time-item">
+                <span className="time-label">Date</span>
+                <span className="time-value">{formatDate(event.date)}</span>
+              </div>
+            )}
             <div className="time-item">
               <span className="time-label">Début</span>
               <span className="time-value">{formatTime(event.time)}</span>
@@ -162,14 +178,14 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
               {event.teams && (
                 <div className="detail-item">
                   <span className="detail-label">Équipes</span>
-                  <span className="detail-value">{event.teams}</span>
+                  <span className="detail-value teams-value">{event.teams}</span>
                 </div>
               )}
               {event.venue && (
                 <div className="detail-item">
                   <span className="detail-label">Lieu</span>
                   <span className="detail-value venue-value">
-                    📍 {event.venue}
+                    {event.venue}
                   </span>
                 </div>
               )}
@@ -198,7 +214,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
                 <div className="detail-item">
                   <span className="detail-label">Adresse</span>
                   <span className="detail-value venue-value">
-                    📍 {event.venue}
+                    {event.venue}
                   </span>
                 </div>
               )}

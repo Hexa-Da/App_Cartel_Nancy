@@ -38,17 +38,7 @@
   }
 }
 
-/* ✅ Grille Info : Largeur 100% avec max-width pour tablette */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
-  width: 100%;
-  max-width: 800px; /* ✅ Ne pas être ridicule sur tablette */
-  margin: auto; /* ✅ Sécurité scroll : centre la grille */
-  padding: 0 10px;
-  box-sizing: border-box;
-}
+/* ✅ Grille Info : Styles gérés dans Info.tsx avec Bento Grid et Glassmorphism */
 
 .info-section {
   background: white;

@@ -342,7 +342,8 @@ body {
 /* Ajustement de la position du message flottant */
 .floating-message {
   position: fixed;
-  top: 20px;
+  /* ✅ Positionné en dessous du header avec les variables globales */
+  top: var(--below-header-with-margin);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3001;
@@ -466,25 +467,85 @@ body {
   filter: hue-rotate(180deg) saturate(1.5);
 }
 
+/* ============================================
+   STYLE ALTERNATIF DES POPUPS - CARTES DISTINCTES AVEC ESPACEMENTS
+   ============================================ */
+
 .venue-popup {
-  min-width: min(250px, 90vw);
-  padding: 1rem;
+  min-width: min(280px, 90vw);
+  max-width: min(400px, 90vw);
+  padding: clamp(12px, 2vw, 16px);
   background-color: var(--bg-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px var(--shadow-color);
+  border-radius: clamp(12px, 2vw, 16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 16px);
 }
 
-.venue-popup h3 {
-  margin: 0 0 0.5rem 0;
-  color: var(--text-color);
-  font-size: clamp(1rem, 4vw, 1.2rem);
-  font-weight: 600;
+/* Section 1 : Informations du lieu - Carte distincte */
+.venue-popup > h3 {
+  margin: 0;
+  padding: clamp(12px, 2vw, 16px);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: clamp(1rem, 3.5vw, 1.2rem);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.01em;
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: clamp(10px, 2vw, 14px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
-.venue-popup p {
-  margin: 0 0 0.5rem 0;
-  color: var(--text-color-light);
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+.venue-popup > p {
+  margin: 0;
+  padding: clamp(12px, 2vw, 16px);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+  line-height: 1.5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  background: rgba(25, 25, 25, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(10px, 2vw, 14px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Informations supplémentaires (adresse, téléphone) */
+.venue-popup .venue-address,
+.venue-popup .venue-phone {
+  padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 16px);
+  margin: clamp(6px, 1vw, 8px) 0 0 0;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: clamp(0.7rem, 2vw, 0.8rem);
+  text-align: center;
+  background: rgba(20, 20, 20, 0.4);
+  border-radius: clamp(6px, 1.2vw, 10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.venue-popup .venue-address {
+  margin-top: clamp(8px, 1.5vw, 12px);
+}
+
+/* Exclure les éléments dans .match-item du style général de .venue-popup p */
+.venue-popup .match-item p.match-date,
+.venue-popup .match-item p.match-teams,
+.venue-popup .match-item p.match-description,
+.venue-popup .match-item p.match-result,
+.matches-list .match-item p.match-date,
+.matches-list .match-item p.match-teams,
+.matches-list .match-item p.match-description,
+.matches-list .match-item p.match-result {
+  color: inherit !important;
+  margin: inherit;
+  font-size: inherit;
 }
 
 .venue-address {
@@ -500,6 +561,35 @@ body {
   margin-top: -0.5rem !important;
 }
 
+/* Section 2 : Bouton Google Maps - Carte distincte */
+.popup-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vw, 10px);
+  margin: 0;
+  padding: clamp(12px, 2vw, 16px);
+  background: rgba(25, 25, 25, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: clamp(10px, 2vw, 14px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Séparateur visuel avant le bouton */
+.popup-buttons::before {
+  content: '';
+  position: absolute;
+  top: -clamp(6px, 1vw, 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 2px;
+}
+
 .maps-button {
   width: 100%;
   padding: 0.5rem;
@@ -510,60 +600,171 @@ body {
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
-  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
 }
 
-/* Styles pour la liste de matchs */
+/* Section 3 : Liste des matches - Carte distincte */
 .matches-list {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding-top: 0.5rem;
-  /* Changé: Hauteur adaptative */
+  margin: 0;
+  padding: clamp(12px, 2vw, 16px);
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: clamp(10px, 2vw, 14px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  /* Hauteur adaptative */
   max-height: clamp(200px, 40vh, 300px);
-  overflow-y: auto; /* Ajoute le scroll vertical si nécessaire */
-  /* Propriétés pour faire disparaître les scrollbars automatiquement */
+  overflow-y: auto;
   scrollbar-gutter: stable;
+  position: relative;
 }
 
-/* Styles de scrollbars uniformes - gérés par les styles globaux */
-
 .matches-list h4 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: var(--text-color);
-  font-size: 1rem;
+  display: none;
+}
+
+.matches-list > p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+  text-align: center;
+  font-style: italic;
+  margin: clamp(8px, 1.5vw, 12px) 0;
+}
+
+.matches-scroll-container {
+  max-height: clamp(200px, 40vh, 300px);
+  overflow-y: auto;
+  padding-right: 8px;
+  padding-left: 4px;
+  /* Style de scrollbar personnalisé - plus visible pour indiquer le scroll */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(76, 175, 80, 0.7) rgba(0, 0, 0, 0.3);
+  position: relative;
+  /* Scroll snap : chaque match s'aligne automatiquement en haut */
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.matches-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.matches-scroll-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.matches-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, 
+    rgba(76, 175, 80, 0.8) 0%, 
+    rgba(76, 175, 80, 0.6) 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  min-height: 30px;
+}
+
+.matches-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, 
+    rgba(76, 175, 80, 1) 0%, 
+    rgba(76, 175, 80, 0.8) 100%);
+  border-color: rgba(76, 175, 80, 0.5);
 }
 
 .match-item {
-  background-color: var(--bg-secondary);
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  /* Fond sombre avec glassmorphism */
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: clamp(12px, 2vw, 16px);
+  padding: clamp(10px, 2vw, 14px);
+  margin-bottom: clamp(12px, 2vh, 16px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
+  /* Centrer tous les éléments */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  /* Scroll snap : chaque match s'aligne en haut du conteneur */
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Séparateur visuel entre les matches */
+.match-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: clamp(-6px, -1vh, -8px);
+  left: 15%;
+  right: 15%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(76, 175, 80, 0.3) 20%,
+    rgba(76, 175, 80, 0.5) 50%,
+    rgba(76, 175, 80, 0.3) 80%,
+    transparent 100%);
+  border-radius: 1px;
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.2);
+}
+
+/* Dark theme - fond sombre renforcé */
+[data-theme="dark"] .match-item {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Light theme - fond sombre adapté */
+[data-theme="light"] .match-item {
+  background: rgba(40, 40, 40, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .match-date {
-  font-weight: bold;
-  color: var(--danger-color);
-  font-size: 0.85rem;
-  margin: 0.25rem 0;
+  color: rgba(255, 152, 0, 1) !important;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 3vw, 1rem);
+  margin: 0 0 clamp(8px, 1.5vh, 12px) 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: center;
+  width: 100%;
 }
 
 .match-teams {
-  font-weight: 600;
-  color: var(--warning-color);
-  margin: 0.25rem 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+  font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+  margin: 0 0 clamp(8px, 1.5vh, 12px) 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  text-align: center;
+  word-break: break-word;
 }
 
 .match-description {
-  font-style: italic;
-  color: var(--text-color-light);
-  font-size: 0.85rem;
-  margin: 0.25rem 0;
+  color: rgba(255, 255, 255, 1) !important;
+  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  margin: 0 0 clamp(6px, 1vh, 10px) 0;
+  line-height: 1.4;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-weight: 400;
+  word-break: break-word;
+  text-align: center;
+  width: 100%;
 }
 
 .edit-match-button,
@@ -597,7 +798,7 @@ body {
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
   transition: all 0.3s ease;
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 
 .add-match-button:active {
@@ -621,6 +822,43 @@ body {
 
 .leaflet-popup-tip {
   background-color: var(--bg-color) !important;
+}
+
+/* Styles spécifiques pour les éléments dans les popups Leaflet - sélecteurs très spécifiques */
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-date,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-date,
+.leaflet-popup-content-wrapper .match-item .match-date,
+.leaflet-popup-content .match-item .match-date,
+.matches-list .match-item .match-date,
+.matches-scroll-container .match-item .match-date {
+  color: rgba(255, 152, 0, 1) !important;
+}
+
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-description,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-description,
+.leaflet-popup-content-wrapper .match-item .match-description,
+.leaflet-popup-content .match-item .match-description,
+.matches-list .match-item .match-description,
+.matches-scroll-container .match-item .match-description {
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-result,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-result,
+.leaflet-popup-content-wrapper .match-item .match-result,
+.leaflet-popup-content .match-item .match-result,
+.matches-list .match-item .match-result,
+.matches-scroll-container .match-item .match-result {
+  color: rgba(76, 175, 80, 1) !important;
+}
+
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-result strong,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-result strong,
+.leaflet-popup-content-wrapper .match-item .match-result strong,
+.leaflet-popup-content .match-item .match-result strong,
+.matches-list .match-item .match-result strong,
+.matches-scroll-container .match-item .match-result strong {
+  color: rgba(76, 175, 80, 1) !important;
 }
 
 /* Media queries pour les petits écrans */
@@ -678,7 +916,8 @@ body {
 
 .error-message {
   position: fixed;
-  top: 20px;
+  /* ✅ Positionné en dessous du header avec les variables globales */
+  top: var(--below-header-with-margin);
   left: 50%;
   transform: translateX(-50%);
   background-color: var(--danger-color);
@@ -717,8 +956,8 @@ body {
 
 .location-error {
   position: fixed;
-  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 15px (remonté) + 20px d'air - même hauteur que AddVenue */
-  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
+  /* ✅ Positionné au-dessus de la nav bar avec espacement (même hauteur que AddVenue) */
+  bottom: calc(var(--above-bottom-nav) + 50px);
   left: 20px;
   background-color: var(--danger-color);
   color: white;
@@ -728,15 +967,10 @@ body {
   box-shadow: 0 2px 6px var(--shadow-color);
   z-index: 2000;
   font-size: 0.75rem;
-  /* Changé: Dimensions adaptatives */
+  /* Dimensions adaptatives */
   min-width: min(180px, 35vw);
   max-width: min(250px, 50vw);
   pointer-events: auto;
-}
-
-body.ios .location-error {
-  /* ✅ Même calcul pour iOS - remonté - même hauteur que AddVenue */
-  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
 }
 
 
@@ -804,7 +1038,8 @@ body.ios .location-error {
 
 .match-actions {
   display: flex;
-  gap: 0.5rem;
+  /* ✅ Espacement standardisé pour tous les boutons de popup (identique à .popup-buttons) */
+  gap: 0.75rem;
   margin-top: 0.5rem;
 }
 
@@ -914,13 +1149,7 @@ body.ios .location-error {
   }
 }
 
-.popup-buttons {
-  display: flex;
-  flex-direction: column;
-  /* Changé: Espacement de sécurité tactile (12px minimum) */
-  gap: 12px;
-  margin-top: 0.5rem;
-}
+/* .popup-buttons déjà défini plus haut avec le nouveau style */
 
 .copy-button {
   width: 100%;
@@ -957,7 +1186,7 @@ body.ios .location-error {
 }
 
 .popup-buttons .modif-button {
-  background-color: #FF9800; /* Orange */
+  background-color: #FF9800;
   color: white;
   border: none;
   padding: 0.5rem;
@@ -966,16 +1195,11 @@ body.ios .location-error {
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
   transition: all 0.3s ease;
-  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-}
-
-.popup-buttons .modif-button:active {
-  transform: translateY(0);
-  background-color: #EF6C00;
 }
 
 .popup-buttons .delete-button {
@@ -988,6 +1212,25 @@ body.ios .location-error {
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
   transition: all 0.3s ease;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* ✅ Styles standardisés pour tous les boutons de popup */
+.party-map-button,
+.edit-result-button,
+.edit-description-button {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-weight: 600;
+  transition: all 0.3s ease;
   /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
   display: flex;
   align-items: center;
@@ -995,10 +1238,19 @@ body.ios .location-error {
   box-sizing: border-box;
 }
 
+.party-map-button {
+  background-color: #5dabae;
+  color: white;
+}
 
-.popup-buttons .delete-button:active {
-  transform: translateY(0);
-  background-color: #B71C1C;
+.edit-result-button {
+  background-color: #FF8C00;
+  color: white;
+}
+
+.edit-description-button {
+  background-color: #9C27B0;
+  color: white;
 }
 
 .emoji-preview {
@@ -1049,24 +1301,88 @@ body.ios .location-error {
 }
 
 .event-item {
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  padding: 0.75rem;
-  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
+  /* Fond sombre avec glassmorphism */
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: clamp(16px, 3vw, 20px);
+  padding: clamp(12px, 2.5vw, 16px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
   cursor: pointer;
+  position: relative;
+  overflow: visible;
   margin-bottom: 0.5rem;
+  /* Hauteur automatique pour s'adapter au contenu */
+  min-height: fit-content;
+  height: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Dark theme - fond sombre renforcé */
+[data-theme="dark"] .event-item {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Light theme - fond sombre adapté */
+[data-theme="light"] .event-item {
+  background: rgba(40, 40, 40, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Micro-interaction au clic */
+.event-item:active {
+  transform: scale(0.98);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.event-item:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .event-item:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="light"] .event-item:hover {
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .event-item.passed {
-  opacity: 0.6;
-  filter: grayscale(0.7);
+  background: rgba(20, 20, 20, 0.6);
+  opacity: 0.65;
+  filter: grayscale(0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .event-item.passed {
+  background: rgba(15, 15, 15, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .event-item.passed {
+  background: rgba(30, 30, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .event-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: clamp(8px, 1.5vh, 12px);
+  flex-wrap: nowrap;
+  gap: clamp(8px, 1.5vw, 12px);
+  width: 100%;
 }
 
 .event-type-badge {
@@ -1125,17 +1441,27 @@ body.ios .location-error {
 }
 
 .event-date {
-  color: var(--danger-color);
-  font-weight: 600;
-  font-size: 0.8rem;
+  color: rgba(255, 152, 0, 1);
+  font-weight: 700;
+  font-size: clamp(0.85rem, 3vw, 1rem);
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  text-align: right;
+  min-width: fit-content;
 }
 
 .event-description {
-  color: var(--warning-color);
-  font-weight: 100;
-  margin: 8px 0;
-  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  margin: clamp(4px, 0.8vh, 6px) 0;
   line-height: 1.4;
+  overflow: visible;
+  word-break: break-word;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-weight: 400;
+  flex: 0 0 auto;
 }
 
 .event-venue {
@@ -1153,8 +1479,9 @@ body.ios .location-error {
 
 .event-actions {
   display: flex;
-  gap: 0.5rem;
   flex-direction: column;
+  /* ✅ Espacement standardisé pour tous les boutons de popup (identique à .popup-buttons) */
+  gap: 0.75rem;
   margin-top: 15px;
   padding-top: 10px;
   border-top: 1px solid var(--border-color);
@@ -1168,11 +1495,13 @@ body.ios .location-error {
   }
 
   .events-toggle-button {
-    top: 20px;
+    /* ✅ Utiliser les variables globales pour respecter header + safe-top */
+    top: var(--below-header-with-margin) !important;
   }
 
   .calendar-toggle-button {
-    top: 70px;
+    /* ✅ Utiliser les variables globales pour respecter header + safe-top */
+    top: calc(var(--below-header-with-margin) + 50px) !important;
   }
   
   .event-actions {
@@ -1210,8 +1539,8 @@ body.ios .location-error {
 }
 
 .calendar-toggle-button {
-  /* ✅ 50px en dessous du bouton events */
-  top: calc(var(--header-height) + var(--safe-top) + 10px + 50px) !important;
+  /* ✅ 50px en dessous du bouton events (utilise la même variable) */
+  top: calc(var(--below-header-with-margin) + 50px) !important;
 }
 
 
@@ -1225,10 +1554,12 @@ body.ios .location-error {
 /* Repositionner le panneau d'événements à gauche */
 .events-panel {
   position: fixed;
-  top: 0.3rem;
+  /* ✅ Positionné en dessous du header avec les variables globales */
+  top: var(--below-header);
   left: 0;
   width: 100%;
-  height: 100%;
+  /* ✅ Hauteur : 100vh - header - safe-top - nav - safe-bottom */
+  height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom));
   background-color: var(--bg-color);
   z-index: 2000;
   display: flex;
@@ -1238,8 +1569,8 @@ body.ios .location-error {
 
 .events-panel-header {
   padding: 0.7rem;
-  /* ✅ Réduire le padding-top : juste après le Header (sans le +20px) */
-  margin-top: calc(var(--header-height) + var(--safe-top));
+  /* ✅ Le parent .events-panel est déjà positionné sous le header, pas besoin de margin-top */
+  margin-top: 0;
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
@@ -1584,21 +1915,17 @@ body.ios .location-error {
 
 .event-name {
   margin: 0;
-  color: var(--text-color);
-  font-size: 1.2rem;
-  font-weight: 600;
-  font-style: italic;
-  flex: 1;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: clamp(0.85rem, 3vw, 1rem);
+  font-weight: 700;
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  line-clamp: 2;
-  display: -moz-box;
-  -moz-line-clamp: 2;
-  -moz-box-orient: vertical;
+  line-height: 1.3;
+  overflow: visible;
+  word-break: break-word;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.01em;
+  margin-bottom: clamp(4px, 0.8vh, 6px);
+  flex: 0 0 auto;
 }
 
 /* Pour les événements de type party qui n'ont pas d'icône de sport */
@@ -1606,65 +1933,28 @@ body.ios .location-error {
   padding-left: 0;
 }
 
-.event-item {
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  padding: 0.75rem;
-  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.event-item.passed {
-  opacity: 0.6;
-  filter: grayscale(0.7);
-}
-
-.event-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.event-type-badge {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  color: var(--text-color);
-  padding: 0.35rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 36px;
-  min-height: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  gap: 0.6rem;
-}
+/* Styles déjà définis plus haut - pas de duplication nécessaire */
 
 .event-type-badge span {
   display: inline-block;
 }
 
 .match-event .event-type-badge {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08));
-  border-color: rgba(76, 175, 80, 0.3);
-  color: #4CAF50;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+  background: rgba(76, 175, 80, 0.25);
+  border-color: rgba(76, 175, 80, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .party-event .event-type-badge {
-  background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(156, 39, 176, 0.08));
-  border-color: rgba(156, 39, 176, 0.3);
-  color: #9C27B0;
-  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
+  background: rgba(156, 39, 176, 0.25);
+  border-color: rgba(156, 39, 176, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .event-type-badge:hover {
@@ -1674,25 +1964,36 @@ body.ios .location-error {
 
 .match-event .event-type-badge:hover {
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.12));
+  background: rgba(76, 175, 80, 0.3);
 }
 
 .party-event .event-type-badge:hover {
   box-shadow: 0 4px 12px rgba(156, 39, 176, 0.25);
-  background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(156, 39, 176, 0.12));
+  background: rgba(156, 39, 176, 0.3);
 }
 
 .event-date {
-  color: var(--danger-color);
-  font-weight: 600;
-  font-size: 0.8rem;
+  color: rgba(255, 152, 0, 1);
+  font-weight: 700;
+  font-size: clamp(0.85rem, 3vw, 1rem);
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  text-align: right;
+  min-width: fit-content;
 }
 
 .event-description {
-  color: var(--warning-color);
-  font-weight: bold;
-  margin: 5px 0;
-  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  margin: clamp(4px, 0.8vh, 6px) 0;
+  line-height: 1.4;
+  overflow: visible;
+  word-break: break-word;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-weight: 400;
+  flex: 0 0 auto;
 }
 
 .event-address {
@@ -1704,8 +2005,9 @@ body.ios .location-error {
 
 .event-actions {
   display: flex;
-  gap: 0.5rem;
   flex-direction: column;
+  /* ✅ Espacement standardisé pour tous les boutons de popup (identique à .popup-buttons) */
+  gap: 0.75rem;
 }
 
 /* Styles personnalisés pour les contrôles de zoom */
@@ -1910,7 +2212,8 @@ body.ios .location-error {
 
 .planning-button {
   position: absolute;
-  top: 10px;
+  /* ✅ Positionné en dessous du header avec les variables globales */
+  top: calc(var(--header-height) + var(--safe-top) + 10px);
   left: 100px;
   padding: 8px 16px;
   background-color: var(--primary-color);
@@ -1930,18 +2233,66 @@ body.ios .location-error {
 }
 
 .event-result {
-  color: var(--success-color);
-  font-weight: bold;
-  margin: 5px 0;
-  font-size: 1rem;
+  color: rgba(76, 175, 80, 0.95);
+  font-weight: 700;
+  margin: clamp(4px, 0.8vh, 6px) 0;
+  font-size: clamp(0.75rem, 2.8vw, 0.9rem);
   text-align: center;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Style pour les résultats des parties avec contour identique à la description */
+.party-result,
+.party-results {
+  margin: 0;
+  padding: clamp(12px, 2vw, 16px);
+  background: rgba(25, 25, 25, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: clamp(10px, 2vw, 14px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  text-align: center !important;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.party-result h4,
+.party-results h4 {
+  margin: 0 !important;
+  color: rgba(76, 175, 80, 0.95) !important;
+  font-size: clamp(0.8rem, 2.5vw, 0.9rem) !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  line-height: 1.5 !important;
+  width: 100% !important;
+  display: block !important;
 }
 
 .match-result {
-  color: #4CAF50;
-  font-weight: bold;
-  margin: 5px 0;
-  font-size: 0.9rem;
+  color: rgba(76, 175, 80, 1) !important;
+  font-weight: 700;
+  font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+  margin: clamp(6px, 1vh, 10px) 0 0 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  line-height: 1.3;
+  text-align: center;
+  width: 100%;
+}
+
+.match-result strong {
+  color: rgba(76, 175, 80, 1) !important;
+  font-weight: 700;
 }
 
 /* Styles unifiés pour le chat sur toutes les pages */
@@ -2265,10 +2616,12 @@ body.ios .location-error {
 /* Styles pour le panneau de planning */
 .planning-panel {
   position: fixed;
-  top: 0.3rem;
+  /* ✅ Positionné en dessous du header avec les variables globales */
+  top: var(--below-header);
   left: 0;
   width: 100%;
-  height: 100%;
+  /* ✅ Hauteur : 100vh - header - safe-top - nav - safe-bottom */
+  height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom));
   background-color: var(--bg-color);
   z-index: 2000;
   display: flex;
@@ -2517,10 +2870,12 @@ body.ios .location-error {
 
 .calendar-popup {
   position: fixed;
-  top: 4rem;
+  /* ✅ Utiliser les variables globales : Header + safe-top */
+  top: calc(var(--header-height) + var(--safe-top));
   left: 0;
   right: 0;
-  bottom: 0;
+  /* ✅ Aller jusqu'en bas en tenant compte de la nav et safe-bottom */
+  bottom: calc(var(--nav-height) + var(--safe-bottom));
   background-color: var(--bg-color);
   z-index: 999;
   overflow-y: auto;
@@ -2663,8 +3018,8 @@ body.ios .location-error {
 
 .add-venue-button {
   position: fixed;  
-  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 15px (remonté) + 20px d'air */
-  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
+  /* ✅ Positionné au-dessus de la nav bar avec espacement */
+  bottom: calc(var(--above-bottom-nav) + 50px);
   left: 20px;
   width: 48px;
   height: 48px;
@@ -2675,18 +3030,13 @@ body.ios .location-error {
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
   justify-content: center;
-  align-items: center; /* Added to vertically center the cross */
+  align-items: center;
   font-size: 25px;
   padding: 0;
   cursor: pointer;
   z-index: 2000;
   transition: all 0.3s ease;
   pointer-events: auto;
-}
-
-body.ios .add-venue-button {
-  /* ✅ Même calcul pour iOS - remonté */
-  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
 }
 
 
@@ -2752,8 +3102,8 @@ body.ios .add-venue-button {
 .location-loading {
   position: fixed;
   right: 20px;
-  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 20px d'air */
-  bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
+  /* ✅ Positionné au-dessus de la nav bar avec espacement (même hauteur que AddVenue) */
+  bottom: calc(var(--above-bottom-nav) + 50px);
   z-index: 2000;
 }
 
@@ -2828,8 +3178,8 @@ body.ios .add-venue-button {
 
 .recenter-button {
   position: fixed;
-  /* ✅ Utiliser les variables globales : Nav + safe-bottom + 15px (remonté) + 20px (même hauteur que AddVenue) */
-  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
+  /* ✅ Positionné au-dessus de la nav bar avec espacement réduit (remonté, même hauteur que AddVenue) */
+  bottom: calc(var(--above-bottom-nav) + 50px);
   right: 20px;
   width: 48px;
   height: 48px;
@@ -2849,18 +3199,12 @@ body.ios .add-venue-button {
   padding: 0;
 }
 
-
 .recenter-button svg {
   width: 24px;
   height: 24px;
   color: var(--text-color);
   transition: all 0.3s ease;
   filter: drop-shadow(0 1px 2px var(--shadow-color));
-}
-
-body.ios .recenter-button {
-  /* ✅ Même calcul pour iOS - même hauteur que AddVenue - remonté */
-  bottom: calc(15px + var(--nav-height) + var(--safe-bottom) + 20px);
 }
 
 /* Suppression des effets de focus par défaut */

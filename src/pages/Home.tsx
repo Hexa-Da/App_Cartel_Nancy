@@ -323,17 +323,20 @@ const Home: React.FC = () => {
       'Athlétisme': '🏃‍♂️',
       'Spikeball': '⚡️',
       'Pétanque': '🍹',
-      'Escalade': '🧗‍♂️'
+      'Escalade': '🧗‍♂️',
+      'Soirée': '🎵',
+      'Défilé': '🎭'
     };
     return icons[sport] || '🏆';
   };
 
   const handleEventClick = (match: ExtendedMatch) => {
-    const [, time] = match.date.split('T');
+    const [date, time] = match.date.split('T');
     const newEvent: Event = {
       type: match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party' : 'match',
       time: time.split('.')[0],
       endTime: match.endTime ? match.endTime.split('T')[1].split('.')[0] : undefined,
+      date: date,
       name: match.description || match.name,
       teams: match.teams,
       description: match.description,
@@ -389,7 +392,6 @@ const Home: React.FC = () => {
                       </div>
                       <h3 className="event-name">{match.teams}</h3>
                       <p className="event-description">{match.description}</p>
-                      <p className="event-venue">{match.venue}</p>
                       {match.result && (
                         <div className="event-result">{match.result}</div>
                       )}
@@ -430,7 +432,6 @@ const Home: React.FC = () => {
                     </div>
                     <h3 className="event-name">{match.teams}</h3>
                     <p className="event-description">{match.description}</p>
-                    <p className="event-venue">{match.venue}</p>
                     {match.result && (
                       <div className="event-result">{match.result}</div>
                     )}
@@ -500,7 +501,6 @@ const Home: React.FC = () => {
                     <h3 className="event-name">{match.teams}</h3>
                   </div>
                   <p className="event-description">{match.description}</p>
-                  <p className="event-venue">{match.venue}</p>
                   {match.result && <p className="event-result">Résultat : {match.result}</p>}
                 </div>
               ))

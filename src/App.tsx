@@ -2576,8 +2576,6 @@ function App() {
         popupContent.innerHTML = `
           <h3>${venue.name}</h3>
           <p>${venue.description}</p>
-          <p><strong>Sport:</strong> ${venue.sport}</p>
-          <p class="venue-address">${venue.address || `${venue.latitude}, ${venue.longitude}`}</p>
         `;
         }
 
@@ -2592,13 +2590,6 @@ function App() {
           await openInGoogleMaps(venue);
         });
         buttonsContainer.appendChild(mapsButton);
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.textContent = 'Copier l\'adresse';
-        copyButton.addEventListener('click', () => {
-          copyToClipboard(venue.address || `${venue.latitude},${venue.longitude}`);
-        });
-        buttonsContainer.appendChild(copyButton);
         popupContent.appendChild(buttonsContainer);
         }
 
@@ -2612,47 +2603,7 @@ function App() {
           matchesScrollContainer.className = 'matches-scroll-container';
           matchesScrollContainer.style.maxHeight = '200px';
           matchesScrollContainer.style.overflowY = 'auto';
-          const style = document.createElement('style');
-          style.textContent = `
-            .match-passed { 
-              background-color: rgba(255, 255, 255, 0.05); 
-              opacity: 0.7;
-            }
-            .match-passed p { 
-              opacity: 0.7; 
-              color: var(--text-color); 
-            }
-            .match-passed .match-result { 
-              opacity: 0.7; 
-              font-weight: bold; 
-              color: var(--text-color); 
-            }
-            .match-passed .match-date { 
-              opacity: 0.7; 
-              color: var(--danger-color) !important; 
-            }
-            .match-passed .match-teams { 
-              opacity: 0.7; 
-              color: var(--text-color) !important; 
-            }
-            .match-passed .match-description { 
-              opacity: 0.7; 
-              color: var(--warning-color) !important; 
-            }
-            .match-passed .match-result { 
-              opacity: 0.7; 
-              color: var(--success-color) !important; 
-            }
-           
-            
-            /* Styles pour les couleurs des matchs dans les popups Leaflet */
-            .leaflet-popup .match-date { color: var(--danger-color) !important; }
-            .leaflet-popup .match-teams { color: var(--text-color) !important; }
-            .leaflet-popup .match-description { color: var(--warning-color) !important; }
-            .leaflet-popup .match-result { color: var(--success-color) !important; }
-            .leaflet-popup .match-item { border-left: none !important; }
-          `;
-          document.head.appendChild(style);
+          // Les styles sont maintenant gérés par App.css avec le même style que les cartes de match
           sortedMatches.forEach(match => {
             const matchItemDiv = document.createElement('div');
             matchItemDiv.className = `match-item ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`;
@@ -2782,7 +2733,6 @@ function App() {
         popupContent.innerHTML = `
           <h3>${party.name}</h3>
           <p>${party.description}</p>
-          <p class="venue-address">${party.address}</p>
           ${party.sport !== 'Defile' && !party.description?.toLowerCase().includes('showcase') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         `;
         const buttonsContainer = document.createElement('div');
@@ -2795,20 +2745,12 @@ function App() {
           await openInGoogleMaps(party);
         });
         buttonsContainer.appendChild(mapsButton);
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.textContent = 'Copier l\'adresse';
-        copyButton.addEventListener('click', () => {
-          copyToClipboard(party.address || `${party.latitude},${party.longitude}`);
-        });
-        buttonsContainer.appendChild(copyButton);
         
-        // Bouton pour voir la map des lieux de soirée (après "Copier l'adresse")
+        // Bouton pour voir la map des lieux de soirée
         if (party.name !== 'Place Stanislas') {
           const partyMapButton = document.createElement('button');
           partyMapButton.className = 'party-map-button';
           partyMapButton.textContent = 'Voir la carte des lieux';
-          partyMapButton.style.cssText = 'background-color: #5dabae; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; font-size: clamp(0.8rem, 3vw, 0.9rem); transition: all 0.3s ease;';
           partyMapButton.addEventListener('click', () => {
             setSelectedPartyForMap(party.name);
             setActiveTab('party-map');
@@ -2821,12 +2763,11 @@ function App() {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
-          editResultButton.style.cssText = 'background-color: #FF8C00; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
           editResultButton.addEventListener('click', () => {
             // Ouvrir le formulaire modal pour éditer le résultat
             openEditResultModal(party.id, party.result || 'à venir');
           });
-          popupContent.appendChild(editResultButton);
+          buttonsContainer.appendChild(editResultButton);
         }
         
         // Ajouter le bouton d'édition de la description pour les admins (tous les événements party) seulement si le mode édition est activé
@@ -2834,13 +2775,12 @@ function App() {
           const editDescriptionButton = document.createElement('button');
           editDescriptionButton.className = 'edit-description-button';
           editDescriptionButton.textContent = 'Modifier la description';
-          editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
           editDescriptionButton.addEventListener('click', () => {
             // Utiliser directement la description de l'état React (synchronisé avec Firebase)
             const currentDescription = party.description || '';
             openEditDescriptionModal(party.id, currentDescription);
           });
-          popupContent.appendChild(editDescriptionButton);
+          buttonsContainer.appendChild(editDescriptionButton);
         }
         
         popupContent.appendChild(buttonsContainer);
@@ -2853,7 +2793,6 @@ function App() {
           popupContent.innerHTML = `
             <h3>${currentParty.name}</h3>
             <p>${currentParty.description}</p>
-            <p class="venue-address">${currentParty.address}</p>
             ${currentParty.sport !== 'Defile' && !currentParty.description?.toLowerCase().includes('showcase') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
           `;
           
@@ -2867,21 +2806,13 @@ function App() {
           mapsButton.addEventListener('click', async () => {
             await openInGoogleMaps(currentParty);
           });
-          buttonsContainerNew.appendChild(mapsButton);
-          const copyButton = document.createElement('button');
-          copyButton.className = 'copy-button';
-          copyButton.textContent = 'Copier l\'adresse';
-          copyButton.addEventListener('click', () => {
-            copyToClipboard(currentParty.address || `${currentParty.latitude},${currentParty.longitude}`);
-          });
-          buttonsContainerNew.appendChild(copyButton);
-          
-          // Bouton pour voir la map des lieux de soirée (après "Copier l'adresse")
+              buttonsContainerNew.appendChild(mapsButton);
+
+              // Bouton pour voir la map des lieux de soirée
           if (currentParty.name !== 'Place Stanislas') {
             const partyMapButton = document.createElement('button');
             partyMapButton.className = 'party-map-button';
             partyMapButton.textContent = 'Voir la carte des lieux';
-            partyMapButton.style.cssText = 'background-color: #5dabae; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600; font-size: clamp(0.8rem, 3vw, 0.9rem); transition: all 0.3s ease;';
             partyMapButton.addEventListener('click', () => {
               setSelectedPartyForMap(currentParty.name);
               setActiveTab('party-map');
@@ -2894,23 +2825,21 @@ function App() {
             const editResultButton = document.createElement('button');
             editResultButton.className = 'edit-result-button';
             editResultButton.textContent = 'Modifier le résultat';
-            editResultButton.style.cssText = 'background-color: #FF8C00; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
             editResultButton.addEventListener('click', () => {
               openEditResultModal(currentParty.id, currentParty.result || 'à venir');
             });
-            popupContent.appendChild(editResultButton);
+            buttonsContainerNew.appendChild(editResultButton);
           }
           
           if (isAdmin && isEditing) {
             const editDescriptionButton = document.createElement('button');
             editDescriptionButton.className = 'edit-description-button';
             editDescriptionButton.textContent = 'Modifier la description';
-            editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
             editDescriptionButton.addEventListener('click', () => {
               const currentDescription = currentParty.description || '';
               openEditDescriptionModal(currentParty.id, currentDescription);
             });
-            popupContent.appendChild(editDescriptionButton);
+            buttonsContainerNew.appendChild(editDescriptionButton);
           }
           
           popupContent.appendChild(buttonsContainerNew);
@@ -2944,8 +2873,6 @@ function App() {
             popupContent.innerHTML = `
               <h3>${hotel.name}</h3>
               ${savedDescription ? `<p>${savedDescription}</p>` : ''}
-              <p class="venue-address">${hotel.address || `${hotel.latitude}, ${hotel.longitude}`}</p>
-              ${hotel.telephone ? `<p class="venue-phone">Téléphone : ${hotel.telephone}</p>` : ''}
             `;
             const buttonsContainer = document.createElement('div');
             buttonsContainer.className = 'popup-buttons';
@@ -2956,13 +2883,6 @@ function App() {
               await openInGoogleMaps(hotel);
             });
             buttonsContainer.appendChild(mapsButton);
-            const copyButton = document.createElement('button');
-            copyButton.className = 'copy-button';
-            copyButton.textContent = 'Copier l\'adresse';
-            copyButton.addEventListener('click', () => {
-              copyToClipboard(hotel.address || `${hotel.latitude},${hotel.longitude}`);
-            }); 
-            buttonsContainer.appendChild(copyButton);
 
             // Ajouter le bouton "Appeler" si l'hôtel a un numéro de téléphone
             if (hotel.telephone) {
@@ -2987,8 +2907,6 @@ function App() {
               popupContent.innerHTML = `
                 <h3>${currentHotel.name}</h3>
                 ${currentHotel.description ? `<p>${currentHotel.description}</p>` : ''}
-                <p class="venue-address">${currentHotel.address || `${currentHotel.latitude}, ${currentHotel.longitude}`}</p>
-                ${currentHotel.telephone ? `<p class="venue-phone">Téléphone : ${currentHotel.telephone}</p>` : ''}
               `;
               
               // Réajouter les boutons
@@ -3001,14 +2919,7 @@ function App() {
                 await openInGoogleMaps(currentHotel);
               });
               buttonsContainerNew.appendChild(mapsButton);
-              const copyButton = document.createElement('button');
-              copyButton.className = 'copy-button';
-              copyButton.textContent = 'Copier l\'adresse';
-              copyButton.addEventListener('click', () => {
-                copyToClipboard(currentHotel.address || `${currentHotel.latitude},${currentHotel.longitude}`);
-              });
-              buttonsContainerNew.appendChild(copyButton);
-              
+
               // Réajouter le bouton "Appeler" si l'hôtel a un numéro de téléphone
               if (currentHotel.telephone) {
                 const callButton = document.createElement('button');
@@ -3028,12 +2939,11 @@ function App() {
                 const editDescriptionButton = document.createElement('button');
                 editDescriptionButton.className = 'edit-description-button';
                 editDescriptionButton.textContent = 'Modifier la description';
-                editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
                 editDescriptionButton.addEventListener('click', () => {
                   const currentDescription = currentHotel.description || '';
                   openEditHotelDescriptionModal(currentHotel.id, currentDescription);
                 });
-                popupContent.appendChild(editDescriptionButton);
+                buttonsContainerNew.appendChild(editDescriptionButton);
               }
               
               popupContent.appendChild(buttonsContainerNew);
@@ -3074,14 +2984,7 @@ function App() {
               await openInGoogleMaps(restaurant);
             });
             buttonsContainer.appendChild(mapsButton);
-            const copyButton = document.createElement('button');
-            copyButton.className = 'copy-button';
-            copyButton.textContent = 'Copier l\'adresse';
-            copyButton.addEventListener('click', () => {
-              copyToClipboard(restaurant.address || `${restaurant.latitude},${restaurant.longitude}`);
-            });
-            buttonsContainer.appendChild(copyButton);
-    
+
             popupContent.appendChild(buttonsContainer);
             marker.bindPopup(popupContent);
             marker.on('popupopen', () => {
@@ -3092,7 +2995,6 @@ function App() {
               popupContent.innerHTML = `
                 <h3>${currentRestaurant.name}</h3>
                 <p>${currentRestaurant.description}</p>
-                <p class="venue-address">${currentRestaurant.address}</p>
               `;
               
               // Réajouter les boutons
@@ -3105,14 +3007,7 @@ function App() {
                 await openInGoogleMaps(currentRestaurant);
               });
               buttonsContainerNew.appendChild(mapsButton);
-              const copyButton = document.createElement('button');
-              copyButton.className = 'copy-button';
-              copyButton.textContent = 'Copier l\'adresse';
-              copyButton.addEventListener('click', () => {
-                copyToClipboard(currentRestaurant.address || `${currentRestaurant.latitude},${currentRestaurant.longitude}`);
-              });
-              buttonsContainerNew.appendChild(copyButton);
-              
+
               // Réajouter le bouton d'édition si admin - Utiliser les refs pour avoir les valeurs actuelles
               const currentIsAdmin = isAdminRef.current;
               const currentIsEditing = isEditingRef.current;
@@ -3120,12 +3015,11 @@ function App() {
                 const editDescriptionButton = document.createElement('button');
                 editDescriptionButton.className = 'edit-description-button';
                 editDescriptionButton.textContent = 'Modifier la description';
-                editDescriptionButton.style.cssText = 'background-color: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: 600;';
                 editDescriptionButton.addEventListener('click', () => {
                   const currentDescription = currentRestaurant.description || '';
                   openEditRestaurantDescriptionModal(currentRestaurant.id, currentDescription);
                 });
-                popupContent.appendChild(editDescriptionButton);
+                buttonsContainerNew.appendChild(editDescriptionButton);
               }
               
               popupContent.appendChild(buttonsContainerNew);
@@ -4619,7 +4513,6 @@ function App() {
                       {event.type === 'party' && (
                         <>
                           <p className="event-description">{event.description}</p>
-                          <p className="event-address">{event.address}</p>
                           {event.sport !== 'Defile' && !event.description?.toLowerCase().includes('showcase') && (
                             <div className="party-results">
                               <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
@@ -4638,15 +4531,6 @@ function App() {
                           }}
                         >
                           Ouvrir dans Google Maps
-                        </button>
-                        <button 
-                          className="copy-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard(event.address);
-                          }}
-                        >
-                          Copier l'adresse
                         </button>
                       </div>
                     </div>

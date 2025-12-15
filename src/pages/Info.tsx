@@ -26,11 +26,12 @@ interface InfoCardProps {
   icon: React.ReactNode;
   title: string;
   onClick: () => void;
+  size?: 'small' | 'medium' | 'large' | 'wide';
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ icon, title, onClick }) => {
+const InfoCard: React.FC<InfoCardProps> = ({ icon, title, onClick, size = 'small' }) => {
   return (
-    <div className="info-card" onClick={onClick}>
+    <div className={`info-card info-card-${size}`} onClick={onClick}>
       <div className="info-icon">{icon}</div>
       <h3 className="info-card-title">{title}</h3>
     </div>
@@ -79,48 +80,56 @@ const Info: React.FC = () => {
           icon={<FaUtensils />}
           title="Infos Restaurations"
           onClick={() => handleCardClick('restauration')}
+          size="wide"
         />
         
         <InfoCard
           icon={<FaTrophy />}
           title="Infos Sports"
           onClick={() => handleCardClick('sport')}
+          size="medium"
         />
         
         <InfoCard
           icon={<FaMusic />}
           title="Infos Soirées"
           onClick={() => handleCardClick('party')}
+          size="medium"
         />
         
         <InfoCard
           icon={<FaHotel />}
           title="Infos Hotels"
           onClick={() => handleCardClick('hotel')}
+          size="small"
         />
         
         <InfoCard
           icon={<FaRing />}
           title="Infos Bracelet"
           onClick={() => handleCardClick('bracelet')}
+          size="small"
         />
         
         <InfoCard
           icon={<FaDice />}
           title="Faites vos paris"
           onClick={() => handleCardClick('parie')}
+          size="wide"
         />
         
         <InfoCard
           icon={<FaFileAlt />}
           title="Fichiers Utiles"
           onClick={() => handleCardClick('planning')}
+          size="small"
         />
         
         <InfoCard
           icon={<FaFileContract />}
           title="Mentions Légales"
           onClick={() => handleCardClick('legal')}
+          size="small"
         />
       </div>
 
@@ -128,8 +137,6 @@ const Info: React.FC = () => {
 
       <style>{`
         .info-page {
-          /* ✅ Styles gérés par Info.css pour le centrage */
-          /* Padding et background conservés ici pour compatibilité */
           padding: 20px;
           padding-top: 10px;
           background-color: var(--bg-color);
@@ -137,92 +144,162 @@ const Info: React.FC = () => {
         }
 
         .info-title {
-          font-size: 2.5rem;
+          font-size: clamp(1.8rem, 4vw, 2.5rem);
           font-weight: 700;
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: clamp(30px, 5vh, 40px);
           color: var(--text-color);
-          /* ✅ Sécurité scroll : margin auto pour éviter la coupure */
           margin-left: auto;
           margin-right: auto;
           width: 100%;
-          max-width: 800px;
+          max-width: min(800px, 95vw);
         }
 
         .info-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 25px;
-          padding: 0 10px;
-          /* ✅ Correction syntaxe : max-width au lieu de maxWidth */
-          max-width: min(800px, 95vw);
+          grid-template-columns: repeat(4, 1fr);
+          grid-auto-rows: minmax(120px, auto);
+          gap: clamp(12px, 2vw, 20px);
+          padding: 0 clamp(10px, 2vw, 20px);
+          max-width: min(900px, 95vw);
           width: 100%;
-          margin: auto; /* ✅ Sécurité scroll : centre la grille */
+          margin: auto;
           box-sizing: border-box;
         }
 
+        /* Bento Grid Layout - Tailles variables */
+        .info-card-small {
+          grid-column: span 1;
+          grid-row: span 1;
+        }
+
+        .info-card-medium {
+          grid-column: span 2;
+          grid-row: span 1;
+        }
+
+        .info-card-wide {
+          grid-column: span 2;
+          grid-row: span 1;
+        }
+
+        .info-card-large {
+          grid-column: span 2;
+          grid-row: span 2;
+        }
+
+        /* Glassmorphism Effect */
         .info-card {
-          background-color: var(--bg-secondary);
-          border-radius: 12px;
-          padding: 15px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: clamp(12px, 2vw, 16px);
+          padding: clamp(15px, 3vw, 20px);
           text-align: center;
           cursor: pointer;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                      box-shadow 0.2s ease,
+                      border-color 0.2s ease;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          min-height: clamp(80px, 14vh, 120px);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          min-height: clamp(100px, 15vh, 140px);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           -webkit-tap-highlight-color: transparent;
           -webkit-touch-callout: none;
           -webkit-user-select: none;
           -moz-user-select: none;
           -ms-user-select: none;
           user-select: none;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Dark theme glassmorphism */
+        [data-theme="dark"] .info-card {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Light theme glassmorphism */
+        [data-theme="light"] .info-card {
+          background: rgba(255, 255, 255, 0.7);
+          border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Micro-interaction au clic */
+        .info-card:active {
+          transform: scale(0.98);
+          transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .info-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          border-color: rgba(255, 255, 255, 0.3);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="dark"] .info-card:hover {
+          border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        [data-theme="light"] .info-card:hover {
+          border-color: rgba(0, 0, 0, 0.15);
         }
 
         .info-icon {
-          font-size: 1.6rem;
-          margin-bottom: 8px;
+          font-size: clamp(2rem, 4vw, 2.8rem);
+          margin-bottom: clamp(6px, 1.5vh, 10px);
           color: var(--text-color);
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .info-card-title {
-          font-size: 0.8rem;
+          font-size: clamp(0.75rem, 2vw, 0.95rem);
           margin: 0;
           color: var(--text-color);
-          font-weight: 500;
+          font-weight: 600;
+          line-height: 1.3;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
+        /* Responsive Mobile First */
         @media (max-width: 600px) {
           .info-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            padding: 0 5px;
+            gap: clamp(10px, 3vw, 16px);
+            padding: 0 clamp(8px, 2vw, 12px);
+          }
+
+          .info-card-small,
+          .info-card-medium,
+          .info-card-wide {
+            grid-column: span 1;
+            grid-row: span 1;
+          }
+
+          .info-card-large {
+            grid-column: span 2;
+            grid-row: span 1;
           }
 
           .info-card {
-            padding: 12px;
-            min-height: clamp(70px, 12vh, 100px);
+            min-height: clamp(90px, 18vh, 130px);
+            padding: clamp(12px, 2.5vw, 16px);
           }
 
           .info-icon {
-            font-size: 1.4rem;
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
           }
 
           .info-card-title {
-            font-size: 0.75rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
           }
 
           .info-title {
-            font-size: 2rem;
-            margin-bottom: 30px;
+            font-size: clamp(1.6rem, 5vw, 2rem);
+            margin-bottom: clamp(20px, 4vh, 30px);
           }
         }
 
@@ -230,8 +307,21 @@ const Info: React.FC = () => {
           .info-grid {
             grid-template-columns: repeat(3, 1fr);
           }
+
+          .info-card-wide {
+            grid-column: span 3;
+          }
+
+          .info-card-medium {
+            grid-column: span 2;
+          }
         }
 
+        @media (min-width: 1025px) {
+          .info-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
 
       `}</style>
     </div>
