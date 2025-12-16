@@ -604,9 +604,9 @@ const Parie: React.FC = () => {
           <TimerDisplay />
 
           {isLoadingBets && (
-            <div className="loading-bets">
-              <FaSpinner className="loading-spinner" />
-              <span>Chargement des paris...</span>
+            <div className="chat-loading-spinner-container">
+              <div className="chat-loading-spinner"></div>
+              <div className="chat-loading-text">Chargement des paris...</div>
             </div>
           )}
 
@@ -696,12 +696,6 @@ const Parie: React.FC = () => {
               </div>
             ))}
           </div>
-
-          {sports.length === 0 && (
-            <div className="no-sports">
-              <p>Aucun sport disponible pour le moment.</p>
-            </div>
-          )}
 
           {/* Modal pour définir les gagnants */}
           {showWinnersModal && (

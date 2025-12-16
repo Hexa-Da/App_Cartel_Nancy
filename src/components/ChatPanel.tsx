@@ -39,6 +39,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
   const [newMessage, setNewMessage] = useState('');
   const [newMessageSender, setNewMessageSender] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Annuler l'ajout de message si isEditing passe à false
   useEffect(() => {
@@ -53,6 +54,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
   // Lecture en temps réel des messages depuis Firebase
   useEffect(() => {
     const messagesRef = ref(database, 'chatMessages');
+    setIsLoading(true);
     const unsubscribe = onValue(messagesRef, (snapshot) => {
       const data = snapshot.val() || {};
       // Transforme l'objet en tableau [{id, ...}]
@@ -68,6 +70,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
       }
       
       setMessages(sortedMessages);
+      setIsLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -292,7 +295,17 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
       )}
       
       <div className="chat-container">
-        {messages.map((message, index) => (
+        {isLoading ? (
+          <div className="chat-loading-spinner-container">
+            <div className="chat-loading-spinner"></div>
+            <div className="chat-loading-text">Chargement des messages...</div>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="chat-empty-message">
+            Aucun message pour le moment
+          </div>
+        ) : (
+          messages.map((message, index) => (
           <div 
             key={message.id || index} 
             className={`chat-message ${message.isAdmin ? 'admin' : ''}`} 
@@ -333,7 +346,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
               </div>
             )}
           </div>
-        ))}
+        ))
+        )}
       </div>
     </div>
   );

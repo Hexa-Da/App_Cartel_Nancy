@@ -1,4 +1,8 @@
-.admin-modal-overlay {
+/* ================================
+   Modal Bracelet - Saisie du numéro de bracelet
+   ================================ */
+
+.bracelet-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,7 +13,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  z-index: 2000;
+  z-index: 10001;
   /* Pas de scroll sur l'overlay - seul le contenu du modal scroll */
   overflow: hidden;
   padding: 1rem;
@@ -19,12 +23,12 @@
 
 /* Sur mobile, remonter le modal quand le clavier apparaît */
 @media (max-height: 600px), (max-width: 768px) and (max-height: 800px) {
-  .admin-modal-overlay {
+  .bracelet-modal-overlay {
     padding-top: calc(env(safe-area-inset-top, 0px) + 10vh);
   }
 }
 
-.admin-modal-content {
+.bracelet-modal-content {
   background-color: var(--bg-color);
   border-radius: 12px;
   width: 90%;
@@ -44,12 +48,12 @@
 
 /* Sur mobile avec clavier, ajuster la position */
 @media (max-height: 600px), (max-width: 768px) and (max-height: 800px) {
-  .admin-modal-content {
+  .bracelet-modal-content {
     max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 2rem);
   }
 }
 
-.admin-modal-header {
+.bracelet-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -58,14 +62,14 @@
   position: relative;
 }
 
-.admin-modal-header h2 {
+.bracelet-modal-header h2 {
   margin: 0;
   color: var(--text-color);
   font-size: 1.2rem;
   font-weight: 600;
 }
 
-.admin-modal-close {
+.bracelet-modal-close {
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -85,7 +89,7 @@
   justify-content: center;
 }
 
-.admin-login-form {
+.bracelet-form {
   padding: 1rem;
   background-color: var(--bg-color);
   overflow-y: auto;
@@ -124,7 +128,17 @@
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
-.admin-login-button {
+.bracelet-error {
+  color: var(--danger-color);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  padding: 0.5rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.bracelet-submit-button {
   background-color: var(--primary-color);
   color: white;
   border: none;
@@ -140,16 +154,16 @@
   min-height: 44px;
 }
 
-.admin-login-button:hover {
+.bracelet-submit-button:hover {
   background-color: #0056b3;
 }
 
-.admin-login-button:active {
+.bracelet-submit-button:active {
   transform: translateY(1px);
 }
 
 /* Suppression des effets de focus et de sélection */
-.admin-modal-content * {
+.bracelet-modal-content * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -159,14 +173,14 @@
   user-select: none;
 }
 
-.admin-modal-content button:focus,
-.admin-modal-content input:focus {
+.bracelet-modal-content button:focus,
+.bracelet-modal-content input:focus {
   outline: none !important;
   box-shadow: none !important;
 }
 
 /* Permettre la sélection de texte pour les labels */
-.admin-modal-content label {
+.bracelet-modal-content label {
   -webkit-user-select: text;
   -khtml-user-select: text;
   -moz-user-select: text;
@@ -175,7 +189,7 @@
 }
 
 /* Permettre la sélection de texte pour les inputs */
-.admin-modal-content input {
+.bracelet-modal-content input {
   -webkit-user-select: text;
   -khtml-user-select: text;
   -moz-user-select: text;
@@ -183,6 +197,7 @@
   user-select: text;
 }
 
+/* Animation d'entrée */
 @keyframes modalSlideIn {
   from {
     opacity: 0;
@@ -193,3 +208,4 @@
     transform: translateY(0);
   }
 }
+

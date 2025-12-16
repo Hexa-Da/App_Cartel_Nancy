@@ -31,7 +31,7 @@ interface ExtendedMatch extends Match {
 }
 
 const Home: React.FC = () => {
-  const { getFilteredEvents, getAllDelegations, delegationMatches } = useApp();
+  const { getFilteredEvents, getAllDelegations, delegationMatches, isLoadingVenues } = useApp();
   const { selectedEvent, setSelectedEvent } = useAppPanels();
   const [events, setEvents] = useState<Place[]>([]);
   const navigate = useNavigate();
@@ -149,6 +149,22 @@ const Home: React.FC = () => {
       window.removeEventListener('adminLoginSuccess', handleAdminLoginSuccess);
     };
   }, [getFilteredEvents]);
+
+  // Mettre à jour les événements quand les venues sont chargées
+  useEffect(() => {
+    if (!isLoadingVenues) {
+      const filteredEvents = getFilteredEvents();
+      setEvents(
+        filteredEvents
+          .filter((venue): venue is typeof venue & { id: string } => !!venue.id)
+          .map(venue => ({
+            ...venue,
+            type: 'venue' as const,
+            matches: venue.matches || []
+          }))
+      );
+    }
+  }, [isLoadingVenues, getFilteredEvents]);
 
   // Fonction pour vérifier si un match est passé (reprise de App.tsx)
   const isMatchPassed = (startDate: string, endTime?: string, type: 'match' | 'party' = 'match') => {
@@ -375,39 +391,55 @@ const Home: React.FC = () => {
           {userPreferences.favoriteSports.length > 0 ? (
             userPreferences.favoriteSports.map((sport: string) => {
               const matches = getMatchesByDelegationAndSport(events, userPreferences.delegation, sport);
-              return matches.length > 0 ? (
+              return (
                 <div key={sport} className="horizontal-scroll">
-                  {matches.map(match => (
-                    <div 
-                      key={match.id} 
-                      className={`event-item home-event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
-                      onClick={() => handleEventClick(match)}
-                    >
-                      <div className="event-header">
-                        <span className="event-type-badge">
-                          <span>{getSportIcon(sport)}</span>
-                          <span>{sport}</span>
-                        </span>
-                        <span className="event-date">{formatDateTime(match.date, match.endTime)}</span>
+                  {matches.length > 0 ? (
+                    matches.map(match => (
+                      <div 
+                        key={match.id} 
+                        className={`event-item home-event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+                        onClick={() => handleEventClick(match)}
+                      >
+                        <div className="event-header">
+                          <span className="event-type-badge">
+                            <span>{getSportIcon(sport)}</span>
+                            <span>{sport}</span>
+                          </span>
+                          <span className="event-date">{formatDateTime(match.date, match.endTime)}</span>
+                        </div>
+                        <h3 className="event-name">{match.teams}</h3>
+                        <p className="event-description">{match.description}</p>
+                        {match.result && (
+                          <div className="event-result">{match.result}</div>
+                        )}
                       </div>
-                      <h3 className="event-name">{match.teams}</h3>
-                      <p className="event-description">{match.description}</p>
-                      {match.result && (
-                        <div className="event-result">{match.result}</div>
-                      )}
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    isLoadingVenues ? (
+                      <div className="no-matches loading-container">
+                        <div className="section-loading-spinner"></div>
+                      </div>
+                    ) : (
+                      <p className="no-matches">
+                        {userPreferences.delegation 
+                          ? `Aucun match de ${sport} trouvé pour la délégation de ${userPreferences.delegation}`
+                          : `Aucun match de ${sport} trouvé. Veuillez sélectionner votre délégation.`}
+                      </p>
+                    )
+                  )}
                 </div>
-              ) : (
-                <p key={sport} className="no-matches">
-                  {userPreferences.delegation 
-                    ? `Aucun match de ${sport} trouvé pour la délégation de ${userPreferences.delegation}`
-                    : `Aucun match de ${sport} trouvé. Veuillez sélectionner votre délégation.`}
-                </p>
               );
             })
           ) : (
-            <p className="no-matches">Veuillez sélectionner votre sports dans les préférences</p>
+            <div className="horizontal-scroll">
+              {isLoadingVenues ? (
+                <div className="no-matches loading-container">
+                  <div className="section-loading-spinner"></div>
+                </div>
+              ) : (
+                <p className="no-matches">Veuillez sélectionner votre sports dans les préférences</p>
+              )}
+            </div>
           )}
         </section>
 
@@ -438,11 +470,23 @@ const Home: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <p className="no-matches">Aucun match trouvé pour la délégation {userPreferences.delegation} <br />
-                Veuillez sélectionner votre délégation dans les préférences</p>
+                isLoadingVenues ? (
+                  <div className="no-matches loading-container">
+                    <div className="section-loading-spinner"></div>
+                  </div>
+                ) : (
+                  <p className="no-matches">Aucun match trouvé pour la délégation {userPreferences.delegation} <br />
+                  Veuillez sélectionner votre délégation dans les préférences</p>
+                )
               )
             ) : (
-              <p className="no-matches">Veuillez sélectionner votre délégation dans les préférences</p>
+              isLoadingVenues ? (
+                <div className="no-matches loading-container">
+                  <div className="section-loading-spinner"></div>
+                </div>
+              ) : (
+                <p className="no-matches">Veuillez sélectionner votre délégation dans les préférences</p>
+              )
             )}
           </div>
         </section>
@@ -505,7 +549,13 @@ const Home: React.FC = () => {
                 </div>
               ))
             ) : (
-              <p className="no-matches">Aucun match en direct</p>
+              isLoadingVenues ? (
+                <div className="no-matches loading-container">
+                  <div className="section-loading-spinner"></div>
+                </div>
+              ) : (
+                <p className="no-matches">Aucun match en direct</p>
+              )
             )}
           </div>
         </section>

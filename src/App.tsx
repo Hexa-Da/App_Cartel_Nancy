@@ -41,6 +41,7 @@ import BusLines from './components/BusLines';
 import './components/ModalForm.css';
 import PartyMap from './pages/PartyMap';
 import ChatPanel from './components/ChatPanel';
+import EventsTab from './components/EventsTab';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -1131,10 +1132,6 @@ function App() {
   });
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [fromEvents, setFromEvents] = useState(false);
-  const [isStarFilterActive, setIsStarFilterActive] = useState(() => {
-    const saved = localStorage.getItem('starFilterActive');
-    return saved !== null ? JSON.parse(saved) : false;
-  });
 
   // État pour l'historique des actions et l'index actuel
   const [history, setHistory] = useState<HistoryAction[]>([]);
@@ -1193,56 +1190,6 @@ function App() {
     };
   }, []);
 
-  // Écouter les changements de l'état de l'étoile dans le localStorage
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'starFilterActive') {
-        const newValue = e.newValue === 'true';
-        setIsStarFilterActive(newValue);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  // Effet pour détecter les changements de filtres et mettre à jour l'état de l'étoile
-  useEffect(() => {
-    // Vérifier si les filtres actuels correspondent aux préférences
-    const preferredSportRaw = localStorage.getItem('preferredSport') || 'all';
-    let preferredSport;
-    try {
-      const parsed = JSON.parse(preferredSportRaw);
-      preferredSport = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
-    } catch {
-      preferredSport = preferredSportRaw;
-    }
-    const preferredDelegation = localStorage.getItem('preferredDelegation') || 'all';
-    const preferredChampionshipRaw = localStorage.getItem('preferredChampionship') || 'none';
-    let preferredChampionship;
-    try {
-      const parsed = JSON.parse(preferredChampionshipRaw);
-      preferredChampionship = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
-    } catch {
-      preferredChampionship = preferredChampionshipRaw;
-    }
-
-    // Vérifier si les filtres correspondent aux préférences
-    const sportMatches = eventFilter === (preferredSport === 'none' ? 'match' : preferredSport);
-    const delegationMatches = delegationFilter === preferredDelegation;
-    const genderMatches = preferredChampionship === 'none' ? 
-      (showFemale && showMale && showMixed) :
-      (preferredChampionship === 'female' ? showFemale && !showMale && !showMixed :
-       preferredChampionship === 'male' ? !showFemale && showMale && !showMixed :
-       preferredChampionship === 'mixed' ? !showFemale && !showMale && showMixed : false);
-
-    const shouldBeActive = sportMatches && delegationMatches && genderMatches;
-    
-    if (shouldBeActive !== isStarFilterActive) {
-      setIsStarFilterActive(shouldBeActive);
-      localStorage.setItem('starFilterActive', JSON.stringify(shouldBeActive));
-    }
-  }, [eventFilter, delegationFilter, showFemale, showMale, showMixed, isStarFilterActive]);
 
   const mapStyles = {
     osm: {
@@ -2208,134 +2155,6 @@ function App() {
     });
   };
 
-  // Fonction optimisée pour récupérer tous les événements (matchs et soirées)
-  const getAllEvents = useMemo(() => {
-    const events: Array<{
-      id: string;
-      name: string;
-      date: string;
-      endTime?: string;
-      description: string;
-      address: string;
-      location: [number, number];
-      type: 'match' | 'party';
-      teams?: string;
-      venue?: string;
-      venueId?: string;
-      isPassed: boolean;
-      sport?: string;
-      result?: string;
-    }> = [];
-
-    // Ajouter les matchs
-    venues.forEach(venue => {
-      if (venue.matches && venue.matches.length > 0) {
-        venue.matches.forEach(match => {
-          events.push({
-            id: `match-${venue.id}-${match.id}`,
-            name: match.teams,
-            date: match.date,
-            endTime: match.endTime,
-            description: match.description,
-            address: venue.address || `${venue.latitude}, ${venue.longitude}`,
-            location: [venue.latitude, venue.longitude],
-            type: 'match',
-            teams: match.teams,
-            venue: venue.name,
-            venueId: venue.id,
-            isPassed: isMatchPassed(match.date, match.endTime, 'match'),
-            sport: venue.sport,
-            result: match.result
-          });
-        });
-      }
-    });
-
-    // Ajouter les soirées (seulement pour les admins)
-    if (isAdmin) {
-      parties.forEach(party => {
-        // Calculer l'heure de fin par défaut (6h après le début)
-        const startDate = new Date(party.date);
-        const endDate = new Date(startDate);
-        endDate.setHours(startDate.getHours() + 6);
-        
-        events.push({
-          id: `party-${party.id || party.name}`,
-          name: party.name,
-          date: party.date,
-          endTime: endDate.toISOString(), // Ajouter l'heure de fin calculée
-          description: party.description,
-          address: party.address || `${party.latitude}, ${party.longitude}`,
-          location: [party.latitude, party.longitude],
-          type: 'party',
-          isPassed: isMatchPassed(party.date, endDate.toISOString(), 'party'),
-          sport: party.sport
-        });
-      });
-    }
-
-    // Trier par date (du plus récent au plus ancien)
-    return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [venues, parties]);
-
-  // Fonction optimisée pour filtrer les événements
-  const getFilteredEvents = useMemo(() => {
-    const allEvents = getAllEvents;
-    
-    return allEvents.filter(event => {
-      // Filtre par type d'événement
-      const typeMatch = eventFilter === 'all' || 
-        (eventFilter === 'none' ? false :
-          (eventFilter === 'party' && event.type === 'party' && isAdmin) ||
-          (eventFilter === 'match' && event.type === 'match') ||
-          (event.type === 'match' && event.sport === eventFilter && eventFilter !== 'match'));
-
-      // Filtre par délégation
-      const delegationMatch = event.type === 'party' 
-  ? true 
-  : (delegationFilter === 'all' || (event.teams && delegationMatches(event.teams, delegationFilter)));
-
-      // Filtre par lieu
-      let venueMatch = true;
-      if (venueFilter !== 'Tous') {
-        if (event.type === 'party') {
-          // Les parties ne sont visibles que pour les admins
-          if (!isAdmin) {
-            venueMatch = false;
-          } else {
-            let partyId = '';
-            switch (event.name) {
-              case 'Place Stanislas':
-                partyId = 'place-stanislas';
-                break;
-              case 'Parc Expo':
-                partyId = 'parc-expo';
-                break;
-              case 'Zénith':
-                partyId = 'zenith';
-                break;
-              default:
-                partyId = event.name.toLowerCase().replace(/\s+/g, '-');
-            }
-            venueMatch = partyId === venueFilter;
-          }
-        } else {
-          venueMatch = event.venueId === venueFilter;
-        }
-      }
-
-      // Filtre par genre
-      const isFemale = event.description?.toLowerCase().includes('féminin');
-      const isMale = event.description?.toLowerCase().includes('masculin');
-      const isMixed = event.description?.toLowerCase().includes('mixte');
-      const genderMatch = (!isFemale && !isMale && !isMixed) || 
-        (isFemale && showFemale) || 
-        (isMale && showMale) ||
-        (isMixed && showMixed);
-
-      return typeMatch && delegationMatch && venueMatch && genderMatch;
-    });
-  }, [getAllEvents, eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed]);
 
   // Fonction pour formater la date et l'heure
   const formatDateTime = (dateString: string, endTimeString?: string) => {
@@ -3686,97 +3505,6 @@ function App() {
     return Array.from(delegations).sort();
   };
 
-  const scrollToFirstNonPassedEvent = () => {
-    const eventsList = document.querySelector('.events-list');
-    if (eventsList) {
-      const firstNonPassedEvent = eventsList.querySelector('.event-item:not(.passed)');
-      if (firstNonPassedEvent) {
-        // Calculer la position avec un offset pour laisser de l'espace en haut
-        const containerRect = eventsList.getBoundingClientRect();
-        const elementRect = firstNonPassedEvent.getBoundingClientRect();
-        const offset = 15; // 40px d'espace en haut
-        
-        const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
-        eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
-      }
-    }
-  };
-
-  // Update the filter change handlers to include the scroll
-  const handleEventFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    ReactGA.event({
-      category: 'filter',
-      action: 'change_event_filter',
-      label: e.target.value
-    });
-    setEventFilterWithSave(e.target.value);
-    // Réinitialiser le filtre de lieu quand le type d'événement change
-    setVenueFilterWithSave('Tous');
-    triggerMarkerUpdate();
-    setTimeout(scrollToFirstNonPassedEvent, 100);
-  };
-
-  const handleDelegationFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    ReactGA.event({
-      category: 'filter',
-      action: 'change_delegation_filter',
-      label: e.target.value
-    });
-    setDelegationFilterWithSave(e.target.value);
-    triggerMarkerUpdate();
-    setTimeout(scrollToFirstNonPassedEvent, 100);
-  };
-
-  // Ajouter la fonction pour gérer le clic sur le bouton ⭐
-  const handleStarFilterClick = () => {
-    const preferredSportRaw = localStorage.getItem('preferredSport') || 'all';
-    let preferredSport;
-    try {
-      const parsed = JSON.parse(preferredSportRaw);
-      preferredSport = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
-    } catch {
-      preferredSport = preferredSportRaw;
-    }
-    const preferredDelegation = localStorage.getItem('preferredDelegation') || 'all';
-    const preferredChampionshipRaw = localStorage.getItem('preferredChampionship') || 'none';
-    let preferredChampionship;
-    try {
-      const parsed = JSON.parse(preferredChampionshipRaw);
-      preferredChampionship = Array.isArray(parsed) ? parsed[0] || 'none' : parsed;
-    } catch {
-      preferredChampionship = preferredChampionshipRaw;
-    }
-    
-    const newStarFilterActive = !isStarFilterActive;
-    setIsStarFilterActive(newStarFilterActive);
-    localStorage.setItem('starFilterActive', JSON.stringify(newStarFilterActive));
-    
-    if (!isStarFilterActive) {
-      // Si le sport préféré est 'none', on utilise 'match' pour afficher tous les sports
-      setEventFilterWithSave(preferredSport === 'none' ? 'match' : preferredSport);
-      setDelegationFilterWithSave(preferredDelegation);
-      
-      // Appliquer les filtres de genre en fonction du championnat sélectionné
-      if (preferredChampionship !== 'none') {
-        setShowFemaleWithSave(preferredChampionship === 'female');
-        setShowMaleWithSave(preferredChampionship === 'male');
-        setShowMixedWithSave(preferredChampionship === 'mixed');
-      } else {
-        setShowFemaleWithSave(true);
-        setShowMaleWithSave(true);
-        setShowMixedWithSave(true);
-      }
-    } else {
-      setEventFilterWithSave('all');
-      setDelegationFilterWithSave('all');
-      setShowFemaleWithSave(true);
-      setShowMaleWithSave(true);
-      setShowMixedWithSave(true);
-    }
-    
-    triggerMarkerUpdate();
-    setTimeout(scrollToFirstNonPassedEvent, 100);
-  };
 
   const getVenueOptions = () => {
     if (eventFilter === 'all' || eventFilter === 'match') {
@@ -3873,24 +3601,6 @@ function App() {
     return { hasFemale, hasMale, hasMixed };
   };
 
-  const handleVenueFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    ReactGA.event({
-      category: 'filter',
-      action: 'change_venue_filter',
-      label: e.target.value
-    });
-    setVenueFilterWithSave(e.target.value);
-    triggerMarkerUpdate();
-    setTimeout(scrollToFirstNonPassedEvent, 100);
-  };
-
-  const handleGenderFilterChange = (gender: 'female' | 'male' | 'mixed') => {
-    if (gender === 'female') setShowFemaleWithSave(!showFemale);
-    if (gender === 'male') setShowMaleWithSave(!showMale);
-    if (gender === 'mixed') setShowMixedWithSave(!showMixed);
-    triggerMarkerUpdate();
-    setTimeout(scrollToFirstNonPassedEvent, 100);
-  };
 
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
@@ -4139,26 +3849,6 @@ function App() {
 
   return (
     <div className="app">
-      {/* Overlay de chargement global */}
-      {showVenuesLoadingOverlay && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'var(--bg-primary)',
-          opacity: 0.8,
-          zIndex: 5000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-        }}>
-          <div className="location-loading-spinner" style={{ width: 60, height: 60, borderWidth: 6, marginBottom: 24 }}></div>
-          <div style={{ color: '#1976D2', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: 8 }}>Chargement des données…</div>
-        </div>
-      )}
       <main className="app-main">
         {locationError && showLocationPrompt && (
           <div className="location-error">
@@ -4192,10 +3882,12 @@ function App() {
             </div>
           </div>
         )}
-        {locationLoading ? (
-          <div className="loading">Chargement de la carte...</div>
-        ) : (
-          <div className="page-content no-scroll map-container" style={{ marginTop: 0, paddingTop: 0 }}>
+        <div className="page-content no-scroll map-container" style={{ marginTop: 0, paddingTop: 0 }}>
+        {(locationLoading || (showVenuesLoadingOverlay && (activeTab === 'map' || location.pathname === '/map'))) && (
+          <div className="map-loading-indicator">
+            <div className="location-loading-spinner"></div>
+          </div>
+        )}
         <MapContainer
           center={[48.686881, 6.1880492]}
           zoom={12}
@@ -4307,236 +3999,14 @@ function App() {
             )}
             
             {activeTab === 'events' && (
-              <div className="events-panel">
-                <div className="events-panel-header">
-                    <h3>Événements</h3>
-                    {showFilters && (
-                    <>
-                      <button
-                        className={`filter-reset-button star${isStarFilterActive ? ' active' : ''}`}
-                        onClick={handleStarFilterClick}
-                        title="Appliquer vos préférences"
-                      >
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 1.5L14.5 8.5L22 9L16 14.5L17.5 22L12 18L6.5 22L8 14.5L2 9L9.5 8.5L12 1.5Z"/>
-                        </svg>
-                      </button>
-                      <button
-                        className="filter-reset-button"
-                        onClick={() => {
-                          setEventFilterWithSave('all');
-                          setDelegationFilterWithSave('all');
-                          setVenueFilterWithSave('Tous');
-                          setShowFemaleWithSave(true);
-                          setShowMaleWithSave(true);
-                          setShowMixedWithSave(true);
-                          setIsStarFilterActive(false);
-                          localStorage.setItem('starFilterActive', 'false');
-                          triggerMarkerUpdate();
-                          setTimeout(scrollToFirstNonPassedEvent, 100);
-                        }}
-                      >
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                        </svg>
-                      </button>
-                      </>
-                    )}
-                    <button 
-                      className="filter-toggle-button"
-                      onClick={() => setShowFilters(!showFilters)}
-                    >
-                      <svg 
-                        width="28" 
-                        height="28" 
-                        viewBox="0 0 24 24" 
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        style={{ 
-                          transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.3s ease'
-                        }}
-                      >
-                        <path d="M18 4H6l5 6.5v4.5l2 2v-6.5L18 4Z"/>
-                      </svg>
-                    </button>
-                </div>
-                <div className={`event-filters ${showFilters ? 'show' : ''}`}>
-                    {showFilters && (
-                    <>
-                      <div className="filter-buttons-row"></div>
-                      <select 
-                        className="filter-select"
-                        value={eventFilter}
-                        onChange={handleEventFilterChange}
-                      >
-                        <option value="none">Aucun</option>
-                        <option value="all">Tous les événements</option>
-                        <option value="match">Tous les sports</option>
-                        {isAdmin && <option value="party">Soirées et Défilé 🎉</option>}
-                        <option value="Football">Football ⚽</option>
-                        <option value="Basketball">Basketball 🏀</option>
-                        <option value="Handball">Handball 🤾</option>
-                        <option value="Rugby">Rugby 🏉</option>
-                        <option value="Ultimate">Ultimate 🥏</option>
-                        <option value="Natation">Natation 🏊</option>
-                        <option value="Badminton">Badminton 🏸</option>
-                        <option value="Tennis">Tennis 🎾</option>
-                        <option value="Cross">Cross 👟</option>
-                        <option value="Volleyball">Volleyball 🏐</option>
-                        <option value="Ping-pong">Ping-pong 🏓</option>
-                        <option value="Echecs">Echecs ♟️</option>
-                        <option value="Athlétisme">Athlétisme 🏃‍♂️</option>
-                        <option value="Spikeball">Spikeball ⚡️</option>
-                        <option value="Pétanque">Pétanque 🍹</option>
-                        <option value="Escalade">Escalade 🧗‍♂️</option>
-                      </select>
-
-                      <select
-                        className="filter-select"
-                        value={delegationFilter}
-                        onChange={handleDelegationFilterChange}
-                      >
-                        <option value="all">Toutes les délégations</option>
-                        {getAllDelegations().map(delegation => (
-                          <option key={delegation} value={delegation}>
-                            {delegation}
-                          </option>
-                        ))}
-                      </select>
-
-                      {eventFilter !== 'none' && eventFilter !== 'all' && eventFilter !== 'match' && (
-                        <select 
-                          className="filter-select"
-                          value={venueFilter}
-                          onChange={handleVenueFilterChange}
-                        >
-                          {getVenueOptions().map(option => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-
-                      {eventFilter !== 'all' && eventFilter !== 'party' && (() => {
-                        const { hasFemale, hasMale, hasMixed } = hasGenderMatches(eventFilter);
-                        if (!hasFemale && !hasMale && !hasMixed) return null;
-                        return (
-                          <div className="gender-filter-row">
-                            {hasFemale && (
-                              <button 
-                                className={`gender-filter-button ${showFemale ? 'active' : ''}`}
-                                onClick={() => handleGenderFilterChange('female')}
-                              >
-                                Féminin
-                              </button>
-                            )}
-                            {hasMale && (
-                              <button 
-                                className={`gender-filter-button ${showMale ? 'active' : ''}`}
-                                onClick={() => handleGenderFilterChange('male')}
-                              >
-                                Masculin
-                              </button>
-                            )}
-                            {hasMixed && (
-                              <button 
-                                className={`gender-filter-button ${showMixed ? 'active' : ''}`}
-                                onClick={() => handleGenderFilterChange('mixed')}
-                              >
-                                Mixte
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })()}
-                    </>
-                  )}
-                </div>
-                <div className="events-list">
-                  {getFilteredEvents.map(event => (
-                    <div 
-                      key={event.id} 
-                      className={`event-item ${event.isPassed ? 'passed' : ''} ${event.type === 'match' ? 'match-event' : 'party-event'} ${selectedEvent?.id === event.id ? 'selected' : ''}`}
-                      onClick={() => handleEventSelect(event)}
-                    >
-                      <div className="event-header">
-                        <span className="event-type-badge">
-                          {event.type === 'match' ? (
-                            <>
-                              <span>{getSportIcon(event.sport || '')}</span>
-                              <span>{event.sport}</span>
-                            </>
-                          ) : event.sport === 'Defile' ? (
-                            <>
-                              <span>🎺</span>
-                              <span>Défilé</span>
-                            </>
-                          ) : event.sport === 'Pompom' ? (
-                            <>
-                              <span>🎀</span>
-                              <span>Pompom</span>
-                            </>
-                          ) : event.name === 'Parc Expo' && event.description.includes('Showcase') ? (
-                            <>
-                              <span>🎤</span>
-                              <span>SHOWCASE</span>
-                            </>
-                          ) : (event.name === 'Parc Expo' || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
-                            <>
-                              <span>🎧</span>
-                              <span>DJ CONTEST</span>
-                            </>
-                          ) : (
-                            <>
-                              <span>🎉</span>
-                              <span>Soirée</span>
-                            </>
-                          )}
-                        </span>
-                        <span className="event-date">{formatDateTime(event.date, event.endTime)}</span>
-                      </div>
-                      <div className="event-title-container">
-                        <h3 className="event-name">{event.name}</h3>
-                      </div>
-                      {event.type === 'match' && (
-                        <>
-                          <p className="event-description">{event.description}</p>
-                          <p className="event-venue">{event.venue}</p>
-                          {event.result && <p className="event-result">Résultat : {event.result}</p>}
-                        </>
-                      )}
-                      {event.type === 'party' && (
-                        <>
-                          <p className="event-description">{event.description}</p>
-                          {event.sport !== 'Defile' && !event.description?.toLowerCase().includes('showcase') && (
-                            <div className="party-results">
-                              <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
-                                Résultat : {event.result || 'à venir'}
-                              </h4>
-                            </div>
-                          )}
-                        </>
-                      )}
-                      <div className="event-actions">
-                        <button 
-                          className="maps-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`, '_blank');
-                          }}
-                        >
-                          Ouvrir dans Google Maps
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <EventsTab
+                venues={venues}
+                parties={parties}
+                isAdmin={isAdmin}
+                onEventSelect={handleEventSelect}
+                triggerMarkerUpdate={triggerMarkerUpdate}
+                isVenuesLoading={isVenuesLoading}
+              />
             )}
             {activeTab === 'chat' && (
               <ChatPanel 
@@ -4545,7 +4015,6 @@ function App() {
               />
             )}
           </div>
-        )}
       </main>
       
       {/* Formulaire d'ajout/modification de match */}
@@ -5250,6 +4719,7 @@ function App() {
           handleBack();
         }}
         isBackDisabled={activeTab === 'map' || activeTab === 'info'}
+        isVenuesLoading={isVenuesLoading}
       />
 
               {/* Modal d'édition du résultat de la soirée pompom */}

@@ -402,6 +402,35 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Quand no-matches est directement dans matches-section (pas dans horizontal-scroll) */
+.matches-section > .no-matches {
+  padding: 20px clamp(20px, 5vw, 32px);
+}
+
+/* Quand no-matches est dans horizontal-scroll, utiliser le padding du conteneur */
+.horizontal-scroll > .no-matches {
+  padding: 20px;
+}
+
+/* Conteneur de chargement */
+.no-matches.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 40px 20px;
+}
+
+/* Spinner de chargement pour les sections */
+.section-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid var(--primary-color, #1976D2);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
 /* Responsive breakpoints */
 @media (max-width: 480px) {
   .home-page {
@@ -471,6 +500,25 @@
     font-size: clamp(0.8rem, 3.5vw, 1rem);
     padding: 15px;
   }
+  
+  .matches-section > .no-matches {
+    padding: 15px clamp(16px, 4vw, 24px);
+  }
+  
+  .horizontal-scroll > .no-matches {
+    padding: 15px;
+  }
+  
+  .no-matches.loading-container {
+    min-height: 100px;
+    padding: 30px 15px;
+  }
+  
+  .section-loading-spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -532,6 +580,25 @@
   .no-matches {
     font-size: clamp(0.7rem, 3.2vw, 0.9rem);
     padding: 12px;
+  }
+  
+  .matches-section > .no-matches {
+    padding: 12px clamp(14px, 3.5vw, 20px);
+  }
+  
+  .horizontal-scroll > .no-matches {
+    padding: 12px;
+  }
+  
+  .no-matches.loading-container {
+    min-height: 90px;
+    padding: 25px 12px;
+  }
+  
+  .section-loading-spinner {
+    width: 28px;
+    height: 28px;
+    border-width: 3px;
   }
 }
 
@@ -969,6 +1036,25 @@
   .no-matches {
     font-size: clamp(0.6rem, 3vw, 0.8rem);
     padding: 10px;
+  }
+  
+  .matches-section > .no-matches {
+    padding: 10px clamp(12px, 3vw, 16px);
+  }
+  
+  .horizontal-scroll > .no-matches {
+    padding: 10px;
+  }
+  
+  .no-matches.loading-container {
+    min-height: 80px;
+    padding: 20px 10px;
+  }
+  
+  .section-loading-spinner {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
   }
 }
 

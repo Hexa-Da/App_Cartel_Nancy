@@ -140,25 +140,29 @@
   border-top: 1px solid var(--border-color);
 }
 
-.bracelet-input {
+.bracelet-open-button {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
   border-radius: 6px;
   font-size: 1rem;
   text-align: center;
-  background-color: var(--bg-secondary);
+  background-color: var(--primary-color);
   color: var(--text-color);
   box-sizing: border-box;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
 }
 
-.bracelet-input:focus {
-  outline: none;
+.bracelet-open-button:hover {
   border-color: var(--primary-color);
+  background-color: var(--bg-color);
 }
 
-.bracelet-input::placeholder {
-  color: var(--text-color-light);
+.bracelet-open-button:active {
+  transform: translateY(1px);
 }
 
 .bracelet-info {

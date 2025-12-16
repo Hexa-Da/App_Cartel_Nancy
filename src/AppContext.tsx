@@ -40,6 +40,7 @@ interface AppContextType {
   setVenues: React.Dispatch<React.SetStateAction<Venue[]>>;
   messages: any[];
   setMessages: React.Dispatch<React.SetStateAction<any[]>>;
+  isLoadingVenues: boolean;
   getFilteredEvents: () => Venue[];
   getAllDelegations: () => string[];
   hasGenderMatches: (sport: string) => { hasFemale: boolean, hasMale: boolean, hasMixed: boolean };
@@ -53,6 +54,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [isLoadingVenues, setIsLoadingVenues] = useState(true);
 
   // Vérification de l'état admin au chargement
   useEffect(() => {
@@ -83,6 +85,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Lecture des venues depuis Firebase
   useEffect(() => {
+    setIsLoadingVenues(true);
     const venuesRef = ref(database, 'venues');
     const unsubscribe = onValue(venuesRef, (snapshot) => {
       const data = snapshot.val() || {};
@@ -91,6 +94,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         ...(value as Omit<Venue, 'id'>) 
       }));
       setVenues(venuesArray);
+      setIsLoadingVenues(false);
+    }, (error) => {
+      console.error('Error loading venues:', error);
+      setIsLoadingVenues(false);
     });
     return () => unsubscribe();
   }, []);
@@ -187,6 +194,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       setVenues,
       messages,
       setMessages,
+      isLoadingVenues,
       getFilteredEvents,
       getAllDelegations,
       hasGenderMatches,

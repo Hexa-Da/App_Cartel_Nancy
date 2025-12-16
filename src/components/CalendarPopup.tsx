@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './CalendarPopup.css';
 import { Venue } from '../types';
 import Header from './Header';
@@ -38,6 +38,7 @@ interface CalendarPopupProps {
   isEditing?: boolean;
   onBack?: () => void;
   isBackDisabled?: boolean;
+  isVenuesLoading?: boolean;
 }
 
 const CalendarPopup: React.FC<CalendarPopupProps> = ({ 
@@ -70,13 +71,45 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   onEditModeToggle,
   isEditing,
   onBack,
-  isBackDisabled
+  isBackDisabled,
+  isVenuesLoading
 }) => {
   const { selectedEvent, setSelectedEvent } = useAppPanels();
+  const [isLoading, setIsLoading] = useState(true);
+  const hasInitialized = useRef(false);
   const [isStarFilterActive, setIsStarFilterActive] = useState(() => {
     const saved = localStorage.getItem('starFilterActive');
     return saved !== null ? JSON.parse(saved) : false;
   });
+
+  // Gérer l'état de chargement
+  useEffect(() => {
+    // Si isVenuesLoading est fourni, l'utiliser directement
+    if (isVenuesLoading !== undefined) {
+      setIsLoading(isVenuesLoading);
+      return;
+    }
+    
+    // Sinon, utiliser la logique de détection automatique
+    // Les données sont considérées comme chargées une fois qu'on a reçu les venues depuis Firebase
+    // (venues commence comme tableau vide [] puis est rempli après le chargement Firebase)
+    // Si venues a des données, le chargement est terminé
+    // Sinon, attendre un court délai pour permettre le chargement initial
+    if (venues.length > 0) {
+      hasInitialized.current = true;
+      setIsLoading(false);
+    } else if (!hasInitialized.current) {
+      // Premier rendu avec venues vide : attendre un peu pour voir si des données arrivent
+      const timer = setTimeout(() => {
+        hasInitialized.current = true;
+        setIsLoading(false);
+      }, 800);
+      return () => clearTimeout(timer);
+    } else {
+      // Après l'initialisation, le chargement est toujours terminé
+      setIsLoading(false);
+    }
+  }, [venues, isVenuesLoading]);
 
   // Écouter les changements de l'état de l'étoile dans le localStorage
   useEffect(() => {
@@ -843,7 +876,13 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
           )}
           
           <div className="calendar-scrollable-content">
-            <div className="calendar-grid">
+            {isLoading ? (
+              <div className="chat-loading-spinner-container">
+                <div className="chat-loading-spinner"></div>
+                <div className="chat-loading-text">Chargement du calendrier...</div>
+              </div>
+            ) : (
+              <div className="calendar-grid">
               <div className="calendar-hours">
                 <div className="calendar-hour-header"></div>
                 <div className="calendar-hours-container">
@@ -899,6 +938,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                 })}
               </div>
             </div>
+            )}
           </div>
         </div>
         

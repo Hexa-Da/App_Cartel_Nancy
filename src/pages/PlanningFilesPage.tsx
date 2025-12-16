@@ -14,7 +14,7 @@
  * - Séparation claire des fonctionnalités
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PlanningFiles from '../components/PlanningFiles';
 import { useApp } from '../AppContext';
@@ -136,7 +136,7 @@ const PlanningFilesPage: React.FC = () => {
           { value: 'all', label: 'Tous les restaurants' },
           ...RESTAURANTS.map(restaurant => ({
             value: restaurant.id,
-            label: `${restaurant.name} 🍽️`
+            label: `${restaurant.name}`
           }))
         ];
       case 'hotel':
@@ -144,13 +144,13 @@ const PlanningFilesPage: React.FC = () => {
           { value: 'all', label: 'Tous les hôtels' },
           ...HOTELS.map(hotel => ({
             value: hotel.id,
-            label: `${hotel.name} 🏢`
+            label: `${hotel.name}`
           }))
         ];
       case 'hse':
         return [
           { value: 'all', label: 'Tous les fichiers HSE' },
-          { value: 'HSE', label: 'HSE 🛡️' }
+          { value: 'HSE', label: 'HSE' }
         ];
       default:
         return [{ value: 'all', label: 'Tous' }];
@@ -162,13 +162,9 @@ const PlanningFilesPage: React.FC = () => {
     setSpecificEvent('all');
   }, [eventType]);
 
-  // Simulation du chargement de la page
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsPageLoading(false);
-    }, 800); // Chargement de 800ms
-
-    return () => clearTimeout(timer);
+  // Callback pour gérer le chargement des données depuis PlanningFiles
+  const handleLoadingChange = useCallback((loading: boolean) => {
+    setIsPageLoading(loading);
   }, []);
 
   // Calculer la hauteur des filtres dynamiquement avec gestion iOS robuste
@@ -348,24 +344,11 @@ const PlanningFilesPage: React.FC = () => {
     </div>
   ) : null;
 
-  // Indicateur de chargement intégré dans le layout
-  const loadingIndicator = isPageLoading ? (
-    <div className="page-loading-indicator">
-      <div style={{
-        width: '40px',
-        height: '40px',
-        border: '3px solid var(--border-color)',
-        borderTop: '3px solid var(--accent-color)',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite'
-      }} />
-      <div style={{
-        color: 'var(--accent-color)',
-        fontSize: '1rem',
-        fontWeight: '600'
-      }}>
-        Chargement des fichiers...
-      </div>
+  // Spinner de chargement affiché sous les filtres
+  const loadingSpinner = isPageLoading ? (
+    <div className="chat-loading-spinner-container">
+      <div className="chat-loading-spinner"></div>
+      <div className="chat-loading-text">Chargement des fichiers...</div>
     </div>
   ) : null;
 
@@ -380,11 +363,9 @@ const PlanningFilesPage: React.FC = () => {
         paddingTop: isIOS ? `${filtersHeight + 10}px` : `${filtersHeight + 20}px`
       }}>
       {uploadBar}
-      {loadingIndicator}
 
       {/* Système de filtres en cascade - Utilise les classes CSS */}
-      {!isPageLoading && (
-        <div id="filters-container" className="filters-container">
+      <div id="filters-container" className="filters-container">
           <div className="filter-group">
             <label className="filter-label">
               Type d'événement :
@@ -426,25 +407,33 @@ const PlanningFilesPage: React.FC = () => {
             </div>
           )}
         </div>
-      )}
+
+      {/* Spinner de chargement sous les filtres */}
+      {loadingSpinner}
 
       {/* Composant PlanningFiles avec filtre */}
-      {!isPageLoading && (
-        <div className="planning-container">
-          <PlanningFiles 
-            isAdmin={isAdmin && isEditing} 
-            filter={eventType === 'all' ? 'all' : specificEvent === 'all' ? eventType : specificEvent}
-            showFilterSelector={false}
-            uploading={uploading}
-            setUploading={handleSetUploading}
-            uploadProgress={uploadProgress}
-            setUploadProgress={handleSetUploadProgress}
-            hotels={HOTELS}
-            restaurants={RESTAURANTS}
-            parties={PARTIES}
-          />
-        </div>
-      )}
+      <div 
+        className="planning-container" 
+        style={{ 
+          opacity: isPageLoading ? 0 : 1,
+          pointerEvents: isPageLoading ? 'none' : 'auto',
+          transition: 'opacity 0.3s ease'
+        }}
+      >
+        <PlanningFiles 
+          isAdmin={isAdmin && isEditing} 
+          filter={eventType === 'all' ? 'all' : specificEvent === 'all' ? eventType : specificEvent}
+          showFilterSelector={false}
+          uploading={uploading}
+          setUploading={handleSetUploading}
+          uploadProgress={uploadProgress}
+          setUploadProgress={handleSetUploadProgress}
+          hotels={HOTELS}
+          restaurants={RESTAURANTS}
+          parties={PARTIES}
+          onLoadingChange={handleLoadingChange}
+        />
+      </div>
     </div>
   );
 };

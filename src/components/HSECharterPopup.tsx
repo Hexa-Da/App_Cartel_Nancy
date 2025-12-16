@@ -3,6 +3,7 @@
  */
 
 import React, { useState } from 'react';
+import BraceletModal from './BraceletModal';
 import './HSECharterPopup.css';
 
 interface HSECharterPopupProps {
@@ -13,12 +14,19 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [braceletNumber, setBraceletNumber] = useState('');
   const [error, setError] = useState('');
+  const [isBraceletModalOpen, setIsBraceletModalOpen] = useState(false);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const el = e.target as HTMLDivElement;
     if (el.scrollHeight - el.scrollTop <= el.clientHeight + 50) {
       setHasScrolledToBottom(true);
     }
+  };
+
+  const handleBraceletSubmit = (number: string) => {
+    setBraceletNumber(number);
+    setIsBraceletModalOpen(false);
+    setError('');
   };
 
   const handleSubmit = () => {
@@ -28,6 +36,7 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
     }
     if (!braceletNumber.trim()) {
       setError('Veuillez saisir votre numéro de bracelet');
+      setIsBraceletModalOpen(true);
       return;
     }
     onAccept(braceletNumber.trim());
@@ -101,13 +110,13 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
             <p className="bracelet-info">
               Veuillez saisir votre numéro de bracelet pour valider la charte
             </p>
-            <input
-              type="text"
-              className="bracelet-input"
-              placeholder="Ex: 12345"
-              value={braceletNumber}
-              onChange={(e) => setBraceletNumber(e.target.value)}
-            />
+            <button
+              type="button"
+              className="bracelet-open-button"
+              onClick={() => setIsBraceletModalOpen(true)}
+            >
+              {braceletNumber ? braceletNumber : 'Saisir le numéro de bracelet'}
+            </button>
           </section>
         </div>
 
@@ -120,9 +129,16 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
           >
             {hasScrolledToBottom ? "Valider" : "Lisez jusqu'en bas"}
           </button>
-          {!hasScrolledToBottom && <p className="hse-scroll-hint">Faites défiler pour lire toute la charte</p>}
         </div>
       </div>
+
+      <BraceletModal
+        isOpen={isBraceletModalOpen}
+        onClose={() => setIsBraceletModalOpen(false)}
+        onSubmit={handleBraceletSubmit}
+        error={error && !braceletNumber.trim() ? error : undefined}
+        initialValue={braceletNumber}
+      />
     </div>
   );
 };

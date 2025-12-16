@@ -154,6 +154,7 @@ interface PlanningFilesProps {
   hotels?: Hotel[];
   restaurants?: Restaurant[];
   parties?: Party[];
+  onLoadingChange?: (isLoading: boolean) => void;
 }
 
 // Tableaux vides stables pour éviter les re-renders infinis
@@ -171,7 +172,8 @@ export default function PlanningFiles({
   setUploadProgress: externalSetUploadProgress,
   hotels = EMPTY_HOTELS,
   restaurants = EMPTY_RESTAURANTS,
-  parties = EMPTY_PARTIES
+  parties = EMPTY_PARTIES,
+  onLoadingChange
 }: PlanningFilesProps) {
   const [files, setFiles] = useState<PlanningFile[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<PlanningFile[]>([]);
@@ -188,6 +190,7 @@ export default function PlanningFiles({
   const [internalUploading, setInternalUploading] = useState(false);
   const [internalUploadProgress, setInternalUploadProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   
   // Utiliser les props externes si fournies, sinon les états internes
   const uploading = externalUploading !== undefined ? externalUploading : internalUploading;
@@ -218,9 +221,9 @@ export default function PlanningFiles({
     { value: 'Spikeball', label: 'Spikeball ⚡️' },
     { value: 'Pétanque', label: 'Pétanque 🍹' },
     { value: 'Escalade', label: 'Escalade 🧗‍♂️' },
-    { value: 'Hotel', label: 'Hôtel 🏢' },
-    { value: 'Restaurant', label: 'Restaurant 🍽️' },
-    { value: 'HSE', label: 'HSE 🛡️' }
+    { value: 'Hotel', label: 'Hôtel' },
+    { value: 'Restaurant', label: 'Restaurant' },
+    { value: 'HSE', label: 'HSE' }
   ];
 
   // Helper pour détecter mobile
@@ -258,9 +261,13 @@ export default function PlanningFiles({
     
     if (!optimizer.canCreateConnection()) {
       console.warn('Limite de connexions Firebase atteinte pour les fichiers');
+      setIsLoading(false);
+      onLoadingChange?.(false);
       return;
     }
 
+    setIsLoading(true);
+    onLoadingChange?.(true);
     optimizer.registerConnection();
     
     const filesRef = ref(database, 'planningFiles');
@@ -280,13 +287,17 @@ export default function PlanningFiles({
       } else {
         setFiles([]);
       }
+      
+      // Les données sont chargées (même si vide)
+      setIsLoading(false);
+      onLoadingChange?.(false);
     });
 
     return () => {
       filesUnsubscribe();
       optimizer.unregisterConnection();
     };
-  }, [isVisible]);
+  }, [isVisible, onLoadingChange]);
 
   // Utiliser IntersectionObserver pour détecter la visibilité
   useEffect(() => {
@@ -961,10 +972,10 @@ export default function PlanningFiles({
           </div>
       )}
 
-      {filteredFiles.length === 0 ? (
+      {filteredFiles.length === 0 && !isLoading ? (
           <p className="no-files">Aucun fichier disponible</p>
-      ) : (
-          <div className="files-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '40vh', overflowY: 'auto', width: '100%', minWidth: 0, alignItems: 'center' }}>
+      ) : filteredFiles.length > 0 ? (
+          <div className="files-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '40vh', overflowY: 'auto', width: '100%', minWidth: 0, alignItems: 'stretch' }}>
           {filteredFiles.map((file) => {
             const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name);
             return (
@@ -980,10 +991,10 @@ export default function PlanningFiles({
                 gap: isMobile ? '0.3rem' : '0.5rem',
                 minWidth: 0,
                 width: '100%',
-                maxWidth: 340,
+                maxWidth: '100%',
                 boxSizing: 'border-box',
                 wordBreak: 'break-word',
-                margin: '0 auto',
+                margin: 0,
               }}>
                 <div style={{
                   fontWeight: 600,
@@ -1093,7 +1104,7 @@ export default function PlanningFiles({
             );
           })}
         </div>
-      )}
+      ) : null}
       </div>
 
       <style>{`
