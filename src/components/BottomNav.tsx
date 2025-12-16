@@ -36,58 +36,6 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
     setPlatformClass(platform);
   }, []);
 
-  // Masquer la barre de navigation quand le clavier apparaît
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  
-  useEffect(() => {
-    let initialHeight = window.innerHeight;
-    
-    const checkKeyboardState = () => {
-      const currentHeight = window.innerHeight;
-      const heightDifference = initialHeight - currentHeight;
-      
-      // Si la hauteur a diminué de plus de 150px, le clavier est probablement ouvert
-      const keyboardOpen = heightDifference > 150;
-      setIsKeyboardOpen(keyboardOpen);
-    };
-
-    const handleResize = () => {
-      checkKeyboardState();
-    };
-
-    const handleFocusIn = () => {
-      // Quand un input reçoit le focus, vérifier l'état du clavier
-      setTimeout(checkKeyboardState, 100);
-    };
-
-    const handleFocusOut = () => {
-      // Quand un input perd le focus, vérifier l'état du clavier
-      setTimeout(checkKeyboardState, 100);
-    };
-
-    // Écouter les événements pour détecter le clavier
-    window.addEventListener('resize', handleResize);
-    document.addEventListener('focusin', handleFocusIn);
-    document.addEventListener('focusout', handleFocusOut);
-    
-    // Écouter les changements de viewport (clavier virtuel)
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', checkKeyboardState);
-    }
-
-    // Vérifier l'état initial
-    checkKeyboardState();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      document.removeEventListener('focusin', handleFocusIn);
-      document.removeEventListener('focusout', handleFocusOut);
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', checkKeyboardState);
-      }
-    };
-  }, []);
-
   const handleNavClick = (path: string) => {
     closeAllPanels();
     closeAllModals(); // Fermer tous les modals (settings, emergency, admin)
@@ -106,10 +54,8 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
     handleNavClick(path);
   };
 
-  // Ne pas afficher la barre de navigation si le clavier est ouvert
-  if (isKeyboardOpen) {
-    return null;
-  }
+  // Avec le comportement overlay iOS, la BottomNav reste fixe en bas
+  // Elle sera naturellement cachée derrière le clavier sans logique JavaScript
 
   return (
     <div className="bottom-nav-container">

@@ -213,8 +213,6 @@ const Layout: React.FC = () => {
     }
   }, []);
 
-  // Pas de gestion JavaScript du clavier - utilisation CSS pure uniquement
-
   // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
   useEffect(() => {
     if (!localStorage.getItem('lastSeenChatTimestamp')) {

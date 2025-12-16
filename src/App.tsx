@@ -37,6 +37,7 @@ import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
 import PartyMap from './pages/PartyMap';
@@ -553,12 +554,38 @@ function App() {
     configureStatusBar();
   }, []);
 
-  // Ajoute la classe 'ios' au body si la plateforme est iOS
+  // Configuration iOS : comportement overlay natif du clavier
   useEffect(() => {
     const platform = Capacitor.getPlatform();
     document.body.classList.add(platform);
     
     if (platform === 'ios') {
+      // Configuration du plugin Keyboard pour comportement overlay
+      const configureKeyboard = async () => {
+        try {
+          // Mode overlay : le clavier passe par-dessus l'app sans redimensionner
+          await Keyboard.setResizeMode({ mode: KeyboardResize.None });
+          // Permet le scroll automatique vers l'input focalisé
+          await Keyboard.setScroll({ isDisabled: false });
+          
+          // Debug : Vérifier que la configuration est appliquée
+          console.log('[Keyboard] Configuration overlay appliquée sur iOS');
+          
+          // Écouter les événements pour debug
+          Keyboard.addListener('keyboardWillShow', (info) => {
+            console.log('[Keyboard] Clavier va s\'ouvrir, hauteur:', info.keyboardHeight);
+          });
+          
+          Keyboard.addListener('keyboardWillHide', () => {
+            console.log('[Keyboard] Clavier va se fermer');
+          });
+        } catch (error) {
+          console.error('Erreur configuration Keyboard:', error);
+        }
+      };
+      
+      configureKeyboard();
+      
       // Détecter si on est dans un simulateur
       const isSimulator = window.navigator.userAgent.includes('Simulator') || 
                          window.navigator.userAgent.includes('iPhone Simulator') ||
@@ -593,8 +620,6 @@ function App() {
       }, false);
     }
   }, []);
-
-  // Pas de gestion JavaScript du clavier - utilisation CSS pure uniquement
 
   // Forcer l'orientation portrait au démarrage
   // Note: Le verrouillage principal est géré par OrientationLock dans main.tsx

@@ -234,9 +234,7 @@ html {
   /* Pas de overflow: hidden sur html pour permettre le scroll natif */
   overflow-x: hidden;
   overflow-y: auto;
-  /* Utilise 100dvh (dynamic viewport height) pour mobile moderne */
-  height: 100dvh;
-  /* Fallback pour navigateurs non supportant dvh */
+  /* ✅ Hauteur fixe 100vh pour comportement overlay iOS (pas de 100dvh qui s'adapte au clavier) */
   height: 100vh;
 }
 
@@ -249,9 +247,8 @@ body {
   min-width: 320px;
   /* ✅ Largeur stricte : 100vw */
   width: 100vw;
-  /* ✅ Hauteur stricte : 100vh/100dvh */
-  height: 100dvh; /* Mobile moderne */
-  height: 100vh; /* Fallback */
+  /* ✅ Hauteur fixe 100vh pour comportement overlay iOS (pas de 100dvh qui s'adapte au clavier) */
+  height: 100vh;
   /* ✅ Box-sizing pour éviter les débordements */
   box-sizing: border-box;
   background-color: var(--bg-color);
@@ -265,6 +262,8 @@ body {
   
   /* NOTE: Les Safe Areas sont gérées dans .app-header et .bottom-nav
      pour ne pas casser les proportions strictes 10/80/10 */
+  /* NOTE: Avec keyboardResize: 'none', le body reste en hauteur fixe 100vh
+     Le clavier iOS passe par-dessus sans redimensionner le layout */
 }
 
 
@@ -276,9 +275,8 @@ body {
   flex-direction: column;
   /* ✅ Largeur stricte : 100vw */
   width: 100vw;
-  /* ✅ Hauteur stricte : 100vh/100dvh */
-  height: 100dvh; /* Mobile moderne */
-  height: 100vh; /* Fallback */
+  /* ✅ Hauteur fixe 100vh pour comportement overlay iOS (pas de 100dvh qui s'adapte au clavier) */
+  height: 100vh;
   margin: 0;
   padding: 0;
   /* ✅ Box-sizing pour éviter les débordements */
@@ -287,6 +285,8 @@ body {
   overflow: hidden;
   /* Force le recalcul sur iOS */
   -webkit-overflow-scrolling: touch;
+  /* NOTE: Avec keyboardResize: 'none', #root reste en hauteur fixe 100vh
+     Le clavier iOS passe par-dessus sans redimensionner le layout */
 }
 
 h1, h2, h3, h4, h5, h6 {

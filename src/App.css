@@ -1655,32 +1655,13 @@ body {
 
 /* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .chat-container gère déjà la hauteur et le scroll */
 
-/* Agrandissement du conteneur de chat quand le clavier apparaît */
-.keyboard-open .chat-container {
-  height: calc(100vh - 120px) !important;
-  margin-bottom: 5px;
-  padding: 1rem 2rem;
-  flex: 1;
-  overflow-y: auto;
-}
+/* ✅ SUPPRIMÉ : Règles .keyboard-open pour comportement resize
+   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner
+   Le layout reste fixe et le plugin Keyboard gère le scroll automatique vers l'input */
 
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .keyboard-open .chat-container gère déjà le comportement */
-
-/* Amélioration spécifique du header du chat-panel quand le clavier est ouvert */
-.keyboard-open .chat-panel-header {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 10 !important;
-  background-color: var(--bg-color) !important;
-  border-bottom: 1px solid var(--border-color) !important;
-  margin-top: 0 !important;
-  padding: 1rem !important;
-}
-
-.keyboard-open .chat-panel-header h3 {
-  margin-top: 0 !important;
-}
+/* ✅ SUPPRIMÉ : Règles .keyboard-open pour comportement resize
+   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner */
 
 .chat-message {
   margin-bottom: 1rem;
@@ -1826,14 +1807,8 @@ body {
 
 /* ✅ SUPPRIMÉ : Règle iOS redondante - le système global gère déjà le margin-top via les variables CSS */
 
-/* Agrandissement du conteneur de chat pour Home et Info quand le clavier apparaît */
-.keyboard-open .home-info-chat .chat-container {
-  height: calc(100vh - 120px) !important;
-  margin-bottom: 5px;
-  padding: 1rem 2rem;
-  flex: 1;
-  overflow-y: auto;
-}
+/* ✅ SUPPRIMÉ : Règles .keyboard-open pour comportement resize
+   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner */
 
 
 .chat-message {
@@ -2216,76 +2191,10 @@ body {
 
 /* Tous les chats utilisent maintenant les mêmes styles de base */
 
-/* Agrandissement du chat quand le clavier apparaît - seulement pour les éléments de chat */
-.chat-panel.keyboard-open,
-.home-info-chat.keyboard-open {
-  height: 100vh !important;
-  width: 100vw !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  position: fixed !important;
-  z-index: 9999 !important;
-  overflow: hidden !important;
-}
-
-/* CSS pur pour iOS - pas de JavaScript */
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .keyboard-open gère déjà le comportement */
-
-
-/* Agrandissement des éléments de saisie de message quand le clavier apparaît - seulement dans le chat */
-.chat-panel.keyboard-open textarea,
-.home-info-chat.keyboard-open textarea {
-  margin-top: 1rem !important;
-  font-size: 1.1rem !important;
-  padding: 12px !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.chat-panel.keyboard-open input[type="text"],
-.home-info-chat.keyboard-open input[type="text"] {
-  top: 5rem !important;
-  font-size: 1.1rem !important;
-  padding: 12px !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.chat-panel.keyboard-open button[type="submit"],
-.home-info-chat.keyboard-open button[type="submit"] {
-  top: 5rem !important;
-  font-size: 1.2rem !important;
-  padding: 8px 12px !important;
-  width: auto !important;
-}
-
-/* Amélioration du header du chat quand le clavier est ouvert - seulement dans le chat */
-.chat-panel.keyboard-open .chat-panel-header,
-.home-info-chat.keyboard-open .chat-panel-header {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 10 !important;
-  background-color: var(--bg-color) !important;
-  border-bottom: 1px solid var(--border-color) !important;
-  margin-top: 0 !important;
-  padding: 1rem !important;
-}
-
-/* Agrandissement des messages de chat - seulement dans le chat */
-.chat-panel.keyboard-open .chat-message,
-.home-info-chat.keyboard-open .chat-message {
-  padding: 1rem 1.2rem 3rem 1.2rem !important;
-  font-size: 1rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-.chat-panel.keyboard-open .chat-message-content,
-.home-info-chat.keyboard-open .chat-message-content {
-  font-size: 1rem !important;
-  line-height: 1.5 !important;
-}
+/* ✅ SUPPRIMÉ : Toutes les règles .keyboard-open pour comportement resize
+   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner
+   Le layout reste fixe (body, #root, .app-main en hauteur fixe 100vh)
+   Le plugin Keyboard gère automatiquement le scroll vers l'input focalisé */
 
 
 /* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .keyboard-open .chat-container gère déjà le comportement */

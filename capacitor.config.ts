@@ -14,8 +14,8 @@ const config: CapacitorConfig = {
     backgroundColor: '#000000',
     allowsLinkPreview: false,
     handleApplicationURL: true,
-    keyboardResize: 'ionic',
-    scrollPadding: true
+    keyboardResize: 'none', // Comportement overlay natif iOS : le clavier passe par-dessus l'app
+    scrollPadding: false // Le plugin Keyboard gère le scroll ponctuel vers l'input
   },
   android: {
     keyboardResize: 'none',
@@ -51,6 +51,11 @@ const config: CapacitorConfig = {
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true
+    },
+    Keyboard: {
+      resize: 'none',
+      resizeOnFullScreen: false,
+      style: 'dark'
     }
   }
 };
