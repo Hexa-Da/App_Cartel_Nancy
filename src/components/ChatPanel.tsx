@@ -16,6 +16,7 @@
 import React, { useState, useEffect } from 'react';
 import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { database } from '../firebase';
+import { firebaseLogger } from '../services/FirebaseLogger';
 import NotificationService from '../services/NotificationService';
 import './ChatPanel.css';
 
@@ -86,26 +87,53 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
 
   // Ajout d'un message dans Firebase (avec nom personnalisé)
   const handleAddMessage = async (msg: string, sender: string) => {
-    const newMsgRef = push(ref(database, 'chatMessages'));
-    await set(newMsgRef, {
-      content: msg,
-      sender: sender || 'Organisation',
-      timestamp: Date.now(),
-      isAdmin: true
-    });
+    try {
+      const newMsgRef = push(ref(database, 'chatMessages'));
+      await firebaseLogger.wrapOperation(
+        () => set(newMsgRef, {
+          content: msg,
+          sender: sender || 'Organisation',
+          timestamp: Date.now(),
+          isAdmin: true
+        }),
+        'write:message',
+        'chatMessages'
+      );
 
-    const notificationService = NotificationService.getInstance();
-    await notificationService.notifyChatMessage(msg, sender);
+      const notificationService = NotificationService.getInstance();
+      await notificationService.notifyChatMessage(msg, sender);
+    } catch (error) {
+      // L'erreur est déjà loggée par wrapOperation
+      throw error;
+    }
   };
 
   // Modification d'un message dans Firebase (texte et nom)
-  const handleEditMessage = (id: string, newContent: string, newSender: string) => {
-    update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender});
+  const handleEditMessage = async (id: string, newContent: string, newSender: string) => {
+    try {
+      await firebaseLogger.wrapOperation(
+        () => update(ref(database, `chatMessages/${id}`), { content: newContent, sender: newSender}),
+        'update:message',
+        `chatMessages/${id}`
+      );
+    } catch (error) {
+      // L'erreur est déjà loggée par wrapOperation
+      throw error;
+    }
   };
 
   // Suppression d'un message dans Firebase
-  const handleDeleteMessage = (id: string) => {
-    remove(ref(database, `chatMessages/${id}`));
+  const handleDeleteMessage = async (id: string) => {
+    try {
+      await firebaseLogger.wrapOperation(
+        () => remove(ref(database, `chatMessages/${id}`)),
+        'delete:message',
+        `chatMessages/${id}`
+      );
+    } catch (error) {
+      // L'erreur est déjà loggée par wrapOperation
+      throw error;
+    }
   };
 
   // Fonction pour traduire un message en anglais

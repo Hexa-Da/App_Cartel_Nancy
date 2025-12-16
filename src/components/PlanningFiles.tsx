@@ -3,6 +3,7 @@ import { ref, onValue, push, remove, set } from 'firebase/database';
 import { database, storage } from '../firebase';
 import { PlanningFile } from '../types';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
+import { firebaseLogger } from '../services/FirebaseLogger';
 
 // Classe pour optimiser les connexions Firebase et monitoring des coûts
 class FirebaseOptimizer {
@@ -271,27 +272,41 @@ export default function PlanningFiles({
     optimizer.registerConnection();
     
     const filesRef = ref(database, 'planningFiles');
-    const filesUnsubscribe = onValue(filesRef, (snapshot) => {
-      const data = snapshot.val();
-      
-      if (data) {
-        // Calculer la taille des données transférées
-        const dataSize = JSON.stringify(data).length;
-        optimizer.trackTransfer(dataSize);
-        
-        const filesArray = Object.entries(data).map(([id, value]) => ({
-          id,
-          ...(value as Omit<PlanningFile, 'id'>)
-        }));
-        setFiles(filesArray);
-      } else {
-        setFiles([]);
+    const filesUnsubscribe = onValue(
+      filesRef, 
+      (snapshot) => {
+        try {
+          const data = snapshot.val();
+          
+          if (data) {
+            // Calculer la taille des données transférées
+            const dataSize = JSON.stringify(data).length;
+            optimizer.trackTransfer(dataSize);
+            
+            const filesArray = Object.entries(data).map(([id, value]) => ({
+              id,
+              ...(value as Omit<PlanningFile, 'id'>)
+            }));
+            setFiles(filesArray);
+          } else {
+            setFiles([]);
+          }
+          
+          // Les données sont chargées (même si vide)
+          setIsLoading(false);
+          onLoadingChange?.(false);
+        } catch (error) {
+          firebaseLogger.logError('read:planningFiles', 'planningFiles', error, { snapshot: snapshot.val() });
+          setIsLoading(false);
+          onLoadingChange?.(false);
+        }
+      },
+      (error) => {
+        firebaseLogger.logError('read:planningFiles', 'planningFiles', error);
+        setIsLoading(false);
+        onLoadingChange?.(false);
       }
-      
-      // Les données sont chargées (même si vide)
-      setIsLoading(false);
-      onLoadingChange?.(false);
-    });
+    );
 
     return () => {
       filesUnsubscribe();
@@ -452,23 +467,28 @@ export default function PlanningFiles({
           }
           // Supprimer du storage (ignorer les erreurs de permissions ou 404)
           try {
-            await deleteObject(storageRef(storage, storagePath));
-            console.log('Fichier supprimé du storage avec succès');
+            await firebaseLogger.wrapOperation(
+              () => deleteObject(storageRef(storage, storagePath)),
+              'delete:storageFile',
+              `planningFiles/${storagePath}`
+            );
           } catch (error: any) {
+            // Les erreurs sont déjà loggées par wrapOperation
             if (error.code === 'storage/object-not-found') {
-              console.info('Fichier déjà supprimé ou inexistant dans Firebase Storage.');
+              // Fichier déjà supprimé, ce n'est pas grave
             } else if (error.code === 'storage/unauthorized' || error.code === 'storage/forbidden') {
-              console.warn('Permissions insuffisantes pour supprimer le fichier du storage, suppression de la base de données uniquement.');
-            } else {
-              console.warn('Erreur lors de la suppression du fichier du storage:', error.message);
+              // Permissions insuffisantes, on continue quand même avec la suppression de la DB
             }
           }
         }
         // Supprimer de la base (toujours)
-        await remove(ref(database, `planningFiles/${fileId}`));
-        console.log('Fichier supprimé de la base de données avec succès');
+        await firebaseLogger.wrapOperation(
+          () => remove(ref(database, `planningFiles/${fileId}`)),
+          'delete:planningFile',
+          `planningFiles/${fileId}`
+        );
       } catch (error) {
-        console.error('Erreur lors de la suppression:', error);
+        // L'erreur est déjà loggée par wrapOperation
         alert('Une erreur est survenue lors de la suppression du fichier.');
       }
     }
@@ -541,7 +561,11 @@ export default function PlanningFiles({
           setUploadProgress(progress);
         },
         (error) => {
-          console.error('Erreur lors de l\'upload:', error);
+          firebaseLogger.logError('upload:planningFile', `planningFiles/${storagePath}`, error, { 
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type
+          });
           if (error.code === 'storage/unauthorized' || error.code === 'storage/forbidden') {
             console.warn('Permissions insuffisantes pour l\'upload. Vérifiez les règles de sécurité Firebase Storage.');
           }
@@ -594,7 +618,11 @@ export default function PlanningFiles({
 
             // Save file info to database
             const newFileRef = push(ref(database, 'planningFiles'));
-            await set(newFileRef, fileData);
+            await firebaseLogger.wrapOperation(
+              () => set(newFileRef, fileData),
+              'write:planningFile',
+              'planningFiles'
+            );
 
       setNewFile({
         name: '',
@@ -615,7 +643,7 @@ export default function PlanningFiles({
             setUploading(false);
             setUploadProgress(0);
           } catch (error) {
-            console.error('Erreur lors de la sauvegarde des informations:', error);
+            firebaseLogger.logError('write:planningFile', 'planningFiles', error, { fileData });
             setUploading(false);
             setUploadProgress(0);
             throw error;

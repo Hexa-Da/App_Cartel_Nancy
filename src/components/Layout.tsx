@@ -22,6 +22,7 @@ import BottomNav from './BottomNav';
 import './Layout.css';
 import { ref, onValue, set, push, remove, update, get } from 'firebase/database';
 import { database } from '../firebase';
+import { firebaseLogger } from '../services/FirebaseLogger';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Header';
 import { useAppPanels } from '../AppPanelsContext';
@@ -491,7 +492,11 @@ const Layout: React.FC = () => {
     }
 
     try {
-      await set(newVenueRef, newVenue);
+      await firebaseLogger.wrapOperation(
+        () => set(newVenueRef, newVenue),
+        'write:venue',
+        'venues'
+      );
       
       setNewVenueName('');
       setNewVenueDescription('');
@@ -503,7 +508,7 @@ const Layout: React.FC = () => {
       setIsPlacingMarker(false);
       setIsAddingPlace(false);
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du lieu:', error);
+      // L'erreur est déjà loggée par wrapOperation
       alert('Une erreur est survenue lors de l\'ajout du lieu.');
     }
   };
@@ -544,7 +549,11 @@ const Layout: React.FC = () => {
     }
 
     try {
-      await set(venueRef, updatedVenue);
+      await firebaseLogger.wrapOperation(
+        () => set(venueRef, updatedVenue),
+        'update:venue',
+        `venues/${editingVenue.id}`
+      );
       
       setNewVenueName('');
       setNewVenueDescription('');
@@ -556,7 +565,7 @@ const Layout: React.FC = () => {
       setEditingVenue({ id: null, venue: null });
       setIsAddingPlace(false);
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du lieu:', error);
+      // L'erreur est déjà loggée par wrapOperation
       alert('Une erreur est survenue lors de la mise à jour du lieu.');
     }
   };
@@ -568,8 +577,17 @@ const Layout: React.FC = () => {
       return;
     }
 
-    const venueRef = ref(database, `venues/${id}`);
-    await set(venueRef, null);
+    try {
+      const venueRef = ref(database, `venues/${id}`);
+      await firebaseLogger.wrapOperation(
+        () => set(venueRef, null),
+        'delete:venue',
+        `venues/${id}`
+      );
+    } catch (error) {
+      // L'erreur est déjà loggée par wrapOperation
+      alert('Une erreur est survenue lors de la suppression du lieu.');
+    }
   };
 
   // Fonction pour ajouter un nouveau match
@@ -579,7 +597,11 @@ const Layout: React.FC = () => {
     const venueRef = ref(database, `venues/${venueId}`);
     
     try {
-      const snapshot = await get(venueRef);
+      const snapshot = await firebaseLogger.wrapOperation(
+        () => get(venueRef),
+        'read:venue',
+        `venues/${venueId}`
+      );
       const venue = snapshot.val();
       if (!venue) return;
 
@@ -600,10 +622,14 @@ const Layout: React.FC = () => {
 
       const updatedMatches = [...(venue.matches || []), match];
       
-      await set(venueRef, {
-        ...venue,
-        matches: updatedMatches
-      });
+      await firebaseLogger.wrapOperation(
+        () => set(venueRef, {
+          ...venue,
+          matches: updatedMatches
+        }),
+        'write:match',
+        `venues/${venueId}/matches`
+      );
 
       // Réinitialiser le formulaire
       setNewMatch({
@@ -615,7 +641,7 @@ const Layout: React.FC = () => {
       });
       setEditingMatch({ venueId: null, match: null });
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du match:', error);
+      // L'erreur est déjà loggée par wrapOperation
       alert('Une erreur est survenue lors de l\'ajout du match.');
     }
   };
@@ -627,7 +653,11 @@ const Layout: React.FC = () => {
     const venueRef = ref(database, `venues/${venueId}`);
     
     try {
-      const snapshot = await get(venueRef);
+      const snapshot = await firebaseLogger.wrapOperation(
+        () => get(venueRef),
+        'read:venue',
+        `venues/${venueId}`
+      );
       const venue = snapshot.val();
       if (!venue) return;
 
@@ -635,14 +665,18 @@ const Layout: React.FC = () => {
         match.id === matchId ? { ...match, ...updatedData } : match
       );
       
-      await set(venueRef, {
-        ...venue,
-        matches: updatedMatches
-      });
+      await firebaseLogger.wrapOperation(
+        () => set(venueRef, {
+          ...venue,
+          matches: updatedMatches
+        }),
+        'update:match',
+        `venues/${venueId}/matches/${matchId}`
+      );
       
       setEditingMatch({ venueId: null, match: null });
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du match:', error);
+      // L'erreur est déjà loggée par wrapOperation
       alert('Une erreur est survenue lors de la mise à jour du match.');
     }
   };
@@ -658,18 +692,26 @@ const Layout: React.FC = () => {
     const venueRef = ref(database, `venues/${venueId}`);
     
     try {
-      const snapshot = await get(venueRef);
+      const snapshot = await firebaseLogger.wrapOperation(
+        () => get(venueRef),
+        'read:venue',
+        `venues/${venueId}`
+      );
       const venue = snapshot.val();
       if (!venue) return;
 
       const updatedMatches = venue.matches.filter((match: Match) => match.id !== matchId);
       
-      await set(venueRef, {
-        ...venue,
-        matches: updatedMatches
-      });
+      await firebaseLogger.wrapOperation(
+        () => set(venueRef, {
+          ...venue,
+          matches: updatedMatches
+        }),
+        'delete:match',
+        `venues/${venueId}/matches/${matchId}`
+      );
     } catch (error) {
-      console.error('Erreur lors de la suppression du match:', error);
+      // L'erreur est déjà loggée par wrapOperation
       alert('Une erreur est survenue lors de la suppression du match.');
     }
   };

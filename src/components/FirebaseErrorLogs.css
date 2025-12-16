@@ -1,0 +1,221 @@
+/* ============================================
+   FIREBASE ERROR LOGS - Composant d'affichage des erreurs Firebase
+   ============================================ */
+
+.firebase-error-logs {
+  position: fixed;
+  /* ✅ Positionné au-dessus de la nav bar avec espacement (même style que location-error) */
+  bottom: calc(var(--above-bottom-nav) + 50px);
+  right: 20px;
+  background-color: var(--danger-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-align: left;
+  box-shadow: 0 2px 6px var(--shadow-color);
+  z-index: 2000;
+  font-size: 0.75rem;
+  /* Dimensions adaptatives */
+  min-width: min(180px, 35vw);
+  max-width: min(400px, 80vw);
+  pointer-events: auto;
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.firebase-error-logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  position: sticky;
+  top: 0;
+  background-color: var(--danger-color);
+  z-index: 1;
+}
+
+.firebase-error-logs-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 700;
+  flex: 1;
+}
+
+.firebase-error-logs-close-button {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+.firebase-error-logs-close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.firebase-error-logs-close-button:active {
+  transform: scale(0.9);
+}
+
+.firebase-error-logs-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.firebase-error-log-item {
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  word-break: break-word;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.firebase-error-log-item:hover {
+  transform: translateX(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.firebase-error-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.firebase-error-log-time {
+  opacity: 0.9;
+  font-size: 0.65rem;
+  color: white;
+}
+
+.firebase-error-log-type {
+  display: flex;
+  align-items: center;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+}
+
+.firebase-error-log-type-text {
+  font-size: 0.6rem;
+  letter-spacing: 0.5px;
+}
+
+.firebase-error-log-message {
+  color: white;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.firebase-error-log-details {
+  font-size: 0.65rem;
+  opacity: 0.8;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.firebase-error-log-detail-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.firebase-error-log-detail-label {
+  font-weight: 600;
+  min-width: 60px;
+  opacity: 0.9;
+}
+
+.firebase-error-log-detail-value {
+  font-family: 'Courier New', monospace;
+  opacity: 0.85;
+  word-break: break-all;
+}
+
+/* Scrollbar personnalisée */
+.firebase-error-logs::-webkit-scrollbar {
+  width: 6px;
+}
+
+.firebase-error-logs::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.firebase-error-logs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+}
+
+.firebase-error-logs::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .firebase-error-logs {
+    max-width: min(350px, 85vw);
+    font-size: 0.7rem;
+  }
+
+  .firebase-error-log-item {
+    font-size: 0.65rem;
+    padding: 0.4rem;
+  }
+
+  .firebase-error-log-type-text {
+    font-size: 0.55rem;
+  }
+
+  .firebase-error-log-details {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .firebase-error-logs {
+    max-width: min(300px, 90vw);
+    right: 10px;
+    bottom: calc(var(--above-bottom-nav) + 40px);
+    padding: 0.4rem 0.8rem;
+  }
+
+  .firebase-error-logs-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}

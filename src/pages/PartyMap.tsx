@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { ref, onValue, push, remove } from 'firebase/database';
 import { database } from '../firebase';
+import { firebaseLogger } from '../services/FirebaseLogger';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { useAppPanels } from '../AppPanelsContext';
@@ -337,10 +338,14 @@ const PartyMap: React.FC = () => {
 
       try {
         const markersRef = ref(database, `planMarkers/${partyName}`);
-        await push(markersRef, newMarker);
+        await firebaseLogger.wrapOperation(
+          () => push(markersRef, newMarker),
+          'write:marker',
+          `planMarkers/${partyName}`
+        );
         setIsAddingMarker(false);
       } catch (error) {
-        console.error('Erreur lors de l\'ajout du marqueur:', error);
+        // L'erreur est déjà loggée par wrapOperation
         alert('Une erreur est survenue lors de l\'ajout du marqueur.');
       }
     };
@@ -352,9 +357,13 @@ const PartyMap: React.FC = () => {
       if (window.confirm('Voulez-vous supprimer ce marqueur ?')) {
         try {
           const markerRef = ref(database, `planMarkers/${partyName}/${markerId}`);
-          await remove(markerRef);
+          await firebaseLogger.wrapOperation(
+            () => remove(markerRef),
+            'delete:marker',
+            `planMarkers/${partyName}/${markerId}`
+          );
         } catch (error) {
-          console.error('Erreur lors de la suppression du marqueur:', error);
+          // L'erreur est déjà loggée par wrapOperation
           alert('Une erreur est survenue lors de la suppression du marqueur.');
         }
       }

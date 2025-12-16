@@ -15,7 +15,7 @@
  * - Interface responsive pour mobile et desktop
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import EventDetails, { Event } from '../components/EventDetails';
 import { Match, Venue } from '../types';
@@ -23,6 +23,7 @@ import './Home.css';
 import '../components/EventDetails.css';
 import { useApp } from '../AppContext';
 import { useAppPanels } from '../AppPanelsContext';
+import FirebaseErrorLogs from '../components/FirebaseErrorLogs';
 
 type Place = Venue;
 
@@ -30,12 +31,34 @@ interface ExtendedMatch extends Match {
   venue?: string;
 }
 
+interface DebugLog {
+  id: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  timestamp: Date;
+}
+
 const Home: React.FC = () => {
   const { getFilteredEvents, getAllDelegations, delegationMatches, isLoadingVenues } = useApp();
   const { selectedEvent, setSelectedEvent } = useAppPanels();
   const [events, setEvents] = useState<Place[]>([]);
+  const [debugLogs, setDebugLogs] = useState<DebugLog[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Fonction pour ajouter un log de debug (mémorisée pour éviter les re-renders)
+  const addLog = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
+    const log: DebugLog = {
+      id: `${Date.now()}-${Math.random()}`,
+      message,
+      type,
+      timestamp: new Date()
+    };
+    setDebugLogs(prev => {
+      const newLogs = [log, ...prev].slice(0, 20); // Garder seulement les 20 derniers logs
+      return newLogs;
+    });
+  }, []);
   const [userPreferences, setUserPreferences] = useState({
     favoriteSports: (() => {
       const raw = localStorage.getItem('preferredSport');
@@ -62,17 +85,38 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const updateEvents = () => {
-      const filteredEvents = getFilteredEvents();
-      // Filtrer les venues sans id et mapper pour correspondre à l'interface Venue de types.ts
-      setEvents(
-        filteredEvents
+      try {
+        addLog('🔄 Début du chargement des événements', 'info');
+        const filteredEvents = getFilteredEvents();
+        addLog(`📊 Événements filtrés récupérés: ${filteredEvents?.length || 0}`, 'info');
+        
+        if (!filteredEvents || filteredEvents.length === 0) {
+          addLog('⚠️ Aucun événement filtré trouvé', 'warning');
+        }
+        
+        // Filtrer les venues sans id et mapper pour correspondre à l'interface Venue de types.ts
+        const validEvents = filteredEvents
           .filter((venue): venue is typeof venue & { id: string } => !!venue.id)
           .map(venue => ({
             ...venue,
             type: 'venue' as const,
             matches: venue.matches || []
-          }))
-      );
+          }));
+        
+        addLog(`✅ Événements valides (avec id): ${validEvents.length}`, 'success');
+        
+        const eventsWithoutId = filteredEvents.filter(venue => !venue.id);
+        if (eventsWithoutId.length > 0) {
+          addLog(`⚠️ Événements sans id ignorés: ${eventsWithoutId.length}`, 'warning');
+        }
+        
+        setEvents(validEvents);
+        addLog('✅ Événements mis à jour avec succès', 'success');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        addLog(`❌ Erreur lors du chargement des événements: ${errorMessage}`, 'error');
+        setEvents([]);
+      }
     };
 
     const handleStorageChange = (e: StorageEvent) => {
@@ -152,19 +196,39 @@ const Home: React.FC = () => {
 
   // Mettre à jour les événements quand les venues sont chargées
   useEffect(() => {
+    addLog(`🔄 isLoadingVenues changé: ${isLoadingVenues}`, 'info');
+    
     if (!isLoadingVenues) {
-      const filteredEvents = getFilteredEvents();
-      setEvents(
-        filteredEvents
+      try {
+        addLog('📥 Chargement des événements après chargement des venues', 'info');
+        const filteredEvents = getFilteredEvents();
+        addLog(`📊 Événements récupérés après chargement: ${filteredEvents?.length || 0}`, 'info');
+        
+        const validEvents = filteredEvents
           .filter((venue): venue is typeof venue & { id: string } => !!venue.id)
           .map(venue => ({
             ...venue,
             type: 'venue' as const,
             matches: venue.matches || []
-          }))
-      );
+          }));
+        
+        addLog(`✅ Événements valides après chargement: ${validEvents.length}`, 'success');
+        
+        if (validEvents.length === 0) {
+          addLog('⚠️ Aucun événement valide après chargement des venues', 'warning');
+        }
+        
+        setEvents(validEvents);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        addLog(`❌ Erreur lors du chargement après venues: ${errorMessage}`, 'error');
+        setEvents([]);
+      }
+    } else {
+      addLog('⏳ En attente du chargement des venues...', 'info');
     }
   }, [isLoadingVenues, getFilteredEvents]);
+
 
   // Fonction pour vérifier si un match est passé (reprise de App.tsx)
   const isMatchPassed = (startDate: string, endTime?: string, type: 'match' | 'party' = 'match') => {
@@ -569,6 +633,9 @@ const Home: React.FC = () => {
           venues={events}
         />
       )}
+
+      {/* Affichage des logs d'erreur Firebase */}
+      <FirebaseErrorLogs />
     </div>
   );
 };

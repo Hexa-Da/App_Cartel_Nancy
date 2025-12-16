@@ -16,6 +16,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ref, onValue } from 'firebase/database';
 import { database } from './firebase';
+import { firebaseLogger } from './services/FirebaseLogger';
 
 interface Venue {
   id?: string;
@@ -87,36 +88,78 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     setIsLoadingVenues(true);
     const venuesRef = ref(database, 'venues');
-    const unsubscribe = onValue(venuesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      const venuesArray = Object.entries(data).map(([id, value]) => ({ 
-        id, 
-        ...(value as Omit<Venue, 'id'>) 
-      }));
-      setVenues(venuesArray);
-      setIsLoadingVenues(false);
-    }, (error) => {
-      console.error('Error loading venues:', error);
-      setIsLoadingVenues(false);
-    });
-    return () => unsubscribe();
+    let isStillLoading = true;
+    
+    // Timeout pour détecter les problèmes de connexion
+    const connectionTimeout = setTimeout(() => {
+      if (isStillLoading) {
+        firebaseLogger.logError(
+          'read:venues',
+          'venues',
+          { code: 'TIMEOUT', message: 'Timeout de connexion après 10 secondes' },
+          { timeout: 10000 }
+        );
+      }
+    }, 10000);
+
+    const unsubscribe = onValue(
+      venuesRef, 
+      (snapshot) => {
+        clearTimeout(connectionTimeout);
+        isStillLoading = false;
+        try {
+          const data = snapshot.val() || {};
+          const venuesArray = Object.entries(data).map(([id, value]) => ({ 
+            id, 
+            ...(value as Omit<Venue, 'id'>) 
+          }));
+          setVenues(venuesArray);
+          setIsLoadingVenues(false);
+        } catch (error) {
+          firebaseLogger.logError('read:venues', 'venues', error, { snapshot: snapshot.val() });
+          setIsLoadingVenues(false);
+        }
+      }, 
+      (error) => {
+        clearTimeout(connectionTimeout);
+        isStillLoading = false;
+        firebaseLogger.logError('read:venues', 'venues', error);
+        setIsLoadingVenues(false);
+      }
+    );
+    
+    return () => {
+      clearTimeout(connectionTimeout);
+      isStillLoading = false;
+      unsubscribe();
+    };
   }, []);
 
   // Lecture des messages depuis Firebase
   useEffect(() => {
     const messagesRef = ref(database, 'chatMessages');
-    const unsubscribe = onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      const messagesArray = Object.entries(data).map(([id, value]) => ({ 
-        id, 
-        ...(value as any) 
-      }));
-      
-      // Trier les messages par timestamp décroissant (plus récents en premier)
-      const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
-      
-      setMessages(sortedMessages);
-    });
+    const unsubscribe = onValue(
+      messagesRef, 
+      (snapshot) => {
+        try {
+          const data = snapshot.val() || {};
+          const messagesArray = Object.entries(data).map(([id, value]) => ({ 
+            id, 
+            ...(value as any) 
+          }));
+          
+          // Trier les messages par timestamp décroissant (plus récents en premier)
+          const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
+          
+          setMessages(sortedMessages);
+        } catch (error) {
+          firebaseLogger.logError('read:messages', 'chatMessages', error, { snapshot: snapshot.val() });
+        }
+      },
+      (error) => {
+        firebaseLogger.logError('read:messages', 'chatMessages', error);
+      }
+    );
     return () => unsubscribe();
   }, []);
 

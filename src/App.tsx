@@ -1996,7 +1996,7 @@ function App() {
       placeType = 'resto';
     } else if (venue.type === 'party') {
       placeType = 'soirée';
-    } else if (venue.type === 'venue' || !venue.type) {
+    } else if (venue.type === 'venue') {
       // Pour les venues sans type ou type 'venue', vérifier les propriétés supplémentaires
       if (venueAny.placeType) {
         placeType = venueAny.placeType;
