@@ -303,6 +303,7 @@
   grid-template-columns: auto 1fr;
   gap: 10px;
   padding: 1rem;
+  padding-bottom: clamp(2rem, 8vh, 4rem);
 }
 
 .calendar-hours {
@@ -326,8 +327,8 @@
 }
 
 .calendar-hours-container {
-  /* Changé: Hauteur adaptative - s'adapte au conteneur parent */
-  height: 100%;
+  /* Hauteur correspondant exactement à celle de .calendar-events */
+  height: var(--calendar-height);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -587,6 +588,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
+  padding-bottom: clamp(1rem, 4vh, 2rem);
   /* Propriétés pour faire disparaître les scrollbars automatiquement */
   scrollbar-gutter: stable;
 }

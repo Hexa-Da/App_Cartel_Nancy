@@ -37,6 +37,19 @@
   margin: 0 auto;
 }
 
+.parie-content .admin-buttons-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-bottom: clamp(1rem, 3vh, 2rem) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: 12px !important;
+}
+
 /* État non activé */
 .parie-setup {
   text-align: center;
@@ -784,18 +797,28 @@
 
 /* Boutons admin */
 .admin-buttons-container {
+  margin: 0 auto !important;
   margin-top: 0;
+  margin-bottom: clamp(1rem, 3vh, 2rem) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
   padding: 1rem;
-  display: flex;
-  /* Changé: Espacement de sécurité tactile (12px minimum) */
+  display: flex !important;
+  flex-direction: column !important;
+  /* Changé: Espacement vertical entre les boutons */
   gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .admin-sync-button {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background-color: var(--primary-color);
@@ -807,6 +830,9 @@
   /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
   min-height: 44px;
   min-width: 44px;
+  width: 100%;
+  max-width: min(400px, 90vw);
+  margin: 0 auto;
 }
 
 .admin-sync-button:disabled {

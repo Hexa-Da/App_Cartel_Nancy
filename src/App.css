@@ -561,7 +561,6 @@ body {
   margin-top: -0.5rem !important;
 }
 
-/* Section 2 : Bouton Google Maps - Carte distincte */
 .popup-buttons {
   display: flex;
   flex-direction: column;
@@ -728,6 +727,13 @@ body {
 [data-theme="light"] .match-item {
   background: rgba(40, 40, 40, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Style pour les matchs passés - grisé */
+.match-item.match-passed {
+  opacity: 0.65;
+  filter: grayscale(0.8);
+  background: rgba(20, 20, 20, 0.6);
 }
 
 .match-date {

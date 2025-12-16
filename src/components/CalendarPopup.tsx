@@ -81,6 +81,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     const saved = localStorage.getItem('starFilterActive');
     return saved !== null ? JSON.parse(saved) : false;
   });
+  const eventsContainerRef = useRef<HTMLDivElement>(null);
+  const [pixelsPerHour, setPixelsPerHour] = useState(43.33);
 
   // Gérer l'état de chargement
   useEffect(() => {
@@ -110,6 +112,52 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
       setIsLoading(false);
     }
   }, [venues, isVenuesLoading]);
+
+  // Calculer dynamiquement pixelsPerHour en fonction de la hauteur réelle du conteneur
+  useEffect(() => {
+    if (!isOpen || isLoading) return;
+
+    const calculatePixelsPerHour = () => {
+      if (eventsContainerRef.current) {
+        const containerHeight = eventsContainerRef.current.offsetHeight;
+        // Avec justify-content: space-between, il y a 16 heures (08:00 à 23:00)
+        // ce qui crée 15 intervalles entre elles
+        // La hauteur totale est divisée en 15 intervalles égaux
+        const numberOfIntervals = 15; // 16 heures - 1 = 15 intervalles
+        // Calculer le ratio en divisant la hauteur par le nombre d'intervalles
+        const calculatedPixelsPerHour = containerHeight / numberOfIntervals;
+        if (calculatedPixelsPerHour > 0 && !isNaN(calculatedPixelsPerHour) && isFinite(calculatedPixelsPerHour)) {
+          setPixelsPerHour(calculatedPixelsPerHour);
+        }
+      }
+    };
+
+    // Attendre que le conteneur soit rendu avant de calculer
+    const timeoutId = setTimeout(() => {
+      calculatePixelsPerHour();
+    }, 150);
+
+    // Calculer au montage et au redimensionnement
+    window.addEventListener('resize', calculatePixelsPerHour);
+    
+    // Utiliser ResizeObserver pour détecter les changements de taille du conteneur
+    let resizeObserver: ResizeObserver | null = null;
+    if (eventsContainerRef.current && window.ResizeObserver) {
+      resizeObserver = new ResizeObserver(() => {
+        // Petit délai pour s'assurer que le layout est terminé
+        setTimeout(calculatePixelsPerHour, 50);
+      });
+      resizeObserver.observe(eventsContainerRef.current);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', calculatePixelsPerHour);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, [isOpen, isLoading]);
 
   // Écouter les changements de l'état de l'étoile dans le localStorage
   useEffect(() => {
@@ -470,7 +518,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     // Limite du calendrier : 8h à 23h (15 heures affichées)
     const CALENDAR_START_HOUR = 8;
     const CALENDAR_END_HOUR = 23;
-    const PIXELS_PER_HOUR = 43.33;
+    // Utiliser la valeur calculée dynamiquement
+    const PIXELS_PER_HOUR = pixelsPerHour;
     
     let endHour: number;
     let endMinute: number;
@@ -551,7 +600,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     const totalMinutes = hours * 60 + minutes;
     const startHour = 8;
     const minutesFromStart = totalMinutes - (startHour * 60);
-    const position = `${(minutesFromStart / 60) * 43.33}px`;
+    // Utiliser la valeur calculée dynamiquement
+    const position = `${(minutesFromStart / 60) * pixelsPerHour}px`;
     return position;
   };
 
@@ -897,7 +947,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                   return (
                     <div key={day.date} className="calendar-day-column">
                       <div className="calendar-day-header">{day.label}</div>
-                      <div className="calendar-events">
+                      <div className="calendar-events" ref={day.date === days[0].date ? eventsContainerRef : null}>
                         {day.date === getTodayDate() && getCurrentTimePosition() !== '' && (
                           <div 
                             className="current-time-indicator"
