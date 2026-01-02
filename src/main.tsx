@@ -35,8 +35,10 @@ import { NavigationProvider } from './contexts/NavigationContext';
 import { ModalProvider } from './contexts/ModalContext';
 import { FormProvider } from './contexts/FormContext';
 import { EditingProvider } from './contexts/EditingContext';
+import { setupCapacitor } from './config/capacitor';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// Composant racine de l'application
+const AppRoot = (
   <React.StrictMode>
     <OrientationLock />
     <AppProvider>
@@ -68,3 +70,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </AppProvider>
   </React.StrictMode>
 );
+
+// Configuration Capacitor avant le rendu React
+(async () => {
+  try {
+    await setupCapacitor();
+  } catch (error) {
+    console.error('Erreur lors de la configuration Capacitor:', error);
+  }
+  
+  // Rendre l'app après la configuration (ou même si elle échoue)
+  ReactDOM.createRoot(document.getElementById('root')!).render(AppRoot);
+})();

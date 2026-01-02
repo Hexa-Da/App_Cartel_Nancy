@@ -29,8 +29,6 @@ import ChatPanel from './ChatPanel';
 import HSECharterHandler from './forms/HSECharterHandler';
 import VenueForm from './forms/VenueForm';
 import MatchForm from './forms/MatchForm';
-import { Capacitor } from '@capacitor/core';
-import { StatusBar, Style } from '@capacitor/status-bar';
 
 interface Message {
   id?: string;
@@ -59,26 +57,6 @@ const Layout: React.FC = () => {
         setActiveTab('info');
       }
     }, [location.pathname]);
-
-  // Ajoute la classe de la plateforme au body et configure la barre de statut
-  useEffect(() => {
-    const platform = Capacitor.getPlatform();
-    document.body.classList.add(platform);
-    
-    // Configuration de la barre de statut et de navigation pour Android
-    if (platform === 'android') {
-      const setupStatusBar = async () => {
-        try {
-          await StatusBar.setStyle({ style: Style.Dark });
-          await StatusBar.setBackgroundColor({ color: '#00000000' }); // Transparent
-          await StatusBar.setOverlaysWebView({ overlay: true });
-        } catch (error) {
-          console.log('StatusBar plugin not available:', error);
-        }
-      };
-      setupStatusBar();
-    }
-  }, []);
 
   // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
   useEffect(() => {

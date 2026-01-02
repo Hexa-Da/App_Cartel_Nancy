@@ -36,8 +36,6 @@ import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
-import { StatusBar, Style } from '@capacitor/status-bar';
-import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
 import PartyMap from './pages/PartyMap';
@@ -152,23 +150,6 @@ function LocationMarker() {
 
   // Écouter les changements de l'état de localisation
   useEffect(() => {
-    // ✅ Configuration StatusBar pour activer le mode Edge-to-Edge (Plein écran réel)
-    const configureStatusBar = async () => {
-      if (Capacitor.isNativePlatform()) {
-        try {
-          // 1. Rend la barre d'état transparente (ou sombre selon le thème)
-          await StatusBar.setStyle({ style: Style.Dark });
-          
-          // 2. CRUCIAL : Dit à l'app de passer SOUS la barre d'état
-          await StatusBar.setOverlaysWebView({ overlay: true });
-        } catch (e) {
-          console.warn('Erreur StatusBar:', e);
-        }
-      }
-    };
-    
-    configureStatusBar();
-
     // Initialiser le service de notifications au démarrage
     const initNotifications = async () => {
       try {
@@ -541,92 +522,6 @@ function App() {
     setSelectedPartyForMap
   } = useAppPanels();
   const location = useLocation();
-
-  // ✅ Configuration StatusBar pour activer le mode Edge-to-Edge (Safe Areas)
-  useEffect(() => {
-    const configureStatusBar = async () => {
-      if (Capacitor.isNativePlatform()) {
-        try {
-          // 1. Rend la barre transparente pour voir l'app dessous
-          await StatusBar.setStyle({ style: Style.Dark });
-          // 2. CRUCIAL : Force l'app à passer SOUS la barre d'état (iOS + Android)
-          // Note: Pour Android, la navigation bar est configurée dans MainActivity.java
-          await StatusBar.setOverlaysWebView({ overlay: true });
-        } catch (e) {
-          console.warn('Erreur StatusBar:', e);
-        }
-      }
-    };
-    
-    configureStatusBar();
-  }, []);
-
-  // Configuration iOS : comportement overlay natif du clavier
-  useEffect(() => {
-    const platform = Capacitor.getPlatform();
-    document.body.classList.add(platform);
-    
-    if (platform === 'ios') {
-      // Configuration du plugin Keyboard pour comportement overlay
-      const configureKeyboard = async () => {
-        try {
-          // Mode overlay : le clavier passe par-dessus l'app sans redimensionner
-          await Keyboard.setResizeMode({ mode: KeyboardResize.None });
-          // Permet le scroll automatique vers l'input focalisé
-          await Keyboard.setScroll({ isDisabled: false });
-          
-          // Debug : Vérifier que la configuration est appliquée
-          console.log('[Keyboard] Configuration overlay appliquée sur iOS');
-          
-          // Écouter les événements pour debug
-          Keyboard.addListener('keyboardWillShow', (info) => {
-            console.log('[Keyboard] Clavier va s\'ouvrir, hauteur:', info.keyboardHeight);
-          });
-          
-          Keyboard.addListener('keyboardWillHide', () => {
-            console.log('[Keyboard] Clavier va se fermer');
-          });
-        } catch (error) {
-          console.error('Erreur configuration Keyboard:', error);
-        }
-      };
-      
-      configureKeyboard();
-      
-      // Détecter si on est dans un simulateur
-      const isSimulator = window.navigator.userAgent.includes('Simulator') || 
-                         window.navigator.userAgent.includes('iPhone Simulator') ||
-                         window.navigator.userAgent.includes('iPad Simulator');
-      
-      if (isSimulator) {
-        document.body.classList.add('ios-simulator');
-      }
-      // Désactiver le zoom sur iOS pour éviter les problèmes de double-tap
-      document.addEventListener('touchstart', function(event) {
-        // Ne pas bloquer les clics sur la barre de navigation
-        if (event.target && (event.target as Element).closest('.bottom-nav')) {
-          return;
-        }
-        if (event.touches.length > 1) {
-          event.preventDefault();
-        }
-      }, { passive: false });
-      
-      // Prévenir le zoom sur double-tap
-      let lastTouchEnd = 0;
-      document.addEventListener('touchend', function(event) {
-        // Ne pas bloquer les clics sur la barre de navigation
-        if (event.target && (event.target as Element).closest('.bottom-nav')) {
-          return;
-        }
-        const now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-          event.preventDefault();
-        }
-        lastTouchEnd = now;
-      }, false);
-    }
-  }, []);
 
   // Forcer l'orientation portrait au démarrage
   // Note: Le verrouillage principal est géré par OrientationLock dans main.tsx
