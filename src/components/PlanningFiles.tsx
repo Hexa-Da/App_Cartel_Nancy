@@ -4,6 +4,7 @@ import { database, storage } from '../firebase';
 import { PlanningFile } from '../types';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
 import { firebaseLogger } from '../services/FirebaseLogger';
+import { BREAKPOINTS, MODAL_SIZES, minSize } from '../config/responsive';
 
 // Classe pour optimiser les connexions Firebase et monitoring des coûts
 class FirebaseOptimizer {
@@ -69,8 +70,8 @@ const compressImage = (file: File, maxSizeKB = 500, quality = 0.8): Promise<File
 
     img.onload = () => {
       // Redimensionner si nécessaire
-      const maxWidth = 1200;
-      const maxHeight = 1200;
+      const maxWidth = BREAKPOINTS.large;
+      const maxHeight = BREAKPOINTS.large;
       let { width, height } = img;
 
       if (width > maxWidth || height > maxHeight) {
@@ -228,7 +229,7 @@ export default function PlanningFiles({
   ];
 
   // Helper pour détecter mobile
-  const isMobile = window.innerWidth < 600;
+  const isMobile = window.innerWidth < BREAKPOINTS.smallTablet;
 
   // Initialiser le filtre basé sur la prop
   useEffect(() => {
@@ -735,7 +736,7 @@ export default function PlanningFiles({
               background: 'var(--bg-color)',
               borderRadius: '12px',
               width: '90%',
-              maxWidth: '400px',
+              maxWidth: minSize(400, 95),
               maxHeight: 'calc(100vh - 40px)',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
               overflow: 'hidden',

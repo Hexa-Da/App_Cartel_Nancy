@@ -1,0 +1,259 @@
+/* ============================================
+   HEADER - "Cloué" en Position Fixed
+   ============================================ */
+.app-header {
+  /* ✅ POSITION FIXED : Cloué en haut de l'écran */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* ✅ Utiliser la variable globale */
+  height: var(--header-height);
+  /* ✅ Sécurité tactile : min-height 44px */
+  min-height: 44px;
+  /* ✅ Vérification Visuelle (Z-Index) : Header au-dessus du contenu */
+  z-index: 1000;
+  /* ✅ Box-sizing pour éviter les débordements */
+  box-sizing: border-box;
+  margin: 0;
+  /* ✅ Fond explicite : Empêche la transparence */
+  background-color: var(--bg-primary);
+  display: flex;
+  justify-content: space-between;
+  /* ✅ Alignement "Magnétique" : Boutons collés en BAS */
+  align-items: flex-end;
+  box-shadow: 0 2px 24px var(--shadow-color);
+  /* ✅ Padding : horizontal normal, bottom 5px pour ne pas toucher la bordure */
+  padding: 0 clamp(8px, 2vw, 10px) 5px;
+  /* ✅ Safe Areas gérées dans le padding-top (ne casse pas la hauteur) */
+  padding-top: calc(var(--safe-top) + 0px);
+}
+
+/* Tous les boutons du header */
+.app-header button {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-header button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Boutons du header - alignement vertical centré */
+.chat-button,
+.emergency-button,
+.header-settings-button,
+.admin-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* Changé: Padding adaptatif */
+  padding: clamp(4px, 1vh, 6px);
+  color: var(--text-color);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  position: relative;
+  /* Changé: Dimensions adaptatives avec clamp - Augmentées */
+  width: clamp(40px, 5vw, 48px);
+  height: clamp(40px, 5vw, 48px);
+  flex-shrink: 0;
+  /* Augmentation du font-size */
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+}
+
+.chat-button svg,
+.emergency-button svg,
+.header-settings-button svg,
+.admin-button svg {
+  /* Changé: SVG adaptatif - Augmenté */
+  width: clamp(26px, 4vw, 30px);
+  height: clamp(26px, 4vw, 30px);
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 1px 2px var(--shadow-color));
+}
+
+/* Conteneurs gauche et droite du header */
+.header-left {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin-right: 0;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Styles pour les boutons dans header-left */
+.header-left .header-back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* Changé: Padding adaptatif */
+  padding: clamp(3px, 0.8vh, 4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  /* Changé: Dimensions adaptatives - Augmentées */
+  width: clamp(36px, 4.5vw, 44px);
+  height: clamp(36px, 4.5vw, 44px);
+  flex-shrink: 0;
+  /* Remonté un peu */
+  position: relative;
+  top: clamp(-3px, -0.8vh, -5px);
+}
+
+.header-back-button:disabled {
+  cursor: not-allowed;
+}
+
+.header-back-button svg {
+  /* Changé: SVG adaptatif - Augmenté */
+  width: clamp(28px, 4vw, 32px);
+  height: clamp(28px, 4vw, 32px);
+  stroke: var(--text-primary);
+}
+
+.header-back-button:hover:not(:disabled) {
+  background-color: transparent;
+}
+
+.header-back-button:active, .header-back-button:focus {
+  background-color: transparent;
+  outline: none;
+}
+
+.header-back-button:hover:not(:disabled) svg {
+  stroke: var(--text-primary);
+}
+
+/* État actif du chat-button */
+.chat-button.active {
+  transform: scale(1.1);
+}
+
+.chat-button.active svg {
+  filter: drop-shadow(0 2px 4px var(--shadow-color));
+}
+
+.unread-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  z-index: 10;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Styles spécifiques pour emergency-button */
+.emergency-button {
+  color: #e74c3c !important;
+}
+
+.emergency-button svg {
+  color: #e74c3c;
+}
+
+.emergency-button:hover svg {
+  color: #c0392b;
+}
+
+/* Bouton d'édition dans le header */
+.edit-button {
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  font-weight: 600;
+  padding: clamp(4px, 1vh, 8px) clamp(8px, 1.5vw, 12px);
+  background-color: var(--warning-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  margin-left: 0;
+  /* Aligné avec le bouton back */
+  height: clamp(32px, 3.3vw, 38px);
+  width: auto;
+  min-width: clamp(50px, 6vw, 70px);
+  flex-shrink: 0;
+  /* Aligné avec le bouton back */
+  position: relative;
+  top: clamp(-4px, -0.8vh, -6px);
+}
+
+.edit-button.active {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+/* Logo et texte dans le header */
+.header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.header-logo img {
+  /* Changé: Logo adaptatif avec contraintes - Augmenté */
+  height: clamp(32px, 5vh, 48px);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 0;
+  padding: 0;
+}
+
+.header-logo-text {
+  /* Changé: Taille de police adaptative - Augmentée */
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  font-weight: bold;
+  white-space: nowrap;
+  /* Changé: Protection contre débordement */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  max-width: 100%;
+}
+
+/* Mode clair - Texte noir */
+[data-theme="light"] .header-logo-text {
+  color: #000000 !important;
+}
+
+/* Mode sombre - Texte blanc */
+[data-theme="dark"] .header-logo-text {
+  color: #ffffff !important;
+}
+

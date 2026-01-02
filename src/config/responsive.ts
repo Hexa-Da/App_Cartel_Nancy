@@ -6,6 +6,7 @@
 // Breakpoints standards
 export const BREAKPOINTS = {
   mobile: 480,
+  smallTablet: 600, // Breakpoint intermédiaire pour certains composants
   tablet: 768,
   desktop: 1024,
   large: 1200

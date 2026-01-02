@@ -23,6 +23,7 @@ import AdminLoginModal from './AdminLoginModal';
 import { verifyAdminCode } from '../firebase';
 import { useApp } from '../AppContext';
 import { useAppPanels } from '../AppPanelsContext';
+import './Header.css';
 
 interface HeaderProps {
   onChat?: () => void;

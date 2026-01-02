@@ -18,6 +18,7 @@ import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import NotificationService from '../services/NotificationService';
+import { MODAL_SIZES } from '../config/responsive';
 import './ChatPanel.css';
 
 interface Message {
@@ -250,7 +251,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
             background: 'var(--bg-color)', 
             borderBottom: '1px solid var(--border-color)',
             width: '100%',
-            maxWidth: '800px',
+            maxWidth: MODAL_SIZES.large,
             margin: '0 auto'
           }}
           onSubmit={handleSubmit}
