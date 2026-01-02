@@ -19,6 +19,7 @@ import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import NotificationService from '../services/NotificationService';
 import { MODAL_SIZES } from '../config/responsive';
+import logger from '../services/Logger';
 import './ChatPanel.css';
 
 interface Message {
@@ -169,7 +170,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
         alert('Erreur lors de la traduction');
       }
     } catch (error) {
-      console.error('Erreur de traduction:', error);
+      logger.error('Erreur de traduction:', error);
       alert('Erreur lors de la traduction. Veuillez réessayer.');
     }
   };

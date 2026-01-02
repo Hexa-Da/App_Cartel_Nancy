@@ -11,6 +11,7 @@
 import { ref, push, set, get } from 'firebase/database';
 import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
+import logger from '../services/Logger';
 
 interface VenueFormData {
   name: string;
@@ -52,7 +53,7 @@ export const useVenueForm = ({
       }
       return null;
     } catch (error) {
-      console.error('Erreur de géocodage:', error);
+      logger.error('Erreur de géocodage:', error);
       return null;
     }
   };

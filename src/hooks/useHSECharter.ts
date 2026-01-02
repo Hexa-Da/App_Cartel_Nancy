@@ -10,6 +10,7 @@
 import { useState, useEffect } from 'react';
 import { ref, get, update } from 'firebase/database';
 import { database } from '../firebase';
+import logger from '../services/Logger';
 
 export const useHSECharter = () => {
   const [showHSECharter, setShowHSECharter] = useState(() => {
@@ -46,7 +47,7 @@ export const useHSECharter = () => {
         const data = snapshot.val();
         if (data.deviceId && data.deviceId !== deviceId) {
           // Le bracelet est déjà utilisé sur un autre appareil
-          console.warn('Ce bracelet est déjà utilisé sur un autre appareil');
+          logger.warn('Ce bracelet est déjà utilisé sur un autre appareil');
         }
         
         // Utiliser update pour préserver les champs existants
@@ -58,10 +59,10 @@ export const useHSECharter = () => {
         // Stocker le numéro de bracelet dans localStorage
         localStorage.setItem('userBraceletNumber', trimmedNumber);
       } else {
-        console.warn('Numéro de bracelet invalide');
+        logger.warn('Numéro de bracelet invalide');
       }
     } catch (err) {
-      console.error('Erreur activation bracelet:', err);
+      logger.error('Erreur activation bracelet:', err);
     }
   };
 

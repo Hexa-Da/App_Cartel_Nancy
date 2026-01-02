@@ -7,6 +7,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { firebaseLogger, FirebaseLog } from '../services/FirebaseLogger';
+import logger from '../services/Logger';
 import './FirebaseErrorLogs.css';
 
 // Clé pour stocker les IDs des logs lus dans localStorage
@@ -20,7 +21,7 @@ const getReadErrorIds = (): Set<string> => {
       return new Set(JSON.parse(stored));
     }
   } catch (error) {
-    console.warn('Erreur lors de la lecture des erreurs lues:', error);
+    logger.warn('Erreur lors de la lecture des erreurs lues:', error);
   }
   return new Set<string>();
 };
@@ -32,7 +33,7 @@ const saveReadErrorIds = (readErrorIds: Set<string>): void => {
     const idsArray = Array.from(readErrorIds).slice(0, 100);
     localStorage.setItem(READ_ERRORS_KEY, JSON.stringify(idsArray));
   } catch (error) {
-    console.warn('Erreur lors de la sauvegarde des erreurs lues:', error);
+    logger.warn('Erreur lors de la sauvegarde des erreurs lues:', error);
   }
 };
 

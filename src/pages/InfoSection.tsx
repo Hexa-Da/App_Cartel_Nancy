@@ -14,6 +14,7 @@ import {
   FaChevronDown, FaChevronUp
 } from 'react-icons/fa';
 import Parie from './Parie';
+import logger from '../services/Logger';
 import './InfoSection.css';
 
 interface FAQItem {
@@ -379,7 +380,7 @@ const InfoSection: React.FC = () => {
   useEffect(() => {
     const adminStatus = localStorage.getItem('isAdmin') === 'true';
     if (adminStatus !== isAdmin) {
-      console.log('InfoSection - Sync admin:', adminStatus);
+      logger.log('InfoSection - Sync admin:', adminStatus);
     }
   }, [isAdmin, isEditing]);
 

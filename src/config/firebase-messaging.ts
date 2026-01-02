@@ -16,6 +16,7 @@
 
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { app } from '../firebase';
+import logger from '../services/Logger';
 
 // Configuration Firebase Cloud Messaging
 export const messaging = getMessaging(app);
@@ -32,7 +33,7 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
     }
     return null;
   } catch (error) {
-    console.error('Erreur lors de la demande de permission:', error);
+    logger.error('Erreur lors de la demande de permission:', error);
     return null;
   }
 };
@@ -51,7 +52,7 @@ export const saveTokenToDatabase = async (token: string, userId?: string) => {
   try {
     // Ici vous devriez sauvegarder le token dans votre base de données Firebase
     // pour pouvoir envoyer des notifications à cet utilisateur
-    console.log('Token sauvegardé pour l\'utilisateur:', userId, token);
+    logger.log('Token sauvegardé pour l\'utilisateur:', userId, token);
     
     // Exemple de sauvegarde dans Firebase Realtime Database
     // const tokenRef = ref(database, `userTokens/${userId || 'anonymous'}`);
@@ -61,6 +62,6 @@ export const saveTokenToDatabase = async (token: string, userId?: string) => {
     //   lastUpdated: Date.now()
     // });
   } catch (error) {
-    console.error('Erreur lors de la sauvegarde du token:', error);
+    logger.error('Erreur lors de la sauvegarde du token:', error);
   }
 };

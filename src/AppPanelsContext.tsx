@@ -18,6 +18,7 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { useNavigation } from './contexts/NavigationContext';
 import { useModal } from './contexts/ModalContext';
+import logger from './services/Logger';
 import { useForm } from './contexts/FormContext';
 import { useEditing } from './contexts/EditingContext';
 import { TabType } from './contexts/NavigationContext';
@@ -243,7 +244,7 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
  */
 export const useAppPanels = () => {
   if (process.env.NODE_ENV !== 'production') {
-    console.warn(
+    logger.warn(
       '⚠️ useAppPanels est déprécié. ' +
       'Utilisez les hooks spécialisés : useNavigation(), useModal(), useForm(), useEditing()'
     );

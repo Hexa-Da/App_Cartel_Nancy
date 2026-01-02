@@ -71,6 +71,8 @@
 .horizontal-scroll {
   display: flex;
   overflow-x: auto;
+  /* ✅ Empêcher le scroll vertical local - le scroll vertical se fait sur .app-main */
+  overflow-y: visible;
   /* Gap adaptatif */
   gap: clamp(10px, 2vw, 14px);
   /* Padding latéral suffisant pour éviter les cartes coupées */

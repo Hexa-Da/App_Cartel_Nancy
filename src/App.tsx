@@ -46,6 +46,7 @@ import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
 import { venueService } from './services/VenueService';
 import { matchService } from './services/MatchService';
+import logger from './services/Logger';
 import { mapService } from './services/MapService';
 import { MapView } from './components/map/MapView';
 import { MapControls } from './components/map/MapControls';
@@ -228,7 +229,7 @@ function App() {
       } catch (error) {
         // Le verrouillage d'orientation n'est pas supporté sur ce device ou navigateur
         if (Capacitor.isNativePlatform()) {
-          console.warn("Le verrouillage d'orientation n'est pas supporté sur ce device");
+          logger.warn("Le verrouillage d'orientation n'est pas supporté sur ce device");
         }
       }
     };
@@ -349,7 +350,7 @@ function App() {
         checkAndFlyTo();
         
       } catch (error) {
-        console.error('Erreur lors du parsing du lieu sélectionné:', error);
+        logger.error('Erreur lors du parsing du lieu sélectionné:', error);
         localStorage.removeItem('selectedVenue');
       }
     }
@@ -1177,7 +1178,7 @@ function App() {
       setIsPlacingMarker(false);
       setIsAddingPlace(false);
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du lieu:', error);
+      logger.error('Erreur lors de l\'ajout du lieu:', error);
       alert('Une erreur est survenue lors de l\'ajout du lieu.');
     }
   };
@@ -1220,7 +1221,7 @@ function App() {
         
         setSelectedVenue(null);
       } catch (error) {
-        console.error('Erreur lors de la suppression du lieu:', error);
+        logger.error('Erreur lors de la suppression du lieu:', error);
         alert('Une erreur est survenue lors de la suppression du lieu.');
       }
     }
@@ -1269,7 +1270,7 @@ function App() {
         }, 300);
       }
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du match:', error);
+      logger.error('Erreur lors de l\'ajout du match:', error);
       alert('Une erreur est survenue lors de l\'ajout du match.');
     }
   };
@@ -1306,7 +1307,7 @@ function App() {
         }, 300);
       }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du match:', error);
+      logger.error('Erreur lors de la mise à jour du match:', error);
       alert('Une erreur est survenue lors de la mise à jour du match.');
     }
   };
@@ -1339,7 +1340,7 @@ function App() {
         addToHistory(matchService.createDeleteHistoryAction(venueId, venueBefore, matchToDelete));
       }
     } catch (error) {
-      console.error('Erreur lors de la suppression du match:', error);
+      logger.error('Erreur lors de la suppression du match:', error);
       alert('Une erreur est survenue lors de la suppression du match.');
     }
   };
@@ -1419,7 +1420,7 @@ function App() {
           setEditingVenue({ id: null, venue: null });
           setIsAddingPlace(false);
         } catch (error) {
-          console.error('Erreur lors de la mise à jour du lieu:', error);
+          logger.error('Erreur lors de la mise à jour du lieu:', error);
           alert('Une erreur est survenue lors de la mise à jour du lieu.');
         }
       }
@@ -1572,7 +1573,7 @@ function App() {
       try {
         await Browser.open({ url });
       } catch (error) {
-        console.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
+        logger.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
         // Fallback vers window.open si le plugin échoue
         window.open(url, '_blank');
       }
@@ -1650,7 +1651,7 @@ function App() {
     navigator.clipboard.writeText(text).then(() => {
       alert('Adresse copiée dans le presse-papier !');
     }).catch(err => {
-      console.error('Erreur lors de la copie :', err);
+      logger.error('Erreur lors de la copie :', err);
       alert('Erreur lors de la copie de l\'adresse');
     });
   };
@@ -3114,7 +3115,7 @@ function App() {
         setIsAdmin(false);
         setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
       } catch (error) {
-        console.error('Erreur lors de la déconnexion:', error);
+        logger.error('Erreur lors de la déconnexion:', error);
       }
     }
   };

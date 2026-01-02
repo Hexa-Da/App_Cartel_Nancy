@@ -10,6 +10,7 @@
 import { ref, set, push, remove } from 'firebase/database';
 import { database } from '../firebase';
 import { Venue } from '../types';
+import logger from './Logger';
 
 export interface HistoryAction {
   type: 'ADD_VENUE' | 'UPDATE_VENUE' | 'DELETE_VENUE';
@@ -33,7 +34,7 @@ class VenueService {
       }
       return null;
     } catch (error) {
-      console.error('Erreur de géocodage:', error);
+      logger.error('Erreur de géocodage:', error);
       return null;
     }
   }

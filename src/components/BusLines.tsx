@@ -4,6 +4,7 @@ import { Icon } from 'leaflet';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { useZoomBasedLoading } from '../hooks/useLazyData';
+import logger from '../services/Logger';
 import './BusLines.css';
 
 // Icône pour les arrêts de tram (point blanc)
@@ -3896,7 +3897,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                             try {
                               await Browser.open({ url: line.googleMapsUrl! });
                             } catch (error) {
-                              console.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
+                              logger.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
                               window.open(line.googleMapsUrl!, '_blank');
                             }
                           } else {
@@ -3921,7 +3922,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                               try {
                                 await Browser.open({ url: link.url });
                               } catch (error) {
-                                console.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
+                                logger.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
                                 window.open(link.url, '_blank');
                               }
                             } else {

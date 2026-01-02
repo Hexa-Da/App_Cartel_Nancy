@@ -15,6 +15,7 @@
 import { useEffect } from 'react';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Capacitor } from '@capacitor/core';
+import logger from '../services/Logger';
 
 /**
  * Composant qui verrouille l'orientation de l'écran en mode portrait
@@ -30,7 +31,7 @@ export default function OrientationLock() {
         // Le verrouillage d'orientation n'est pas supporté sur ce device ou navigateur
         // On ignore l'erreur silencieusement
         if (Capacitor.isNativePlatform()) {
-          console.warn("Le verrouillage d'orientation n'est pas supporté sur ce device");
+          logger.warn("Le verrouillage d'orientation n'est pas supporté sur ce device");
         }
       }
     };

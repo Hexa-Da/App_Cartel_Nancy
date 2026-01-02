@@ -12,6 +12,7 @@ import {
   FaCheckCircle, FaExclamationTriangle, FaChevronDown, FaChevronUp, FaClock, FaSpinner
 } from 'react-icons/fa';
 import './Parie.css';
+import logger from '../services/Logger';
 
 interface SportSection {
   sportKey: string;
@@ -157,7 +158,7 @@ const Parie: React.FC = () => {
         // La synchronisation sera gérée par une Cloud Function pour éviter la surcharge
       }
     } catch (err) {
-      console.error('Erreur chargement paris:', err);
+      logger.error('Erreur chargement paris:', err);
       const savedBets = localStorage.getItem('userBets');
       if (savedBets) {
         setBets(JSON.parse(savedBets));
@@ -178,7 +179,7 @@ const Parie: React.FC = () => {
         setDelegationVotes(snapshot.val());
       }
     } catch (err) {
-      console.error('Erreur chargement votes délégation:', err);
+      logger.error('Erreur chargement votes délégation:', err);
     }
   }, []);
 
@@ -193,7 +194,7 @@ const Parie: React.FC = () => {
         lastBetUpdate: Date.now()
       });
     } catch (err) {
-      console.error('Erreur sauvegarde paris:', err);
+      logger.error('Erreur sauvegarde paris:', err);
     }
   };
 
@@ -213,8 +214,8 @@ const Parie: React.FC = () => {
         // Format par défaut pour Firebase Functions v2 (région: europe-west1)
         // L'utilisateur peut override avec VITE_SYNC_VOTES_ENDPOINT si la région est différente
         functionUrl = `https://europe-west1-${projectId}.cloudfunctions.net/syncAllDelegationVotes`;
-        console.warn('[Parie] URL Cloud Function construite automatiquement:', functionUrl);
-        console.warn('[Parie] Pour utiliser une région différente, définissez VITE_SYNC_VOTES_ENDPOINT dans .env');
+        logger.warn('[Parie] URL Cloud Function construite automatiquement:', functionUrl);
+        logger.warn('[Parie] Pour utiliser une région différente, définissez VITE_SYNC_VOTES_ENDPOINT dans .env');
       }
       
       const authKey = import.meta.env.VITE_FCM_ENDPOINT_AUTH_KEY;
@@ -236,7 +237,7 @@ const Parie: React.FC = () => {
       }
 
       const result = await response.json();
-      console.log('Synchronisation des votes réussie:', result.message);
+      logger.log('Synchronisation des votes réussie:', result.message);
 
       // Recharger les votes de la délégation de l'utilisateur après synchronisation
       const currentDelegation = userDelegationRef.current;
@@ -244,7 +245,7 @@ const Parie: React.FC = () => {
         await loadDelegationVotes(currentDelegation);
       }
     } catch (err) {
-      console.error('Erreur synchronisation votes délégation:', err);
+      logger.error('Erreur synchronisation votes délégation:', err);
       const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
       
       // Message d'erreur plus détaillé
@@ -285,7 +286,7 @@ const Parie: React.FC = () => {
         setWinners(currentWinners);
       }
     } catch (err) {
-      console.error('Erreur chargement gagnants:', err);
+      logger.error('Erreur chargement gagnants:', err);
     }
   }, [getAllDelegations]);
 
@@ -314,7 +315,7 @@ const Parie: React.FC = () => {
           
           // Sauvegarder les votes mis à jour
           const updatePromise = set(delegationBetsRef, votes).catch(err => {
-            console.error(`Erreur sauvegarde winners délégation ${delegation}:`, err);
+            logger.error(`Erreur sauvegarde winners délégation ${delegation}:`, err);
           });
           updatePromises.push(updatePromise);
         }
@@ -323,7 +324,7 @@ const Parie: React.FC = () => {
       await Promise.all(updatePromises);
       setShowWinnersModal(false);
     } catch (err) {
-      console.error('Erreur sauvegarde gagnants:', err);
+      logger.error('Erreur sauvegarde gagnants:', err);
     } finally {
       setIsSavingWinners(false);
     }
@@ -341,7 +342,7 @@ const Parie: React.FC = () => {
         setDelegationVotes(snapshot.val());
       }
     }, (error) => {
-      console.error('Erreur listener delegationBets:', error);
+      logger.error('Erreur listener delegationBets:', error);
     });
 
     return () => unsubscribe();

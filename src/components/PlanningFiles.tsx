@@ -5,6 +5,7 @@ import { PlanningFile } from '../types';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import { BREAKPOINTS } from '../config/responsive';
+import logger from '../services/Logger';
 import './PlanningFiles.css';
 
 // Classe pour optimiser les connexions Firebase et monitoring des coûts
@@ -27,14 +28,14 @@ class FirebaseOptimizer {
   trackTransfer(bytes: number) {
     this.dailyTransfer += bytes;
     if (this.dailyTransfer > this.MAX_DAILY_TRANSFER * 0.8) {
-      console.warn('⚠️ Limite de transfert quotidien atteinte à 80%');
+      logger.warn('⚠️ Limite de transfert quotidien atteinte à 80%');
     }
   }
 
   trackStorage(bytes: number) {
     this.dailyStorage += bytes;
     if (this.dailyStorage > this.MAX_DAILY_STORAGE * 0.8) {
-      console.warn('⚠️ Limite de stockage quotidien atteinte à 80%');
+      logger.warn('⚠️ Limite de stockage quotidien atteinte à 80%');
     }
   }
 
@@ -260,7 +261,7 @@ export default function PlanningFiles({
     const optimizer = FirebaseOptimizer.getInstance();
     
     if (!optimizer.canCreateConnection()) {
-      console.warn('Limite de connexions Firebase atteinte pour les fichiers');
+      logger.warn('Limite de connexions Firebase atteinte pour les fichiers');
       setIsLoading(false);
       onLoadingChange?.(false);
       return;
@@ -533,9 +534,9 @@ export default function PlanningFiles({
         setUploadProgress(10); // Indiquer le début de la compression
         try {
           fileToUpload = await compressImage(file, 500, 0.8);
-          console.log(`Image compressée: ${file.size} bytes → ${fileToUpload.size} bytes (${Math.round((1 - fileToUpload.size / file.size) * 100)}% de réduction)`);
+          logger.log(`Image compressée: ${file.size} bytes → ${fileToUpload.size} bytes (${Math.round((1 - fileToUpload.size / file.size) * 100)}% de réduction)`);
         } catch (compressionError) {
-          console.warn('Erreur de compression, utilisation du fichier original:', compressionError);
+          logger.warn('Erreur de compression, utilisation du fichier original:', compressionError);
           fileToUpload = file;
         }
       }
@@ -566,7 +567,7 @@ export default function PlanningFiles({
             fileType: file.type
           });
           if (error.code === 'storage/unauthorized' || error.code === 'storage/forbidden') {
-            console.warn('Permissions insuffisantes pour l\'upload. Vérifiez les règles de sécurité Firebase Storage.');
+            logger.warn('Permissions insuffisantes pour l\'upload. Vérifiez les règles de sécurité Firebase Storage.');
           }
           setUploading(false);
           setUploadProgress(0);
@@ -650,7 +651,7 @@ export default function PlanningFiles({
         }
       );
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du fichier:', error);
+      logger.error('Erreur lors de l\'ajout du fichier:', error);
       let errorMessage = 'Une erreur est survenue lors de l\'ajout du fichier.';
       
       if (error instanceof Error) {

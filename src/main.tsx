@@ -39,6 +39,7 @@ import { initializeAnalytics } from './config/analytics';
 import { setupTheme } from './config/theme-setup';
 import { setupAnalytics } from './config/analytics-setup';
 import Loader from './components/Loader';
+import logger from './services/Logger';
 
 // Composant racine de l'application
 const AppRoot = (
@@ -84,7 +85,7 @@ const AppRoot = (
   try {
     await setupCapacitor();
   } catch (error) {
-    console.error('Erreur lors de la configuration Capacitor:', error);
+    logger.error('Erreur lors de la configuration Capacitor:', error);
   }
   
   // Initialiser ReactGA (complémentaire à gtag.js)

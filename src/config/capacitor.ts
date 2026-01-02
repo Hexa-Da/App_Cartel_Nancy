@@ -26,6 +26,7 @@
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
+import logger from '../services/Logger';
 
 /**
  * Configure Capacitor au démarrage de l'application
@@ -62,7 +63,7 @@ export const setupCapacitor = async (): Promise<void> => {
         await StatusBar.setBackgroundColor({ color: '#00000000' }); // Transparent
       }
     } catch (error) {
-      console.warn('Erreur StatusBar:', error);
+      logger.warn('Erreur StatusBar:', error);
     }
   }
   
@@ -74,18 +75,18 @@ export const setupCapacitor = async (): Promise<void> => {
       // Permet le scroll automatique vers l'input focalisé
       await Keyboard.setScroll({ isDisabled: false });
       
-      console.log('[Keyboard] Configuration overlay appliquée sur iOS');
+      logger.log('[Keyboard] Configuration overlay appliquée sur iOS');
       
       // Écouter les événements pour debug
       Keyboard.addListener('keyboardWillShow', (info) => {
-        console.log('[Keyboard] Clavier va s\'ouvrir, hauteur:', info.keyboardHeight);
+        logger.log('[Keyboard] Clavier va s\'ouvrir, hauteur:', info.keyboardHeight);
       });
       
       Keyboard.addListener('keyboardWillHide', () => {
-        console.log('[Keyboard] Clavier va se fermer');
+        logger.log('[Keyboard] Clavier va se fermer');
       });
     } catch (error) {
-      console.error('Erreur configuration Keyboard:', error);
+      logger.error('Erreur configuration Keyboard:', error);
     }
   }
   

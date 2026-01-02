@@ -23,6 +23,7 @@ import BusLines from '../components/BusLines';
 import { useNavigation } from '../contexts/NavigationContext';
 import { useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga4';
+import logger from '../services/Logger';
 
 // Note: Cette page est une version simplifiée qui utilise les hooks et composants extraits.
 // La logique complète reste dans App.tsx pour l'instant.
@@ -36,7 +37,7 @@ export default function MapPage() {
 
   const handleMapClick = (e: { latlng: { lat: number; lng: number } }) => {
     // Logique de gestion des clics sur la carte
-    console.log('Map clicked at:', e.latlng);
+    logger.log('Map clicked at:', e.latlng);
   };
 
   const handleTabChange = (tab: string) => {

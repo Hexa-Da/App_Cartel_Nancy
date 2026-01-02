@@ -16,6 +16,7 @@ import { Capacitor } from '@capacitor/core';
 import { useForm } from '../contexts/FormContext';
 import { useEditing } from '../contexts/EditingContext';
 import { useApp } from '../AppContext';
+import logger from '../services/Logger';
 import './PartyMap.css';
 
 interface Party {
@@ -168,7 +169,7 @@ const PartyMap: React.FC = () => {
       try {
         await Browser.open({ url });
       } catch (error) {
-        console.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
+        logger.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
         window.open(url, '_blank');
       }
     } else {

@@ -18,6 +18,7 @@ import { LatLng } from 'leaflet';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import NotificationService from '../services/NotificationService';
+import logger from '../services/Logger';
 
 export const useLocationTracking = () => {
   const [position, setPosition] = useState<LatLng | null>(null);
@@ -31,7 +32,7 @@ export const useLocationTracking = () => {
   });
 
   const handleLocationError = (err: any) => {
-    console.error('Erreur de géolocalisation:', err);
+    logger.error('Erreur de géolocalisation:', err);
     const now = Date.now();
     if (now - lastErrorTime.current < 3000) return;
     lastErrorTime.current = now;
@@ -98,7 +99,7 @@ export const useLocationTracking = () => {
         const notificationService = NotificationService.getInstance();
         await notificationService.initialize();
       } catch (error) {
-        console.error('Erreur lors de l\'initialisation des notifications:', error);
+        logger.error('Erreur lors de l\'initialisation des notifications:', error);
       }
     };
     

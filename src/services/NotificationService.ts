@@ -21,6 +21,7 @@ import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { ref, set } from 'firebase/database';
 import { database } from '../firebase';
+import logger from './Logger';
 
 class NotificationService {
   private static instance: NotificationService;
@@ -50,7 +51,7 @@ class NotificationService {
         await this.requestLocationPermission();
       this.isInitialized = true;
     } catch (error) {
-      console.error('Error initializing notifications:', error);
+      logger.error('Error initializing notifications:', error);
       // Ne pas bloquer l'application si l'initialisation des notifications échoue
       this.isInitialized = true;
     }
@@ -70,7 +71,7 @@ class NotificationService {
 
       const endpoint = import.meta.env.VITE_FCM_NOTIFICATION_ENDPOINT;
       if (!endpoint) {
-        console.warn('[NotificationService] VITE_FCM_NOTIFICATION_ENDPOINT manquant : impossible de déclencher la notification distante.');
+        logger.warn('[NotificationService] VITE_FCM_NOTIFICATION_ENDPOINT manquant : impossible de déclencher la notification distante.');
         return;
       }
 
@@ -81,7 +82,7 @@ class NotificationService {
         timestamp: Date.now()
       });
     } catch (error) {
-      console.error('Erreur lors de l\'envoi de la notification de chat:', error);
+      logger.error('Erreur lors de l\'envoi de la notification de chat:', error);
     }
   }
 
@@ -96,9 +97,9 @@ class NotificationService {
         updatedAt: Date.now()
       });
 
-      console.log('Token FCM enregistré dans la base:', tokenKey);
+      logger.log('Token FCM enregistré dans la base:', tokenKey);
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du token:', error);
+      logger.error('Erreur lors de la sauvegarde du token:', error);
     }
   }
 
@@ -125,7 +126,7 @@ class NotificationService {
     try {
       const endpoint = import.meta.env.VITE_FCM_SUBSCRIBE_ENDPOINT;
       if (!endpoint) {
-        console.warn(`[NotificationService] VITE_FCM_SUBSCRIBE_ENDPOINT manquant : abonnement au topic "${topic}" ignoré.`);
+        logger.warn(`[NotificationService] VITE_FCM_SUBSCRIBE_ENDPOINT manquant : abonnement au topic "${topic}" ignoré.`);
         return;
       }
 
@@ -134,9 +135,9 @@ class NotificationService {
         topic
       });
         
-        console.log(`Abonné au topic ${topic}`);
+        logger.log(`Abonné au topic ${topic}`);
     } catch (error) {
-      console.error(`Erreur lors de l'abonnement au topic ${topic}:`, error);
+      logger.error(`Erreur lors de l'abonnement au topic ${topic}:`, error);
     }
   }
 
@@ -168,7 +169,7 @@ class NotificationService {
     const permissionStatus = await PushNotifications.checkPermissions();
     if (permissionStatus.receive === 'prompt') {
       const result = await PushNotifications.requestPermissions();
-      console.log('Permission notifications push:', result.receive);
+      logger.log('Permission notifications push:', result.receive);
     }
 
     this.registerNativeListeners();
@@ -179,26 +180,26 @@ class NotificationService {
     PushNotifications.addListener('registration', async (token) => {
       try {
         this.fcmToken = token.value;
-        console.log('Token FCM reçu:', token.value);
+        logger.log('Token FCM reçu:', token.value);
 
         await this.saveTokenToFirebase(token.value);
         await this.subscribeToTopic(this.chatTopic);
       } catch (error) {
-        console.error('Erreur lors du traitement du token FCM:', error);
+        logger.error('Erreur lors du traitement du token FCM:', error);
       }
     });
 
     PushNotifications.addListener('registrationError', (error) => {
-      console.error('Erreur lors de l\'enregistrement FCM:', error.error);
+      logger.error('Erreur lors de l\'enregistrement FCM:', error.error);
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('Notification reçue:', notification);
+      logger.log('Notification reçue:', notification);
       this.showInAppNotification(notification);
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-      console.log('Action sur notification:', notification);
+      logger.log('Action sur notification:', notification);
       // TODO: implémenter une navigation vers l'écran de chat si nécessaire
     });
   }
@@ -206,7 +207,7 @@ class NotificationService {
   private async initializeWebPush() {
     if ('Notification' in window) {
       const permission = await Notification.requestPermission();
-      console.log('Permission notifications web:', permission);
+      logger.log('Permission notifications web:', permission);
     }
   }
 
@@ -233,7 +234,7 @@ class NotificationService {
         return false;
       }
     } catch (error) {
-      console.error('Error requesting location permission:', error);
+      logger.error('Error requesting location permission:', error);
       return false;
     }
   }
@@ -256,7 +257,7 @@ class NotificationService {
         return false;
       }
     } catch (error) {
-      console.error('Error checking location permission:', error);
+      logger.error('Error checking location permission:', error);
       return false;
     }
   }
@@ -278,7 +279,7 @@ class NotificationService {
         return false;
       }
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
+      logger.error('Error requesting notification permission:', error);
       return false;
     }
   }
@@ -295,7 +296,7 @@ class NotificationService {
         return false;
       }
     } catch (error) {
-      console.error('Error checking notification permission:', error);
+      logger.error('Error checking notification permission:', error);
       return false;
     }
   }
@@ -322,7 +323,7 @@ class NotificationService {
         }
       }
     } catch (error) {
-      console.error('Error sending local notification:', error);
+      logger.error('Error sending local notification:', error);
     }
   }
 }

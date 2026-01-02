@@ -19,6 +19,7 @@
 import React, { useState } from 'react';
 import { ref, get } from 'firebase/database';
 import { database } from '../firebase';
+import logger from '../services/Logger';
 import './VSSForm.css';
 
 // Configuration anti-spam
@@ -167,7 +168,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     try {
       await sendToTelegram(message);
     } catch (error) {
-      console.error('Erreur lors de l\'envoi de l\'alerte troll:', error);
+      logger.error('Erreur lors de l\'envoi de l\'alerte troll:', error);
     }
   };
 
@@ -220,7 +221,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
       setValidationError(null);
       return true;
     } catch (error) {
-      console.error('Erreur lors de la vérification:', error);
+      logger.error('Erreur lors de la vérification:', error);
       setValidationError('Participant non valide');
       return false;
     }
@@ -336,7 +337,7 @@ ${formData.description}
       onClose();
 
     } catch (error) {
-      console.error('Erreur lors de l\'envoi:', error);
+      logger.error('Erreur lors de l\'envoi:', error);
       
       // Fallback: Méthode traditionnelle avec client mail
       const emailContent = `Nouveau signalement VSS :
