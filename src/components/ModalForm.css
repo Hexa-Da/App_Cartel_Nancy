@@ -9,8 +9,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* ✅ z-index: 1 pour rester sous le Header/Nav (z-index: 1000) */
-  z-index: 1;
+  /* ✅ z-index: base pour rester sous le Header/Nav (z-index: header) */
+  z-index: var(--z-base);
   backdrop-filter: blur(5px);
 }
 
@@ -51,7 +51,7 @@
   padding: 0 1rem;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
-  z-index: 1;
+  z-index: var(--z-base);
   flex-shrink: 0;
   height: 60px;
 }

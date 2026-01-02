@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1002;
+  z-index: var(--z-header-overlay);
 }
 
 .calendar-popup {
@@ -44,7 +44,7 @@
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: var(--z-content-overlay);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -65,7 +65,7 @@
   position: sticky;
   /* ✅ Utiliser les variables globales : Header + safe-top */
   top: calc(var(--header-height) + var(--safe-top));
-  z-index: 3;
+  z-index: var(--z-content-overlay);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -87,7 +87,7 @@
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: var(--z-content-overlay);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -125,7 +125,7 @@
   min-width: 30px !important;
   max-width: 30px !important;
   box-sizing: border-box !important;
-  z-index: 995 !important;
+  z-index: var(--z-content-high) !important;
   transition: all 0.3s ease !important;
   opacity: 1 !important;
 }
@@ -155,7 +155,7 @@
   min-width: 30px !important;
   max-width: 30px !important;
   box-sizing: border-box !important;
-  z-index: 995 !important;
+  z-index: var(--z-content-high) !important;
   transition: all 0.3s ease !important;
   opacity: 1 !important;
 }
@@ -185,7 +185,7 @@
   min-width: 30px !important;
   max-width: 30px !important;
   justify-content: center !important;
-  z-index: 995 !important;
+  z-index: var(--z-content-high) !important;
   box-sizing: border-box !important;
 }
 
@@ -253,7 +253,7 @@
   position: sticky;
   /* ✅ Top: 0 car le panel est déjà positionné sous le Header */
   top: 0;
-  z-index: 2;
+  z-index: var(--z-content-overlay);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -288,7 +288,7 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px var(--shadow-color);
   font-size: 14px;
-  z-index: 1000;
+  z-index: var(--z-header);
 }
 
 
@@ -433,7 +433,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.2s ease;
-  z-index: 1;
+  z-index: var(--z-base);
   border: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   flex-direction: column;
@@ -441,7 +441,7 @@
 
 .calendar-event:hover {
   transform: scale(1.02);
-  z-index: 2;
+  z-index: var(--z-content-overlay);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -490,7 +490,7 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px var(--shadow-color);
-  z-index: 1000;
+  z-index: var(--z-header);
   max-width: 90%;
   /* Changé: Largeur adaptative */
   width: min(400px, 90vw);
@@ -562,7 +562,7 @@
   right: 0;
   height: 1px;
   background-color: red;
-  z-index: 10;
+  z-index: var(--z-content);
   pointer-events: none;
 }
 

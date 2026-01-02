@@ -8,7 +8,7 @@
   /* ✅ Hauteur : 100vh - header - safe-top - nav - safe-bottom */
   height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom));
   background-color: var(--bg-color);
-  z-index: 2000;
+  z-index: var(--z-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -20,7 +20,7 @@
   background-color: var(--bg-color);
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: var(--z-content-overlay);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -57,7 +57,7 @@
   min-width: 30px !important;
   max-width: 30px !important;
   justify-content: center !important;
-  z-index: 995 !important;
+  z-index: var(--z-content-high) !important;
   box-sizing: border-box !important;
 }
 
@@ -127,7 +127,7 @@
   height: 24px;
   width: 70px;
   justify-content: center;
-  z-index: 995;
+  z-index: var(--z-content-high);
 }
 
 .filter-reset-button {
@@ -160,7 +160,7 @@
   min-width: 30px !important;
   max-width: 30px !important;
   box-sizing: border-box !important;
-  z-index: 995 !important;
+  z-index: var(--z-content-high) !important;
   transition: all 0.3s ease !important;
   opacity: 1 !important;
 }
@@ -189,7 +189,7 @@
   min-width: 30px !important;
   max-width: 30px !important;
   box-sizing: border-box !important;
-  z-index: 995 !important;
+  z-index: var(--z-content-high) !important;
   transition: all 0.3s ease !important;
   opacity: 1 !important;
 }

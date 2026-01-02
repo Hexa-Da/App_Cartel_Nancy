@@ -18,9 +18,9 @@
   margin: 0;
   /* ✅ Padding à l'intérieur du composant (pas sur le conteneur) */
   padding: 20px;
-  padding-top: 0px;
+  padding-top: var(--spacing-page-top-mobile-padding);
   position: relative;
-  z-index: 1;
+  z-index: var(--z-base);
   /* ✅ Overflow visible pour permettre le scroll si le contenu dépasse */
   overflow: visible;
   overflow-x: hidden;
@@ -34,7 +34,26 @@
 @media (max-height: 600px) {
   .info-page {
     justify-content: flex-start;
-    padding-top: 20px; /* Ajoute de l'air en haut sur petit écran */
+    padding-top: var(--spacing-page-top-mobile-padding);
+  }
+}
+
+/* ✅ Harmonisation avec Home.css : Media queries pour tablet et desktop */
+@media (min-height: 700px) {
+  .info-page {
+    padding-top: var(--spacing-page-top-tablet-padding);
+  }
+}
+
+@media (min-height: 900px) {
+  .info-page {
+    padding-top: var(--spacing-page-top-desktop-padding);
+  }
+}
+
+@media (min-width: 701px) {
+  .info-page {
+    padding-top: var(--spacing-page-top-desktop-padding);
   }
 }
 

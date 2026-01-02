@@ -64,7 +64,7 @@
   margin: 0;
   padding: 0; /* ✅ Pas de padding (sinon blanc visible) */
   /* ✅ Vérification Visuelle (Z-Index) : Contenu sous le Header et Nav */
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 /* ============================================
@@ -82,7 +82,7 @@
   /* ✅ Background-color hérité de .app-main */
   background-color: inherit;
   /* ✅ Vérification Visuelle (Z-Index) : Contenu sous le Header et Nav */
-  z-index: 1;
+  z-index: var(--z-base);
   /* Overflow géré par type de page (voir ci-dessous) */
 }
 
@@ -124,7 +124,7 @@
 
 /* Assurer que les popups sont toujours au-dessus du contenu */
 .leaflet-popup {
-  z-index: 2000;
+  z-index: var(--z-modal);
 }
 
 /* ============================================
@@ -160,7 +160,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: var(--z-modal);
 }
 
 .modal-content {
@@ -218,7 +218,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: var(--z-modal);
 }
 
 .emergency-popup-content {

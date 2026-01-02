@@ -72,7 +72,7 @@
   top: calc(var(--header-height) + var(--safe-top) + 25px);
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: var(--z-content-high);
   background: var(--bg-color);
   padding: 15px 20px;
   display: flex;
@@ -202,7 +202,7 @@ body.ios[data-theme="light"] .planning-files-page .filter-select {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10000;
+  z-index: var(--z-max);
   background: rgba(20,20,20,0.95);
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   padding: 20px;
@@ -222,7 +222,7 @@ body.ios[data-theme="light"] .planning-files-page .filter-select {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1000;
+  z-index: var(--z-header);
   background: rgba(20,20,20,0.95);
   padding: 20px;
   border-radius: 12px;

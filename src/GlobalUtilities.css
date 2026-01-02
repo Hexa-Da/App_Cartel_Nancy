@@ -115,7 +115,7 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   width: var(--modal-width);
   max-width: var(--modal-width);
-  z-index: 3000;
+  z-index: var(--z-popup);
   max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
   overflow-y: auto;
   padding: clamp(15px, 3vw, 20px);
@@ -267,7 +267,7 @@ body {
   top: var(--below-header-with-margin);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 3001;
+  z-index: var(--z-popup-overlay);
   background-color: var(--bg-secondary);
   color: var(--text-color);
   padding: 10px 20px;
@@ -284,7 +284,7 @@ body {
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
-  z-index: 2000;
+  z-index: var(--z-modal);
   box-shadow: 0 2px 5px var(--shadow-color);
   animation: slideIn 0.3s ease-out;
 }
@@ -357,14 +357,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999;
+  z-index: var(--z-max);
 }
 
 /* Augmentation de spécificité pour z-index des modals */
 body .edit-form,
 body [role="dialog"],
 body .form-overlay {
-  z-index: 99999;
+  z-index: var(--z-max);
 }
 
 .edit-form::before {
@@ -375,7 +375,7 @@ body .form-overlay {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: -1;
+  z-index: var(--z-below);
 }
 
 .match-edit-form {
@@ -385,12 +385,12 @@ body .form-overlay {
   left: auto;
   max-width: 90vw;
   background-color: var(--bg-color);
-  z-index: 100000;
+  z-index: var(--z-max);
 }
 
 /* Augmentation de spécificité pour match-edit-form */
 body .match-edit-form {
-  z-index: 100000;
+  z-index: var(--z-max);
 }
 
 /* Classes utilitaires - Focus et sélection */
@@ -488,7 +488,7 @@ select,
   body .form-overlay,
   body .edit-form,
   body [role="dialog"] {
-    z-index: 100000;
+    z-index: var(--z-max);
   }
 }
 

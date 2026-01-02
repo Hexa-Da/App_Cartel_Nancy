@@ -9,7 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  z-index: 2000;
+  z-index: var(--z-modal);
   /* Pas de scroll sur l'overlay - seul le contenu du modal scroll */
   overflow: hidden;
   padding: 1rem;

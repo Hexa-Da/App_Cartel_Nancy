@@ -20,7 +20,7 @@
   padding-right: 0;
   overflow: visible;
   /* Z-Index : Nav au-dessus du contenu */
-  z-index: 1000;
+  z-index: var(--z-header);
   pointer-events: auto;
   /* Force d'affichage iOS - Hack GPU */
   transform: translateZ(0);
@@ -58,7 +58,7 @@
   -webkit-user-select: none;
   min-height: auto;
   min-width: clamp(60px, 10vw, 80px);
-  z-index: 1000;
+  z-index: var(--z-header);
   pointer-events: auto;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);

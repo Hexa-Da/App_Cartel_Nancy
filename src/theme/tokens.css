@@ -150,6 +150,48 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+
+  /* ============================================
+     Z-INDEX (Système de superposition)
+     ============================================ */
+  /* Base : Contenu normal */
+  --z-base: 1;
+  
+  /* Content : Overlays légers au-dessus du contenu */
+  --z-content-overlay: 2;
+  
+  /* Content : Éléments de contenu importants */
+  --z-content: 10;
+  
+  /* Content High : Éléments de contenu prioritaires (badges, tooltips) */
+  --z-content-high: 100;
+  
+  /* Header : Navigation fixe (Header et BottomNav) */
+  --z-header: 1000;
+  
+  /* Header Overlay : Éléments au-dessus du header */
+  --z-header-overlay: 1100;
+  
+  /* Modal : Modales et dialogs */
+  --z-modal: 2000;
+  
+  /* Modal Overlay : Overlays de modales */
+  --z-modal-overlay: 2100;
+  
+  /* Popup : Popups et messages flottants */
+  --z-popup: 3000;
+  
+  /* Popup Overlay : Overlays de popups */
+  --z-popup-overlay: 3100;
+  
+  /* Loader : Écran de chargement */
+  --z-loader: 9999;
+  
+  /* Max : Niveau maximum (popups spéciales, form overlays) */
+  --z-max: 10000;
+  
+  /* Below : En dessous du contenu */
+  --z-below: -1;
 }
 
 /* ============================================
