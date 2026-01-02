@@ -52,6 +52,7 @@
   /* Variables utilitaires */
   --text-color-light: #7f8c8d;
   --accent-color: #4CAF50;
+  --party-color: #9C27B0;
   --error-color: #f44336;
   --bg-hover: #f0f0f0;
   --bg-disabled: #e0e0e0;
@@ -145,6 +146,15 @@
   --spacing-page-top-desktop-padding: clamp(85px, 6vh, 110px);
 
   /* ============================================
+     SPACING (Espacements cohérents)
+     ============================================ */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* ============================================
      BORDER RADIUS (Harmonisation)
      ============================================ */
   --radius-sm: 8px;
@@ -214,6 +224,7 @@
   
   /* Variables utilitaires (dark theme) */
   --accent-color: #4CAF50;
+  --party-color: #9C27B0;
   --error-color: #f44336;
   --bg-hover: #333333;
   --bg-disabled: #404040;
@@ -238,6 +249,7 @@
   
   /* Variables utilitaires (light theme) */
   --accent-color: #4CAF50;
+  --party-color: #9C27B0;
   --error-color: #f44336;
   --bg-hover: #f0f0f0;
   --bg-disabled: #e0e0e0;

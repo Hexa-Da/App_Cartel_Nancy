@@ -222,17 +222,17 @@
 }
 
 .event-item.match-passed.match-event .event-type-badge {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(76, 175, 80, 0.06));
-  border-color: rgba(76, 175, 80, 0.25);
-  color: #4CAF50;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 12%, transparent), color-mix(in srgb, var(--accent-color) 6%, transparent));
+  border-color: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  color: var(--accent-color);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
 .event-item.match-passed.party-event .event-type-badge {
-  background: linear-gradient(135deg, rgba(156, 39, 176, 0.12), rgba(156, 39, 176, 0.06));
-  border-color: rgba(156, 39, 176, 0.25);
-  color: #9C27B0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--party-color) 12%, transparent), color-mix(in srgb, var(--party-color) 6%, transparent));
+  border-color: color-mix(in srgb, var(--party-color) 25%, transparent);
+  color: var(--party-color);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -285,19 +285,19 @@
 }
 
 .match-event .event-type-badge {
-  background: rgba(76, 175, 80, 0.25);
-  border-color: rgba(76, 175, 80, 0.4);
+  background: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-color) 30%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 .party-event .event-type-badge {
-  background: rgba(156, 39, 176, 0.25);
-  border-color: rgba(156, 39, 176, 0.4);
+  background: color-mix(in srgb, var(--party-color) 25%, transparent);
+  border-color: color-mix(in srgb, var(--party-color) 40%, transparent);
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--party-color) 30%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -308,13 +308,13 @@
 }
 
 .match-event .event-type-badge:hover {
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.12));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 25%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 20%, transparent), color-mix(in srgb, var(--accent-color) 12%, transparent));
 }
 
 .party-event .event-type-badge:hover {
-  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.25);
-  background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(156, 39, 176, 0.12));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--party-color) 25%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--party-color) 20%, transparent), color-mix(in srgb, var(--party-color) 12%, transparent));
 }
 
 .event-date {
@@ -365,7 +365,7 @@
 }
 
 .event-result {
-  color: rgba(76, 175, 80, 0.95);
+  color: color-mix(in srgb, var(--accent-color) 95%, transparent);
   font-weight: 700;
   margin: clamp(4px, 0.8vh, 6px) 0;
   font-size: clamp(0.75rem, 2.8vw, 0.9rem);
@@ -429,7 +429,7 @@
   width: 40px;
   height: 40px;
   border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top: 4px solid var(--primary-color, #1976D2);
+  border-top: 4px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
