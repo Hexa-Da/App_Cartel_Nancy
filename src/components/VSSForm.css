@@ -13,7 +13,6 @@
   backdrop-filter: blur(5px);
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .vss-form-overlay gère déjà le positionnement */
 
 
 .vss-form-container {
@@ -239,6 +238,3 @@
     margin-bottom: 1rem;
   }
 }
-
-/* Styles spécifiques pour iOS - ajustement du formulaire VSS */
-/* ✅ SUPPRIMÉ : Règles iOS redondantes - les règles standard gèrent déjà max-height et le scroll */ 

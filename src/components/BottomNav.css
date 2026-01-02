@@ -110,8 +110,6 @@
 
 /* ✅ Règles déjà définies dans .bottom-nav et .nav-button standard - pas de duplication nécessaire */
 
-/* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré dans Layout.css
-   avec position absolute et top/bottom utilisant les variables globales */
 
 @media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .bottom-nav {
@@ -195,7 +193,6 @@
     padding: clamp(2px, 0.4vh, 4px) clamp(3px, 1.2vw, 4px);
   }
 
-  /* ✅ SUPPRIMÉ : Règles iOS redondantes dans media query - les règles globales gèrent déjà le positionnement */
 
   .nav-icon {
     font-size: clamp(14px, 2.5vw, 16px);

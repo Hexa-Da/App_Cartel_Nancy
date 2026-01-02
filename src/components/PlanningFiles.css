@@ -243,7 +243,6 @@
   z-index: 2000;
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .modal-overlay gère déjà le positionnement */
 
 
 .modal-content {
@@ -260,7 +259,6 @@
   flex-direction: column;
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .modal-content gère déjà max-height, display et flex-direction */
 
 .modal-content img {
   max-width: 100%;

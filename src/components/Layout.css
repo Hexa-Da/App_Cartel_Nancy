@@ -121,8 +121,6 @@
   position: relative;
 }
 
-/* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré plus haut
-   avec position absolute et top/bottom pour remplir l'espace entre Header et Nav */
 
 /* Assurer que les popups sont toujours au-dessus du contenu */
 .leaflet-popup {

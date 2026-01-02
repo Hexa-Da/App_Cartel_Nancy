@@ -14,7 +14,6 @@
   backdrop-filter: blur(5px);
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .modal-form-overlay gère déjà le positionnement */
 
 
 /* Container arrondi, max-width, padding */
@@ -276,6 +275,3 @@
     font-size: clamp(0.85rem, 2.5vw, 0.9rem);
   }
 }
-
-/* Styles spécifiques pour iOS - ajustement du formulaire Modal */
-/* ✅ SUPPRIMÉ : Règles iOS redondantes - les règles standard gèrent déjà max-height et le scroll */ 

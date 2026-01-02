@@ -72,6 +72,3 @@
   align-items: center;
   gap: 10px;
 }
-
-/* ✅ SUPPRIMÉ : Toutes les règles iOS spécifiques pour .info-page et .app-main
-   Le système global avec variables CSS gère maintenant automatiquement le layout. */ 

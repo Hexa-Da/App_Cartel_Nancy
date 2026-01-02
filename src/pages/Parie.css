@@ -600,7 +600,6 @@
   z-index: 2000;
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bracelet-modal-overlay gère déjà le positionnement */
 
 
 .bracelet-modal-content {
@@ -620,7 +619,6 @@
   flex-direction: column;
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bracelet-modal-content gère déjà max-height, display et flex-direction */
 
 .bracelet-modal-header {
   display: flex;
@@ -664,7 +662,6 @@
   min-height: 0;
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .bracelet-login-form gère déjà le scroll avec -webkit-overflow-scrolling: touch */
 
 .bracelet-login-form .form-group {
   display: flex;
@@ -807,9 +804,6 @@
 }
 
 /* Styles spécifiques pour iOS */
-/* ✅ SUPPRIMÉ : Règles iOS redondantes pour .parie-page et .app-main - le système global gère déjà le layout */
-  overflow: visible !important;
-}
 
 /* Boutons admin */
 .admin-buttons-container {

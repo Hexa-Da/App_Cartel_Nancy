@@ -134,7 +134,6 @@
 /* ===== STYLES iOS SPÉCIFIQUES ===== */
 
 /* Détection iOS et application des styles */
-/* ✅ SUPPRIMÉ : Règle iOS redondante pour top - la règle standard .filters-container gère déjà le positionnement */
 body.ios .filters-container {
   /* ✅ Conservé : Ajustements visuels spécifiques iOS (backdrop-filter, tap-highlight, etc.) */
   -webkit-backdrop-filter: none !important;
@@ -422,10 +421,3 @@ body.ios .filter-select {
   line-height: 1.2 !important;
 }
 
-/* Force le recalcul du positionnement sur iOS */
-/* ✅ SUPPRIMÉ : Toutes les règles iOS spécifiques pour .planning-files-page, .filters-container, .planning-container
-   Le système global avec variables CSS gère maintenant automatiquement :
-   - Le padding-top via .planning-files-page (défini dans les règles standard)
-   - Le positionnement de .filters-container (défini dans les règles standard)
-   - Les hacks de recalcul (margin-top négatif, animations, pseudo-éléments) ne sont plus nécessaires
-   car le layout Fixed Shell gère correctement le positionnement. */

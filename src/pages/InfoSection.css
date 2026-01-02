@@ -234,6 +234,3 @@
   }
 }
 
-/* ✅ SUPPRIMÉ : Toutes les règles iOS spécifiques pour .info-section-page et .app-main
-   Le système global avec variables CSS gère maintenant automatiquement le layout.
-   Le padding-bottom est géré par .app-main via calc(var(--nav-height) + var(--safe-bottom) + 20px). */

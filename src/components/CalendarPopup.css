@@ -105,7 +105,6 @@
   font-weight: 700;
 }
 
-/* ✅ SUPPRIMÉ : Règles iOS redondantes - les règles standard gèrent déjà le positionnement */
 
 
 .calendar-panel-header .filter-reset-button {
@@ -196,7 +195,6 @@
   flex-shrink: 0 !important;
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .calendar-panel-header .filter-toggle-button gère déjà le positionnement */
 
 .calendar-filters-section {
   background-color: var(--bg-color);

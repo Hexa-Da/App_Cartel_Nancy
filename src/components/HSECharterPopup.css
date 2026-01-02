@@ -253,5 +253,3 @@
   font-weight: 500;
 }
 
-/* iOS specific adjustments */
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .hse-popup gère déjà max-height */

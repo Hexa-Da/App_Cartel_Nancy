@@ -124,5 +124,4 @@ button:focus-visible {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .app-container utilise déjà var(--bottom-nav-total-height) qui inclut les safe areas */
 

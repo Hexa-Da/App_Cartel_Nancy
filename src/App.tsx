@@ -17,10 +17,10 @@
  * - Centralise la logique métier de l'application
  */
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
-import { useState, useEffect, useRef, createContext, useContext, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import './App.css';
 import './GlobalUtilities.css';
 import './MapStyles.css';
@@ -48,8 +48,6 @@ import { venueService } from './services/VenueService';
 import { matchService } from './services/MatchService';
 import logger from './services/Logger';
 import { mapService } from './services/MapService';
-import { MapView } from './components/map/MapView';
-import { MapControls } from './components/map/MapControls';
 import { MatchFormModal } from './components/forms/MatchFormModal';
 import { VenueFormModal } from './components/forms/VenueFormModal';
 import { LocationMarker } from './components/map/LocationMarker';
