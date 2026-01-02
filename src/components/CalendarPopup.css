@@ -476,7 +476,7 @@
   color: white;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .filter-row {
     flex-direction: column;
     padding: 0.5rem;

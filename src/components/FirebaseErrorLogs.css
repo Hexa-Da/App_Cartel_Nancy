@@ -17,7 +17,7 @@
   font-size: 0.75rem;
   /* Dimensions adaptatives */
   min-width: min(180px, 35vw);
-  max-width: min(400px, 80vw);
+  max-width: var(--modal-width-small);
   pointer-events: auto;
   max-height: 50vh;
   overflow-y: auto;
@@ -185,9 +185,9 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .firebase-error-logs {
-    max-width: min(350px, 85vw);
+    max-width: var(--modal-width-small);
     font-size: 0.7rem;
   }
 
@@ -205,7 +205,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px) { /* BREAKPOINTS.mobile */
   .firebase-error-logs {
     max-width: min(300px, 90vw);
     right: 10px;

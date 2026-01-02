@@ -44,8 +44,10 @@
      BREAKPOINTS (Points de rupture)
      ============================================ */
   --bp-mobile: 480px;
+  --bp-small-tablet: 600px;
   --bp-tablet: 768px;
   --bp-desktop: 1024px;
+  --bp-large: 1200px;
 
   /* ============================================
      SAFE AREAS (Encoches iOS/Android)
@@ -86,14 +88,24 @@
   /* ============================================
      LARGEURS INTELLIGENTES (Responsive)
      ============================================ */
-  /* Popup: Max 350px, mais s'adapte si l'écran est plus petit */
-  --modal-width: min(350px, 90vw);
+  /* Modales - Correspond à MODAL_SIZES de responsive.ts */
+  --modal-width-small: min(350px, 90vw);
+  --modal-width-medium: min(500px, 90vw);
+  --modal-width-large: min(800px, 95vw);
+  
+  /* Alias pour compatibilité */
+  --modal-width: var(--modal-width-small);
   
   /* Panel Chat: Max 400px, sinon 95% de l'écran */
   --panel-width: min(400px, 95vw);
   
   /* Event Card: Largeur standard pour les cartes d'événements */
   --event-card-width: min(300px, 90vw);
+  
+  /* Cartes - Correspond à CARD_SIZES de responsive.ts */
+  --card-size-event: min(350px, 85vw);
+  --card-size-small: min(280px, 90vw);
+  --card-size-medium: min(300px, 85vw);
 
   /* ============================================
      HAUTEURS INTELLIGENTES (Responsive)

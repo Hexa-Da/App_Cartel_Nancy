@@ -54,7 +54,7 @@
 }
 
 /* Media queries pour les petits écrans - Copié-collé exact des venues */
-@media (max-width: 600px) {
+@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .bus-stop-popup {
     max-width: 85vw;
   }

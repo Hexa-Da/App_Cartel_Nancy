@@ -432,8 +432,8 @@
   animation: spin 1s linear infinite;
 }
 
-/* Responsive breakpoints */
-@media (max-width: 480px) {
+/* Responsive breakpoints - Correspondent à BREAKPOINTS de responsive.ts */
+@media (max-width: 480px) { /* BREAKPOINTS.mobile */
   .home-page {
     padding: 8px;
     margin-top: var(--spacing-page-top-mobile-margin);
@@ -798,7 +798,7 @@
   }
 }
 
-@media (min-width: 500px) and (max-width: 700px) {
+@media (min-width: 500px) and (max-width: 700px) { /* Breakpoint personnalisé entre smallTablet et tablet */
   .home-page {
     padding: 15px;
     margin-top: var(--spacing-page-top-tablet-margin);
@@ -859,7 +859,7 @@
     padding: 20px;
     margin-top: var(--spacing-page-top-desktop-margin);
     /* Changé: Largeur adaptative */
-    max-width: min(1200px, 95vw);
+    max-width: min(1200px, 95vw); /* BREAKPOINTS.large */
     margin-left: auto;
     margin-right: auto;
     justify-content: flex-start;
@@ -915,7 +915,7 @@
 }
 
 /* Support pour les écrans très larges */
-@media (min-width: 1200px) {
+@media (min-width: 1200px) { /* BREAKPOINTS.large */
   .horizontal-scroll {
     justify-content: center;
   }

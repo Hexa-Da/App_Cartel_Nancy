@@ -102,8 +102,8 @@
    ============================================ */
 
 .venue-popup {
-  min-width: min(280px, 90vw);
-  max-width: min(400px, 90vw);
+  min-width: var(--card-size-small);
+  max-width: var(--modal-width-small);
   padding: clamp(12px, 2vw, 16px);
   background-color: var(--bg-color);
   border-radius: clamp(12px, 2vw, 16px);
@@ -886,14 +886,14 @@
   }
 }
 
-/* Media queries */
-@media (max-width: 600px) {
+/* Media queries - Breakpoints correspondant à BREAKPOINTS de responsive.ts */
+@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .venue-popup {
     max-width: 85vw;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .emoji-selector {
     grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
   }

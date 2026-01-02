@@ -453,7 +453,7 @@ select,
 }
 
 /* Media queries */
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .edit-form {
     width: var(--modal-width);
     max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
@@ -489,7 +489,7 @@ select,
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .edit-form {
     flex-direction: column;
     width: 100%;
@@ -504,7 +504,7 @@ select,
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .form-overlay, .edit-form, [role="dialog"] {
     z-index: 100000 !important;
   }

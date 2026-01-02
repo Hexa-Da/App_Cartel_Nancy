@@ -222,7 +222,7 @@
   text-align: center;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px) { /* BREAKPOINTS.mobile */
   .vss-form-container {
     width: 100%;
     max-width: 100%;

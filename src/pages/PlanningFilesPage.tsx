@@ -19,6 +19,7 @@ import { useSearchParams } from 'react-router-dom';
 import PlanningFiles from '../components/PlanningFiles';
 import { useApp } from '../AppContext';
 import { useAppPanels } from '../AppPanelsContext';
+import { MODAL_SIZES } from '../config/responsive';
 import './PlanningFilesPage.css';
 
 // Données hardcodées des hôtels (synchronisées avec App.tsx)
@@ -299,7 +300,7 @@ const PlanningFilesPage: React.FC = () => {
         borderRadius: '12px',
         border: '2px solid var(--accent-color)',
         minWidth: '300px',
-        maxWidth: '500px',
+        maxWidth: MODAL_SIZES.medium,
       }}>
       <div style={{
         color: 'var(--accent-color)',

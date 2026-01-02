@@ -201,7 +201,7 @@
 }
 
 /* Media queries */
-@media (max-width: 600px) {
+@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .chat-message-content {
     padding: 0.2rem 0.2rem;
     max-width: 98vw;

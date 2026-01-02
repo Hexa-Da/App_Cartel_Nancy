@@ -21,6 +21,7 @@ import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel
 import { GiPartyPopper } from 'react-icons/gi';
 import { MdLeaderboard, MdEventNote } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { BREAKPOINTS, MODAL_SIZES } from '../config/responsive';
 
 interface InfoCardProps {
   icon: React.ReactNode;
@@ -152,7 +153,7 @@ const Info: React.FC = () => {
           margin-left: auto;
           margin-right: auto;
           width: 100%;
-          max-width: min(800px, 95vw);
+          max-width: ${MODAL_SIZES.large};
         }
 
         .info-grid {
@@ -265,7 +266,7 @@ const Info: React.FC = () => {
         }
 
         /* Responsive Mobile First */
-        @media (max-width: 600px) {
+        @media (max-width: ${BREAKPOINTS.smallTablet}px) {
           .info-grid {
             grid-template-columns: repeat(2, 1fr);
             gap: clamp(10px, 3vw, 16px);
@@ -303,7 +304,7 @@ const Info: React.FC = () => {
           }
         }
 
-        @media (min-width: 601px) and (max-width: 1024px) {
+        @media (min-width: ${BREAKPOINTS.smallTablet + 1}px) and (max-width: ${BREAKPOINTS.desktop}px) {
           .info-grid {
             grid-template-columns: repeat(3, 1fr);
           }
@@ -317,7 +318,7 @@ const Info: React.FC = () => {
           }
         }
 
-        @media (min-width: 1025px) {
+        @media (min-width: ${BREAKPOINTS.desktop + 1}px) {
           .info-grid {
             grid-template-columns: repeat(4, 1fr);
           }

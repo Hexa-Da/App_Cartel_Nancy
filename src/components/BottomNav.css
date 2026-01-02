@@ -113,7 +113,7 @@
 /* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré dans Layout.css
    avec position absolute et top/bottom utilisant les variables globales */
 
-@media (max-width: 600px) {
+@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .bottom-nav {
     /* Hauteur adaptative pour iOS */
     height: auto;
@@ -144,7 +144,7 @@
 }
 
 /* Styles simplifiés pour mobile */
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .bottom-nav {
     /* Hauteur adaptative pour iOS */
     height: auto;

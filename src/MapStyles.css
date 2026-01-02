@@ -171,7 +171,7 @@
 }
 
 /* Media queries */
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .leaflet-control-container {
     z-index: 900 !important;
   }

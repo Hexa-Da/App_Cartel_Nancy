@@ -71,7 +71,7 @@
   padding: 20px;
   border-radius: 8px;
   margin: 20px auto;
-  /* Changé: Largeur adaptative */
+  /* Changé: Largeur adaptative - Correspond à BREAKPOINTS.smallTablet */
   max-width: min(600px, 95vw);
   width: 100%;
 }

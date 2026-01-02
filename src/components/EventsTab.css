@@ -662,7 +662,7 @@
 }
 
 /* Ajustement pour la vue mobile */
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .events-panel {
     width: 100%;
     height: 100%;

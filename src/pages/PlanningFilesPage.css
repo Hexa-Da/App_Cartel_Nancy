@@ -215,7 +215,7 @@ body.ios[data-theme="light"] .planning-files-page .filter-select {
   border: 2px solid var(--accent-color);
   /* Changé: Dimensions adaptatives */
   min-width: min(300px, 90vw);
-  max-width: min(500px, 90vw);
+  max-width: var(--modal-width-medium);
 }
 
 .page-loading-indicator {
@@ -250,14 +250,14 @@ body.ios .page-loading-indicator {
 body.ios .upload-progress-bar {
   /* Changé: Dimensions adaptatives */
   min-width: min(280px, 85vw);
-  max-width: min(480px, 90vw);
+  max-width: var(--modal-width-small);
   padding: 24px;
 }
 
 body.ios .page-loading-indicator {
   /* Changé: Dimensions adaptatives */
   min-width: min(260px, 80vw);
-  max-width: min(400px, 90vw);
+  max-width: var(--modal-width-small);
   padding: 24px;
 }
 
@@ -334,7 +334,7 @@ body.ios-simulator .filters-container {
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .filters-container {
     flex-direction: column;
     gap: 10px;
@@ -355,7 +355,7 @@ body.ios-simulator .filters-container {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px) { /* BREAKPOINTS.mobile */
   .planning-files-page {
     padding-left: 15px;
     padding-right: 15px;

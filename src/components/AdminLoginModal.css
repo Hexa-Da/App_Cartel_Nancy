@@ -18,7 +18,7 @@
 }
 
 /* Sur mobile, remonter le modal quand le clavier apparaît */
-@media (max-height: 600px), (max-width: 768px) and (max-height: 800px) {
+@media (max-height: 600px), (max-width: 768px) and (max-height: 800px) { /* BREAKPOINTS.tablet */
   .admin-modal-overlay {
     padding-top: calc(env(safe-area-inset-top, 0px) + 10vh);
   }
@@ -29,7 +29,7 @@
   border-radius: 12px;
   width: 90%;
   /* Changé: Largeur adaptative */
-  max-width: min(400px, 90vw);
+  max-width: var(--modal-width-small);
   max-height: calc(100vh - 2rem);
   max-height: calc(100dvh - 2rem); /* Dynamic viewport height pour mobile */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -43,7 +43,7 @@
 }
 
 /* Sur mobile avec clavier, ajuster la position */
-@media (max-height: 600px), (max-width: 768px) and (max-height: 800px) {
+@media (max-height: 600px), (max-width: 768px) and (max-height: 800px) { /* BREAKPOINTS.tablet */
   .admin-modal-content {
     max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 2rem);
   }

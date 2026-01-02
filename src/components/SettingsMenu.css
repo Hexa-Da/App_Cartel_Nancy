@@ -17,7 +17,7 @@
   border-radius: 12px;
   width: 90%;
   /* Changé: Largeur adaptative */
-  max-width: min(400px, 90vw);
+  max-width: var(--modal-width-small);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   position: relative;

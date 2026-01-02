@@ -169,7 +169,7 @@ body {
   border-radius: 8px;
   width: 90%;
   /* Changé: Largeur adaptative */
-  max-width: min(500px, 90vw);
+  max-width: var(--modal-width-medium);
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -283,7 +283,7 @@ body {
 }
 
 /* Empêcher la rotation sur les appareils mobiles */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) { /* BREAKPOINTS.tablet */
   html {
     -webkit-text-size-adjust: 100%;
   }

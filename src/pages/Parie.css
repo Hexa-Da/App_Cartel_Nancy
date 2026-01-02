@@ -33,7 +33,7 @@
 
 .parie-content {
   /* Changé: Largeur adaptative */
-  max-width: min(500px, 95vw);
+  max-width: var(--modal-width-medium);
   margin: 0 auto;
 }
 
@@ -517,7 +517,7 @@
   opacity: 0.6;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .parie-header h1 {
     font-size: 1.8rem;
   }
@@ -592,7 +592,7 @@
   border-radius: 12px;
   width: 90%;
   /* Changé: Largeur adaptative */
-  max-width: min(400px, 90vw);
+  max-width: var(--modal-width-small);
   max-height: calc(100vh - 40px);
   max-height: calc(100svh - 40px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -831,7 +831,7 @@
   min-height: 44px;
   min-width: 44px;
   width: 100%;
-  max-width: min(400px, 90vw);
+  max-width: var(--modal-width-small);
   margin: 0 auto;
 }
 
@@ -877,7 +877,7 @@
   border-radius: 12px;
   width: 100%;
   /* Changé: Largeur adaptative */
-  max-width: min(500px, 95vw);
+  max-width: var(--modal-width-medium);
   max-height: 80vh;
   display: flex;
   flex-direction: column;
