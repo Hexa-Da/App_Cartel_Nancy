@@ -102,7 +102,7 @@
   border: none !important;
   box-shadow: 0 2px 8px var(--shadow-color) !important;
   margin: 0 !important;
-  background: var(--bg-primary) !important;
+  background: var(--bg-color) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
 }

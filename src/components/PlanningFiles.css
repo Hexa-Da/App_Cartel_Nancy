@@ -39,7 +39,7 @@
   border-radius: 4px;
   border: 1px solid var(--border-color);
   font-size: 16px;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   color: var(--text-primary);
 }
 
@@ -101,7 +101,7 @@
   border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 16px;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   color: var(--text-primary);
 }
 
@@ -166,7 +166,7 @@
 .file-preview {
   position: relative;
   padding-top: 56.25%;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
 }
 
 .planning-image {
@@ -251,7 +251,7 @@
   max-width: 90%;
   max-height: calc(100vh - var(--below-header)); /* Utilise la variable CSS */
   max-height: calc(100svh - var(--below-header)); /* Support viewport units modernes */
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid var(--accent-color);
@@ -297,7 +297,7 @@
   padding: 10px;
   border: 2px dashed var(--border-color);
   border-radius: 4px;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   cursor: pointer;
   transition: all 0.3s;
   color: var(--text-primary);

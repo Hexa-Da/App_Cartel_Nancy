@@ -2,23 +2,19 @@
    GLOBAL UTILITIES - Variables CSS, Reset, Classes Utilitaires
    ============================================ */
 
-/* Variables CSS */
+/* Variables CSS - Variables uniques non définies dans tokens.css */
+/* NOTE: Les variables de thème (--primary-color, --success-color, --bg-color, etc.)
+   sont définies dans theme/tokens.css et importées dans main.tsx */
+
 :root {
-  --primary-color: #3498db;
+  /* Variables de hover (non définies dans tokens.css) */
   --primary-hover: #2980b9;
-  --success-color: #2ecc71;
   --success-hover: #27ae60;
-  --danger-color: #e74c3c;
   --danger-hover: #c0392b;
-  --warning-color: #f39c12;
   --warning-hover: #d35400;
-  --text-color: #2c3e50;
+  
+  /* Variables utilitaires uniques */
   --text-color-light: #7f8c8d;
-  --bg-color: #ffffff;
-  --bg-secondary: #6e6e6e;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --bg-primary: #ffffff;
   --accent-color: #4CAF50;
   --error-color: #f44336;
   --bg-hover: #f0f0f0;
@@ -26,11 +22,6 @@
 }
 
 [data-theme="dark"] {
-  --bg-primary: #000000;
-  --bg-secondary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #b3b3b3;
-  --border-color: #404040;
   --accent-color: #4CAF50;
   --error-color: #f44336;
   --bg-hover: #333333;
@@ -38,11 +29,6 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #6e6e6e;
-  --text-primary: #181818;
-  --text-secondary: #555;
-  --border-color: #e0e0e0;
   --accent-color: #4CAF50;
   --error-color: #f44336;
   --bg-hover: #f0f0f0;
@@ -58,7 +44,7 @@
 
 /* Styles de base utilisant les variables */
 body {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   color: var(--text-primary);
 }
 
@@ -72,12 +58,12 @@ body {
 
 /* Classes utilitaires - Settings Menu */
 .settings-menu {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   border: 1px solid var(--border-color);
 }
 
 .settings-menu-content {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
 }
 
 .settings-item {
@@ -89,13 +75,13 @@ body {
 }
 
 .settings-select {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
 .settings-select option {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   color: var(--text-primary);
 }
 
@@ -108,7 +94,7 @@ body {
 }
 
 .slider:before {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
 }
 
 .settings-item:last-child {

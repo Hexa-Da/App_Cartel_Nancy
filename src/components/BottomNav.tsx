@@ -58,8 +58,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
   // Elle sera naturellement cachée derrière le clavier sans logique JavaScript
 
   return (
-    <div className="bottom-nav-container">
-      <nav className={`bottom-nav ${platformClass}`}>
+    <nav className={`bottom-nav ${platformClass}`}>
       <button 
         className={`nav-button ${location.pathname === '/home' ? 'active' : ''}`}
         onClick={(e) => handleClick(e, '/home')}
@@ -124,8 +123,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
           <line x1="12" y1="8" x2="12.01" y2="8"/>
         </svg>
       </button>
-      </nav>
-    </div>
+    </nav>
   );
 };
 

@@ -584,12 +584,12 @@
 
 .add-venue-button {
   position: fixed;  
-  bottom: calc(var(--above-bottom-nav) + 50px);
+  bottom: calc(var(--above-bottom-nav) + 60px);
   left: 20px;
   width: 48px;
   height: 48px;
   border-radius: 9999px;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   color: var(--text-color);
   border: none;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -606,12 +606,12 @@
 
 .recenter-button {
   position: fixed;
-  bottom: calc(var(--above-bottom-nav) + 50px);
+  bottom: calc(var(--above-bottom-nav) + 60px);
   right: 20px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--bg-primary) !important;
+  background-color: var(--bg-color) !important;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
@@ -641,7 +641,7 @@
 .location-loading {
   position: fixed;
   right: 20px;
-  bottom: calc(var(--above-bottom-nav) + 50px);
+  bottom: calc(var(--above-bottom-nav) + 60px);
   z-index: 2000;
 }
 
@@ -657,7 +657,7 @@
 .map-loading-indicator {
   position: fixed;
   left: 20px;
-  bottom: calc(var(--above-bottom-nav) + 50px);
+  bottom: calc(var(--above-bottom-nav) + 60px);
   z-index: 2000;
 }
 
@@ -668,7 +668,7 @@
 
 .location-error {
   position: fixed;
-  bottom: calc(var(--above-bottom-nav) + 50px);
+  bottom: calc(var(--above-bottom-nav) + 60px);
   right: 20px;
   background-color: var(--danger-color);
   color: white;
@@ -825,7 +825,7 @@
   left: 10px !important;
   z-index: 2000;
   padding: 0.5rem 1rem;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-color);
   color: var(--text-color);
   font-size: 14px;
   font-weight: 600;
