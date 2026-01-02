@@ -43,6 +43,13 @@ import './components/ModalForm.css';
 import PartyMap from './pages/PartyMap';
 import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
+import { venueService } from './services/VenueService';
+import { matchService } from './services/MatchService';
+import { mapService } from './services/MapService';
+import { MapView } from './components/map/MapView';
+import { MapControls } from './components/map/MapControls';
+import { MatchFormModal } from './components/forms/MatchFormModal';
+import { VenueFormModal } from './components/forms/VenueFormModal';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -1279,60 +1286,10 @@ function App() {
     'Stand entreprise': '👩‍💼',
   };
 
-  // Fonction pour géocoder une adresse avec Nominatim
-  const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
-      );
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      }
-      return null;
-    } catch (error) {
-      console.error('Erreur de géocodage:', error);
-      return null;
-    }
-  };
-
-  const getMarkerColor = (date: string) => {
-    const matchDate = new Date(date);
-    const now = new Date();
-    const diffTime = matchDate.getTime() - now.getTime();
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    
-    if (diffHours < 0) return { color: '#808080', rotation: '0deg' }; // Gris pour les matchs passés
-    if (diffHours <= 1) return { color: '#FF0000', rotation: '0deg' }; // Rouge pour les matchs dans moins d'1h
-    if (diffHours <= 3) return { color: '#FF4500', rotation: '45deg' }; // Orange foncé pour les matchs dans 1-3h
-    if (diffHours <= 6) return { color: '#FFA500', rotation: '90deg' }; // Orange pour les matchs dans 3-6h
-    if (diffHours <= 12) return { color: '#FFD700', rotation: '135deg' }; // Jaune pour les matchs dans 6-12h
-    return { color: '#4CAF50', rotation: '180deg' }; // Vert pour les matchs plus éloignés
-  };
-
-  // Modifier la fonction getSportIcon pour utiliser des emojis
-  const getSportIcon = (sport: string) => {
-    const sportIcons: { [key: string]: string } = {
-      'Football': '⚽',
-      'Basketball': '🏀',
-      'Handball': '🤾',
-      'Rugby': '🏉',
-      'Ultimate': '🥏',
-      'Natation': '🏊',
-      'Badminton': '🏸',
-      'Tennis': '🎾',
-      'Cross': '👟',
-      'Volleyball': '🏐',
-      'Ping-pong': '🏓',
-      'Echecs': '♟️',
-      'Athlétisme': '🏃‍♂️',
-      'Spikeball': '⚡️',
-      'Pétanque': '🍹',
-      'Escalade': '🧗‍♂️',
-    };
-    return sportIcons[sport] || '🏆';
-  };
+  // Utiliser les services pour les fonctions utilitaires
+  const geocodeAddress = venueService.geocodeAddress.bind(venueService);
+  const getMarkerColor = mapService.getMarkerColor.bind(mapService);
+  const getSportIcon = mapService.getSportIcon.bind(mapService);
 
   // Charger les descriptions et résultats depuis Firebase au démarrage
   useEffect(() => {
@@ -1631,45 +1588,45 @@ function App() {
       coordinates = [48.6921, 6.1844]; // Coordonnées par défaut (Nancy)
     }
 
-    const venuesRef = ref(database, 'venues');
-    const newVenueRef = push(venuesRef);
-    const newVenue: any = {
-      name: newVenueName || '',
-      position: coordinates,
-      description: newVenueDescription || '',
-      address: newVenueAddress || `${coordinates[0]}, ${coordinates[1]}`,
-      matches: [],
-      sport: selectedSport || 'Football',
-      date: '',
-      latitude: coordinates[0],
-      longitude: coordinates[1],
-      emoji: selectedEmoji || '⚽',
-      type: 'venue',
-      placeType: selectedPlaceType || 'sport'
-    };
-    
-    // Ajouter les champs spécifiques selon le type
-    if (selectedPlaceType === 'soirée') {
-      newVenue.eventType = selectedEventType;
-    }
-    if (selectedPlaceType === 'indication') {
-      newVenue.indicationType = selectedIndicationType;
-    }
-
     try {
-      await set(newVenueRef, newVenue);
+      const venueId = await venueService.addVenue({
+        name: newVenueName || '',
+        description: newVenueDescription || '',
+        address: newVenueAddress || `${coordinates[0]}, ${coordinates[1]}`,
+        coordinates,
+        sport: selectedSport || 'Football',
+        emoji: selectedEmoji || '⚽',
+        placeType: selectedPlaceType || 'sport',
+        eventType: selectedPlaceType === 'soirée' ? selectedEventType : undefined,
+        indicationType: selectedPlaceType === 'indication' ? selectedIndicationType : undefined
+      });
+
       updateMapMarkers();
       triggerMarkerUpdate(); 
       
-      const venueId = newVenueRef.key || '';
-      addToHistory({
-        type: 'ADD_VENUE',
-        data: { ...newVenue, id: venueId },
-        undo: async () => {
-          const undoRef = ref(database, `venues/${venueId}`);
-          await set(undoRef, null);
-        }
-      });
+      const newVenue: any = {
+        name: newVenueName || '',
+        position: coordinates,
+        description: newVenueDescription || '',
+        address: newVenueAddress || `${coordinates[0]}, ${coordinates[1]}`,
+        matches: [],
+        sport: selectedSport || 'Football',
+        date: '',
+        latitude: coordinates[0],
+        longitude: coordinates[1],
+        emoji: selectedEmoji || '⚽',
+        type: 'venue',
+        placeType: selectedPlaceType || 'sport'
+      };
+      
+      if (selectedPlaceType === 'soirée') {
+        newVenue.eventType = selectedEventType;
+      }
+      if (selectedPlaceType === 'indication') {
+        newVenue.indicationType = selectedIndicationType;
+      }
+
+      addToHistory(venueService.createAddHistoryAction(venueId, { ...newVenue, id: venueId }));
       
       setNewVenueName('');
       setNewVenueDescription('');
@@ -1714,33 +1671,19 @@ function App() {
     // Sauvegarder l'état du lieu avant suppression pour pouvoir annuler
     const venue = venues.find(v => v.id === id);
     if (venue) {
-      const venueRef = ref(database, `venues/${id}`);
-      await set(venueRef, null);
-      updateMapMarkers();
-      triggerMarkerUpdate(); 
-      
-      // Ajouter l'action à l'historique avec une fonction d'annulation
-      addToHistory({
-        type: 'DELETE_VENUE',
-        data: venue,
-        undo: async () => {
-          const undoRef = ref(database, `venues/${id}`);
-          await set(undoRef, {
-            name: venue.name,
-            position: [venue.latitude, venue.longitude],
-            description: venue.description,
-            address: venue.address,
-            matches: venue.matches || [],
-            sport: venue.sport,
-            date: venue.date,
-            latitude: venue.latitude,
-            longitude: venue.longitude,
-            emoji: venue.emoji
-          });
-        }
-      });
-      
-    setSelectedVenue(null);
+      try {
+        await venueService.deleteVenue(id);
+        updateMapMarkers();
+        triggerMarkerUpdate(); 
+        
+        // Ajouter l'action à l'historique avec une fonction d'annulation
+        addToHistory(venueService.createDeleteHistoryAction(id, venue));
+        
+        setSelectedVenue(null);
+      } catch (error) {
+        console.error('Erreur lors de la suppression du lieu:', error);
+        alert('Une erreur est survenue lors de la suppression du lieu.');
+      }
     }
   };
 
@@ -1751,49 +1694,20 @@ function App() {
     const venue = venues.find(v => v.id === venueId);
     if (!venue) return;
 
-    const matchId = uuidv4();
-    const match: Match = {
-      id: matchId,
-      name: `${venue.name} - Match`,
-      description: newMatch.description || '',
-      address: venue.address,
-      latitude: venue.latitude,
-      longitude: venue.longitude,
-      position: [venue.latitude, venue.longitude],
-      date: newMatch.date || '',
-      type: 'match',
-      teams: newMatch.teams || '',
-      sport: venue.sport,
-      time: newMatch.date ? new Date(newMatch.date).toTimeString().split(' ')[0] : '',
-      endTime: newMatch.endTime || '',
-      result: newMatch.result || '',
-      venueId: venue.id,
-      emoji: venue.emoji
-    };
-
     try {
-      const venueRef = ref(database, `venues/${venueId}`);
-      const updatedMatches = [...(venue.matches || []), match];
-      
-      await set(venueRef, {
-        ...venue,
-        matches: updatedMatches
+      const match = await matchService.addMatch(venueId, venue, {
+        date: newMatch.date || '',
+        teams: newMatch.teams || '',
+        description: newMatch.description || '',
+        endTime: newMatch.endTime || '',
+        result: newMatch.result || ''
       });
+
       triggerMarkerUpdate(); 
       updateMapMarkers();
       
       // Ajouter l'action à l'historique
-      addToHistory({
-        type: 'ADD_MATCH',
-        data: { venueId, match },
-        undo: async () => {
-          const undoRef = ref(database, `venues/${venueId}`);
-          await set(undoRef, {
-            ...venue,
-            matches: venue.matches || []
-          });
-        }
-      });
+      addToHistory(matchService.createAddHistoryAction(venueId, venue, match));
 
       // Réinitialiser le formulaire
       setNewMatch({
@@ -1825,55 +1739,36 @@ function App() {
   const handleUpdateMatch = async (venueId: string, matchId: string, updatedData: Partial<Match>) => {
     if (!checkAdminRights()) return;
     
-    const venueRef = ref(database, `venues/${venueId}`);
     const venue = venues.find(v => v.id === venueId);
+    if (!venue) return;
+
+    const venueBefore = { ...venue };
+    const matchBefore = venue.matches.find(m => m.id === matchId);
     
-    if (venue) {
-      const venueBefore = { ...venue };
-      const matchBefore = venue.matches.find(m => m.id === matchId);
+    try {
+      await matchService.updateMatch(venueId, venue, matchId, updatedData);
+      triggerMarkerUpdate(); 
+      updateMapMarkers();
       
-      const updatedMatches = venue.matches.map(match =>
-        match.id === matchId ? { 
-          ...match, 
-          ...updatedData,
-          endTime: updatedData.endTime || '' // Permettre une chaîne vide pour endTime
-        } : match
+      if (matchBefore) {
+        const matchAfter = { ...matchBefore, ...updatedData };
+        addToHistory(matchService.createUpdateHistoryAction(venueId, venueBefore, matchId, matchBefore, matchAfter));
+      }
+      
+      setOpenPopup(venueId);
+      
+      const marker = markersRef.current.find(m => 
+        m.getLatLng().lat === venue.latitude && m.getLatLng().lng === venue.longitude
       );
       
-      try {
-        await set(venueRef, {
-          ...venue,
-          matches: updatedMatches
-        });
-        triggerMarkerUpdate(); 
-        updateMapMarkers();
-        
-        if (matchBefore) {
-          addToHistory({
-            type: 'UPDATE_MATCH',
-            data: { venueId, matchId, before: matchBefore, after: { ...matchBefore, ...updatedData } },
-            undo: async () => {
-              const undoRef = ref(database, `venues/${venueId}`);
-              await set(undoRef, venueBefore);
-            }
-          });
-        }
-        
-        setOpenPopup(venueId);
-        
-        const marker = markersRef.current.find(m => 
-          m.getLatLng().lat === venue.latitude && m.getLatLng().lng === venue.longitude
-        );
-        
-        if (marker) {
-          setTimeout(() => {
-            marker.openPopup();
-          }, 300);
-        }
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour du match:', error);
-        alert('Une erreur est survenue lors de la mise à jour du match.');
+      if (marker) {
+        setTimeout(() => {
+          marker.openPopup();
+        }, 300);
       }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du match:', error);
+      alert('Une erreur est survenue lors de la mise à jour du match.');
     }
   };
 
@@ -1886,33 +1781,27 @@ function App() {
       return;
     }
     
-    const venueRef = ref(database, `venues/${venueId}`);
     const venue = venues.find(v => v.id === venueId);
+    if (!venue) return;
+
+    // Sauvegarder l'état avant suppression pour pouvoir annuler
+    const venueBefore = { ...venue };
+    const matchToDelete = venue.matches.find(m => m.id === matchId);
     
-    if (venue) {
-      // Sauvegarder l'état avant suppression pour pouvoir annuler
-      const venueBefore = { ...venue };
-      const matchToDelete = venue.matches.find(m => m.id === matchId);
-      
-      const updatedMatches = venue.matches.filter(match => match.id !== matchId);
-      await set(venueRef, {
-        ...venue,
-        matches: updatedMatches
-      });
-      triggerMarkerUpdate(); 
+    try {
+      const deletedMatch = await matchService.deleteMatch(venueId, venue, matchId);
+      if (!deletedMatch) return;
+
+      triggerMarkerUpdate();
       updateMapMarkers();
       
-      // Ajouter l'action à l'historique avec une fonction d'annulation
+      // Ajouter l'action à l'historique
       if (matchToDelete) {
-        addToHistory({
-          type: 'DELETE_MATCH',
-          data: { venueId, match: matchToDelete },
-          undo: async () => {
-            const undoRef = ref(database, `venues/${venueId}`);
-            await set(undoRef, venueBefore);
-          }
-        });
+        addToHistory(matchService.createDeleteHistoryAction(venueId, venueBefore, matchToDelete));
       }
+    } catch (error) {
+      console.error('Erreur lors de la suppression du match:', error);
+      alert('Une erreur est survenue lors de la suppression du match.');
     }
   };
 
@@ -1972,19 +1861,12 @@ function App() {
         }
         
         try {
-          await set(venueRef, updatedVenue);
+          await venueService.updateVenue(editingVenue.id, updatedVenue);
           triggerMarkerUpdate(); 
           updateMapMarkers();
           
           // Ajouter l'action à l'historique avec une fonction d'annulation
-          addToHistory({
-            type: 'UPDATE_VENUE',
-            data: { before: venueBefore, after: updatedVenue },
-            undo: async () => {
-              const undoRef = ref(database, `venues/${editingVenue.id}`);
-              await set(undoRef, venueBefore);
-            }
-          });
+          addToHistory(venueService.createUpdateHistoryAction(editingVenue.id, venueBefore, updatedVenue));
           
           // Réinitialiser le formulaire et l'état d'édition
           setNewVenueName('');
@@ -2134,70 +2016,13 @@ function App() {
     triggerMarkerUpdate();
   };
 
-  // Fonction pour vérifier si un match est passé
-  const isMatchPassed = (startDate: string, endTime?: string, type: 'match' | 'party' = 'match') => {
-    // Simulation de la date du 25/04 à 16h
-    const now = new Date();
-    const start = new Date(startDate);
-    
-    // Si l'événement est dans le futur, il n'est pas passé
-    if (start > now) {
-      return false;
-    }
-    
-    // Si une heure de fin est spécifiée, l'utiliser
-    if (endTime) {
-      const end = new Date(endTime);
-      return end < now;
-    }
-    
-    // Pour les soirées sans heure de fin, on considère qu'elles se terminent à 23h
-    if (type === 'party') {
-      const end = new Date(startDate);
-      end.setHours(23, 0, 0, 0);
-      return end < now;
-    }
-    
-    // Pour les matchs sans heure de fin, on considère qu'ils durent 1h
-    const end = new Date(startDate);
-    end.setHours(end.getHours() + 1);
-    return end < now;
-  };
-
-  // Fonction utilitaire pour vérifier si une délégation est présente dans une chaîne de teams
-  // Utilise une correspondance exacte pour éviter que "Nancy" matche "Télécom Nancy"
-  const delegationMatches = (teamsString: string, delegation: string): boolean => {
-    if (!teamsString || !delegation) return false;
-    
-    const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-    const delegationLower = delegation.toLowerCase();
-    
-    // Vérifier chaque équipe pour une correspondance exacte
-    return teams.some((team: string) => {
-      const teamLower = team.toLowerCase();
-      // Correspondance exacte (insensible à la casse)
-      return teamLower === delegationLower;
-    });
-  };
+  // Utiliser les services pour les fonctions utilitaires
+  const isMatchPassed = mapService.isMatchPassed.bind(mapService);
+  const delegationMatches = mapService.delegationMatches.bind(mapService);
 
 
-  // Fonction pour formater la date et l'heure
-  const formatDateTime = (dateString: string, endTimeString?: string) => {
-    const date = new Date(dateString);
-    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-    const day = days[date.getDay()];
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    
-    if (endTimeString) {
-      const endTime = new Date(endTimeString);
-      const endHours = endTime.getHours().toString().padStart(2, '0');
-      const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
-      return `${day} ${hours}:${minutes} - ${endHours}:${endMinutes}`;
-    }
-    
-    return `${day} ${hours}:${minutes}`;
-  };
+  // Utiliser le service pour formater la date
+  const formatDateTime = mapService.formatDateTime.bind(mapService);
 
   // Fonction pour ouvrir dans Google Maps
   const openInGoogleMaps = async (place: Place) => {
