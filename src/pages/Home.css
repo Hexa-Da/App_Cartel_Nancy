@@ -96,7 +96,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: clamp(16px, 3vw, 20px);
+  border-radius: var(--radius-lg);
   padding: clamp(12px, 2.5vw, 16px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
@@ -251,7 +251,7 @@
   background: rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.95);
   padding: clamp(6px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
-  border-radius: clamp(18px, 3.5vw, 22px);
+  border-radius: var(--radius-lg);
   font-size: clamp(0.6rem, 2.5vw, 0.75rem);
   font-weight: 700;
   display: flex;
@@ -400,7 +400,7 @@
   text-align: center;
   padding: 20px;
   background-color: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   margin: 8px 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
