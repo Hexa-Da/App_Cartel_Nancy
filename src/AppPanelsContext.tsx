@@ -1,23 +1,27 @@
 /**
- * @fileoverview Contexte de gestion des panneaux et navigation de l'application
+ * @fileoverview Contexte de compatibilité pour AppPanelsContext
  * 
- * Ce fichier gère l'état des panneaux et la navigation avec :
- * - Onglet actif (map, events, chat, planning, calendar)
- * - État des modales (ajout message, urgence)
- * - Mode édition pour les administrateurs
- * - Fonctions de fermeture des panneaux
+ * Ce fichier fournit une interface de compatibilité qui délègue aux nouveaux contextes :
+ * - NavigationContext pour activeTab
+ * - ModalContext pour les modales
+ * - FormContext pour les formulaires
+ * - EditingContext pour isEditing
  * 
  * Nécessaire car :
- * - Centralise la logique de navigation entre onglets
- * - Gère l'état des modales et popups
- * - Coordonne l'affichage des panneaux
- * - Évite les conflits d'état entre composants
+ * - Maintient la compatibilité avec les composants existants
+ * - Permet une migration progressive
+ * - Centralise l'accès aux différents contextes
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
+import { useNavigation } from './contexts/NavigationContext';
+import { useModal } from './contexts/ModalContext';
+import { useForm } from './contexts/FormContext';
+import { useEditing } from './contexts/EditingContext';
+import { TabType } from './contexts/NavigationContext';
 import { Event } from './components/EventDetails';
 
-export type TabType = 'map' | 'events' | 'chat' | 'planning' | 'calendar' | 'home' | 'info' | 'party-map';
+export type { TabType };
 
 interface AppPanelsContextType {
   activeTab: TabType;
@@ -94,69 +98,74 @@ interface AppPanelsContextType {
 const AppPanelsContext = createContext<AppPanelsContextType | undefined>(undefined);
 
 export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('map');
-  const [showAddMessage, setShowAddMessage] = useState(false);
-  const [showEmergency, setShowEmergency] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
-  const [showChat, setShowChat] = useState(false);
-  const [chatOriginTab, setChatOriginTab] = useState<TabType>('map');
-  // États des formulaires
-  const [showVSSForm, setShowVSSForm] = useState(false);
-  const [showEditMatchModal, setShowEditMatchModal] = useState(false);
-  const [showEditVenueModal, setShowEditVenueModal] = useState(false);
-  const [showEditResultModal, setShowEditResultModal] = useState(false);
-  const [showEditDescriptionModal, setShowEditDescriptionModal] = useState(false);
-  const [showEditHotelDescriptionModal, setShowEditHotelDescriptionModal] = useState(false);
-  const [showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal] = useState(false);
-  const [showPlaceTypeModal, setShowPlaceTypeModal] = useState(false);
-  const [selectedPlaceType, setSelectedPlaceType] = useState<string | null>(null);
-  const [isAddingPlace, setIsAddingPlace] = useState(false);
-  const [isPlacingMarker, setIsPlacingMarker] = useState(false);
-  // États du formulaire de lieu
-  const [newVenueName, setNewVenueName] = useState('');
-  const [newVenueDescription, setNewVenueDescription] = useState('');
-  const [newVenueAddress, setNewVenueAddress] = useState('');
-  const [selectedSport, setSelectedSport] = useState('Football');
-  const [selectedEmoji, setSelectedEmoji] = useState('⚽');
-  const [selectedEventType, setSelectedEventType] = useState('DJ contest');
-  const [selectedIndicationType, setSelectedIndicationType] = useState('Soins');
-  const [tempMarker, setTempMarker] = useState<[number, number] | null>(null);
-  const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: any | null }>({ id: null, venue: null });
-  // États du formulaire de match
-  const [editingMatch, setEditingMatch] = useState<{ venueId: string | null, match: any | null }>({ venueId: null, match: null });
-  const [newMatch, setNewMatch] = useState<{ date: string, teams: string, description: string, endTime?: string, result?: string }>({
-    date: '',
-    teams: '',
-    description: '',
-    endTime: '',
-    result: ''
-  });
-  const [isEditing, setIsEditing] = useState(() => {
-    // Récupérer l'état depuis localStorage au chargement
-    const saved = localStorage.getItem('isEditing');
-    return saved ? JSON.parse(saved) : false;
-  });
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [selectedPartyForMap, setSelectedPartyForMap] = useState<string | null>(null);
-
-  // Sauvegarder l'état isEditing dans localStorage à chaque changement
-  useEffect(() => {
-    localStorage.setItem('isEditing', JSON.stringify(isEditing));
-  }, [isEditing]);
-
-  // Écouter les changements d'état admin et désactiver isEditing si l'admin se déconnecte
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'isAdmin' && e.newValue !== 'true') {
-        // Si l'admin se déconnecte, désactiver le mode édition
-        setIsEditing(false);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [setIsEditing]);
+  // Utiliser les nouveaux contextes
+  const { activeTab, setActiveTab } = useNavigation();
+  const {
+    showChat,
+    setShowChat,
+    showEmergency,
+    setShowEmergency,
+    showSettings,
+    setShowSettings,
+    showAdminModal,
+    setShowAdminModal,
+    showAddMessage,
+    setShowAddMessage,
+    showVSSForm,
+    setShowVSSForm,
+    showEditMatchModal,
+    setShowEditMatchModal,
+    showEditVenueModal,
+    setShowEditVenueModal,
+    showEditResultModal,
+    setShowEditResultModal,
+    showEditDescriptionModal,
+    setShowEditDescriptionModal,
+    showEditHotelDescriptionModal,
+    setShowEditHotelDescriptionModal,
+    showEditRestaurantDescriptionModal,
+    setShowEditRestaurantDescriptionModal,
+    showPlaceTypeModal,
+    setShowPlaceTypeModal,
+    chatOriginTab,
+    setChatOriginTab,
+    closeAllModals: closeAllModalsFromModal
+  } = useModal();
+  const {
+    newVenueName,
+    setNewVenueName,
+    newVenueDescription,
+    setNewVenueDescription,
+    newVenueAddress,
+    setNewVenueAddress,
+    selectedSport,
+    setSelectedSport,
+    selectedEmoji,
+    setSelectedEmoji,
+    selectedEventType,
+    setSelectedEventType,
+    selectedIndicationType,
+    setSelectedIndicationType,
+    tempMarker,
+    setTempMarker,
+    editingVenue,
+    setEditingVenue,
+    editingMatch,
+    setEditingMatch,
+    newMatch,
+    setNewMatch,
+    selectedPlaceType,
+    setSelectedPlaceType,
+    isAddingPlace,
+    setIsAddingPlace,
+    isPlacingMarker,
+    setIsPlacingMarker,
+    selectedEvent,
+    setSelectedEvent,
+    selectedPartyForMap,
+    setSelectedPartyForMap
+  } = useForm();
+  const { isEditing, setIsEditing } = useEditing();
 
   // Annuler l'ajout de message si isEditing passe à false
   useEffect(() => {
@@ -165,24 +174,16 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
     }
   }, [isEditing, showAddMessage, setShowAddMessage]);
 
+  // Wrapper pour closeAllPanels qui inclut setActiveTab et ferme les modales
   const closeAllPanels = () => {
     setActiveTab('map');
     setShowAddMessage(false);
     setShowEmergency(false);
   };
 
+  // Wrapper pour closeAllModals qui inclut setIsAddingPlace
   const closeAllModals = () => {
-    setShowSettings(false);
-    setShowEmergency(false);
-    setShowAdminModal(false);
-    setShowVSSForm(false);
-    setShowEditMatchModal(false);
-    setShowEditVenueModal(false);
-    setShowEditResultModal(false);
-    setShowEditDescriptionModal(false);
-    setShowEditHotelDescriptionModal(false);
-    setShowEditRestaurantDescriptionModal(false);
-    setShowPlaceTypeModal(false);
+    closeAllModalsFromModal();
     setIsAddingPlace(false);
   };
 

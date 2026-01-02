@@ -31,28 +31,40 @@ import './theme/platform/android.css';
 import './index.css';
 import { AppPanelsProvider } from './AppPanelsContext';
 import { AppProvider } from './AppContext';
+import { NavigationProvider } from './contexts/NavigationContext';
+import { ModalProvider } from './contexts/ModalContext';
+import { FormProvider } from './contexts/FormContext';
+import { EditingProvider } from './contexts/EditingContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <OrientationLock />
     <AppProvider>
-      <AppPanelsProvider>
-        <Router>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/map" element={<App />} />
-              <Route path="/info" element={<Info />} />
-              <Route path="info/:sectionName" element={<InfoSection />} />
-              <Route path="/planning-files" element={<PlanningFilesPage />} />
+      <NavigationProvider>
+        <ModalProvider>
+          <FormProvider>
+            <EditingProvider>
+              <AppPanelsProvider>
+                <Router>
+                  <Routes>
+                    <Route element={<Layout />}>
+                      <Route path="/home" element={<Home />} />
+                      <Route path="/map" element={<App />} />
+                      <Route path="/info" element={<Info />} />
+                      <Route path="info/:sectionName" element={<InfoSection />} />
+                      <Route path="/planning-files" element={<PlanningFilesPage />} />
 
-              <Route path="classement" element={<div>Classement</div>} />
-              <Route path="profil" element={<div>Profil</div>} />
-              <Route path="*" element={<Navigate to="/home" replace />} />
-            </Route>
-          </Routes>
-        </Router>
-      </AppPanelsProvider>
+                      <Route path="classement" element={<div>Classement</div>} />
+                      <Route path="profil" element={<div>Profil</div>} />
+                      <Route path="*" element={<Navigate to="/home" replace />} />
+                    </Route>
+                  </Routes>
+                </Router>
+              </AppPanelsProvider>
+            </EditingProvider>
+          </FormProvider>
+        </ModalProvider>
+      </NavigationProvider>
     </AppProvider>
   </React.StrictMode>
 );
