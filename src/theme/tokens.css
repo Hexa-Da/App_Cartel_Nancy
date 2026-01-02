@@ -90,12 +90,15 @@
   
   /* Panel Chat: Max 400px, sinon 95% de l'écran */
   --panel-width: min(400px, 95vw);
+  
+  /* Event Card: Largeur standard pour les cartes d'événements */
+  --event-card-width: min(300px, 90vw);
 
   /* ============================================
      HAUTEURS INTELLIGENTES (Responsive)
      ============================================ */
   /* Calendrier : Minimum 400px, Idéalement tout l'espace libre, Max 700px */
-  --calendar-height: clamp(400px, calc(100vh - 200px), 700px);
+  --calendar-height: clamp(400px, calc(100vh - var(--header-total-height) - var(--bottom-nav-total-height)), 700px);
 }
 
 /* ============================================

@@ -79,7 +79,7 @@
   -webkit-overflow-scrolling: touch;
   /* Hauteur ajustée pour tenir sur la page */
   min-height: auto;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - var(--header-total-height) - var(--bottom-nav-total-height));
   scroll-behavior: smooth;
   /* Propriétés pour faire disparaître les scrollbars automatiquement */
   scrollbar-gutter: stable;
@@ -122,7 +122,7 @@
 
 .home-event-item {
   /* Largeur standard fixe pour que tag et date tiennent sur une ligne */
-  width: 300px;
+  width: var(--event-card-width, min(300px, 90vw));
   flex: 0 0 auto;
   /* Hauteur ajustée pour tenir sur la page */
   min-height: auto;
@@ -461,12 +461,12 @@
     padding: 0 clamp(16px, 4vw, 24px);
     margin: 0;
     gap: clamp(10px, 2vw, 14px);
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - var(--header-total-height) - var(--bottom-nav-total-height));
   }
 
   .home-event-item {
     /* Largeur standard fixe */
-    width: 300px;
+    width: var(--event-card-width, min(300px, 90vw));
     flex: 0 0 auto;
   }
 
@@ -548,7 +548,7 @@
 
   .home-event-item {
     /* Largeur standard fixe */
-    width: 300px;
+    width: var(--event-card-width, min(300px, 90vw));
     flex: 0 0 auto;
   }
 
@@ -832,7 +832,7 @@
   
   .home-event-item {
     /* Largeur standard fixe */
-    width: 300px;
+    width: var(--event-card-width, min(300px, 90vw));
     flex: 0 0 auto;
   }
   
@@ -892,7 +892,7 @@
   
   .home-event-item {
     /* Largeur standard fixe */
-    width: 300px;
+    width: var(--event-card-width, min(300px, 90vw));
     flex: 0 0 auto;
   }
   
@@ -921,7 +921,7 @@
   
   .home-event-item {
     /* Largeur standard fixe */
-    width: 300px;
+    width: var(--event-card-width, min(300px, 90vw));
     flex: 0 0 auto;
   }
 }
@@ -1000,7 +1000,7 @@
   
   .home-event-item {
     /* Largeur standard fixe */
-    width: 300px;
+    width: var(--event-card-width, min(300px, 90vw));
     flex: 0 0 auto;
   }
   
@@ -1093,7 +1093,7 @@
   
   .home-event-item {
     /* Largeur standard fixe */
-    width: 300px;
+    width: var(--event-card-width, min(300px, 90vw));
     flex: 0 0 auto;
   }
   
