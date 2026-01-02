@@ -13,7 +13,8 @@ import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-import { useAppPanels } from '../AppPanelsContext';
+import { useForm } from '../contexts/FormContext';
+import { useEditing } from '../contexts/EditingContext';
 import { useApp } from '../AppContext';
 import './PartyMap.css';
 
@@ -50,7 +51,7 @@ const PlanMapViewAdjuster: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ b
 };
 
 const PartyMap: React.FC = () => {
-  const { selectedPartyForMap } = useAppPanels();
+  const { selectedPartyForMap } = useForm();
   const [parties, setParties] = useState<Party[]>([]);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -281,7 +282,7 @@ const PartyMap: React.FC = () => {
     imageAlt: string;
     partyName: string;
   }> = ({ imageSrc, partyName }) => {
-    const { isEditing } = useAppPanels();
+    const { isEditing } = useEditing();
     const { isAdmin } = useApp();
     const [planMarkers, setPlanMarkers] = useState<any[]>([]);
     const [isAddingMarker, setIsAddingMarker] = useState(false);

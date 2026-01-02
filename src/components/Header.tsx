@@ -22,7 +22,8 @@ import SettingsMenu from './SettingsMenu';
 import AdminLoginModal from './AdminLoginModal';
 import { verifyAdminCode } from '../firebase';
 import { useApp } from '../AppContext';
-import { useAppPanels } from '../AppPanelsContext';
+import { useEditing } from '../contexts/EditingContext';
+import { useModal } from '../contexts/ModalContext';
 import './Header.css';
 
 interface HeaderProps {
@@ -52,7 +53,8 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   const { isAdmin, user, setIsAdmin, setUser } = useApp();
-  const { setIsEditing, showSettings, setShowSettings, showAdminModal, setShowAdminModal } = useAppPanels();
+  const { setIsEditing } = useEditing();
+  const { showSettings, setShowSettings, showAdminModal, setShowAdminModal } = useModal();
 
   const handleAdminLogin = (code: string) => {
     if (verifyAdminCode(code)) {

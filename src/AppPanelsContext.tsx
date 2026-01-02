@@ -1,16 +1,18 @@
 /**
  * @fileoverview Contexte de compatibilité pour AppPanelsContext
  * 
- * Ce fichier fournit une interface de compatibilité qui délègue aux nouveaux contextes :
- * - NavigationContext pour activeTab
- * - ModalContext pour les modales
- * - FormContext pour les formulaires
- * - EditingContext pour isEditing
+ * ⚠️ DÉPRÉCIÉ - Ce contexte est déprécié et sera supprimé dans une future version.
  * 
- * Nécessaire car :
- * - Maintient la compatibilité avec les composants existants
- * - Permet une migration progressive
- * - Centralise l'accès aux différents contextes
+ * Migration vers les nouveaux contextes :
+ * - NavigationContext pour activeTab, setActiveTab
+ * - ModalContext pour showChat, showEmergency, etc.
+ * - FormContext pour newVenueName, editingVenue, etc.
+ * - EditingContext pour isEditing, setIsEditing
+ * 
+ * Ce fichier fournit une interface de compatibilité qui délègue aux nouveaux contextes.
+ * Utilisé uniquement pour la rétrocompatibilité pendant la période de transition.
+ * 
+ * @deprecated Utilisez directement les contextes spécialisés : NavigationContext, ModalContext, FormContext, EditingContext
  */
 
 import React, { createContext, useContext, useEffect } from 'react';
@@ -232,7 +234,20 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
   );
 };
 
+/**
+ * @deprecated Utilisez les hooks spécialisés :
+ * - useNavigation() pour activeTab, setActiveTab
+ * - useModal() pour showChat, showEmergency, etc.
+ * - useForm() pour newVenueName, editingVenue, etc.
+ * - useEditing() pour isEditing, setIsEditing
+ */
 export const useAppPanels = () => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      '⚠️ useAppPanels est déprécié. ' +
+      'Utilisez les hooks spécialisés : useNavigation(), useModal(), useForm(), useEditing()'
+    );
+  }
   const context = useContext(AppPanelsContext);
   if (!context) {
     throw new Error('useAppPanels must be used within an AppPanelsProvider');

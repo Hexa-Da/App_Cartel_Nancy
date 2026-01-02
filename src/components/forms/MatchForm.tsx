@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { useAppPanels } from '../../AppPanelsContext';
+import { useForm } from '../../contexts/FormContext';
 import { useApp } from '../../AppContext';
 import { useMatchForm } from '../../hooks/useMatchForm';
 import { MatchFormModal } from './MatchFormModal';
@@ -17,7 +17,7 @@ const MatchForm: React.FC = () => {
     setEditingMatch,
     newMatch,
     setNewMatch
-  } = useAppPanels();
+  } = useForm();
 
   const { isAdmin } = useApp();
 

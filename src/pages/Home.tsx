@@ -22,7 +22,7 @@ import { Match, Venue } from '../types';
 import './Home.css';
 import '../components/EventDetails.css';
 import { useApp } from '../AppContext';
-import { useAppPanels } from '../AppPanelsContext';
+import { useForm } from '../contexts/FormContext';
 import FirebaseErrorLogs from '../components/FirebaseErrorLogs';
 
 type Place = Venue;
@@ -40,7 +40,7 @@ interface DebugLog {
 
 const Home: React.FC = () => {
   const { getFilteredEvents, getAllDelegations, delegationMatches, isLoadingVenues } = useApp();
-  const { selectedEvent, setSelectedEvent } = useAppPanels();
+  const { selectedEvent, setSelectedEvent } = useForm();
   const [events, setEvents] = useState<Place[]>([]);
   const [debugLogs, setDebugLogs] = useState<DebugLog[]>([]);
   const navigate = useNavigate();

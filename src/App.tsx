@@ -33,7 +33,10 @@ import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import { Hotel, Restaurant, Party } from './types/venue';
 import { Outlet, useLocation} from 'react-router-dom';
-import { useAppPanels, TabType } from './AppPanelsContext';
+import { useNavigation, TabType } from './contexts/NavigationContext';
+import { useModal } from './contexts/ModalContext';
+import { useForm } from './contexts/FormContext';
+import { useEditing } from './contexts/EditingContext';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import BusLines from './components/BusLines';
@@ -147,21 +150,17 @@ interface OutletContext {
 import VSSForm from './components/VSSForm';
 
 function App() {
-  const { 
-    activeTab, 
-    setActiveTab, 
-    showAddMessage, 
-    setShowAddMessage, 
-    showEmergency, 
-    setShowEmergency, 
-    closeAllPanels, 
-    isEditing, 
-    setIsEditing, 
-    showChat, 
-    setShowChat, 
-    chatOriginTab, 
+  const { activeTab, setActiveTab } = useNavigation();
+  const { isEditing, setIsEditing } = useEditing();
+  const {
+    showAddMessage,
+    setShowAddMessage,
+    showEmergency,
+    setShowEmergency,
+    showChat,
+    setShowChat,
+    chatOriginTab,
     setChatOriginTab,
-    // États des formulaires
     showVSSForm,
     setShowVSSForm,
     showEditMatchModal,
@@ -177,14 +176,15 @@ function App() {
     showEditRestaurantDescriptionModal,
     setShowEditRestaurantDescriptionModal,
     showPlaceTypeModal,
-    setShowPlaceTypeModal,
+    setShowPlaceTypeModal
+  } = useModal();
+  const {
     selectedPlaceType,
     setSelectedPlaceType,
     isAddingPlace,
     setIsAddingPlace,
     isPlacingMarker,
     setIsPlacingMarker,
-    // États du formulaire de lieu
     newVenueName,
     setNewVenueName,
     newVenueDescription,
@@ -203,14 +203,19 @@ function App() {
     setTempMarker,
     editingVenue,
     setEditingVenue,
-    // États du formulaire de match
     editingMatch,
     setEditingMatch,
     newMatch,
     setNewMatch,
     selectedPartyForMap,
     setSelectedPartyForMap
-  } = useAppPanels();
+  } = useForm();
+  
+  const closeAllPanels = () => {
+    setActiveTab('map');
+    setShowAddMessage(false);
+    setShowEmergency(false);
+  };
   const location = useLocation();
 
   // Forcer l'orientation portrait au démarrage
@@ -3171,7 +3176,7 @@ function App() {
     }
   };
 
-  // Juste après la déclaration de useAppPanels et des states principaux dans App()
+  // Juste après la déclaration des hooks de contexte et des states principaux dans App()
   const previousTabRef = useRef<TabType | null>(null);
 
   useEffect(() => {

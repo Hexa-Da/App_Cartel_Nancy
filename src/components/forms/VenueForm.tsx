@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { useAppPanels } from '../../AppPanelsContext';
+import { useForm } from '../../contexts/FormContext';
 import { useApp } from '../../AppContext';
 import { useVenueForm } from '../../hooks/useVenueForm';
 import { VenueFormModal } from './VenueFormModal';
@@ -33,8 +33,9 @@ const VenueForm: React.FC = () => {
     tempMarker,
     editingVenue,
     setEditingVenue,
+    isPlacingMarker,
     setIsPlacingMarker
-  } = useAppPanels();
+  } = useForm();
 
   const { isAdmin } = useApp();
 

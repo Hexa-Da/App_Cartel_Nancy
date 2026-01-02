@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ref, get, set, update, onValue } from 'firebase/database';
 import { database } from '../firebase';
 import { useApp } from '../AppContext';
-import { useAppPanels } from '../AppPanelsContext';
+import { useEditing } from '../contexts/EditingContext';
 import { 
   FaCheckCircle, FaExclamationTriangle, FaChevronDown, FaChevronUp, FaClock, FaSpinner
 } from 'react-icons/fa';
@@ -57,7 +57,7 @@ interface DelegationVotes {
 
 const Parie: React.FC = () => {
   const { venues, getAllDelegations, isAdmin } = useApp();
-  const { isEditing } = useAppPanels();
+  const { isEditing } = useEditing();
   const [storedBracelet, setStoredBracelet] = useState<string | null>(null);
   const [isActivated, setIsActivated] = useState(false);
   

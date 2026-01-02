@@ -21,7 +21,10 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import './Layout.css';
 import Header from './Header';
-import { useAppPanels, TabType } from '../AppPanelsContext';
+import { useNavigation, TabType } from '../contexts/NavigationContext';
+import { useModal } from '../contexts/ModalContext';
+import { useForm } from '../contexts/FormContext';
+import { useEditing } from '../contexts/EditingContext';
 import { useApp } from '../AppContext';
 import VSSForm from './VSSForm';
 import EmergencyPopup from './EmergencyPopup';
@@ -41,7 +44,56 @@ interface Message {
 const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   
-  const { isEditing, setIsEditing, activeTab, setActiveTab, showEmergency, setShowEmergency, showChat, setShowChat, chatOriginTab, showSettings, setShowSettings, showVSSForm, setShowVSSForm, showAdminModal, setShowAdminModal, showEditMatchModal, setShowEditMatchModal, showEditVenueModal, setShowEditVenueModal, showEditResultModal, setShowEditResultModal, showEditDescriptionModal, setShowEditDescriptionModal, showEditHotelDescriptionModal, setShowEditHotelDescriptionModal, showEditRestaurantDescriptionModal, setShowEditRestaurantDescriptionModal, showPlaceTypeModal, setShowPlaceTypeModal, selectedPlaceType, setSelectedPlaceType, isAddingPlace, setIsAddingPlace, isPlacingMarker, setIsPlacingMarker, closeAllModals, selectedEvent, setSelectedEvent, selectedPartyForMap, setSelectedPartyForMap, editingVenue, setEditingVenue, editingMatch, setEditingMatch, newMatch, setNewMatch, tempMarker, setTempMarker } = useAppPanels();
+  const { activeTab, setActiveTab } = useNavigation();
+  const { isEditing, setIsEditing } = useEditing();
+  const {
+    showEmergency,
+    setShowEmergency,
+    showChat,
+    setShowChat,
+    chatOriginTab,
+    showSettings,
+    setShowSettings,
+    showVSSForm,
+    setShowVSSForm,
+    showAdminModal,
+    setShowAdminModal,
+    showEditMatchModal,
+    setShowEditMatchModal,
+    showEditVenueModal,
+    setShowEditVenueModal,
+    showEditResultModal,
+    setShowEditResultModal,
+    showEditDescriptionModal,
+    setShowEditDescriptionModal,
+    showEditHotelDescriptionModal,
+    setShowEditHotelDescriptionModal,
+    showEditRestaurantDescriptionModal,
+    setShowEditRestaurantDescriptionModal,
+    showPlaceTypeModal,
+    setShowPlaceTypeModal,
+    closeAllModals
+  } = useModal();
+  const {
+    selectedPlaceType,
+    setSelectedPlaceType,
+    isAddingPlace,
+    setIsAddingPlace,
+    isPlacingMarker,
+    setIsPlacingMarker,
+    selectedEvent,
+    setSelectedEvent,
+    selectedPartyForMap,
+    setSelectedPartyForMap,
+    editingVenue,
+    setEditingVenue,
+    editingMatch,
+    setEditingMatch,
+    newMatch,
+    setNewMatch,
+    tempMarker,
+    setTempMarker
+  } = useForm();
   const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
   const location = useLocation();
   const navigate = useNavigate();

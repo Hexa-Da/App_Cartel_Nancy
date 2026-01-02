@@ -4,7 +4,7 @@ import { Venue } from '../types';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import EventDetails, { Event } from '../components/EventDetails';
-import { useAppPanels } from '../AppPanelsContext';
+import { useForm } from '../contexts/FormContext';
 
 interface CalendarPopupProps {
   isOpen: boolean;
@@ -74,7 +74,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   isBackDisabled,
   isVenuesLoading
 }) => {
-  const { selectedEvent, setSelectedEvent } = useAppPanels();
+  const { selectedEvent, setSelectedEvent } = useForm();
   const [isLoading, setIsLoading] = useState(true);
   const hasInitialized = useRef(false);
   const [isStarFilterActive, setIsStarFilterActive] = useState(() => {

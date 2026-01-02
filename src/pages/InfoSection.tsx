@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAppPanels } from '../AppPanelsContext';
+import { useEditing } from '../contexts/EditingContext';
 import { useApp } from '../AppContext';
 import { 
   FaCoffee, FaBreadSlice, FaUtensils, FaCalendarAlt, FaPizzaSlice, 
@@ -372,7 +372,7 @@ const sectionsData: { [key: string]: { title: string; items: { icon: React.React
 
 const InfoSection: React.FC = () => {
   const { sectionName } = useParams<{ sectionName: string }>();
-  const { isEditing } = useAppPanels();
+  const { isEditing } = useEditing();
   const { isAdmin } = useApp();
   const navigate = useNavigate();
   

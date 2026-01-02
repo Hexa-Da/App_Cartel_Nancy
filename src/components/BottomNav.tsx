@@ -18,7 +18,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './BottomNav.css';
-import { useAppPanels } from '../AppPanelsContext';
+import { useNavigation } from '../contexts/NavigationContext';
+import { useModal } from '../contexts/ModalContext';
 import { Capacitor } from '@capacitor/core';
 
 interface BottomNavProps {
@@ -28,7 +29,14 @@ interface BottomNavProps {
 const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { closeAllPanels, closeAllModals } = useAppPanels();
+  const { setActiveTab } = useNavigation();
+  const { closeAllModals, setShowAddMessage, setShowEmergency } = useModal();
+  
+  const closeAllPanels = () => {
+    setActiveTab('map');
+    setShowAddMessage(false);
+    setShowEmergency(false);
+  };
   const [platformClass, setPlatformClass] = useState('');
 
   useEffect(() => {

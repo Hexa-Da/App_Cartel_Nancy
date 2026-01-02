@@ -18,7 +18,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PlanningFiles from '../components/PlanningFiles';
 import { useApp } from '../AppContext';
-import { useAppPanels } from '../AppPanelsContext';
+import { useEditing } from '../contexts/EditingContext';
 import { MODAL_SIZES } from '../config/responsive';
 import './PlanningFilesPage.css';
 
@@ -87,7 +87,7 @@ const PlanningFilesPage: React.FC = () => {
     setUploadProgress(value);
   };
   const { isAdmin } = useApp();
-  const { isEditing } = useAppPanels();
+  const { isEditing } = useEditing();
 
   // Déterminer le filtre initial basé sur les paramètres URL
   useEffect(() => {

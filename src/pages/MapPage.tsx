@@ -20,7 +20,7 @@ import { LocationMarker } from '../components/map/LocationMarker';
 import { MapEvents } from '../components/map/MapEvents';
 import { ZoomListener } from '../components/map/ZoomListener';
 import BusLines from '../components/BusLines';
-import { useAppPanels } from '../AppPanelsContext';
+import { useNavigation } from '../contexts/NavigationContext';
 import { useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga4';
 
@@ -31,7 +31,7 @@ import ReactGA from 'react-ga4';
 export default function MapPage() {
   const { mapStyle, setMapStyle, currentZoom, setCurrentZoom, mapRef, markersRef, indicationMarkersRef, triggerMarkerUpdate } = useMapState();
   const { eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed } = useEventFilters();
-  const { activeTab, setActiveTab } = useAppPanels();
+  const { activeTab, setActiveTab } = useNavigation();
   const location = useLocation();
 
   const handleMapClick = (e: { latlng: { lat: number; lng: number } }) => {
