@@ -18,7 +18,6 @@ import { ref, onValue, set, push, remove, update } from 'firebase/database';
 import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import NotificationService from '../services/NotificationService';
-import { MODAL_SIZES } from '../config/responsive';
 import logger from '../services/Logger';
 import './ChatPanel.css';
 
@@ -209,10 +208,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
     <div className="chat-panel">
       <div className="chat-panel-header">
         <h3>Messages de l'orga</h3>
-        <div style={{ display: 'flex', alignItems: 'center', position: 'relative'}}>
+        <div className="chat-panel-header-actions">
           {isAdmin && isEditing && (
             <button
-              className="add-message-button"
+              className="add-message-button add-message-button-wrapper"
               onClick={() => {
                 if (showAddMessage) {
                   // Si on ferme le formulaire, réinitialiser les champs
@@ -221,17 +220,6 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
                   setEditingMessageId(null);
                 }
                 setShowAddMessage((v) => !v);
-              }}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                height: 20, 
-                width: 70, 
-                position: 'absolute',
-                top: '-0.5rem',
-                right: 0,
-                zIndex: 10
               }}
             >
               {showAddMessage ? 'Annuler' : 'Ajouter'}
@@ -243,53 +231,20 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
       {showAddMessage && (
         <form
           className="add-message-form"
-          style={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            gap: '12px', 
-            padding: '1.5rem', 
-            alignItems: 'stretch',
-            background: 'var(--bg-color)', 
-            borderBottom: '1px solid var(--border-color)',
-            width: '100%',
-            maxWidth: MODAL_SIZES.large,
-            margin: '0 auto'
-          }}
           onSubmit={handleSubmit}
         >
           {/* Ligne avec Nom et bouton d'envoi */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="add-message-form-row">
             <input
               type="text"
               value={newMessageSender}
               onChange={e => setNewMessageSender(e.target.value)}
               placeholder="Nom (ex: Organisation, Prénom...)"
-              style={{ 
-                flex: 1,
-                height: '41px',
-                padding: '8px',
-                borderRadius: '4px',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-color)',
-                color: 'var(--text-color)',
-                fontSize: '0.9rem',
-                boxSizing: 'border-box'
-              }}
+              className="add-message-form-input"
             />
             <button 
               type="submit" 
-              style={{ 
-                background: 'none',
-                border: 'none', 
-                cursor: 'pointer',
-                padding: '8px',
-                fontSize: '22px',
-                flexShrink: 0,
-                height: '41px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="add-message-form-submit"
             >
               ➡️
             </button>
@@ -303,22 +258,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
               e.target.style.height = `${e.target.scrollHeight}px`;
             }}
             placeholder="Votre message..."
-            style={{
-              width: '100%',
-              height: '80px',
-              minHeight: '80px', 
-              maxHeight: '200px',
-              padding: '12px',
-              borderRadius: '4px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-color)',
-              color: 'var(--text-color)',
-              fontSize: '1rem',
-              resize: 'vertical',
-              overflow: 'auto',
-              lineHeight: '1.5',
-              boxSizing: 'border-box'
-            }}
+            className="add-message-form-textarea"
             autoFocus
           />
         </form>
@@ -338,14 +278,13 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
           messages.map((message, index) => (
           <div 
             key={message.id || index} 
-            className={`chat-message ${message.isAdmin ? 'admin' : ''}`} 
-            style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}
+            className={`chat-message chat-message-wrapper ${message.isAdmin ? 'admin' : ''}`}
           >
-            <div className="chat-message-header" style={{ justifyContent: 'space-between' }}>
+            <div className="chat-message-header">
               <span>{message.sender}</span>
               <span>{new Date(message.timestamp).toLocaleString()}</span>
             </div>
-            <div className="chat-message-content" style={{ textAlign: 'left' }}>
+            <div className="chat-message-content">
               {translatedMessages[message.id || `msg-${index}`] || message.content}
             </div>
             {/* Bouton de traduction en bas à droite */}
