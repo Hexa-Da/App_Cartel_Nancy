@@ -12,7 +12,7 @@
 /* Page Paris - Container scrollable */
 .parie-page {
   padding: 20px;
-  padding-top: 50px;
+  padding-top: var(--spacing-page-top-mobile-padding);
   padding-bottom: 120px;
   background-color: var(--bg-color);
   min-height: 100%;
@@ -21,7 +21,7 @@
 .parie-header {
   text-align: center;
   margin-bottom: 30px;
-  padding-top: 10px;
+  padding-top: 0;
 }
 
 .parie-header h1 {
@@ -518,6 +518,10 @@
 }
 
 @media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
+  .parie-page {
+    padding-top: var(--spacing-page-top-mobile-padding);
+  }
+
   .parie-header h1 {
     font-size: 1.8rem;
   }
@@ -566,6 +570,18 @@
   .sport-right {
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) { /* BREAKPOINTS.tablet */
+  .parie-page {
+    padding-top: var(--spacing-page-top-tablet-padding);
+  }
+}
+
+@media (min-width: 1025px) { /* BREAKPOINTS.desktop */
+  .parie-page {
+    padding-top: var(--spacing-page-top-desktop-padding);
   }
 }
 

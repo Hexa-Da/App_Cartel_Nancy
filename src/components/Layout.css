@@ -27,7 +27,7 @@
   min-height: 100vh;
   /* ✅ ÉTAPE 2 : Utiliser les Variables Globales pour le "Sandwich" Parfait */
   /* Pour les pages scrollables (Home, Info, Formulaires) : Padding sur le conteneur QUI SCROLL */
-  padding-top: calc(var(--header-height) + var(--safe-top) + 20px); /* Header + encoche + 20px d'air */
+  padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-mobile-margin)); /* Header + encoche + spacing mobile */
   padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px); /* Nav + barre home + 20px d'air */
   /* ✅ Box-sizing : Le padding est inclus dans la hauteur */
   box-sizing: border-box;
@@ -47,7 +47,7 @@
 
 /* ✅ Exception pour la Page Home : Réduire le padding-top pour occuper toute la hauteur */
 .app-main:has(.home-page) {
-  padding-top: calc(var(--header-height) + var(--safe-top) + 10px);
+  padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-mobile-margin));
 }
 
 /* ✅ Exception pour la Page Map : Le .map-container ignore le padding du parent */
@@ -292,6 +292,28 @@ body {
     -webkit-text-size-adjust: 100%;
     -webkit-transform: none !important;
     transform: none !important;
+  }
+}
+
+/* Responsive spacing pour tablet */
+@media (min-width: 601px) and (max-width: 1024px) { /* BREAKPOINTS.tablet */
+  .app-main {
+    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-tablet-margin));
+  }
+  
+  .app-main:has(.home-page) {
+    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-tablet-margin));
+  }
+}
+
+/* Responsive spacing pour desktop */
+@media (min-width: 1025px) { /* BREAKPOINTS.desktop */
+  .app-main {
+    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-desktop-margin));
+  }
+  
+  .app-main:has(.home-page) {
+    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-desktop-margin));
   }
 }
 
