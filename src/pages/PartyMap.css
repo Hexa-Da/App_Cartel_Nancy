@@ -47,3 +47,134 @@
   transform: scale(0.95);
 }
 
+/* ============================================
+   POPUPS LEAFLET - Styles extraits des inline
+   ============================================ */
+
+/* Marqueur de partie (cercle violet avec emoji) */
+.party-marker > div {
+  background-color: #9C27B0;
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.party-marker > div > span {
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Marqueur du plan (cercle blanc avec emoji) */
+.plan-indication-marker > div {
+  background-color: white;
+  color: #333;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.plan-indication-marker > div > span {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Résultat de la partie dans la popup */
+.party-result h4 {
+  color: var(--success-color);
+  margin-top: 10px;
+}
+
+/* Conteneur d'édition (panneau flottant pour ajouter des marqueurs) */
+.plan-editor-container {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-direction: row;
+  background-color: var(--bg-color);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  max-width: 90%;
+}
+
+/* Select pour choisir le type d'indication */
+.plan-indication-select {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Bouton d'ajout de marqueur (bouton "+") */
+.plan-add-marker-button {
+  padding: 8px 12px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  min-height: 44px;
+}
+
+/* Bouton annuler */
+.plan-cancel-button {
+  padding: 8px 16px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  min-height: 44px;
+}
+
+/* Bouton supprimer dans la popup */
+.plan-delete-button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  width: 100%;
+  min-height: 44px;
+}
+

@@ -205,9 +205,7 @@ const PartyMap: React.FC = () => {
       const marker = L.marker([party.latitude, party.longitude], {
         icon: L.divIcon({
           className: 'custom-marker party-marker',
-          html: `<div style="background-color: #9C27B0; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                   <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${party.emoji || (party.sport === 'Pompom' ? '🎀' : party.sport === 'Defile' ? '🎺' : '🎉')}</span>
-                 </div>`,
+          html: `<div><span>${party.emoji || (party.sport === 'Pompom' ? '🎀' : party.sport === 'Defile' ? '🎺' : '🎉')}</span></div>`,
           iconSize: [30, 30],
           iconAnchor: [15, 15],
           popupAnchor: [0, -15]
@@ -220,9 +218,9 @@ const PartyMap: React.FC = () => {
         <h3>${party.name}</h3>
         <p>${party.description}</p>
         <p class="venue-address">${party.address}</p>
-        ${party.name === 'Parc Expo' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
-        ${party.name === 'Zénith' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
-        ${party.name === 'Parc Expo' && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.name === 'Parc Expo' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.name === 'Zénith' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.name === 'Parc Expo' && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
       `;
 
       const buttonsContainer = document.createElement('div');
@@ -374,37 +372,13 @@ const PartyMap: React.FC = () => {
     return (
       <div className="page-content no-scroll party-map-container">
         {isAdmin && isEditing && (
-          <div style={{
-            position: 'fixed',
-            bottom: '80px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000,
-            display: 'flex',
-            gap: '8px',
-            alignItems: 'center',
-            flexDirection: 'row',
-            backgroundColor: 'var(--bg-color)',
-            padding: '12px 16px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            border: '1px solid var(--border-color)',
-            maxWidth: '90%'
-          }}>
+          <div className="plan-editor-container">
             {!isAddingMarker ? (
               <>
                 <select
                   value={selectedIndicationType}
                   onChange={(e) => setSelectedIndicationType(e.target.value)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '4px',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-color)',
-                    color: 'var(--text-color)',
-                    fontSize: '0.9rem',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                  }}
+                  className="plan-indication-select"
                 >
                   <option value="Soins">Soins 🚑</option>
                   <option value="Poubelle">Poubelle 🗑️</option>
@@ -420,23 +394,7 @@ const PartyMap: React.FC = () => {
                 </select>
                 <button
                   onClick={() => setIsAddingMarker(true)}
-                  style={{
-                    padding: '8px 12px',
-                    backgroundColor: 'black',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
-                    cursor: 'pointer',
-                    fontSize: '1.5rem',
-                    fontWeight: 'bold',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    lineHeight: '1'
-                  }}
+                  className="plan-add-marker-button"
                   title="Ajouter un marqueur"
                 >
                   +
@@ -445,17 +403,7 @@ const PartyMap: React.FC = () => {
             ) : (
               <button
                 onClick={() => setIsAddingMarker(false)}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#e74c3c',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem',
-                  fontWeight: '500',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                }}
+                className="plan-cancel-button"
               >
                 Annuler
               </button>
@@ -486,9 +434,7 @@ const PartyMap: React.FC = () => {
               position={[marker.position[0], marker.position[1]]}
               icon={L.divIcon({
                 className: 'custom-marker plan-indication-marker',
-                html: `<div style="background-color: white; color: #333; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                         <span style="font-size: 20px; line-height: 1;">${marker.emoji || '📍'}</span>
-                       </div>`,
+                html: `<div><span>${marker.emoji || '📍'}</span></div>`,
                 iconSize: [30, 30],
                 iconAnchor: [15, 15],
                 popupAnchor: [0, -15]
@@ -500,17 +446,7 @@ const PartyMap: React.FC = () => {
                   {isAdmin && isEditing && (
                     <button
                       onClick={() => handleDeleteMarker(marker.id)}
-                      style={{
-                        marginTop: '8px',
-                        padding: '6px 12px',
-                        backgroundColor: '#e74c3c',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        width: '100%'
-                      }}
+                      className="plan-delete-button"
                     >
                       Supprimer
                     </button>
