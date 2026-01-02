@@ -435,9 +435,9 @@
 @media (max-width: 480px) {
   .home-page {
     padding: 8px;
-    margin-top: 35px;
+    margin-top: var(--spacing-page-top-mobile-margin);
     justify-content: flex-start;
-    padding-top: 55px;
+    padding-top: var(--spacing-page-top-mobile-padding);
   }
 
   .welcome-title {
@@ -524,9 +524,9 @@
 @media (max-width: 360px) {
   .home-page {
     padding: 6px;
-    margin-top: 30px;
+    margin-top: var(--spacing-page-top-mobile-margin);
     justify-content: flex-start;
-    padding-top: 50px;
+    padding-top: var(--spacing-page-top-mobile-padding);
   }
 
   .welcome-title {
@@ -604,9 +604,9 @@
 
 @media (min-height: 700px) {
   .home-page {
-    margin-top: 40px;
+    margin-top: var(--spacing-page-top-tablet-margin);
     justify-content: flex-start;
-    padding-top: 90px;
+    padding-top: var(--spacing-page-top-tablet-padding);
   }
 
   .welcome-title {
@@ -629,9 +629,9 @@
 
 @media (min-height: 800px) {
   .home-page {
-    margin-top: 45px;
+    margin-top: var(--spacing-page-top-tablet-margin);
     justify-content: flex-start;
-    padding-top: 100px;
+    padding-top: var(--spacing-page-top-tablet-padding);
   }
 
   .welcome-title {
@@ -654,9 +654,9 @@
 
 @media (min-height: 900px) {
   .home-page {
-    margin-top: 50px;
+    margin-top: var(--spacing-page-top-desktop-margin);
     justify-content: flex-start;
-    padding-top: 110px;
+    padding-top: var(--spacing-page-top-desktop-padding);
   }
 
   .welcome-title {
@@ -679,9 +679,9 @@
 
 @media (min-height: 900px) {
   .home-page {
-    margin-top: 50px;
+    margin-top: var(--spacing-page-top-desktop-margin);
     justify-content: flex-start;
-    padding-top: 110px;
+    padding-top: var(--spacing-page-top-desktop-padding);
   }
 
   .welcome-title {
@@ -704,7 +704,7 @@
 
 @media (min-height: 1100px) {
   .home-page {
-    margin-top: 35px;
+    margin-top: var(--spacing-page-top-mobile-margin);
     justify-content: center;
   }
 
@@ -729,9 +729,9 @@
 @media (max-height: 700px) {
   .home-page {
     padding: 6px;
-    margin-top: 30px;
+    margin-top: var(--spacing-page-top-mobile-margin);
     justify-content: flex-start;
-    padding-top: 45px;
+    padding-top: var(--spacing-page-top-mobile-padding);
   }
 
   .welcome-title {
@@ -759,9 +759,9 @@
 @media (max-height: 600px) {
   .home-page {
     padding: 4px;
-    margin-top: 25px;
+    margin-top: var(--spacing-page-top-mobile-margin);
     justify-content: flex-start;
-    padding-top: 40px;
+    padding-top: var(--spacing-page-top-mobile-padding);
   }
 
   .welcome-title {
@@ -800,9 +800,9 @@
 @media (min-width: 500px) and (max-width: 700px) {
   .home-page {
     padding: 15px;
-    margin-top: 45px;
+    margin-top: var(--spacing-page-top-tablet-margin);
     justify-content: flex-start;
-    padding-top: 75px;
+    padding-top: var(--spacing-page-top-tablet-padding);
   }
   
   .welcome-title {
@@ -856,13 +856,13 @@
 @media (min-width: 701px) {
   .home-page {
     padding: 20px;
-    margin-top: 50px;
+    margin-top: var(--spacing-page-top-desktop-margin);
     /* Changé: Largeur adaptative */
     max-width: min(1200px, 95vw);
     margin-left: auto;
     margin-right: auto;
     justify-content: flex-start;
-    padding-top: 85px;
+    padding-top: var(--spacing-page-top-desktop-padding);
   }
   
   .welcome-title {
@@ -969,9 +969,9 @@
 @media (max-width: 320px) {
   .home-page {
     padding: 4px;
-    margin-top: 25px;
+    margin-top: var(--spacing-page-top-mobile-margin);
     justify-content: flex-start;
-    padding-top: 45px;
+    padding-top: var(--spacing-page-top-mobile-padding);
   }
   
   .welcome-title {
@@ -1062,9 +1062,9 @@
 @media (max-height: 500px) and (orientation: landscape) {
   .home-page {
     padding: 4px;
-    margin-top: 20px;
+    margin-top: var(--spacing-page-top-mobile-margin);
     justify-content: flex-start;
-    padding-top: 35px;
+    padding-top: var(--spacing-page-top-mobile-padding);
   }
   
   .welcome-title {

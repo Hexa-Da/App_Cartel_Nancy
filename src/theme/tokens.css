@@ -99,6 +99,21 @@
      ============================================ */
   /* Calendrier : Minimum 400px, Idéalement tout l'espace libre, Max 700px */
   --calendar-height: clamp(400px, calc(100vh - var(--header-total-height) - var(--bottom-nav-total-height)), 700px);
+
+  /* ============================================
+     SPACING PAGE TOP (Espacement en haut de page)
+     ============================================ */
+  /* Mobile : margin-top et padding-top adaptatifs */
+  --spacing-page-top-mobile-margin: clamp(25px, 3vh, 35px);
+  --spacing-page-top-mobile-padding: clamp(40px, 4vh, 55px);
+  
+  /* Tablet : margin-top et padding-top adaptatifs */
+  --spacing-page-top-tablet-margin: clamp(40px, 4vh, 50px);
+  --spacing-page-top-tablet-padding: clamp(75px, 5vh, 90px);
+  
+  /* Desktop : margin-top et padding-top adaptatifs */
+  --spacing-page-top-desktop-margin: clamp(45px, 5vh, 50px);
+  --spacing-page-top-desktop-padding: clamp(85px, 6vh, 110px);
 }
 
 /* ============================================
