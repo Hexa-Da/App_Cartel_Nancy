@@ -4,6 +4,20 @@
  * Ce composant gère uniquement l'affichage de la carte Leaflet avec :
  * - MapContainer et TileLayer
  * - Composants enfants (LocationMarker, MapEvents, etc.)
+ * 
+ * Note: OptimizedMarkers.tsx peut être utilisé comme enfant de ce composant,
+ * mais nécessite une refactorisation de la logique de marqueurs actuelle
+ * (qui utilise L.marker() directement) vers react-leaflet.
+ * 
+ * Exemple d'utilisation future :
+ * <MapView ...>
+ *   <OptimizedMarkers 
+ *     venues={venues}
+ *     onMarkerClick={handleMarkerClick}
+ *     eventFilter={eventFilter}
+ *     venueFilter={venueFilter}
+ *   />
+ * </MapView>
  */
 
 import { MapContainer, TileLayer } from 'react-leaflet';

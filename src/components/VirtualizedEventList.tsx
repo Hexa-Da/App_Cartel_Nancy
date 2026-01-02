@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useCallback } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { List } from 'react-window';
+import './EventsTab.css';
 
 interface Event {
   id: string;
@@ -18,153 +19,108 @@ interface Event {
   result?: string;
 }
 
+interface EventItemRowProps {
+  events: Event[];
+  onEventClick: (event: Event) => void;
+  formatDateTime: (dateString: string, endTimeString?: string) => string;
+  getSportIcon: (sport: string) => string;
+}
+
 interface EventItemProps {
   index: number;
   style: React.CSSProperties;
-  data: {
-    events: Event[];
-    onEventClick: (event: Event) => void;
-    formatDateTime: (dateString: string, endTimeString?: string) => string;
+  ariaAttributes: {
+    'aria-posinset': number;
+    'aria-setsize': number;
+    role: 'listitem';
   };
+  events: Event[];
+  onEventClick: (event: Event) => void;
+  formatDateTime: (dateString: string, endTimeString?: string) => string;
+  getSportIcon: (sport: string) => string;
 }
 
-const EventItem = memo(({ index, style, data }: EventItemProps) => {
-  const { events, onEventClick, formatDateTime } = data;
+const EventItem = memo(({ index, style, events, onEventClick, formatDateTime, getSportIcon }: EventItemProps) => {
   const event = events[index];
 
   const handleClick = useCallback(() => {
     onEventClick(event);
   }, [onEventClick, event]);
 
-  const getEventIcon = useCallback(() => {
-    if (event.type === 'party') return '🎉';
-    if (event.sport === 'Football') return '⚽';
-    if (event.sport === 'Basketball') return '🏀';
-    if (event.sport === 'Volleyball') return '🏐';
-    return '🏟️';
-  }, [event.type, event.sport]);
-
-  const getEventColor = useCallback(() => {
-    if (event.isPassed) return '#ccc';
-    if (event.type === 'party') return '#ff6b6b';
-    if (event.sport === 'Football') return '#4ecdc4';
-    if (event.sport === 'Basketball') return '#45b7d1';
-    if (event.sport === 'Volleyball') return '#96ceb4';
-    return '#feca57';
-  }, [event.isPassed, event.type, event.sport]);
-
   return (
     <div style={style}>
-      <div
-        className="event-item"
+      <div 
+        className={`event-item ${event.isPassed ? 'passed' : ''} ${event.type === 'match' ? 'match-event' : 'party-event'}`}
         onClick={handleClick}
-        style={{
-          padding: '12px 16px',
-          borderBottom: '1px solid #eee',
-          cursor: 'pointer',
-          backgroundColor: event.isPassed ? '#f8f9fa' : 'white',
-          opacity: event.isPassed ? 0.7 : 1,
-          transition: 'background-color 0.2s ease'
-        }}
-        onMouseEnter={(e) => {
-          if (!event.isPassed) {
-            e.currentTarget.style.backgroundColor = '#f8f9fa';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!event.isPassed) {
-            e.currentTarget.style.backgroundColor = 'white';
-          }
-        }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-          <div
-            style={{
-              fontSize: '24px',
-              minWidth: '32px',
-              textAlign: 'center'
-            }}
-          >
-            {getEventIcon()}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '4px'
-              }}
-            >
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: '#333',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                {event.name}
-              </h3>
-              <span
-                style={{
-                  padding: '2px 6px',
-                  borderRadius: '12px',
-                  fontSize: '10px',
-                  fontWeight: '500',
-                  backgroundColor: getEventColor(),
-                  color: 'white',
-                  textTransform: 'uppercase'
-                }}
-              >
-                {event.type === 'party' ? 'Soirée' : event.sport || 'Match'}
-              </span>
-            </div>
-            <p
-              style={{
-                margin: '0 0 4px 0',
-                fontSize: '14px',
-                color: '#666',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {event.description}
-            </p>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                fontSize: '12px',
-                color: '#888'
-              }}
-            >
-              <span>📅 {formatDateTime(event.date, event.endTime)}</span>
-              {event.venue && (
-                <span>📍 {event.venue}</span>
-              )}
-            </div>
-            {event.result && (
-              <div
-                style={{
-                  marginTop: '4px',
-                  padding: '4px 8px',
-                  backgroundColor: '#e8f5e8',
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  color: '#2d5a2d',
-                  fontWeight: '500'
-                }}
-              >
-                Résultat: {event.result}
+        <div className="event-header">
+          <span className="event-type-badge">
+            {event.type === 'match' ? (
+              <>
+                <span>{getSportIcon(event.sport || '')}</span>
+                <span>{event.sport}</span>
+              </>
+            ) : event.sport === 'Defile' ? (
+              <>
+                <span>🎺</span>
+                <span>Défilé</span>
+              </>
+            ) : event.sport === 'Pompom' ? (
+              <>
+                <span>🎀</span>
+                <span>Pompom</span>
+              </>
+            ) : event.name === 'Parc Expo' && event.description.includes('Showcase') ? (
+              <>
+                <span>🎤</span>
+                <span>SHOWCASE</span>
+              </>
+            ) : (event.name === 'Parc Expo' || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
+              <>
+                <span>🎧</span>
+                <span>DJ CONTEST</span>
+              </>
+            ) : (
+              <>
+                <span>🎉</span>
+                <span>Soirée</span>
+              </>
+            )}
+          </span>
+          <span className="event-date">{formatDateTime(event.date, event.endTime)}</span>
+        </div>
+        <div className="event-title-container">
+          <h3 className="event-name">{event.name}</h3>
+        </div>
+        {event.type === 'match' && (
+          <>
+            <p className="event-description">{event.description}</p>
+            <p className="event-venue">{event.venue}</p>
+            {event.result && <p className="event-result">Résultat : {event.result}</p>}
+          </>
+        )}
+        {event.type === 'party' && (
+          <>
+            <p className="event-description">{event.description}</p>
+            {event.sport !== 'Defile' && !event.description?.toLowerCase().includes('showcase') && (
+              <div className="party-results">
+                <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
+                  Résultat : {event.result || 'à venir'}
+                </h4>
               </div>
             )}
-          </div>
+          </>
+        )}
+        <div className="event-actions">
+          <button 
+            className="maps-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`, '_blank');
+            }}
+          >
+            Ouvrir dans Google Maps
+          </button>
         </div>
       </div>
     </div>
@@ -177,6 +133,7 @@ interface VirtualizedEventListProps {
   events: Event[];
   onEventClick: (event: Event) => void;
   formatDateTime: (dateString: string, endTimeString?: string) => string;
+  getSportIcon: (sport: string) => string;
   height?: number;
   itemHeight?: number;
 }
@@ -184,43 +141,39 @@ interface VirtualizedEventListProps {
 const VirtualizedEventList = memo(({ 
   events, 
   onEventClick, 
-  formatDateTime, 
+  formatDateTime,
+  getSportIcon,
   height = 400,
-  itemHeight = 80
+  itemHeight = 120
 }: VirtualizedEventListProps) => {
-  const itemData = useMemo(() => ({
-    events,
-    onEventClick,
-    formatDateTime
-  }), [events, onEventClick, formatDateTime]);
-
   if (events.length === 0) {
     return (
-      <div
-        style={{
-          height,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#666',
-          fontSize: '14px'
-        }}
-      >
+      <div className="chat-empty-message">
         Aucun événement trouvé
       </div>
     );
   }
 
+  const rowComponent = useCallback((props: EventItemProps) => {
+    return <EventItem {...props} />;
+  }, []);
+
+  const rowProps: EventItemRowProps = useMemo(() => ({
+    events,
+    onEventClick,
+    formatDateTime,
+    getSportIcon
+  }), [events, onEventClick, formatDateTime, getSportIcon]);
+
   return (
-    <List
-      height={height}
-      itemCount={events.length}
-      itemSize={itemHeight}
-      itemData={itemData}
-      overscanCount={5} // Rendu anticipé de 5 éléments pour de meilleures performances
-    >
-      {EventItem}
-    </List>
+    <List<EventItemRowProps>
+      rowCount={events.length}
+      rowHeight={itemHeight}
+      rowComponent={rowComponent}
+      overscanCount={5}
+      style={{ height, padding: '1rem', paddingTop: '1.5rem' }}
+      rowProps={rowProps}
+    />
   );
 });
 
