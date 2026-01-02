@@ -22,6 +22,8 @@ import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef, createContext, useContext, useCallback, useMemo } from 'react';
 import './App.css';
+import './GlobalUtilities.css';
+import './MapStyles.css';
 import { ref, onValue, set, push, remove, update, get } from 'firebase/database';
 import { database } from './firebase';
 import L from 'leaflet';

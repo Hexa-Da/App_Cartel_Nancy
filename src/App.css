@@ -1,418 +1,14 @@
-#root {
-  height: 100vh; 
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  overflow: hidden;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* Reset des styles par défaut */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --primary-color: #3498db;
-  --primary-hover: #2980b9;
-  --success-color: #2ecc71;
-  --success-hover: #27ae60;
-  --danger-color: #e74c3c;
-  --danger-hover: #c0392b;
-  --warning-color: #f39c12;
-  --warning-hover: #d35400;
-  --text-color: #2c3e50;
-  --text-color-light: #7f8c8d;
-  --bg-color: #ffffff;
-  --bg-secondary: #6e6e6e;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --bg-primary: #ffffff;
-  --accent-color: #4CAF50;
-  --error-color: #f44336;
-  --bg-hover: #f0f0f0;
-  --bg-disabled: #e0e0e0;
-}
-
-[data-theme="dark"] {
-  --bg-primary: #000000;
-  --bg-secondary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #b3b3b3;
-  --border-color: #404040;
-  --accent-color: #4CAF50;
-  --error-color: #f44336;
-  --bg-hover: #333333;
-  --bg-disabled: #404040;
-}
-
-[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #6e6e6e;
-  --text-primary: #181818;
-  --text-secondary: #555;
-  --border-color: #e0e0e0;
-  --accent-color: #4CAF50;
-  --error-color: #f44336;
-  --bg-hover: #f0f0f0;
-  --bg-disabled: #e0e0e0;
-}
-
-/* Styles de base utilisant les variables */
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-.settings-menu {
-  background-color: var(--bg-primary);
-  border: 1px solid var(--border-color);
-}
-
-.settings-menu-content {
-  background-color: var(--bg-primary);
-}
-
-.settings-item {
-  border-bottom: 1px solid var(--border-color);
-}
-
-.settings-item label {
-  color: var(--text-primary);
-}
-
-.settings-select {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-
-.settings-select option {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-.switch {
-  background-color: transparent;
-}
-
-.slider {
-  background-color: var(--bg-disabled);
-}
-
-.slider:before {
-  background-color: var(--bg-primary);
-}
-
-.settings-item:last-child {
-  border-bottom: none;
-}
-
 /* ============================================
-   NOTE: Les styles html, body, #root sont maintenant
-   gérés dans src/index.css pour éviter les conflits.
-   Ce fichier App.css se concentre sur les composants.
-   ============================================ */
-
-
-.app {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Styles du header déplacés vers Layout.css */
-
-.tabs {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.tab-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: transparent;
-  color: #fff;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.tab-button.active {
-  background: rgba(255, 255, 255, 0.2);
-  font-weight: 500;
-}
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  margin-left: auto;
-  align-items: center;
-}
-
-/* Styles du edit-button déplacés vers Layout.css */
-
-.add-place-button {
-  padding: 0.2rem 0.5rem;
-  background-color: var(--success-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.edit-form {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--bg-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  /* Changé: Utilise la variable CSS responsive */
-  width: var(--modal-width);
-  max-width: var(--modal-width);
-  z-index: 3000;
-  /* Changé: max-height avec calc() pour gérer les safe areas */
-  max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
-  overflow-y: auto;
-  /* Changé: Padding adaptatif */
-  padding: clamp(15px, 3vw, 20px);
-}
-
-.edit-form-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  margin-top: 2rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.edit-form-header h3 {
-  margin: 0;
-  color: var(--text-color);
-  font-size: 1.2rem;
-}
-
-.edit-form-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group label {
-  color: var(--text-color);
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background: var(--bg-color);
-  color: var(--text-color);
-  font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-.form-input::placeholder {
-  color: var(--text-color-light);
-}
-
-.form-actions {
-  margin-top: 1rem;
-  display: flex;
-  /* Changé: Espacement de sécurité tactile (12px minimum) */
-  gap: 12px;
-  justify-content: flex-end;
-}
-
-.add-button, .cancel-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: all 0.3s;
-  width: 100%;
-  /* Changé: Largeur adaptative */
-  max-width: min(200px, 40vw);
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
-  min-height: 44px;
-  min-width: 44px;
-}
-
-.add-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-}
-
-.add-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.cancel-button {
-  background-color: transparent;
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-}
-
-/* Ajout de styles pour le bouton "Placer sur la carte" */
-.place-on-map-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-}
-
-.place-on-map-button:active {
-  transform: translateY(0);
-}
-
-/* Ajustement de la position du message flottant */
-.floating-message {
-  position: fixed;
-  /* ✅ Positionné en dessous du header avec les variables globales */
-  top: var(--below-header-with-margin);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3001;
-  background-color: var(--bg-secondary);
-  color: var(--text-color);
-  padding: 10px 20px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-@media (max-width: 768px) {
-  .edit-form {
-    /* Changé: Utilise la variable CSS responsive */
-    width: var(--modal-width);
-    max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
-    padding: clamp(12px, 2.5vw, 15px);
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-  }
-  
-  .edit-form-header {
-    margin-bottom: 1rem;
-  }
-  
-  .form-input {
-    padding: 0.6rem;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-  
-  .add-button, .cancel-button {
-    max-width: none;
-    width: 100%;
-  }
-
-  .place-on-map-button {
-    margin-top: 1rem;
-    order: 1; /* Place le bouton après les champs de saisie */
-  }
-}
-
-.edit-instructions {
-  color: #ecf0f1;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-/* ============================================
-   NOTE: Les styles .app-main sont maintenant gérés dans Layout.css
-   pour une meilleure cohérence avec le layout flexbox standardisé.
+   APP.CSS - Styles Carte Uniquement
+   ============================================
+   
+   NOTE: Les fichiers GlobalUtilities.css et MapStyles.css
+   doivent être importés dans App.tsx
    ============================================ */
 
 /* ============================================
-   CAS B : Conteneur de la Map - Hauteur exacte 80vh
+   MARKERS - Styles des marqueurs de la carte
    ============================================ */
-/* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré dans Layout.css
-   avec position absolute et top/bottom pour remplir l'espace entre Header et Nav */
-
-.leaflet-container {
-  height: 100%;
-  width: 100%;
-  margin-bottom: -2rem;
-}
 
 /* Style pour l'icône de localisation de l'utilisateur */
 .user-location-icon {
@@ -436,6 +32,16 @@ body {
   z-index: 600 !important;
 }
 
+.hotel-icon div {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  font-size: 16px !important;
+}
+
 /* Style spécifique pour les icônes de restaurant */
 .restaurant-marker {
   filter: saturate(10) brightness(0.9);
@@ -452,23 +58,47 @@ body {
   z-index: 600 !important;
 }
 
-.hotel-icon div {
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: white !important;
-  font-size: 16px !important;
-}
-
 /* Style pour les pointeurs par défaut */
 .default-marker-icon {
   filter: hue-rotate(180deg) saturate(1.5);
 }
 
+/* Marqueurs personnalisés */
+.custom-marker {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  will-change: opacity, transform;
+}
+
+.custom-marker.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.custom-marker.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.custom-marker span {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: translate(0, 0) !important;
+  line-height: 1 !important;
+}
+
+.hotel-marker span {
+  transform: translate(0, 0) !important;
+}
+
+.party-marker span {
+  transform: translate(0, 0) !important;
+}
+
 /* ============================================
-   STYLE ALTERNATIF DES POPUPS - CARTES DISTINCTES AVEC ESPACEMENTS
+   POPUPS DE CARTE - Styles des popups de lieux
    ============================================ */
 
 .venue-popup {
@@ -534,6 +164,19 @@ body {
   margin-top: clamp(8px, 1.5vw, 12px);
 }
 
+.venue-address {
+  font-style: italic;
+  color: var(--text-color-light) !important;
+  margin-bottom: 1rem !important;
+}
+
+.venue-phone {
+  font-weight: italic;
+  color: var(--text-color-light) !important;
+  margin-bottom: 0.5rem !important;
+  margin-top: -0.5rem !important;
+}
+
 /* Exclure les éléments dans .match-item du style général de .venue-popup p */
 .venue-popup .match-item p.match-date,
 .venue-popup .match-item p.match-teams,
@@ -548,64 +191,10 @@ body {
   font-size: inherit;
 }
 
-.venue-address {
-  font-style: italic;
-  color: var(--text-color-light) !important;
-  margin-bottom: 1rem !important;
-}
+/* ============================================
+   MATCHES LIST - Styles de la liste des matches
+   ============================================ */
 
-.venue-phone {
-  font-weight: italic;
-  color: var(--text-color-light) !important;
-  margin-bottom: 0.5rem !important;
-  margin-top: -0.5rem !important;
-}
-
-.popup-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(8px, 1.5vw, 10px);
-  margin: 0;
-  padding: clamp(12px, 2vw, 16px);
-  background: rgba(25, 25, 25, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: clamp(10px, 2vw, 14px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-/* Séparateur visuel avant le bouton */
-.popup-buttons::before {
-  content: '';
-  position: absolute;
-  top: -clamp(6px, 1vw, 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  border-radius: 2px;
-}
-
-.maps-button {
-  width: 100%;
-  padding: 0.5rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-/* Section 3 : Liste des matches - Carte distincte */
 .matches-list {
   margin: 0;
   padding: clamp(12px, 2vw, 16px);
@@ -615,7 +204,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: clamp(10px, 2vw, 14px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  /* Hauteur adaptative */
   max-height: clamp(200px, 40vh, 300px);
   overflow-y: auto;
   scrollbar-gutter: stable;
@@ -639,11 +227,9 @@ body {
   overflow-y: auto;
   padding-right: 8px;
   padding-left: 4px;
-  /* Style de scrollbar personnalisé - plus visible pour indiquer le scroll */
   scrollbar-width: thin;
   scrollbar-color: rgba(76, 175, 80, 0.7) rgba(0, 0, 0, 0.3);
   position: relative;
-  /* Scroll snap : chaque match s'aligne automatiquement en haut */
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
@@ -676,7 +262,6 @@ body {
 }
 
 .match-item {
-  /* Fond sombre avec glassmorphism */
   background: rgba(30, 30, 30, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -688,13 +273,11 @@ body {
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
               box-shadow 0.2s ease,
               border-color 0.2s ease;
-  /* Centrer tous les éléments */
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   position: relative;
-  /* Scroll snap : chaque match s'aligne en haut du conteneur */
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
@@ -773,6 +356,172 @@ body {
   width: 100%;
 }
 
+.match-result {
+  color: rgba(76, 175, 80, 1) !important;
+  font-weight: 700;
+  font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+  margin: clamp(6px, 1vh, 10px) 0 0 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  line-height: 1.3;
+  text-align: center;
+  width: 100%;
+}
+
+.match-result strong {
+  color: rgba(76, 175, 80, 1) !important;
+  font-weight: 700;
+}
+
+/* ============================================
+   BOUTONS DE POPUP - Styles des boutons dans les popups
+   ============================================ */
+
+.popup-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vw, 10px);
+  margin: 0;
+  padding: clamp(12px, 2vw, 16px);
+  background: rgba(25, 25, 25, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: clamp(10px, 2vw, 14px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Séparateur visuel avant le bouton */
+.popup-buttons::before {
+  content: '';
+  position: absolute;
+  top: -clamp(6px, 1vw, 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 2px;
+}
+
+.maps-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.copy-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #673AB7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.call-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #5dabae;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.popup-buttons .modif-button {
+  background-color: #FF9800;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  width: 100%;
+  transition: all 0.3s ease;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.popup-buttons .delete-button {
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  width: 100%;
+  transition: all 0.3s ease;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.party-map-button,
+.edit-result-button,
+.edit-description-button {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.party-map-button {
+  background-color: #5dabae;
+  color: white;
+}
+
+.edit-result-button {
+  background-color: #FF8C00;
+  color: white;
+}
+
+.edit-description-button {
+  background-color: #9C27B0;
+  color: white;
+}
+
+/* ============================================
+   BOUTONS DE MATCH - Styles des boutons de match
+   ============================================ */
+
 .edit-match-button,
 .delete-match-button,
 .add-match-button {
@@ -812,157 +561,113 @@ body {
   background-color: var(--success-color);
 }
 
-/* Styles pour les popups Leaflet */
-.leaflet-popup-content {
-  margin: 0.5rem;
-  width: auto !important;
-}
-
-.leaflet-popup-content-wrapper {
-  max-width: 90vw;
-  background-color: var(--bg-color) !important;
-  color: var(--text-color) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 8px var(--shadow-color) !important;
-}
-
-.leaflet-popup-tip {
-  background-color: var(--bg-color) !important;
-}
-
-/* Styles spécifiques pour les éléments dans les popups Leaflet - sélecteurs très spécifiques */
-.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-date,
-.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-date,
-.leaflet-popup-content-wrapper .match-item .match-date,
-.leaflet-popup-content .match-item .match-date,
-.matches-list .match-item .match-date,
-.matches-scroll-container .match-item .match-date {
-  color: rgba(255, 152, 0, 1) !important;
-}
-
-.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-description,
-.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-description,
-.leaflet-popup-content-wrapper .match-item .match-description,
-.leaflet-popup-content .match-item .match-description,
-.matches-list .match-item .match-description,
-.matches-scroll-container .match-item .match-description {
-  color: rgba(255, 255, 255, 1) !important;
-}
-
-.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-result,
-.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-result,
-.leaflet-popup-content-wrapper .match-item .match-result,
-.leaflet-popup-content .match-item .match-result,
-.matches-list .match-item .match-result,
-.matches-scroll-container .match-item .match-result {
-  color: rgba(76, 175, 80, 1) !important;
-}
-
-.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-result strong,
-.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-result strong,
-.leaflet-popup-content-wrapper .match-item .match-result strong,
-.leaflet-popup-content .match-item .match-result strong,
-.matches-list .match-item .match-result strong,
-.matches-scroll-container .match-item .match-result strong {
-  color: rgba(76, 175, 80, 1) !important;
-}
-
-/* Media queries pour les petits écrans */
-@media (max-width: 600px) {
-  /* Styles du header déplacés vers Layout.css */
-
-  .edit-form {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .edit-form input {
-    width: 100%;
-  }
-
-  .edit-form button {
-    width: 100%;
-  }
-
-  .venue-popup {
-    max-width: 85vw;
-  }
-}
-
-.edit-buttons {
+.match-actions {
   display: flex;
-  /* Changé: Espacement de sécurité tactile (12px minimum) */
-  gap: 12px;
+  gap: 0.75rem;
   margin-top: 0.5rem;
 }
 
-.save-button,
-.cancel-button {
-  flex: 1;
-  padding: 0.75rem 1rem;
+.delete-match-button {
+  padding: 0.25rem 0.5rem;
+  background-color: var(--danger-color);
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-size: clamp(0.7rem, 2.8vw, 0.8rem);
   transition: all 0.3s ease;
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
-  min-height: 44px;
-  min-width: 44px;
 }
 
-.save-button {
-  background-color: var(--success-color);
-  color: white;
-}
+/* ============================================
+   BOUTONS DE CARTE - Styles des boutons flottants de la carte
+   ============================================ */
 
-.cancel-button {
-  background-color: var(--danger-color);
-  color: white;
-}
-
-.error-message {
-  position: fixed;
-  /* ✅ Positionné en dessous du header avec les variables globales */
-  top: var(--below-header-with-margin);
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--danger-color);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
+.add-venue-button {
+  position: fixed;  
+  bottom: calc(var(--above-bottom-nav) + 50px);
+  left: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  background-color: var(--bg-primary);
+  color: var(--text-color);
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  padding: 0;
+  cursor: pointer;
   z-index: 2000;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translate(-50%, -100%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
-}
-
-/* Style pour le bouton de réessai de localisation */
-.retry-button {
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  pointer-events: auto;
+}
+
+.recenter-button {
+  position: fixed;
+  bottom: calc(var(--above-bottom-nav) + 50px);
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--bg-primary) !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 2000;
+  transition: transform 0.3s ease;
+  pointer-events: auto;
+  opacity: 1 !important;
+  border: none;
+  padding: 0;
+}
+
+.recenter-button svg {
+  width: 24px;
+  height: 24px;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 1px 2px var(--shadow-color));
+}
+
+/* ============================================
+   INDICATEURS DE CHARGEMENT - Styles des indicateurs de la carte
+   ============================================ */
+
+.location-loading {
+  position: fixed;
+  right: 20px;
+  bottom: calc(var(--above-bottom-nav) + 50px);
+  z-index: 2000;
+}
+
+.location-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.map-loading-indicator {
+  position: fixed;
+  left: 20px;
+  bottom: calc(var(--above-bottom-nav) + 50px);
+  z-index: 2000;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .location-error {
   position: fixed;
-  /* ✅ Positionné au-dessus de la nav bar avec espacement (même hauteur que location-loading) */
   bottom: calc(var(--above-bottom-nav) + 50px);
   right: 20px;
   background-color: var(--danger-color);
@@ -973,17 +678,14 @@ body {
   box-shadow: 0 2px 6px var(--shadow-color);
   z-index: 2000;
   font-size: 0.75rem;
-  /* Dimensions adaptatives */
   min-width: min(180px, 35vw);
   max-width: min(250px, 50vw);
   pointer-events: auto;
 }
 
-
 .location-error-buttons {
   margin-top: 0.3rem;
   display: flex;
-  /* Changé: Espacement de sécurité tactile (12px minimum) */
   gap: 12px;
   justify-content: flex-start;
   pointer-events: auto;
@@ -1000,7 +702,6 @@ body {
   transition: all 0.3s ease;
   pointer-events: auto;
   z-index: 2001;
-  /* ✅ Harmonisé avec les autres boutons */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1042,23 +743,9 @@ body {
   box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-.match-actions {
-  display: flex;
-  /* ✅ Espacement standardisé pour tous les boutons de popup (identique à .popup-buttons) */
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.delete-match-button {
-  padding: 0.25rem 0.5rem;
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.7rem, 2.8vw, 0.8rem);
-  transition: all 0.3s ease;
-}
+/* ============================================
+   SELECTEURS ET EMOJI - Styles des sélecteurs de la carte
+   ============================================ */
 
 .map-style-selector {
   border: 1px solid var(--border-color);
@@ -1084,7 +771,6 @@ body {
   background: var(--bg-color);
   border-radius: 6px;
   border: 1px solid var(--border-color);
-  /* Changé: Hauteur adaptative */
   max-height: clamp(150px, 25vh, 250px);
   overflow-y: auto;
 }
@@ -1109,156 +795,6 @@ body {
   color: white;
 }
 
-.custom-marker {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  will-change: opacity, transform;
-}
-
-.custom-marker.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.custom-marker.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.custom-marker span {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  transform: translate(0, 0) !important;
-  line-height: 1 !important;
-}
-
-.hotel-marker span {
-  transform: translate(0, 0) !important;
-}
-
-.party-marker span {
-  transform: translate(0, 0) !important;
-}
-
-@media (max-width: 768px) {
-  .emoji-selector {
-    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-  }
-  
-  .emoji-button {
-    font-size: 1.2rem;
-    padding: 0.4rem;
-    width: 35px;
-    height: 35px;
-  }
-}
-
-/* .popup-buttons déjà défini plus haut avec le nouveau style */
-
-.copy-button {
-  width: 100%;
-  padding: 0.5rem;
-  background-color: #673AB7;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-  transition: all 0.3s ease;
-  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.call-button {
-  width: 100%;
-  padding: 0.5rem;
-  background-color: #5dabae;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-  transition: all 0.3s ease;
-  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.popup-buttons .modif-button {
-  background-color: #FF9800;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-  width: 100%;
-  transition: all 0.3s ease;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.popup-buttons .delete-button {
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-  width: 100%;
-  transition: all 0.3s ease;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-/* ✅ Styles standardisés pour tous les boutons de popup */
-.party-map-button,
-.edit-result-button,
-.edit-description-button {
-  width: 100%;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-  font-weight: 600;
-  transition: all 0.3s ease;
-  /* ✅ Hauteur harmonisée avec padding vertical de 0.5rem */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.party-map-button {
-  background-color: #5dabae;
-  color: white;
-}
-
-.edit-result-button {
-  background-color: #FF8C00;
-  color: white;
-}
-
-.edit-description-button {
-  background-color: #9C27B0;
-  color: white;
-}
-
 .emoji-preview {
   display: flex;
   flex-direction: column;
@@ -1279,9 +815,10 @@ body {
   box-shadow: 0 2px 5px var(--shadow-color);
 }
 
-/* ✅ Styles de l'onglet events déplacés vers EventsTab.css */
+/* ============================================
+   BOUTONS TOGGLE - Styles des boutons toggle de la carte
+   ============================================ */
 
-/* Style pour les boutons flottants (Événements et Calendrier) */
 .events-toggle-button,
 .calendar-toggle-button {
   position: fixed !important;
@@ -1303,23 +840,18 @@ body {
 }
 
 .events-toggle-button {
-  top: var(--below-header-with-margin) !important; /* Utilise la variable CSS */
+  top: var(--below-header-with-margin) !important;
 }
 
 .calendar-toggle-button {
-  /* ✅ 50px en dessous du bouton events (utilise la même variable) */
   top: calc(var(--below-header-with-margin) + 50px) !important;
 }
 
-
-/* Style actif pour les boutons toggle */
 .events-toggle-button.active,
 .calendar-toggle-button.active {
   background-color: var(--primary-color);
   color: white;
 }
-
-/* ✅ Styles de l'onglet events déplacés vers EventsTab.css */
 
 .filter-select {
   flex: 1;
@@ -1340,12 +872,10 @@ body {
   background-size: 12px;
 }
 
-/* Chevrons des filtres - Mode sombre */
 [data-theme="dark"] .filter-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
 }
 
-/* Chevrons des filtres - Mode clair */
 [data-theme="light"] .filter-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23181818' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
 }
@@ -1356,108 +886,25 @@ body {
   }
 }
 
-/* ✅ Styles de l'onglet events déplacés vers EventsTab.css */
-
-/* Styles personnalisés pour les contrôles de zoom */
-.leaflet-control-zoom {
-  position: fixed !important;
-  /* ✅ Aligné strictement avec le bouton "Événements" : même valeur exacte */
-  top: var(--below-header-with-margin) !important;
-  right: 10px !important;
-  z-index: 2000;
-  border: none !important;
-  box-shadow: 0 2px 8px var(--shadow-color) !important;
-  margin: 0 !important;
-  background: var(--bg-primary) !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-}
-
-.leaflet-control-zoom a {
-  width: 35px !important;
-  height: 35px !important;
-  line-height: 35px !important;
-  font-size: 18px !important;
-  margin: 4px !important;
-  background-color: var(--bg-color) !important;
-  color: var(--text-color) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 6px !important;
-  transition: all 0.2s ease !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-weight: 500 !important;
-}
-
-.leaflet-control-zoom-in {
-  margin-bottom: 6px !important;
-}
-
-.leaflet-control-zoom-out {
-  margin-top: 6px !important;
-}
-
-/* Le formulaire d'édition des matchs doit avoir le même style */
-.edit-form, [role="dialog"], .form-overlay {
-  z-index: 99999 !important;
-}
-
-/* Ajout d'un overlay pour empêcher les interactions avec les éléments en dessous */
-.edit-form::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: -1;
-}
-
-.form-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 99999 !important;
-}
-
-.match-edit-form {
-  position: relative;
-  transform: none;
-  top: auto;
-  left: auto;
-  max-width: 90vw;
-  background-color: var(--bg-color);
-  z-index: 100000 !important;
+/* Media queries */
+@media (max-width: 600px) {
+  .venue-popup {
+    max-width: 85vw;
+  }
 }
 
 @media (max-width: 768px) {
-  .form-overlay, .edit-form, [role="dialog"] {
-    z-index: 100000 !important;
+  .emoji-selector {
+    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
   }
   
-  .edit-form {
-    /* Changé: Utilise la variable CSS responsive */
-    width: var(--modal-width);
-    max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
-    padding: clamp(12px, 2.5vw, 15px);
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
+  .emoji-button {
+    font-size: 1.2rem;
+    padding: 0.4rem;
+    width: 35px;
+    height: 35px;
   }
-  
-  .leaflet-control-container {
-    z-index: 900 !important;
-  }
-  
+
   .events-toggle-button {
     z-index: 995 !important;
   }
@@ -1465,1008 +912,4 @@ body {
   .calendar-toggle-button {
     z-index: 995 !important;
   }
-}
-
-/* S'assurer que tous les contrôles Leaflet sont derrière les formulaires */
-.leaflet-control-container, 
-.leaflet-control,
-.leaflet-top,
-.leaflet-bottom,
-.leaflet-right,
-.leaflet-left {
-  z-index: 900 !important;
-}
-
-/* Suppression des styles pour les boutons de lien qui ne sont plus utilisés */
-
-/* Styles du admin-button déplacés vers Layout.css */
-.admin-button {
-  /* Styles déplacés vers Layout.css */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  transition: opacity 0.3s ease;
-}
-
-.login-button {
-  padding: 8px 16px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.logout-button {
-  padding: 8px 16px;
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-left: 8px;
-  transition: all 0.3s ease;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.user-info span {
-  color: var(--text-color);
-  font-size: 14px;
-}
-
-/* Styles pour l'icône de l'onglet */
-.link[rel="icon"] {
-  display: block;
-  margin: 0 auto;
-  text-align: center;
-}
-
-/* Styles pour l'icône de l'application */
-.manifest-icon {
-  display: block;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.calendar-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 8px 16px;
-  background-color: var(--success-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  transition: background-color 0.3s;
-  height: 24px;
-  width: 80px;
-  justify-content: center;
-  z-index: 995;
-}
-
-.planning-button {
-  position: absolute;
-  /* ✅ Positionné en dessous du header avec les variables globales */
-  top: calc(var(--header-height) + var(--safe-top) + 10px);
-  left: 100px;
-  padding: 8px 16px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  transition: background-color 0.3s;
-  height: 24px;
-  width: 80px;
-  justify-content: center;
-  z-index: 995;
-}
-
-/* ✅ Styles event-result et party-result déplacés vers EventsTab.css */
-
-.match-result {
-  color: rgba(76, 175, 80, 1) !important;
-  font-weight: 700;
-  font-size: clamp(0.75rem, 2.5vw, 0.9rem);
-  margin: clamp(6px, 1vh, 10px) 0 0 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  line-height: 1.3;
-  text-align: center;
-  width: 100%;
-}
-
-.match-result strong {
-  color: rgba(76, 175, 80, 1) !important;
-  font-weight: 700;
-}
-
-/* Styles unifiés pour le chat sur toutes les pages */
-.chat-panel {
-  position: fixed;
-  /* ✅ Utiliser les variables globales : Header + safe-top */
-  top: calc(var(--header-height) + var(--safe-top));
-  left: 0;
-  width: 100vw;
-  /* ✅ Hauteur : 100vh - header - safe-top - nav - safe-bottom */
-  height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom));
-  background-color: var(--bg-color);
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  pointer-events: auto;
-}
-
-/* CSS pur pour iOS - pas de JavaScript */
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .chat-panel gère déjà le positionnement avec les variables CSS */
-
-
-.chat-panel-header {
-  padding: 0.7rem;
-  background-color: var(--bg-color);
-  position: sticky;
-  /* ✅ Top: 0 car le panel est déjà positionné sous le Header */
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-  margin-top: 0;
-}
-
-.chat-panel-header h3 {
-  margin-top: 0;
-  color: var(--text-color);
-  font-size: 1.15rem;
-  align-items: center;
-  justify-content: center;
-  position: flex;
-  font-weight: 700;
-}
-
-.chat-container {
-  padding: 1rem;
-  height: calc(100vh - 120px);
-  overflow-y: auto;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  margin-bottom: 10px;
-  flex: 1;
-}
-
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .chat-container gère déjà la hauteur et le scroll */
-
-/* ✅ SUPPRIMÉ : Règles .keyboard-open pour comportement resize
-   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner
-   Le layout reste fixe et le plugin Keyboard gère le scroll automatique vers l'input */
-
-
-/* ✅ SUPPRIMÉ : Règles .keyboard-open pour comportement resize
-   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner */
-
-.chat-message {
-  margin-bottom: 1rem;
-  padding: 0.5rem 0.8rem 2.8rem 0.8rem;
-  border-radius: 8px;
-  background-color: var(--bg-secondary);
-  box-shadow: 0 4px 4px var(--shadow-color);
-  border-left: 4px solid var(--primary-color);
-}
-
-.chat-message.admin {
-  background-color: var(--secondary-color);
-  border-left: 4px solid var(--primary-color);
-}
-
-.chat-message-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-.chat-message-content {
-  font-size: 0.9rem;
-  line-height: 1.4;
-  max-width: 90vw;
-  word-break: break-word;
-  white-space: pre-line;
-  padding: 0.2rem 0.1rem;
-  color: var(--text-color);
-}
-
-.add-message-button {
-  background-color: var(--primary-color); 
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  box-shadow: 0 2px 4px var(--shadow-color);
-  display: flex;
-  align-items: center;
-}
-
-/* Bouton de traduction */
-.translate-button {
-  position: absolute !important;
-  bottom: 8px !important;
-  right: 8px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  cursor: pointer !important;
-  font-size: 0.8rem !important;
-  color: var(--text-color) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  transition: all 0.3s ease !important;
-  z-index: 1 !important;
-}
-
-/* Conteneur des boutons admin dans le chat */
-.chat-admin-buttons {
-  position: absolute !important;
-  bottom: 8px !important;
-  right: 110px !important;
-  display: flex !important;
-  gap: 10px !important;
-  z-index: 1 !important;
-}
-
-/* Boutons admin individuels */
-.edit-message-button,
-.delete-message-button {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  color: var(--text-color) !important;
-  font-size: 0.75rem !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.3s ease !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-}
-
-/* Style spécifique pour le chat panel sur Home et Info */
-.home-info-chat {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--bg-color);
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  pointer-events: auto;
-}
-
-.home-info-chat .chat-panel-header {
-  padding: 0.7rem;
-  background-color: var(--bg-color);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-  /* ✅ Utiliser les variables globales : Header + safe-top + 20px d'air */
-  margin-top: calc(var(--header-height) + var(--safe-top) + 20px);
-  padding-top: 0.7rem;
-}
-
-
-.home-info-chat .chat-panel-header h3 {
-  margin-top: 0;
-  color: var(--text-color);
-  font-size: 1.15rem;
-  align-items: center;
-  justify-content: center;
-  position: flex;
-  font-weight: 700;
-}
-
-.home-info-chat .chat-container {
-  padding: 1rem;
-  height: calc(100vh - 120px);
-  overflow-y: auto;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  margin-bottom: 10px;
-}
-
-/* ✅ SUPPRIMÉ : Règle iOS redondante - le système global gère déjà le margin-top via les variables CSS */
-
-/* ✅ SUPPRIMÉ : Règles .keyboard-open pour comportement resize
-   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner */
-
-
-.chat-message {
-  margin-bottom: 1rem;
-  padding: 0.5rem 0.8rem 2.8rem 0.8rem;
-  border-radius: 8px;
-  background-color: var(--bg-secondary);
-  box-shadow: 0 4px 4px var(--shadow-color);
-  border-left: 4px solid var(--primary-color);
-}
-
-/* Bouton de traduction dans le chat panel */
-/* Conteneur des boutons admin dans le chat home-info */
-@media (max-width: 600px) {
-  .chat-message-content {
-    padding: 0.2rem 0.2rem;
-    max-width: 98vw;
-  }
-}
-
-/* Styles pour les boutons d'urgence déplacés vers Layout.css */
-.emergency-button {
-  /* Styles déplacés vers Layout.css */
-  font-size: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-}
-
-.emergency-popup {
-  position: fixed;
-  backdrop-filter: blur(10px);
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.emergency-popup-content {
-  background-color: var(--bg-color);
-  padding: 0.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-width: 90%;
-  /* Changé: Largeur adaptative */
-  width: min(400px, 90vw);
-  position: relative;
-}
-
-.emergency-popup-header {
-  position: relative;
-  margin-bottom: 1rem;
-  padding-right: 2rem;
-}
-
-.emergency-popup-header h3 {
-  margin-top: 0.5rem;
-  color: var(--text-color);
-}
-
-.emergency-popup ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.emergency-popup li {
-  margin: 0.75rem 0;
-  color: var(--text-color);
-}
-
-.emergency-popup li strong {
-  color: var(--accent-color);
-  margin-right: 0.5rem;
-}
-
-/* Styles pour le panneau de planning */
-.planning-panel {
-  position: fixed;
-  /* ✅ Positionné en dessous du header avec les variables globales */
-  top: var(--below-header);
-  left: 0;
-  width: 100%;
-  /* ✅ Hauteur : 100vh - header - safe-top - nav - safe-bottom */
-  height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom));
-  background-color: var(--bg-color);
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.planning-panel-header {
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  background-color: var(--bg-color);
-  position: sticky;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.planning-panel-header h3 {
-  color: var(--text-color);
-  font-size: 1.2rem;
-  align-items: center;
-  justify-content: center;
-  position: flex;
-}
-
-.close-planning-button {
-  position: absolute;
-  top: 42px;
-  right: 10px;
-  padding: 8px 16px;
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 80px;
-  height: 24px;
-  gap: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px var(--shadow-color);
-  font-size: 14px;
-  z-index: 995;
-}
-
-.close-planning-button svg {
-  display: none;
-}
-
-/* Styles pour les fichiers de planning */
-.planning-files {
-  padding: 10px;
-  background: var(--background-color);
-  border-radius: 8px;
-}
-
-.planning-files h2 {
-  color: var(--text-color);
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.files-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.file-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  background: var(--card-background);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.file-info {
-  flex: 1;
-}
-
-.file-info h3 {
-  margin: 0 0 10px 0;
-  color: var(--text-color);
-}
-
-.file-info p {
-  margin: 5px 0;
-  color: var(--text-secondary);
-  font-size: 0.9em;
-}
-
-.file-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.icon-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: transparent;
-  padding: 8px;
-}
-
-.icon-button svg {
-  width: 24px;
-  height: 24px;
-  transition: all 0.2s ease;
-}
-
-.download-button {
-  color: #4CAF50;
-}
-
-.delete-button {
-  color: #f44336;
-}
-
-/* Styles pour le formulaire d'ajout de fichiers */
-.admin-controls {
-  margin-bottom: 20px;
-}
-
-.admin-instructions {
-  margin-bottom: 1rem;
-}
-
-.add-file-button {
-  padding: 8px 16px;
-  background-color: var(--success-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.2s;
-}
-
-.add-file-form {
-  background: var(--card-background);
-  padding: 2px;
-  gap: 1rem;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--text-color);
-  font-size: 0.9em;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--input-background);
-  color: var(--text-color);
-  font-size: 0.9em;
-}
-
-.form-group textarea {
-  /* Changé: Hauteur adaptative */
-  min-height: clamp(80px, 15vh, 150px);
-  resize: vertical;
-}
-
-.submit-button {
-  padding: 0.75rem 1.25rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.2s;
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
-  min-height: 44px;
-  min-width: 44px;
-}
-
-.filters {
-  margin: 20px 0;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.filter-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.filter-group label {
-  font-weight: 500;
-  color: #495057;
-}
-
-.filter-select {
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  background-color: white;
-  font-size: 14px;
-  color: #495057;
-  cursor: pointer;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-/* Styles pour le calendrier */
-.calendar-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.calendar-popup {
-  position: fixed;
-  /* ✅ Utiliser les variables globales : Header + safe-top */
-  top: calc(var(--header-height) + var(--safe-top));
-  left: 0;
-  right: 0;
-  /* ✅ Aller jusqu'en bas en tenant compte de la nav et safe-bottom */
-  bottom: calc(var(--nav-height) + var(--safe-bottom));
-  background-color: var(--bg-color);
-  z-index: 999;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.calendar-popup-header {
-  padding: 0.7rem;
-  background-color: var(--bg-color);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.calendar-grid {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  padding: 1rem;
-}
-
-.calendar-panel {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Styles des boutons du header déplacés vers Layout.css */
-
-/* Tous les chats utilisent maintenant les mêmes styles de base */
-
-/* ✅ SUPPRIMÉ : Toutes les règles .keyboard-open pour comportement resize
-   Avec keyboardResize: 'none', le clavier iOS passe par-dessus sans redimensionner
-   Le layout reste fixe (body, #root, .app-main en hauteur fixe 100vh)
-   Le plugin Keyboard gère automatiquement le scroll vers l'input focalisé */
-
-
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .keyboard-open .chat-container gère déjà le comportement */
-
-/* ✅ SUPPRIMÉ : Règle iOS redondante pour body - le système global dans index.css gère déjà le viewport et le scroll */
-
-/* ✅ SUPPRIMÉ : Règles iOS redondantes dans @supports - les règles standard gèrent déjà les viewport units modernes */
-
-.home-page .chat-panel-header h3,
-.info-page .chat-panel-header h3 {
-  margin-top: 0;
-}
-
-.leaflet-control-add-venue {
-  margin-top: 10px;
-}
-
-.leaflet-control-add-venue a {
-  background-color: var(--primary-color);
-  color: white;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  border-bottom: 1px solid #ccc;
-}
-
-.leaflet-control-add-venue a i {
-  font-size: 20px;
-}
-
-.add-venue-button {
-  position: fixed;  
-  /* ✅ Positionné au-dessus de la nav bar avec espacement */
-  bottom: calc(var(--above-bottom-nav) + 50px);
-  left: 20px;
-  width: 48px;
-  height: 48px;
-  border-radius: 9999px;
-  background-color: var(--bg-primary);
-  color: var(--text-color);
-  border: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 25px;
-  padding: 0;
-  cursor: pointer;
-  z-index: 2000;
-  transition: all 0.3s ease;
-  pointer-events: auto;
-}
-
-
-/* Styles pour les popups de la carte */
-.leaflet-popup {
-  position: absolute;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.leaflet-popup-content-wrapper {
-  max-width: 90vw;
-  background-color: var(--bg-color) !important;
-  color: var(--text-color) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 8px var(--shadow-color) !important;
-}
-
-.leaflet-popup-content {
-  margin: 0;
-  line-height: 1.4;
-}
-
-.leaflet-popup-tip {
-  background-color: var(--bg-color) !important;
-  box-shadow: 0 4px 8px var(--shadow-color) !important;
-}
-
-/* Empêcher le décalage de la page */
-.leaflet-container {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: var(--bottom-nav-total-height); /* Utilise la variable CSS */
-  z-index: 1;
-}
-
-/* Support spécifique pour iOS */
-/* ✅ SUPPRIMÉ : Règle iOS redondante - la règle standard .leaflet-container utilise déjà var(--bottom-nav-total-height) */
-
-
-/* ✅ SUPPRIMÉ : Les styles .app-main sont maintenant gérés dans Layout.css
-   avec les proportions strictes 5/90/5 et les règles de Flex Rescue */
-
-/* ✅ SUPPRIMÉ : Le style .map-container est maintenant géré plus haut avec height: 80vh */
-
-/* Ajuster la position des popups pour qu'elles ne soient pas coupées */
-.leaflet-popup {
-  margin-bottom: 0;
-}
-
-.leaflet-popup-content-wrapper {
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-/* Assurer que les popups sont toujours visibles */
-.leaflet-popup-tip-container {
-  margin-top: -1px;
-}
-
-.location-loading {
-  position: fixed;
-  right: 20px;
-  /* ✅ Positionné au-dessus de la nav bar avec espacement (même hauteur que AddVenue) */
-  bottom: calc(var(--above-bottom-nav) + 50px);
-  z-index: 2000;
-}
-
-/* ✅ SUPPRIMÉ : Règles iOS redondantes - les règles standard gèrent déjà le positionnement avec les variables CSS */
-
-.location-loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--border-color);
-  border-top: 4px solid var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-/* Spinner de chargement de la carte en bas à gauche */
-.map-loading-indicator {
-  position: fixed;
-  left: 20px;
-  /* ✅ Positionné au-dessus de la nav bar avec espacement (même hauteur que location-loading) */
-  bottom: calc(var(--above-bottom-nav) + 50px);
-  z-index: 2000;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.star-filter-button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-}
-
-.file-preview {
-  margin: 10px 0;
-  width: 100%;
-  /* Changé: Largeur adaptative */
-  max-width: min(300px, 85vw);
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.planning-image {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.planning-image:hover {
-  transform: scale(1.02);
-}
-
-.view-button {
-  color: #2196F3;
-}
-
-.leaflet-control-recenter {
-  margin-top: 10px;
-}
-
-.leaflet-control-recenter a {
-  color: white;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  border-bottom: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-}
-
-.recenter-button {
-  position: fixed;
-  /* ✅ Positionné au-dessus de la nav bar avec espacement réduit (remonté, même hauteur que AddVenue) */
-  bottom: calc(var(--above-bottom-nav) + 50px);
-  right: 20px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: var(--bg-primary) !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 2000;
-  transition: transform 0.3s ease;
-  pointer-events: auto;
-  opacity: 1 !important;
-  border: none;
-  padding: 0;
-}
-
-.recenter-button svg {
-  width: 24px;
-  height: 24px;
-  color: var(--text-color);
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 1px 2px var(--shadow-color));
-}
-
-/* Suppression des effets de focus par défaut */
-button:focus,
-input:focus,
-select:focus,
-.switch:focus,
-.slider:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* Suppression de l'effet de sélection sur les éléments */
-button,
-input,
-select,
-.switch,
-.slider {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Suppression de l'effet de focus sur les éléments de paramètres */
-.settings-item button:focus,
-.settings-item input:focus,
-.settings-item select:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* Suppression de l'effet de focus sur les switches */
-.switch input:focus + .slider {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.settings-item {
-  border-bottom: 1px solid var(--border-color);
 }

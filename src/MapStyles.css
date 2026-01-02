@@ -1,0 +1,179 @@
+/* ============================================
+   MAP STYLES - Styles Leaflet Custom
+   ============================================ */
+
+/* Conteneur Leaflet */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  margin-bottom: -2rem;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--bottom-nav-total-height);
+  z-index: 1;
+}
+
+/* Popups Leaflet */
+.leaflet-popup {
+  position: absolute;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  line-height: 1.4;
+  width: auto !important;
+}
+
+.leaflet-popup-content-wrapper {
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px var(--shadow-color) !important;
+}
+
+.leaflet-popup-tip {
+  background-color: var(--bg-color) !important;
+  box-shadow: 0 4px 8px var(--shadow-color) !important;
+}
+
+.leaflet-popup-tip-container {
+  margin-top: -1px;
+}
+
+/* Styles spécifiques pour les éléments dans les popups Leaflet */
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-date,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-date,
+.leaflet-popup-content-wrapper .match-item .match-date,
+.leaflet-popup-content .match-item .match-date,
+.matches-list .match-item .match-date,
+.matches-scroll-container .match-item .match-date {
+  color: rgba(255, 152, 0, 1) !important;
+}
+
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-description,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-description,
+.leaflet-popup-content-wrapper .match-item .match-description,
+.leaflet-popup-content .match-item .match-description,
+.matches-list .match-item .match-description,
+.matches-scroll-container .match-item .match-description {
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-result,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-result,
+.leaflet-popup-content-wrapper .match-item .match-result,
+.leaflet-popup-content .match-item .match-result,
+.matches-list .match-item .match-result,
+.matches-scroll-container .match-item .match-result {
+  color: rgba(76, 175, 80, 1) !important;
+}
+
+.leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-result strong,
+.leaflet-popup-content-wrapper .matches-list .matches-scroll-container .match-item .match-result strong,
+.leaflet-popup-content-wrapper .match-item .match-result strong,
+.leaflet-popup-content .match-item .match-result strong,
+.matches-list .match-item .match-result strong,
+.matches-scroll-container .match-item .match-result strong {
+  color: rgba(76, 175, 80, 1) !important;
+}
+
+/* Contrôles Leaflet */
+.leaflet-control-container, 
+.leaflet-control,
+.leaflet-top,
+.leaflet-bottom,
+.leaflet-right,
+.leaflet-left {
+  z-index: 900 !important;
+}
+
+.leaflet-control-zoom {
+  position: fixed !important;
+  top: var(--below-header-with-margin) !important;
+  right: 10px !important;
+  z-index: 2000;
+  border: none !important;
+  box-shadow: 0 2px 8px var(--shadow-color) !important;
+  margin: 0 !important;
+  background: var(--bg-primary) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.leaflet-control-zoom a {
+  width: 35px !important;
+  height: 35px !important;
+  line-height: 35px !important;
+  font-size: 18px !important;
+  margin: 4px !important;
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 500 !important;
+}
+
+.leaflet-control-zoom-in {
+  margin-bottom: 6px !important;
+}
+
+.leaflet-control-zoom-out {
+  margin-top: 6px !important;
+}
+
+.leaflet-control-add-venue {
+  margin-top: 10px;
+}
+
+.leaflet-control-add-venue a {
+  background-color: var(--primary-color);
+  color: white;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-bottom: 1px solid #ccc;
+}
+
+.leaflet-control-add-venue a i {
+  font-size: 20px;
+}
+
+.leaflet-control-recenter {
+  margin-top: 10px;
+}
+
+.leaflet-control-recenter a {
+  color: white;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-bottom: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .leaflet-control-container {
+    z-index: 900 !important;
+  }
+}
+

@@ -1,22 +1,212 @@
 /**
  * @fileoverview Styles pour le composant ChatPanel
  * 
- * Note: La plupart des styles sont définis globalement dans App.css
- * Ce fichier contient uniquement les styles spécifiques au composant si nécessaire
+ * Ce fichier contient tous les styles du chat panel
  */
 
-/* Les styles principaux sont dans App.css :
- * - .chat-panel
- * - .chat-panel-header
- * - .chat-container
- * - .chat-message
- * - .chat-message-header
- * - .chat-message-content
- * - .translate-button
- * - .chat-admin-buttons
- * - .add-message-button
- * - .add-message-form
- */
+/* ============================================
+   CHAT PANEL - Styles du panneau de chat
+   ============================================ */
+
+.chat-panel {
+  position: fixed;
+  top: calc(var(--header-height) + var(--safe-top));
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom));
+  background-color: var(--bg-color);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.chat-panel-header {
+  padding: 0.7rem;
+  background-color: var(--bg-color);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  margin-top: 0;
+}
+
+.chat-panel-header h3 {
+  margin-top: 0;
+  color: var(--text-color);
+  font-size: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  position: flex;
+  font-weight: 700;
+}
+
+.chat-container {
+  padding: 1rem;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin-bottom: 10px;
+  flex: 1;
+}
+
+.chat-message {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.8rem 2.8rem 0.8rem;
+  border-radius: 8px;
+  background-color: var(--bg-secondary);
+  box-shadow: 0 4px 4px var(--shadow-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+.chat-message.admin {
+  background-color: var(--secondary-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+.chat-message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.chat-message-content {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-width: 90vw;
+  word-break: break-word;
+  white-space: pre-line;
+  padding: 0.2rem 0.1rem;
+  color: var(--text-color);
+}
+
+.add-message-button {
+  background-color: var(--primary-color); 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  display: flex;
+  align-items: center;
+}
+
+/* Bouton de traduction */
+.translate-button {
+  position: absolute !important;
+  bottom: 8px !important;
+  right: 8px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  cursor: pointer !important;
+  font-size: 0.8rem !important;
+  color: var(--text-color) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  transition: all 0.3s ease !important;
+  z-index: 1 !important;
+}
+
+/* Conteneur des boutons admin dans le chat */
+.chat-admin-buttons {
+  position: absolute !important;
+  bottom: 8px !important;
+  right: 110px !important;
+  display: flex !important;
+  gap: 10px !important;
+  z-index: 1 !important;
+}
+
+/* Boutons admin individuels */
+.edit-message-button,
+.delete-message-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  color: var(--text-color) !important;
+  font-size: 0.75rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+}
+
+/* Style spécifique pour le chat panel sur Home et Info */
+.home-info-chat {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-color);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.home-info-chat .chat-panel-header {
+  padding: 0.7rem;
+  background-color: var(--bg-color);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  margin-top: calc(var(--header-height) + var(--safe-top) + 20px);
+  padding-top: 0.7rem;
+}
+
+.home-info-chat .chat-panel-header h3 {
+  margin-top: 0;
+  color: var(--text-color);
+  font-size: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  position: flex;
+  font-weight: 700;
+}
+
+.home-info-chat .chat-container {
+  padding: 1rem;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.home-page .chat-panel-header h3,
+.info-page .chat-panel-header h3 {
+  margin-top: 0;
+}
+
+/* Media queries */
+@media (max-width: 600px) {
+  .chat-message-content {
+    padding: 0.2rem 0.2rem;
+    max-width: 98vw;
+  }
+}
 
 /* ===== SPINNER DE CHARGEMENT ===== */
 .chat-loading-spinner-container {
