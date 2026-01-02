@@ -152,7 +152,7 @@
 .venue-popup .venue-phone {
   padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 16px);
   margin: clamp(6px, 1vw, 8px) 0 0 0;
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255, 0.7);
   font-size: clamp(0.7rem, 2vw, 0.8rem);
   text-align: center;
   background: rgba(20, 20, 20, 0.4);
@@ -164,20 +164,22 @@
   margin-top: clamp(8px, 1.5vw, 12px);
 }
 
-.venue-address {
+/* Augmentation de spécificité pour venue-address et venue-phone */
+.venue-popup .venue-address {
   font-style: italic;
-  color: var(--text-color-light) !important;
-  margin-bottom: 1rem !important;
+  color: var(--text-color-light);
+  margin-bottom: 1rem;
 }
 
-.venue-phone {
+.venue-popup .venue-phone {
   font-weight: italic;
-  color: var(--text-color-light) !important;
-  margin-bottom: 0.5rem !important;
-  margin-top: -0.5rem !important;
+  color: var(--text-color-light);
+  margin-bottom: 0.5rem;
+  margin-top: -0.5rem;
 }
 
 /* Exclure les éléments dans .match-item du style général de .venue-popup p */
+/* Augmentation de spécificité pour override les styles de .venue-popup p */
 .venue-popup .match-item p.match-date,
 .venue-popup .match-item p.match-teams,
 .venue-popup .match-item p.match-description,
@@ -186,7 +188,7 @@
 .matches-list .match-item p.match-teams,
 .matches-list .match-item p.match-description,
 .matches-list .match-item p.match-result {
-  color: inherit !important;
+  color: inherit;
   margin: inherit;
   font-size: inherit;
 }
@@ -319,8 +321,9 @@
   background: rgba(20, 20, 20, 0.6);
 }
 
-.match-date {
-  color: rgba(255, 152, 0, 1) !important;
+/* Augmentation de spécificité pour match-date */
+.match-item .match-date {
+  color: rgba(255, 152, 0, 1);
   font-weight: 700;
   font-size: clamp(0.85rem, 3vw, 1rem);
   margin: 0 0 clamp(8px, 1.5vh, 12px) 0;
@@ -344,8 +347,9 @@
   word-break: break-word;
 }
 
-.match-description {
-  color: rgba(255, 255, 255, 1) !important;
+/* Augmentation de spécificité pour match-description */
+.match-item .match-description {
+  color: rgba(255, 255, 255, 1);
   font-size: clamp(0.7rem, 2.5vw, 0.85rem);
   margin: 0 0 clamp(6px, 1vh, 10px) 0;
   line-height: 1.4;
@@ -356,8 +360,9 @@
   width: 100%;
 }
 
-.match-result {
-  color: rgba(76, 175, 80, 1) !important;
+/* Augmentation de spécificité pour match-result */
+.match-item .match-result {
+  color: rgba(76, 175, 80, 1);
   font-weight: 700;
   font-size: clamp(0.75rem, 2.5vw, 0.9rem);
   margin: clamp(6px, 1vh, 10px) 0 0 0;
@@ -367,8 +372,8 @@
   width: 100%;
 }
 
-.match-result strong {
-  color: rgba(76, 175, 80, 1) !important;
+.match-item .match-result strong {
+  color: rgba(76, 175, 80, 1);
   font-weight: 700;
 }
 
@@ -611,7 +616,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--bg-color) !important;
+  background-color: var(--bg-color);
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
@@ -621,9 +626,15 @@
   z-index: 2000;
   transition: transform 0.3s ease;
   pointer-events: auto;
-  opacity: 1 !important;
+  opacity: 1;
   border: none;
   padding: 0;
+}
+
+/* Augmentation de spécificité pour override potentiel */
+body .recenter-button {
+  background-color: var(--bg-color);
+  opacity: 1;
 }
 
 .recenter-button svg {
@@ -819,10 +830,11 @@
    BOUTONS TOGGLE - Styles des boutons toggle de la carte
    ============================================ */
 
-.events-toggle-button,
-.calendar-toggle-button {
-  position: fixed !important;
-  left: 10px !important;
+/* Augmentation de spécificité pour les boutons toggle */
+body .events-toggle-button,
+body .calendar-toggle-button {
+  position: fixed;
+  left: 10px;
   z-index: 2000;
   padding: 0.5rem 1rem;
   background-color: var(--bg-color);
@@ -832,19 +844,19 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  border: none !important;
+  border: none;
   border-radius: 8px;
-  transition: none !important;
+  transition: none;
   width: fit-content;
   justify-content: center;
 }
 
-.events-toggle-button {
-  top: var(--below-header-with-margin) !important;
+body .events-toggle-button {
+  top: var(--below-header-with-margin);
 }
 
-.calendar-toggle-button {
-  top: calc(var(--below-header-with-margin) + 50px) !important;
+body .calendar-toggle-button {
+  top: calc(var(--below-header-with-margin) + 50px);
 }
 
 .events-toggle-button.active,
@@ -872,12 +884,13 @@
   background-size: 12px;
 }
 
-[data-theme="dark"] .filter-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
+/* Augmentation de spécificité pour filter-select selon le thème */
+[data-theme="dark"] .filter-select.filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
 }
 
-[data-theme="light"] .filter-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23181818' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
+[data-theme="light"] .filter-select.filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23181818' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -905,11 +918,12 @@
     height: 35px;
   }
 
-  .events-toggle-button {
-    z-index: 995 !important;
+  /* Augmentation de spécificité pour z-index en mobile */
+  body .events-toggle-button {
+    z-index: 995;
   }
 
-  .calendar-toggle-button {
-    z-index: 995 !important;
+  body .calendar-toggle-button {
+    z-index: 995;
   }
 }

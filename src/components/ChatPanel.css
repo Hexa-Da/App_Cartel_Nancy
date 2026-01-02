@@ -101,50 +101,53 @@
 }
 
 /* Bouton de traduction */
-.translate-button {
-  position: absolute !important;
-  bottom: 8px !important;
-  right: 8px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  cursor: pointer !important;
-  font-size: 0.8rem !important;
-  color: var(--text-color) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  transition: all 0.3s ease !important;
-  z-index: 1 !important;
+/* Augmentation de spécificité avec .chat-message */
+.chat-message .translate-button {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+  z-index: 1;
 }
 
 /* Conteneur des boutons admin dans le chat */
-.chat-admin-buttons {
-  position: absolute !important;
-  bottom: 8px !important;
-  right: 110px !important;
-  display: flex !important;
-  gap: 10px !important;
-  z-index: 1 !important;
+/* Augmentation de spécificité avec .chat-message */
+.chat-message .chat-admin-buttons {
+  position: absolute;
+  bottom: 8px;
+  right: 110px;
+  display: flex;
+  gap: 10px;
+  z-index: 1;
 }
 
 /* Boutons admin individuels */
-.edit-message-button,
-.delete-message-button {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  color: var(--text-color) !important;
-  font-size: 0.75rem !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.3s ease !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
+/* Augmentation de spécificité avec .chat-message */
+.chat-message .edit-message-button,
+.chat-message .delete-message-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: var(--text-color);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  min-width: 28px;
+  min-height: 28px;
 }
 
 /* Style spécifique pour le chat panel sur Home et Info */

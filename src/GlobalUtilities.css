@@ -388,11 +388,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999 !important;
+  z-index: 99999;
 }
 
-.edit-form, [role="dialog"], .form-overlay {
-  z-index: 99999 !important;
+/* Augmentation de spécificité pour z-index des modals */
+body .edit-form,
+body [role="dialog"],
+body .form-overlay {
+  z-index: 99999;
 }
 
 .edit-form::before {
@@ -413,17 +416,23 @@ body {
   left: auto;
   max-width: 90vw;
   background-color: var(--bg-color);
-  z-index: 100000 !important;
+  z-index: 100000;
+}
+
+/* Augmentation de spécificité pour match-edit-form */
+body .match-edit-form {
+  z-index: 100000;
 }
 
 /* Classes utilitaires - Focus et sélection */
-button:focus,
-input:focus,
-select:focus,
-.switch:focus,
-.slider:focus {
-  outline: none !important;
-  box-shadow: none !important;
+/* Augmentation de spécificité pour override les styles par défaut */
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+.switch:focus:not(:focus-visible),
+.slider:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 
 button,
@@ -440,28 +449,29 @@ select,
   user-select: none;
 }
 
-.settings-item button:focus,
-.settings-item input:focus,
-.settings-item select:focus {
-  outline: none !important;
-  box-shadow: none !important;
+.settings-item button:focus:not(:focus-visible),
+.settings-item input:focus:not(:focus-visible),
+.settings-item select:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 
-.switch input:focus + .slider {
-  outline: none !important;
-  box-shadow: none !important;
+.switch input:focus:not(:focus-visible) + .slider {
+  outline: none;
+  box-shadow: none;
 }
 
 /* Media queries */
 @media (max-width: 768px) { /* BREAKPOINTS.tablet */
-  .edit-form {
+  /* Augmentation de spécificité pour override en mobile */
+  body .edit-form {
     width: var(--modal-width);
     max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
     padding: clamp(12px, 2.5vw, 15px);
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   
   .edit-form-header {
@@ -505,8 +515,11 @@ select,
 }
 
 @media (max-width: 768px) { /* BREAKPOINTS.tablet */
-  .form-overlay, .edit-form, [role="dialog"] {
-    z-index: 100000 !important;
+  /* Augmentation de spécificité pour z-index en mobile */
+  body .form-overlay,
+  body .edit-form,
+  body [role="dialog"] {
+    z-index: 100000;
   }
 }
 
