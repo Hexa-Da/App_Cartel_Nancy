@@ -231,7 +231,7 @@
 /* Modal overlay pour ajouter un fichier */
 .modal-overlay {
   position: fixed;
-  top: var(--below-header); /* Utilise la variable CSS */
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -248,13 +248,14 @@
 
 .modal-content {
   position: relative;
-  max-width: 90%;
-  max-height: calc(100vh - var(--below-header)); /* Utilise la variable CSS */
-  max-height: calc(100svh - var(--below-header)); /* Support viewport units modernes */
-  background-color: var(--bg-color);
-  border-radius: 8px;
+  background: var(--bg-color);
+  border-radius: 12px;
+  width: 90%;
+  max-width: min(400px, 95vw);
+  max-height: calc(100vh - 40px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  border: 2px solid var(--accent-color);
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
 }
@@ -506,4 +507,288 @@ body.ios-simulator .modal-overlay {
 body.ios-simulator .modal-content {
   -webkit-backdrop-filter: blur(25px);
   backdrop-filter: blur(25px);
+}
+
+
+/* Modal header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.modal-title {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+/* Modal scrollable content */
+.modal-scrollable {
+  padding: 1rem;
+  background-color: var(--bg-color);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100vh - 140px);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Form styles */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 599px) {
+  .modal-form {
+    gap: 0.7rem;
+  }
+}
+
+/* Form inputs and selects */
+.modal-input,
+.modal-select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 599px) {
+  .modal-input,
+  .modal-select {
+    padding: 0.4rem;
+    font-size: 0.98rem;
+  }
+}
+
+/* Form buttons container */
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 1rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+@media (max-width: 599px) {
+  .modal-buttons {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+/* Cancel button */
+.modal-cancel-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--error-color);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.modal-cancel-button:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 599px) {
+  .modal-cancel-button {
+    padding: 0.4rem 1rem;
+    font-size: 0.98rem;
+  }
+}
+
+/* Submit button */
+.modal-submit-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: linear-gradient(45deg, var(--accent-color), #4CAF50);
+  color: white;
+  cursor: pointer;
+  opacity: 1;
+  transition: all 0.2s ease;
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.modal-submit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.modal-submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media (max-width: 599px) {
+  .modal-submit-button {
+    padding: 0.4rem 1rem;
+    font-size: 0.98rem;
+  }
+}
+
+/* Files list */
+.files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 40vh;
+  overflow-y: auto;
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+}
+
+/* File item - override existing styles */
+.file-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
+  margin: 0;
+}
+
+@media (max-width: 599px) {
+  .file-item {
+    padding: 0.6rem 0.5rem !important;
+    gap: 0.3rem !important;
+  }
+}
+
+/* File name */
+.file-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-bottom: 2px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 599px) {
+  .file-name {
+    font-size: 0.98rem;
+  }
+}
+
+/* File actions container */
+.file-actions-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 599px) {
+  .file-actions-container {
+    flex-direction: column;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+}
+
+/* View button */
+.file-view-button {
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background 0.2s;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  cursor: pointer;
+}
+
+@media (max-width: 599px) {
+  .file-view-button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.98rem;
+  }
+}
+
+/* Delete button in file item */
+.file-item .delete-button {
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  border: none;
+  background: var(--error-color);
+  color: white;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background 0.2s;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+}
+
+@media (max-width: 599px) {
+  .file-item .delete-button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.98rem;
+  }
 } 

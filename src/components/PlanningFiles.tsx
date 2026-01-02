@@ -4,7 +4,8 @@ import { database, storage } from '../firebase';
 import { PlanningFile } from '../types';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
 import { firebaseLogger } from '../services/FirebaseLogger';
-import { BREAKPOINTS, MODAL_SIZES, minSize } from '../config/responsive';
+import { BREAKPOINTS } from '../config/responsive';
+import './PlanningFiles.css';
 
 // Classe pour optimiser les connexions Firebase et monitoring des coûts
 class FirebaseOptimizer {
@@ -227,9 +228,6 @@ export default function PlanningFiles({
     { value: 'Restaurant', label: 'Restaurant' },
     { value: 'HSE', label: 'HSE' }
   ];
-
-  // Helper pour détecter mobile
-  const isMobile = window.innerWidth < BREAKPOINTS.smallTablet;
 
   // Initialiser le filtre basé sur la prop
   useEffect(() => {
@@ -720,40 +718,10 @@ export default function PlanningFiles({
       )}
 
       {showAddForm && isAdmin && (
-          <div className="modal-overlay" style={{
-            position: 'fixed',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 2000
-          }}>
-            <div className="modal-content" style={{
-              background: 'var(--bg-color)',
-              borderRadius: '12px',
-              width: '90%',
-              maxWidth: minSize(400, 95),
-              maxHeight: 'calc(100vh - 40px)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-              overflow: 'hidden',
-              position: 'relative',
-              border: '1px solid var(--border-color)',
-              display: 'flex',
-              flexDirection: 'column',
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '1rem',
-                borderBottom: '1px solid var(--border-color)',
-                position: 'relative'
-              }}>
-                <h3 style={{ margin: 0, color: 'var(--text-color)', fontSize: '1.2rem' }}>
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h3 className="modal-title">
                   Ajouter un fichier
                 </h3>
               <button 
@@ -763,41 +731,15 @@ export default function PlanningFiles({
                   setSpecificItem('');
                   setNewFile({ name: '', type: 'image', url: '', eventType: '' });
                 }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                    color: 'var(--text-color)',
-                    position: 'absolute',
-                    right: '0.5rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                  padding: '0.5rem',
-                    lineHeight: 1
-                  }}
+                className="modal-close-button"
               >
                 ×
               </button>
               </div>
 
-              <div style={{
-                padding: '1rem',
-                backgroundColor: 'var(--bg-color)',
-                overflowY: 'auto',
-                flex: 1,
-                minHeight: 0,
-                maxHeight: 'calc(100vh - 140px)',
-                WebkitOverflowScrolling: 'touch',
-              }}>
+              <div className="modal-scrollable">
 
-              <form onSubmit={handleAddFile} style={{ 
-                display: 'flex',
-                flexDirection: 'column',
-                gap: isMobile ? '0.7rem' : '1rem',
-                width: '100%',
-                boxSizing: 'border-box',
-              }}>
+              <form onSubmit={handleAddFile} className="modal-form">
           <div className="form-group">
                   <label htmlFor="fileName">Nom du fichier</label>
             <input
@@ -807,16 +749,7 @@ export default function PlanningFiles({
               onChange={(e) => setNewFile({ ...newFile, name: e.target.value })}
               required
               placeholder="Ex: Fichier Basketball M"
-                    style={{
-                      width: '100%',
-                      padding: isMobile ? '0.4rem' : '0.5rem',
-                      borderRadius: '4px',
-                      border: '1px solid var(--border-color)',
-                      background: 'var(--bg-color)',
-                      color: 'var(--text-primary)',
-                      fontSize: isMobile ? '0.98rem' : '1rem',
-                      boxSizing: 'border-box',
-                    }}
+                    className="modal-input"
             />
           </div>
 
@@ -830,16 +763,7 @@ export default function PlanningFiles({
                       setSpecificItem(''); // Réinitialiser l'élément spécifique quand la catégorie change
                     }}
                     required
-                    style={{
-                      width: '100%',
-                      padding: isMobile ? '0.4rem' : '0.5rem',
-                      borderRadius: '4px',
-                      border: '1px solid var(--border-color)',
-                      background: 'var(--bg-color)',
-                      color: 'var(--text-primary)',
-                      fontSize: isMobile ? '0.98rem' : '1rem',
-                      boxSizing: 'border-box',
-                    }}
+                    className="modal-select"
                   >
                     <option value="">Sélectionnez une catégorie</option>
                     <option value="sports">Sports</option>
@@ -878,16 +802,7 @@ export default function PlanningFiles({
                         }
                       }}
                       required
-                      style={{
-                        width: '100%',
-                        padding: isMobile ? '0.4rem' : '0.5rem',
-                        borderRadius: '4px',
-                        border: '1px solid var(--border-color)',
-                        background: 'var(--bg-color)',
-                        color: 'var(--text-primary)',
-                        fontSize: isMobile ? '0.98rem' : '1rem',
-                        boxSizing: 'border-box',
-                      }}
+                      className="modal-select"
                     >
                       <option value="">Sélectionnez un élément</option>
                       {fileCategory === 'sports' && eventTypes
@@ -931,21 +846,11 @@ export default function PlanningFiles({
                     ref={fileInputRef}
                     onChange={handleFileSelect}
               required
-                    className="file-input"
-                    style={{
-                      width: '100%',
-                      padding: isMobile ? '0.4rem' : '0.5rem',
-                      borderRadius: '4px',
-                      border: '1px solid var(--border-color)',
-                      background: 'var(--bg-color)',
-                      color: 'var(--text-primary)',
-                      fontSize: isMobile ? '0.98rem' : '1rem',
-                      boxSizing: 'border-box',
-                    }}
+                    className="file-input modal-input"
             />
           </div>
 
-          <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '1rem', justifyContent: 'space-between', marginTop: '1rem', flexWrap: isMobile ? 'wrap' : 'nowrap', width: '100%' }}>
+          <div className="modal-buttons">
                   <button 
                     type="button"
                     onClick={() => {
@@ -954,43 +859,14 @@ export default function PlanningFiles({
                       setSpecificItem('');
                       setNewFile({ name: '', type: 'image', url: '', eventType: '' });
                     }}
-                    style={{
-                      padding: isMobile ? '0.4rem 1rem' : '0.5rem 1.5rem',
-                      borderRadius: '4px',
-                      border: '1px solid var(--border-color)',
-                      background: 'var(--error-color)',
-                      color: 'white',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      fontWeight: 'bold',
-                      fontSize: isMobile ? '0.98rem' : '1rem',
-                      minWidth: 0,
-                      boxSizing: 'border-box',
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
-                    onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                    className="modal-cancel-button"
                   >
                     Annuler
                   </button>
                   <button 
                     type="submit" 
                     disabled={uploading}
-                    style={{
-                      padding: isMobile ? '0.4rem 1rem' : '0.5rem 1.5rem',
-                      borderRadius: '4px',
-                      border: '1px solid var(--border-color)',
-                      background: 'linear-gradient(45deg, var(--accent-color), #4CAF50)',
-                      color: 'white',
-                      cursor: uploading ? 'not-allowed' : 'pointer',
-                      opacity: uploading ? 0.7 : 1,
-                      transition: 'all 0.2s ease',
-                      fontWeight: 'bold',
-                      fontSize: isMobile ? '0.98rem' : '1rem',
-                      minWidth: 0,
-                      boxSizing: 'border-box',
-                    }}
-                    onMouseOver={(e) => !uploading && (e.currentTarget.style.transform = 'translateY(-1px)')}
-                    onMouseOut={(e) => !uploading && (e.currentTarget.style.transform = 'translateY(0)')}
+                    className="modal-submit-button"
                   >
                     {uploading ? 'Upload en cours...' : 'Ajouter le fichier'}
           </button>
@@ -1004,70 +880,17 @@ export default function PlanningFiles({
       {filteredFiles.length === 0 && !isLoading ? (
           <p className="no-files">Aucun fichier disponible</p>
       ) : filteredFiles.length > 0 ? (
-          <div className="files-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '40vh', overflowY: 'auto', width: '100%', minWidth: 0, alignItems: 'stretch' }}>
+          <div className="files-list">
           {filteredFiles.map((file) => {
             const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name);
             return (
-              <div key={file.id} className="file-item" style={{
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                padding: isMobile ? '0.6rem 0.5rem' : '0.75rem 1rem',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                marginBottom: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: isMobile ? '0.3rem' : '0.5rem',
-                minWidth: 0,
-                width: '100%',
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-                wordBreak: 'break-word',
-                margin: 0,
-              }}>
-                <div style={{
-                  fontWeight: 600,
-                  fontSize: isMobile ? '0.98rem' : '1rem',
-                  color: 'var(--text-primary)',
-                  whiteSpace: 'normal',
-                  wordBreak: 'break-word',
-                  overflowWrap: 'break-word',
-                  marginBottom: 2,
-                  maxWidth: '100%',
-                  minWidth: 0,
-                }}>{file.name}</div>
-                <div style={{
-                  display: 'flex',
-                  flexDirection: isMobile ? 'column' : 'row',
-                  alignItems: 'center',
-                  gap: isMobile ? '0.4rem' : '0.7rem',
-                  justifyContent: isMobile ? 'center' : 'flex-end',
-                  flexWrap: 'wrap',
-                  width: '100%',
-                  maxWidth: '100%',
-                  minWidth: 0,
-                }}>
+              <div key={file.id} className="file-item">
+                <div className="file-name">{file.name}</div>
+                <div className="file-actions-container">
                   {isImage ? (
                 <button
                       onClick={() => window.open(file.url, '_blank')}
-                      style={{
-                        padding: isMobile ? '0.35rem 0.7rem' : '0.4rem 0.9rem',
-                        borderRadius: '4px',
-                        background: 'var(--accent-color)',
-                        color: 'white',
-                        border: 'none',
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontWeight: 500,
-                        fontSize: isMobile ? '0.98rem' : '1rem',
-                        transition: 'background 0.2s',
-                        minWidth: 0,
-                        maxWidth: '100%',
-                        flex: '1 1 auto',
-                        cursor: 'pointer',
-                      }}
+                      className="file-view-button"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                       Voir
@@ -1075,24 +898,7 @@ export default function PlanningFiles({
                   ) : (
                     <button
                       onClick={() => window.open(file.url, '_blank')}
-                      style={{
-                        padding: isMobile ? '0.35rem 0.7rem' : '0.4rem 0.9rem',
-                        borderRadius: '4px',
-                        background: 'var(--accent-color)',
-                        color: 'white',
-                        border: 'none',
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontWeight: 500,
-                        fontSize: isMobile ? '0.98rem' : '1rem',
-                        transition: 'background 0.2s',
-                        minWidth: 0,
-                        maxWidth: '100%',
-                        flex: '1 1 auto',
-                        cursor: 'pointer',
-                      }}
+                      className="file-view-button"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                       Voir
@@ -1102,23 +908,6 @@ export default function PlanningFiles({
                   <button
                     onClick={() => handleDeleteFile(file.id)}
                       className="delete-button"
-                      style={{
-                        padding: isMobile ? '0.35rem 0.7rem' : '0.4rem 0.9rem',
-                        borderRadius: '4px',
-                        border: 'none',
-                        background: 'var(--error-color)',
-                        color: 'white',
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontWeight: 500,
-                        fontSize: isMobile ? '0.98rem' : '1rem',
-                        transition: 'background 0.2s',
-                        minWidth: 0,
-                        maxWidth: '100%',
-                        flex: '1 1 auto',
-                      }}
                   >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="3 6 5 6 21 6"/>
