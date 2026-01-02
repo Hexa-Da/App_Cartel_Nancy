@@ -1,0 +1,149 @@
+/**
+ * CSS Reset - Normalisation des styles par défaut
+ * 
+ * Ce fichier contient les règles de reset pour :
+ * - Supprimer les marges/paddings par défaut
+ * - Désactiver les effets web (sélection, scrollbars, zoom)
+ * - Configurer le box-sizing
+ * - Masquer les scrollbars
+ */
+
+/* ============================================
+   RESSENTI NATIF - Suppression des effets web
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* ✅ Supprime le flash de sélection gris sur iOS et Android */
+  -webkit-tap-highlight-color: transparent;
+  /* ✅ Désactive le menu contextuel au long-click (sauf sur input) */
+  -webkit-touch-callout: none;
+  /* ✅ Désactive la sélection de texte globale */
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ✅ Réactive la sélection de texte uniquement là où c'est utile */
+input,
+textarea,
+.selectable-text {
+  user-select: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  /* Réactive le menu contextuel pour les champs de texte */
+  -webkit-touch-callout: default;
+}
+
+/* ============================================
+   SCROLLBARS - Masquage complet
+   ============================================ */
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+*::-webkit-scrollbar-track {
+  display: none;
+}
+
+*::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  display: none;
+}
+
+/* Masquer les scrollbars quand pas en cours d'utilisation - uniforme sur toutes les plateformes */
+*:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+/* Masquer complètement les scrollbars sur tous les éléments scrollables */
+.horizontal-scroll,
+.calendar-scrollable-content,
+.matches-list,
+.modal-form-content,
+.vss-form-content,
+.chat-container,
+.emoji-selector,
+.planning-files {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar,
+.calendar-scrollable-content::-webkit-scrollbar,
+.matches-list::-webkit-scrollbar,
+.modal-form-content::-webkit-scrollbar,
+.vss-form-content::-webkit-scrollbar,
+.chat-container::-webkit-scrollbar,
+.emoji-selector::-webkit-scrollbar,
+.planning-files::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track,
+.calendar-scrollable-content::-webkit-scrollbar-track,
+.matches-list::-webkit-scrollbar-track,
+.modal-form-content::-webkit-scrollbar-track,
+.vss-form-content::-webkit-scrollbar-track,
+.chat-container::-webkit-scrollbar-track,
+.emoji-selector::-webkit-scrollbar-track,
+.planning-files::-webkit-scrollbar-track {
+  display: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb,
+.calendar-scrollable-content::-webkit-scrollbar-thumb,
+.matches-list::-webkit-scrollbar-thumb,
+.modal-form-content::-webkit-scrollbar-thumb,
+.vss-form-content::-webkit-scrollbar-thumb,
+.chat-container::-webkit-scrollbar-thumb,
+.emoji-selector::-webkit-scrollbar-thumb,
+.planning-files::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover,
+.calendar-scrollable-content::-webkit-scrollbar-thumb:hover,
+.matches-list::-webkit-scrollbar-thumb:hover,
+.modal-form-content::-webkit-scrollbar-thumb:hover,
+.vss-form-content::-webkit-scrollbar-thumb:hover,
+.chat-container::-webkit-scrollbar-thumb:hover,
+.emoji-selector::-webkit-scrollbar-thumb:hover,
+.planning-files::-webkit-scrollbar-thumb:hover {
+  display: none;
+}
+
+/* Masquer les scrollbars quand pas en cours d'utilisation - uniforme sur toutes les plateformes */
+.horizontal-scroll:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
+.calendar-scrollable-content:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
+.matches-list:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
+.modal-form-content:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
+.vss-form-content:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
+.chat-container:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
+.emoji-selector:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
+.planning-files:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+/* ============================================
+   EMPÊCHER LE ZOOM AUTOMATIQUE SUR LES INPUTS
+   ============================================ */
+input,
+textarea {
+  font-size: 16px !important;
+}
+

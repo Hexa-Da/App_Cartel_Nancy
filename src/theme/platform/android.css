@@ -1,0 +1,20 @@
+/**
+ * Android Specific Hacks & Fixes
+ * 
+ * Ce fichier contient les corrections spécifiques pour Android :
+ * - Ajustements de rendu
+ * - Corrections de scroll si nécessaire
+ */
+
+/* ============================================
+   CORRECTIONS ANDROID (si nécessaire)
+   ============================================ */
+/* Pour l'instant, aucune correction spécifique Android n'est nécessaire.
+ * Les règles globales dans reset.css et tokens.css suffisent.
+ * 
+ * Ajouter ici les hacks Android spécifiques si besoin :
+ * - Corrections de StatusBar
+ * - Ajustements de Safe Areas
+ * - Optimisations de performance
+ */
+

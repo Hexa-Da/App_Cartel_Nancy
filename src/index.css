@@ -1,227 +1,11 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  /* Variables pour le thème clair */
-  --bg-color: #ffffff;
-  --bg-secondary: #f5f5f5;
-  --text-color: #181818;
-  --text-primary: #181818; /* Alias pour text-color */
-  --border-color: #e0e0e0;
-  --primary-color: #646cff;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
-  --success-color: #2ecc71;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --calendar-filter: none;
-  --checkbox-filter: none;
-  
-  /* ============================================
-     ÉTAPE 1 : Définir la Vérité (Variables Globales)
-     ============================================ */
-  /* ✅ Variables exactes pour les hauteurs fixes */
-  --header-height: 10vh; /* Hauteur exacte du Header (position fixed) */
-  --nav-height: 5vh; /* Hauteur exacte de la BottomNav (position fixed) - réduite */
-  
-  /* ✅ Variables pour les Safe Areas (encoches) */
-  /* NOTE: Les variables --safe-area-* sont définies dans responsive-tokens.css
-     qui est importé avant ce fichier. Elles sont disponibles ici. */
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  
-  /* ✅ Variables calculées pour les positions (compatibilité) */
-  --header-total-height: calc(var(--header-height) + var(--safe-top));
-  --bottom-nav-total-height: calc(var(--nav-height) + var(--safe-bottom));
-  --bottom-nav-height: var(--nav-height); /* Alias pour compatibilité */
-  --bottom-nav-height-ios: var(--nav-height); /* Alias pour compatibilité */
-  
-  /* Position au-dessus de la barre de navigation */
-  --above-bottom-nav: calc(var(--nav-height) + var(--safe-bottom));
-  --above-bottom-nav-ios: calc(var(--nav-height) + var(--safe-bottom));
-  
-  /* Position en dessous du header */
-  --below-header: var(--header-total-height);
-  --below-header-with-margin: calc(var(--header-total-height) + 10px);
-}
-
-[data-theme="dark"] {
-  --bg-color: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --text-color: rgb(255, 255, 255);
-  --text-primary: rgb(255, 255, 255); /* Alias pour text-color */
-  --border-color: #404040;
-  --primary-color: #646cff;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
-  --success-color: #2ecc71;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --calendar-filter: invert(0);
-  --checkbox-filter: invert(0);
-}
-
-[data-theme="light"] {
-  --bg-color: #ffffff;
-  --bg-secondary: #f5f5f5;
-  --text-color: #181818;
-  --text-primary: #181818; /* Alias pour text-color */
-  --border-color: #e0e0e0;
-  --primary-color: #646cff;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
-  --success-color: #2ecc71;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --calendar-filter: invert(1);
-  --checkbox-filter: invert(1);
-}
-
-/* ============================================
-   RESSENTI NATIF - Suppression des effets web
-   ============================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  /* ✅ Supprime le flash de sélection gris sur iOS et Android */
-  -webkit-tap-highlight-color: transparent;
-  /* ✅ Désactive le menu contextuel au long-click (sauf sur input) */
-  -webkit-touch-callout: none;
-  /* ✅ Désactive la sélection de texte globale */
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* ✅ Réactive la sélection de texte uniquement là où c'est utile */
-input,
-textarea,
-.selectable-text {
-  user-select: text;
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  /* Réactive le menu contextuel pour les champs de texte */
-  -webkit-touch-callout: default;
-}
-
-*::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
-}
-
-*::-webkit-scrollbar-track {
-  display: none;
-}
-
-*::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  display: none;
-}
-
-/* Masquer les scrollbars quand pas en cours d'utilisation - uniforme sur toutes les plateformes */
-*:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-/* Styles spécifiques pour iOS - masquer complètement */
-/* ✅ SUPPRIMÉ : Règles iOS redondantes pour scrollbars - les règles globales (lignes 168-224) gèrent déjà le masquage pour tous les éléments */
-
-/* Masquer complètement les scrollbars sur tous les éléments scrollables */
-.horizontal-scroll,
-.calendar-scrollable-content,
-.matches-list,
-.modal-form-content,
-.vss-form-content,
-.chat-container,
-.emoji-selector,
-.planning-files {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.horizontal-scroll::-webkit-scrollbar,
-.calendar-scrollable-content::-webkit-scrollbar,
-.matches-list::-webkit-scrollbar,
-.modal-form-content::-webkit-scrollbar,
-.vss-form-content::-webkit-scrollbar,
-.chat-container::-webkit-scrollbar,
-.emoji-selector::-webkit-scrollbar,
-.planning-files::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
-}
-
-.horizontal-scroll::-webkit-scrollbar-track,
-.calendar-scrollable-content::-webkit-scrollbar-track,
-.matches-list::-webkit-scrollbar-track,
-.modal-form-content::-webkit-scrollbar-track,
-.vss-form-content::-webkit-scrollbar-track,
-.chat-container::-webkit-scrollbar-track,
-.emoji-selector::-webkit-scrollbar-track,
-.planning-files::-webkit-scrollbar-track {
-  display: none;
-}
-
-.horizontal-scroll::-webkit-scrollbar-thumb,
-.calendar-scrollable-content::-webkit-scrollbar-thumb,
-.matches-list::-webkit-scrollbar-thumb,
-.modal-form-content::-webkit-scrollbar-thumb,
-.vss-form-content::-webkit-scrollbar-thumb,
-.chat-container::-webkit-scrollbar-thumb,
-.emoji-selector::-webkit-scrollbar-thumb,
-.planning-files::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-.horizontal-scroll::-webkit-scrollbar-thumb:hover,
-.calendar-scrollable-content::-webkit-scrollbar-thumb:hover,
-.matches-list::-webkit-scrollbar-thumb:hover,
-.modal-form-content::-webkit-scrollbar-thumb:hover,
-.vss-form-content::-webkit-scrollbar-thumb:hover,
-.chat-container::-webkit-scrollbar-thumb:hover,
-.emoji-selector::-webkit-scrollbar-thumb:hover,
-.planning-files::-webkit-scrollbar-thumb:hover {
-  display: none;
-}
-
-/* Masquer les scrollbars quand pas en cours d'utilisation - uniforme sur toutes les plateformes */
-.horizontal-scroll:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
-.calendar-scrollable-content:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
-.matches-list:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
-.modal-form-content:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
-.vss-form-content:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
-.chat-container:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
-.emoji-selector:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb,
-.planning-files:not(:hover):not(:active):not(:focus)::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-/* ✅ SUPPRIMÉ : Règles iOS redondantes pour scrollbars - les règles globales (lignes 168-224) gèrent déjà le masquage pour tous les éléments, y compris iOS */
-
-/* Empêcher le zoom automatique sur les inputs */
-input,
-textarea {
-  font-size: 16px !important;
-}
-
-/* Toutes les scrollbars sont maintenant masquées sur tous les supports */
+/**
+ * Styles globaux de l'application
+ * 
+ * Ce fichier définit les styles de base pour les éléments HTML et les composants globaux.
+ * 
+ * NOTE: Les tokens (theme/tokens.css) et le reset (theme/reset.css) sont importés
+ * dans main.tsx avant ce fichier pour garantir l'ordre d'importation correct.
+ */
 
 /* ============================================
    FONDATIONS PHYSIQUES - HTML & Viewport
@@ -257,8 +41,6 @@ body {
   
   /* ✅ Empêche le scroll global (scroll dans .page-content) */
   overflow: hidden;
-  /* Force le recalcul sur iOS */
-  -webkit-overflow-scrolling: touch;
   
   /* NOTE: Les Safe Areas sont gérées dans .app-header et .bottom-nav
      pour ne pas casser les proportions strictes 10/80/10 */
@@ -283,8 +65,6 @@ body {
   box-sizing: border-box;
   /* ✅ Empêche le scroll global (scroll dans .page-content) */
   overflow: hidden;
-  /* Force le recalcul sur iOS */
-  -webkit-overflow-scrolling: touch;
   /* NOTE: Avec keyboardResize: 'none', #root reste en hauteur fixe 100vh
      Le clavier iOS passe par-dessus sans redimensionner le layout */
 }

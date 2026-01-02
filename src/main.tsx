@@ -23,7 +23,11 @@ import InfoSection from './pages/InfoSection';
 import PlanningFilesPage from './pages/PlanningFilesPage';
 import Layout from './components/Layout';
 import OrientationLock from './components/OrientationLock';
-import './styles/responsive-tokens.css';
+/* Import des fichiers de thème dans l'ordre : tokens, reset, platform */
+import './theme/tokens.css';
+import './theme/reset.css';
+import './theme/platform/ios.css';
+import './theme/platform/android.css';
 import './index.css';
 import { AppPanelsProvider } from './AppPanelsContext';
 import { AppProvider } from './AppContext';
