@@ -5,11 +5,22 @@
  * - StatusBar (barre d'état transparente, mode Edge-to-Edge)
  * - Keyboard (comportement overlay sur iOS)
  * - Platform class sur le body
+ * - Prévention du zoom sur iOS
  * 
- * Nécessaire car :
- * - Évite les duplications de code entre App.tsx et Layout.tsx
- * - Centralise la configuration Capacitor au démarrage de l'app
- * - Assure une configuration cohérente sur toutes les plateformes
+ * APPROCHE CHOISIE : Fonction setupCapacitor() appelée dans main.tsx
+ * 
+ * Pourquoi cette approche plutôt qu'un hook React ?
+ * - La configuration Capacitor doit être appliquée AVANT le rendu React
+ *   pour éviter les FOUC (Flash of Unstyled Content) et les problèmes visuels
+ * - C'est une configuration globale qui ne doit être exécutée qu'une seule fois
+ *   au démarrage de l'application, pas à chaque montage de composant
+ * - Plus simple et direct : pas besoin de la réactivité React pour cette config
+ * - Meilleure performance : configuration synchrone avant le montage de React
+ * 
+ * Utilisation :
+ * - Appelée dans main.tsx AVANT ReactDOM.render()
+ * - Ne doit jamais être appelée dans un composant React
+ * - Configuration appliquée une seule fois au démarrage
  */
 
 import { Capacitor } from '@capacitor/core';
@@ -19,8 +30,17 @@ import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 /**
  * Configure Capacitor au démarrage de l'application
  * 
- * Cette fonction doit être appelée AVANT ReactDOM.render dans main.tsx
- * pour s'assurer que la configuration est appliquée dès le début.
+ * IMPORTANT : Cette fonction doit être appelée AVANT ReactDOM.render() dans main.tsx
+ * pour s'assurer que la configuration est appliquée dès le début et éviter les FOUC.
+ * 
+ * Configuration appliquée :
+ * 1. Ajoute la classe de plateforme au body (ios/android/web)
+ * 2. Configure StatusBar en mode Edge-to-Edge (transparent, overlay)
+ * 3. Configure Keyboard en mode overlay sur iOS
+ * 4. Détecte et marque les simulateurs iOS
+ * 5. Préviens le zoom sur iOS (double-tap, pinch)
+ * 
+ * @throws {Error} Log les erreurs mais ne bloque pas le démarrage de l'app
  */
 export const setupCapacitor = async (): Promise<void> => {
   const platform = Capacitor.getPlatform();

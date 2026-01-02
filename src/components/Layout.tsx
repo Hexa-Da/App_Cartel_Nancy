@@ -29,7 +29,6 @@ import ChatPanel from './ChatPanel';
 import HSECharterHandler from './forms/HSECharterHandler';
 import VenueForm from './forms/VenueForm';
 import MatchForm from './forms/MatchForm';
-import { useCapacitorSetup } from '../hooks/useCapacitorSetup';
 
 interface Message {
   id?: string;
@@ -47,10 +46,7 @@ const Layout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Configuration Capacitor (StatusBar, Keyboard, etc.)
-  useCapacitorSetup();
-
-    // Synchroniser activeTab avec location.pathname
+  // Synchroniser activeTab avec location.pathname
     useEffect(() => {
       if (location.pathname === '/home') {
         setActiveTab('home');
