@@ -41,6 +41,22 @@
   --checkbox-filter: none;
 
   /* ============================================
+     VARIABLES UTILITAIRES (Hover, Accent, États)
+     ============================================ */
+  /* Variables de hover */
+  --primary-hover: #2980b9;
+  --success-hover: #27ae60;
+  --danger-hover: #c0392b;
+  --warning-hover: #d35400;
+  
+  /* Variables utilitaires */
+  --text-color-light: #7f8c8d;
+  --accent-color: #4CAF50;
+  --error-color: #f44336;
+  --bg-hover: #f0f0f0;
+  --bg-disabled: #e0e0e0;
+
+  /* ============================================
      BREAKPOINTS (Points de rupture)
      ============================================ */
   --bp-mobile: 480px;
@@ -146,6 +162,12 @@
   --shadow-color: rgba(0, 0, 0, 0.3);
   --calendar-filter: invert(0);
   --checkbox-filter: invert(0);
+  
+  /* Variables utilitaires (dark theme) */
+  --accent-color: #4CAF50;
+  --error-color: #f44336;
+  --bg-hover: #333333;
+  --bg-disabled: #404040;
 }
 
 /* ============================================
@@ -164,5 +186,11 @@
   --shadow-color: rgba(0, 0, 0, 0.3);
   --calendar-filter: invert(1);
   --checkbox-filter: invert(1);
+  
+  /* Variables utilitaires (light theme) */
+  --accent-color: #4CAF50;
+  --error-color: #f44336;
+  --bg-hover: #f0f0f0;
+  --bg-disabled: #e0e0e0;
 }
 

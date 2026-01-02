@@ -1,39 +1,8 @@
 /* ============================================
-   GLOBAL UTILITIES - Variables CSS, Reset, Classes Utilitaires
+   GLOBAL UTILITIES - Reset, Classes Utilitaires
    ============================================ */
 
-/* Variables CSS - Variables uniques non définies dans tokens.css */
-/* NOTE: Les variables de thème (--primary-color, --success-color, --bg-color, etc.)
-   sont définies dans theme/tokens.css et importées dans main.tsx */
-
-:root {
-  /* Variables de hover (non définies dans tokens.css) */
-  --primary-hover: #2980b9;
-  --success-hover: #27ae60;
-  --danger-hover: #c0392b;
-  --warning-hover: #d35400;
-  
-  /* Variables utilitaires uniques */
-  --text-color-light: #7f8c8d;
-  --accent-color: #4CAF50;
-  --error-color: #f44336;
-  --bg-hover: #f0f0f0;
-  --bg-disabled: #e0e0e0;
-}
-
-[data-theme="dark"] {
-  --accent-color: #4CAF50;
-  --error-color: #f44336;
-  --bg-hover: #333333;
-  --bg-disabled: #404040;
-}
-
-[data-theme="light"] {
-  --accent-color: #4CAF50;
-  --error-color: #f44336;
-  --bg-hover: #f0f0f0;
-  --bg-disabled: #e0e0e0;
-}
+/* NOTE: Toutes les variables CSS sont définies dans theme/tokens.css et importées dans main.tsx */
 
 /* Reset des styles par défaut */
 * {
