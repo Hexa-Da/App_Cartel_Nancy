@@ -183,7 +183,7 @@ const Parie: React.FC = () => {
   }, []);
 
   // Sauvegarder les paris dans Firebase
-  // La synchronisation des votes sera gérée par une Cloud Function ou un script côté serveur
+  // La synchronisation des votes est gérée par une Cloud Function côté serveur
   // pour éviter de surcharger les clients avec des calculs coûteux
   const saveBetsToFirebase = async (braceletNum: string, betsData: { [key: string]: string | null }) => {
     try {
@@ -192,121 +192,74 @@ const Parie: React.FC = () => {
         bets: betsData,
         lastBetUpdate: Date.now()
       });
-
-      // Note: La synchronisation des votes devrait être gérée côté serveur (Cloud Function)
-      // pour éviter de surcharger les clients. Pour l'instant, on synchronise uniquement
-      // si nécessaire avec un throttling important.
-      // TODO: Migrer vers une Cloud Function pour gérer syncAllDelegationVotes()
     } catch (err) {
       console.error('Erreur sauvegarde paris:', err);
     }
   };
 
-  // Recalculer les votes agrégés pour TOUTES les délégations
+  // Appeler la Cloud Function pour synchroniser les votes agrégés de toutes les délégations
   const syncAllDelegationVotes = useCallback(async () => {
     setIsSyncing(true);
     try {
-      // Récupérer tous les participants
-      const participantsRef = ref(database, 'participants');
-      const snapshot = await get(participantsRef);
+      // Construire l'URL de la Cloud Function
+      let functionUrl = import.meta.env.VITE_SYNC_VOTES_ENDPOINT;
       
-      if (!snapshot.exists()) return;
-
-      const allParticipants = snapshot.val();
-      const allDelegations = new Set<string>();
-      const delegationVotesMap: { [delegation: string]: DelegationVotes } = {};
-
-      // Première passe : identifier toutes les délégations et initialiser
-      Object.values(allParticipants).forEach((participant: any) => {
-        if (participant.delegation) {
-          allDelegations.add(participant.delegation);
-          if (!delegationVotesMap[participant.delegation]) {
-            delegationVotesMap[participant.delegation] = {};
-          }
+      // Si l'URL n'est pas définie, construire automatiquement à partir du project ID
+      if (!functionUrl) {
+        const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+        if (!projectId) {
+          throw new Error('VITE_FIREBASE_PROJECT_ID manquant. Impossible de construire l\'URL de la Cloud Function.');
         }
-      });
-
-      // Deuxième passe : compter les votes pour chaque délégation
-      Object.entries(allParticipants).forEach(([_braceletNumber, participant]: [string, any]) => {
-        if (participant.delegation && participant.bets) {
-          const delegation = participant.delegation;
-          const newDelegationVotes = delegationVotesMap[delegation];
-
-          // Parcourir les paris de ce participant
-          Object.entries(participant.bets).forEach(([sportKey, votedDelegation]) => {
-            if (votedDelegation) {
-              if (!newDelegationVotes[sportKey]) {
-                newDelegationVotes[sportKey] = {
-                  votes: {},
-                  totalVotes: 0,
-                  winner: null
-                };
-              }
-              
-              // Incrémenter le vote pour cette délégation
-              if (!newDelegationVotes[sportKey].votes[votedDelegation as string]) {
-                newDelegationVotes[sportKey].votes[votedDelegation as string] = 0;
-              }
-              newDelegationVotes[sportKey].votes[votedDelegation as string]++;
-              newDelegationVotes[sportKey].totalVotes++;
-            }
-          });
-        }
-      });
-
-      // Charger les winners existants depuis Firebase pour les préserver
-      const existingWinnersMap: { [delegation: string]: { [sportKey: string]: string | null } } = {};
-      const loadWinnersPromises = Array.from(allDelegations).map(async (delegation) => {
-        const delegationBetsRef = ref(database, `delegationBets/${delegation}`);
-        const snapshot = await get(delegationBetsRef);
-        if (snapshot.exists()) {
-          const votes = snapshot.val();
-          existingWinnersMap[delegation] = {};
-          Object.keys(votes).forEach(sportKey => {
-            existingWinnersMap[delegation][sportKey] = votes[sportKey].winner || null;
-          });
-        }
-      });
-      await Promise.all(loadWinnersPromises);
-
-      // Mettre à jour les votes tout en préservant les winners existants
-      const updatePromises: Promise<void>[] = [];
+        // Format par défaut pour Firebase Functions v2 (région: europe-west1)
+        // L'utilisateur peut override avec VITE_SYNC_VOTES_ENDPOINT si la région est différente
+        functionUrl = `https://europe-west1-${projectId}.cloudfunctions.net/syncAllDelegationVotes`;
+        console.warn('[Parie] URL Cloud Function construite automatiquement:', functionUrl);
+        console.warn('[Parie] Pour utiliser une région différente, définissez VITE_SYNC_VOTES_ENDPOINT dans .env');
+      }
       
-      allDelegations.forEach(delegation => {
-        const votes = delegationVotesMap[delegation];
-        Object.keys(votes).forEach(sportKey => {
-          const sportVotes = votes[sportKey];
-          // Préserver le winner existant s'il existe, sinon ne pas définir de winner automatiquement
-          if (existingWinnersMap[delegation] && existingWinnersMap[delegation][sportKey] !== undefined) {
-            sportVotes.winner = existingWinnersMap[delegation][sportKey];
-          } else {
-            // Si aucun winner n'existe, ne pas en définir automatiquement
-            sportVotes.winner = null;
-          }
-        });
+      const authKey = import.meta.env.VITE_FCM_ENDPOINT_AUTH_KEY;
+      if (!authKey) {
+        throw new Error('VITE_FCM_ENDPOINT_AUTH_KEY manquant dans les variables d\'environnement');
+      }
 
-        // Sauvegarder dans Firebase
-        const delegationBetsRef = ref(database, `delegationBets/${delegation}`);
-        const updatePromise = set(delegationBetsRef, votes).catch(err => {
-          console.error(`Erreur sauvegarde votes délégation ${delegation}:`, err);
-        });
-        updatePromises.push(updatePromise);
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authKey}`
+        }
       });
 
-      // Attendre que toutes les sauvegardes soient terminées
-      await Promise.all(updatePromises);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
+      }
 
-      // Mettre à jour l'état local avec la valeur actuelle de userDelegation
+      const result = await response.json();
+      console.log('Synchronisation des votes réussie:', result.message);
+
+      // Recharger les votes de la délégation de l'utilisateur après synchronisation
       const currentDelegation = userDelegationRef.current;
-      if (currentDelegation && delegationVotesMap[currentDelegation]) {
-        setDelegationVotes(delegationVotesMap[currentDelegation]);
+      if (currentDelegation) {
+        await loadDelegationVotes(currentDelegation);
       }
     } catch (err) {
       console.error('Erreur synchronisation votes délégation:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+      
+      // Message d'erreur plus détaillé
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        alert('Impossible de contacter la Cloud Function. Vérifiez que:\n' +
+              '1. La fonction est déployée (firebase deploy --only functions)\n' +
+              '2. L\'URL est correcte dans VITE_SYNC_VOTES_ENDPOINT\n' +
+              '3. Vous êtes connecté à Internet');
+      } else {
+        alert(`Erreur lors de la synchronisation: ${errorMessage}`);
+      }
     } finally {
       setIsSyncing(false);
     }
-  }, []);
+  }, [loadDelegationVotes]);
 
   // Fonction pour charger les gagnants actuels depuis delegationBets
   const loadCurrentWinners = useCallback(async () => {
