@@ -56,7 +56,7 @@ const OptimizedMarker = memo(({ venue, onMarkerClick, isVisible }: OptimizedMark
         click: handleClick
       }}
     >
-      <Popup>
+      <Popup closeButton={false}>
         <div className="venue-popup">
           <h3>{venue.name}</h3>
           <p>{venue.description}</p>

@@ -243,7 +243,7 @@ const PartyMap: React.FC = () => {
       buttonsContainer.appendChild(copyButton);
 
       popupContent.appendChild(buttonsContainer);
-      marker.bindPopup(popupContent);
+      marker.bindPopup(popupContent, { closeButton: false });
       
       if (mapRef.current) {
         marker.addTo(mapRef.current);
@@ -440,7 +440,7 @@ const PartyMap: React.FC = () => {
                 popupAnchor: [0, -15]
               })}
             >
-              <Popup>
+              <Popup closeButton={false}>
                 <div className="venue-popup">
                   <h3>{marker.indicationType || 'Indication'}</h3>
                   {isAdmin && isEditing && (

@@ -29,19 +29,21 @@ interface EventItemRowProps {
 interface EventItemProps {
   index: number;
   style: React.CSSProperties;
-  ariaAttributes: {
-    'aria-posinset': number;
-    'aria-setsize': number;
-    role: 'listitem';
+  data: {
+    events: Event[];
+    onEventClick: (event: Event) => void;
+    formatDateTime: (dateString: string, endTimeString?: string) => string;
+    getSportIcon: (sport: string) => string;
   };
-  events: Event[];
-  onEventClick: (event: Event) => void;
-  formatDateTime: (dateString: string, endTimeString?: string) => string;
-  getSportIcon: (sport: string) => string;
 }
 
-const EventItem = memo(({ index, style, events, onEventClick, formatDateTime, getSportIcon }: EventItemProps) => {
+const EventItem = memo(({ index, style, data }: EventItemProps) => {
+  const { events, onEventClick, formatDateTime, getSportIcon } = data;
   const event = events[index];
+
+  if (!event) {
+    return null;
+  }
 
   const handleClick = useCallback(() => {
     onEventClick(event);
@@ -154,26 +156,38 @@ const VirtualizedEventList = memo(({
     );
   }
 
-  const rowComponent = useCallback((props: EventItemProps) => {
-    return <EventItem {...props} />;
-  }, []);
-
-  const rowProps: EventItemRowProps = useMemo(() => ({
-    events,
-    onEventClick,
-    formatDateTime,
-    getSportIcon
+  const itemData = useMemo(() => ({
+    events: events || [],
+    onEventClick: onEventClick || (() => {}),
+    formatDateTime: formatDateTime || ((date: string) => date),
+    getSportIcon: getSportIcon || (() => '🏆')
   }), [events, onEventClick, formatDateTime, getSportIcon]);
 
+  if (!itemData || !itemData.events || itemData.events.length === 0) {
+    return (
+      <div className="chat-empty-message">
+        Aucun événement trouvé
+      </div>
+    );
+  }
+
   return (
-    <List<EventItemRowProps>
-      rowCount={events.length}
-      rowHeight={itemHeight}
-      rowComponent={rowComponent}
+    <List
+      height={height}
+      itemCount={itemData.events.length}
+      itemSize={itemHeight}
+      width="100%"
       overscanCount={5}
-      style={{ height, padding: '1rem', paddingTop: '1.5rem' }}
-      rowProps={rowProps}
-    />
+      itemData={itemData}
+      style={{ padding: '1rem', paddingTop: '1.5rem' }}
+    >
+      {({ index, style, data }) => {
+        if (!data || !data.events || index >= data.events.length) {
+          return <div style={style} />;
+        }
+        return <EventItem index={index} style={style} data={data} />;
+      }}
+    </List>
   );
 });
 

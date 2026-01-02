@@ -11,7 +11,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import ReactGA from 'react-ga4';
 import { Venue, Match } from '../types';
-import VirtualizedEventList from './VirtualizedEventList';
 import './EventsTab.css';
 
 interface Party {
@@ -55,22 +54,6 @@ interface EventsTabProps {
 const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdate, isVenuesLoading }: EventsTabProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const hasInitialized = useRef(false);
-  const eventsListRef = useRef<HTMLDivElement>(null);
-  const [listHeight, setListHeight] = useState(400);
-
-  // Calculer la hauteur disponible pour la liste virtualisée
-  useEffect(() => {
-    const updateHeight = () => {
-      if (eventsListRef.current) {
-        const height = eventsListRef.current.clientHeight;
-        setListHeight(height);
-      }
-    };
-
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
   const [eventFilter, setEventFilter] = useState<string>(() => {
     const saved = localStorage.getItem('mapEventFilter');
     return saved || 'all';
@@ -764,7 +747,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
           </>
         )}
       </div>
-      <div className="events-list" ref={eventsListRef}>
+      <div className="events-list">
         {isLoading ? (
           <div className="chat-loading-spinner-container">
             <div className="chat-loading-spinner"></div>
@@ -775,14 +758,83 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
             Aucun événement trouvé
           </div>
         ) : (
-          <VirtualizedEventList
-            events={getFilteredEvents}
-            onEventClick={handleEventSelect}
-            formatDateTime={formatDateTime}
-            getSportIcon={getSportIcon}
-            height={listHeight}
-            itemHeight={120}
-          />
+          getFilteredEvents.map(event => (
+            <div 
+              key={event.id} 
+              className={`event-item ${event.isPassed ? 'passed' : ''} ${event.type === 'match' ? 'match-event' : 'party-event'}`}
+              onClick={() => handleEventSelect(event)}
+            >
+              <div className="event-header">
+                <span className="event-type-badge">
+                  {event.type === 'match' ? (
+                    <>
+                      <span>{getSportIcon(event.sport || '')}</span>
+                      <span>{event.sport}</span>
+                    </>
+                  ) : event.sport === 'Defile' ? (
+                    <>
+                      <span>🎺</span>
+                      <span>Défilé</span>
+                    </>
+                  ) : event.sport === 'Pompom' ? (
+                    <>
+                      <span>🎀</span>
+                      <span>Pompom</span>
+                    </>
+                  ) : event.name === 'Parc Expo' && event.description.includes('Showcase') ? (
+                    <>
+                      <span>🎤</span>
+                      <span>SHOWCASE</span>
+                    </>
+                  ) : (event.name === 'Parc Expo' || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
+                    <>
+                      <span>🎧</span>
+                      <span>DJ CONTEST</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🎉</span>
+                      <span>Soirée</span>
+                    </>
+                  )}
+                </span>
+                <span className="event-date">{formatDateTime(event.date, event.endTime)}</span>
+              </div>
+              <div className="event-title-container">
+                <h3 className="event-name">{event.name}</h3>
+              </div>
+              {event.type === 'match' && (
+                <>
+                  <p className="event-description">{event.description}</p>
+                  <p className="event-venue">{event.venue}</p>
+                  {event.result && <p className="event-result">Résultat : {event.result}</p>}
+                </>
+              )}
+              {event.type === 'party' && (
+                <>
+                  <p className="event-description">{event.description}</p>
+                  {event.sport !== 'Defile' && !event.description?.toLowerCase().includes('showcase') && (
+                    <div className="party-results">
+                      <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
+                        Résultat : {event.result || 'à venir'}
+                      </h4>
+                    </div>
+                  )}
+                </>
+              )}
+              <div className="event-actions">
+                <button 
+                  className="maps-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`, '_blank');
+                  }}
+                >
+                  Ouvrir dans Google Maps
+                </button>
+              </div>
+            </div>
+          ))
         )}
       </div>
     </div>

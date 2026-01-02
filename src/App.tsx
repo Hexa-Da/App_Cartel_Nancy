@@ -376,8 +376,12 @@ function App() {
   useEffect(() => {
     const handleAdminLoginSuccess = () => {
       // Forcer la mise à jour des marqueurs et de l'interface
-      triggerMarkerUpdate();
-      updateMapMarkers();
+      if (updateMapMarkersRef.current) {
+        triggerMarkerUpdate(updateMapMarkersRef.current);
+      } else {
+        // Si updateMapMarkers n'est pas encore défini, juste incrémenter appAction
+        setAppAction(prev => prev + 1);
+      }
       // Recharger les marqueurs d'hôtels et restaurants
       createHotelAndRestaurantMarkers();
       // Mettre à jour l'état admin
@@ -387,8 +391,12 @@ function App() {
 
     const handleAdminLogout = () => {
       // Forcer la mise à jour des marqueurs et de l'interface
-      triggerMarkerUpdate();
-      updateMapMarkers();
+      if (updateMapMarkersRef.current) {
+        triggerMarkerUpdate(updateMapMarkersRef.current);
+      } else {
+        // Si updateMapMarkers n'est pas encore défini, juste incrémenter appAction
+        setAppAction(prev => prev + 1);
+      }
       // Recharger les marqueurs d'hôtels et restaurants
       createHotelAndRestaurantMarkers();
       // Mettre à jour l'état admin
@@ -1140,7 +1148,7 @@ function App() {
       });
 
       updateMapMarkers();
-      triggerMarkerUpdate(); 
+      safeTriggerMarkerUpdate(); 
       
       const newVenue: any = {
         name: newVenueName || '',
@@ -1193,7 +1201,7 @@ function App() {
       // Réactiver le formulaire après le placement du marqueur
       setIsPlacingMarker(false);
       setIsAddingPlace(true);
-      triggerMarkerUpdate();
+      safeTriggerMarkerUpdate();
     }
   };
 
@@ -1212,7 +1220,7 @@ function App() {
       try {
         await venueService.deleteVenue(id);
         updateMapMarkers();
-        triggerMarkerUpdate(); 
+        safeTriggerMarkerUpdate(); 
         
         // Ajouter l'action à l'historique avec une fonction d'annulation
         addToHistory(venueService.createDeleteHistoryAction(id, venue));
@@ -1241,8 +1249,8 @@ function App() {
         result: newMatch.result || ''
       });
 
-      triggerMarkerUpdate(); 
       updateMapMarkers();
+      safeTriggerMarkerUpdate();
       
       // Ajouter l'action à l'historique
       addToHistory(matchService.createAddHistoryAction(venueId, venue, match));
@@ -1285,8 +1293,8 @@ function App() {
     
     try {
       await matchService.updateMatch(venueId, venue, matchId, updatedData);
-      triggerMarkerUpdate(); 
       updateMapMarkers();
+      safeTriggerMarkerUpdate();
       
       if (matchBefore) {
         const matchAfter = { ...matchBefore, ...updatedData };
@@ -1330,8 +1338,8 @@ function App() {
       const deletedMatch = await matchService.deleteMatch(venueId, venue, matchId);
       if (!deletedMatch) return;
 
-      triggerMarkerUpdate();
       updateMapMarkers();
+      safeTriggerMarkerUpdate();
       
       // Ajouter l'action à l'historique
       if (matchToDelete) {
@@ -1400,8 +1408,8 @@ function App() {
         
         try {
           await venueService.updateVenue(editingVenue.id, updatedVenue);
-          triggerMarkerUpdate(); 
           updateMapMarkers();
+          safeTriggerMarkerUpdate();
           
           // Ajouter l'action à l'historique avec une fonction d'annulation
           addToHistory(venueService.createUpdateHistoryAction(editingVenue.id, venueBefore, updatedVenue));
@@ -1551,7 +1559,7 @@ function App() {
     setTempMarker(null);
     setIsPlacingMarker(false);
     setIsAddingPlace(false);
-    triggerMarkerUpdate();
+    safeTriggerMarkerUpdate();
   };
 
   // Utiliser les services pour les fonctions utilitaires
@@ -1879,7 +1887,7 @@ function App() {
           editButtonsContainer.appendChild(deleteButton);
           popupContent.appendChild(editButtonsContainer);
         }
-        marker.bindPopup(popupContent);
+        marker.bindPopup(popupContent, { closeButton: false });
         marker.on('popupopen', () => {
           handlePopupOpen();
         });
@@ -1991,7 +1999,7 @@ function App() {
         }
         
         popupContent.appendChild(buttonsContainer);
-        marker.bindPopup(popupContent);
+        marker.bindPopup(popupContent, { closeButton: false });
         marker.on('popupopen', () => {
           // Mettre à jour le contenu du popup avec les données actuelles depuis l'état React
           const currentParty = parties.find(p => p.id === party.id) || party;
@@ -2105,7 +2113,7 @@ function App() {
             }
     
             popupContent.appendChild(buttonsContainer);
-            marker.bindPopup(popupContent);
+            marker.bindPopup(popupContent, { closeButton: false });
             marker.on('popupopen', () => {
               // Mettre à jour le contenu du popup avec les données actuelles depuis l'état React
               const currentHotel = hotels.find(h => h.id === hotel.id) || hotel;
@@ -2193,7 +2201,7 @@ function App() {
             buttonsContainer.appendChild(mapsButton);
 
             popupContent.appendChild(buttonsContainer);
-            marker.bindPopup(popupContent);
+            marker.bindPopup(popupContent, { closeButton: false });
             marker.on('popupopen', () => {
               // Mettre à jour le contenu du popup avec les données actuelles depuis l'état React
               const currentRestaurant = restaurants.find(r => r.id === restaurant.id) || restaurant;
@@ -2373,13 +2381,13 @@ function App() {
     } else {
       setNewMatch({ date: '', teams: '', description: '', endTime: '', result: '' });
     }
-    triggerMarkerUpdate();
+    safeTriggerMarkerUpdate();
   };
 
   // Fonction pour terminer l'édition d'un match
   const finishEditingMatch = () => {
     setEditingMatch({ venueId: null, match: null });
-    triggerMarkerUpdate();
+    safeTriggerMarkerUpdate();
   };
 
   // Fonction pour sauvegarder le résultat de la soirée
@@ -2393,7 +2401,7 @@ function App() {
           party.id === '2' ? { ...party, result } : party
         )
       );
-      triggerMarkerUpdate();
+      safeTriggerMarkerUpdate();
     } else if (partyId === '3') { // Parc Expo Showcase
       // Sauvegarder dans Firebase
       saveToFirebase('editableData/partyResults/parc-expo-showcase', { result, updatedAt: new Date().toISOString() });
@@ -2403,7 +2411,7 @@ function App() {
           party.id === '3' ? { ...party, result } : party
         )
       );
-      triggerMarkerUpdate();
+      safeTriggerMarkerUpdate();
     } else if (partyId === '4') { // Zénith DJ Contest
       // Sauvegarder dans Firebase uniquement
       saveToFirebase('editableData/partyResults/zenith-dj-contest', { result, updatedAt: new Date().toISOString() });
@@ -2413,7 +2421,7 @@ function App() {
           party.id === '4' ? { ...party, result } : party
         )
       );
-      triggerMarkerUpdate();
+      safeTriggerMarkerUpdate();
     }
     setEditingPartyResult({ partyId: null, isEditing: false });
   };
@@ -2430,7 +2438,7 @@ function App() {
       )
     );
     
-    triggerMarkerUpdate();
+    safeTriggerMarkerUpdate();
     setEditingPartyDescription({ partyId: null, isEditing: false });
   };
 
@@ -2446,7 +2454,7 @@ function App() {
       )
     );
     createHotelAndRestaurantMarkers();
-    triggerMarkerUpdate();
+    safeTriggerMarkerUpdate();
     setEditingHotelDescription({ hotelId: null, isEditing: false });
   };
 
@@ -2582,17 +2590,22 @@ function App() {
   // Ref pour stocker updateMapMarkers (défini plus tard dans le code)
   const updateMapMarkersRef = useRef<(() => void) | null>(null);
   
-  // Fonction pour mettre à jour l'état local avec les données Firebase
-  // Cette fonction est maintenant simplifiée car les états sont mis à jour directement par les listeners Firebase
-  const updateLocalStateFromFirebase = () => {
-    // Les états sont déjà mis à jour directement par les listeners Firebase
-    // On déclenche juste la mise à jour des marqueurs pour refléter les changements
+  // Fonction helper pour appeler triggerMarkerUpdate de manière sécurisée
+  const safeTriggerMarkerUpdate = useCallback(() => {
     if (updateMapMarkersRef.current) {
       triggerMarkerUpdate(updateMapMarkersRef.current);
     } else {
       // Si updateMapMarkers n'est pas encore défini, juste incrémenter appAction
       setAppAction(prev => prev + 1);
     }
+  }, [triggerMarkerUpdate]);
+  
+  // Fonction pour mettre à jour l'état local avec les données Firebase
+  // Cette fonction est maintenant simplifiée car les états sont mis à jour directement par les listeners Firebase
+  const updateLocalStateFromFirebase = () => {
+    // Les états sont déjà mis à jour directement par les listeners Firebase
+    // On déclenche juste la mise à jour des marqueurs pour refléter les changements
+    safeTriggerMarkerUpdate();
   };
 
   // Fonction pour initialiser la branche editableData sur Firebase
@@ -3067,7 +3080,7 @@ function App() {
   const handleEventSelect = (event: any) => {
     setSelectedEvent(event);
     setActiveTab('map'); // Fermer le panneau en revenant à l'onglet map
-    triggerMarkerUpdate();
+    safeTriggerMarkerUpdate();
     
     if (event.type === 'party' && isAdmin) {
       const partyId = event.id.split('-')[1];
