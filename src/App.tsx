@@ -722,7 +722,7 @@ function App() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   // Use custom hooks for map state and filters
-  const { mapStyle, setMapStyle, currentZoom, setCurrentZoom, mapRef, markersRef, indicationMarkersRef, appAction, triggerMarkerUpdate } = useMapState();
+  const { mapStyle, setMapStyle, currentZoom, setCurrentZoom, mapRef, markersRef, indicationMarkersRef, appAction, setAppAction, triggerMarkerUpdate } = useMapState();
   const { eventFilter, setEventFilter, delegationFilter, setDelegationFilter, venueFilter, setVenueFilter, showFemale, setShowFemale, showMale, setShowMale, showMixed, setShowMixed, showFilters, setShowFilters } = useEventFilters();
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [fromEvents, setFromEvents] = useState(false);
@@ -2580,12 +2580,20 @@ function App() {
     }
   };
 
+  // Ref pour stocker updateMapMarkers (défini plus tard dans le code)
+  const updateMapMarkersRef = useRef<(() => void) | null>(null);
+  
   // Fonction pour mettre à jour l'état local avec les données Firebase
   // Cette fonction est maintenant simplifiée car les états sont mis à jour directement par les listeners Firebase
   const updateLocalStateFromFirebase = () => {
     // Les états sont déjà mis à jour directement par les listeners Firebase
     // On déclenche juste la mise à jour des marqueurs pour refléter les changements
-    triggerMarkerUpdate();
+    if (updateMapMarkersRef.current) {
+      triggerMarkerUpdate(updateMapMarkersRef.current);
+    } else {
+      // Si updateMapMarkers n'est pas encore défini, juste incrémenter appAction
+      setAppAction(prev => prev + 1);
+    }
   };
 
   // Fonction pour initialiser la branche editableData sur Firebase
@@ -2839,6 +2847,11 @@ function App() {
       }
     });
   }, [venues, parties, hotels, restaurants, eventFilter, venueFilter]);
+  
+  // Stocker la référence pour qu'elle soit accessible dans updateLocalStateFromFirebase
+  useEffect(() => {
+    updateMapMarkersRef.current = updateMapMarkers;
+  }, [updateMapMarkers]);
 
   // Les marqueurs sont maintenant créés avec la logique correcte dans le premier useEffect
   // Pas besoin de les mettre à jour séparément

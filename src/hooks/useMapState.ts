@@ -67,6 +67,7 @@ export const useMapState = () => {
     markersRef,
     indicationMarkersRef,
     appAction,
+    setAppAction,
     triggerMarkerUpdate
   };
 };
