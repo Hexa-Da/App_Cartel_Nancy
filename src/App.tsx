@@ -17,7 +17,7 @@
  * - Centralise la logique métier de l'application
  */
 
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLng } from 'leaflet';
 import { useState, useEffect, useRef, createContext, useContext, useCallback, useMemo } from 'react';
@@ -31,11 +31,9 @@ import ReactGA from 'react-ga4';
 import { v4 as uuidv4 } from 'uuid';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
+import { Hotel, Restaurant, Party } from './types/venue';
 import { Outlet, useLocation} from 'react-router-dom';
 import { useAppPanels, TabType } from './AppPanelsContext';
-import NotificationService from './services/NotificationService';
-import { Geolocation, Position } from '@capacitor/geolocation';
-import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import BusLines from './components/BusLines';
@@ -50,6 +48,11 @@ import { MapView } from './components/map/MapView';
 import { MapControls } from './components/map/MapControls';
 import { MatchFormModal } from './components/forms/MatchFormModal';
 import { VenueFormModal } from './components/forms/VenueFormModal';
+import { LocationMarker } from './components/map/LocationMarker';
+import { MapEvents } from './components/map/MapEvents';
+import { ZoomListener } from './components/map/ZoomListener';
+import { useMapState, mapStyles } from './hooks/useMapState';
+import { useEventFilters } from './hooks/useEventFilters';
 
 // Fix for default marker icons in Leaflet with React
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -71,35 +74,7 @@ let UserIcon = new Icon({
   className: 'user-location-icon' // Cette classe nous permettra de styliser l'icône
 });
 
-interface BaseItem {
-  id: string;
-  name: string;
-  description: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  position: [number, number];
-  date: string;
-  emoji: string;
-  sport: string;
-}
-
-interface Hotel extends BaseItem {
-  type: 'hotel';
-  telephone?: string;
-  matches: Match[];
-}
-
-interface Restaurant extends BaseItem {
-  type: 'restaurant';
-  mealType: string; // 'midi' ou 'soir'
-  matches: Match[];
-}
-
-interface Party extends BaseItem {
-  type: 'party';
-  result?: string;
-}
+// Interfaces moved to src/types/venue.ts
 
 type Place = Venue | Hotel | Party | Restaurant;
 
@@ -110,23 +85,7 @@ interface HistoryAction {
   undo: () => Promise<void>;
 }
 
-// Initialiser Google Analytics correctement avec debugging
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-XXXXXXXX';
-
-// Configuration avec mode test activé pour la validation
-ReactGA.initialize(GA_MEASUREMENT_ID, {
-  testMode: process.env.NODE_ENV !== 'production',
-  gaOptions: {
-    sendPageView: false // Nous enverrons manuellement le pageview
-  }
-});
-
-// Envoyer un événement test pour vérifier la connexion
-ReactGA.event({
-  category: 'testing',
-  action: 'ga_test',
-  label: 'Validation de connexion GA4'
-});
+// Google Analytics initialization moved to src/config/analytics.ts and called in main.tsx
 
 // Créer un contexte pour la position
 const LocationContext = createContext<{
@@ -137,278 +96,7 @@ const LocationContext = createContext<{
   isLocationEnabled: true
 });
 
-// Composant pour la géolocalisation
-function LocationMarker() {
-  const [position, setPosition] = useState<LatLng | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const map = useMap();
-  const lastErrorTime = useRef<number>(0);
-  const watchIdRef = useRef<string | number | null>(null);
-  const [isLocationEnabled, setIsLocationEnabled] = useState(() => {
-    const stored = localStorage.getItem('location');
-    return stored === null ? true : stored === 'true';
-  });
-
-  // Écouter les changements de l'état de localisation
-  useEffect(() => {
-    // Initialiser le service de notifications au démarrage
-    const initNotifications = async () => {
-      try {
-        const notificationService = NotificationService.getInstance();
-        await notificationService.initialize();
-      } catch (error) {
-        console.error('Erreur lors de l\'initialisation des notifications:', error);
-      }
-    };
-    
-    initNotifications();
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'location') {
-        const newValue = e.newValue === 'true';
-        setIsLocationEnabled(newValue);
-        if (!newValue) {
-          setPosition(null);
-          setError(null);
-        } else {
-          requestLocation();
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  const requestLocation = async () => {
-    if (!isLocationEnabled) return;
-
-    try {
-      setIsLoading(true);
-      
-      if (Capacitor.isNativePlatform()) {
-        // Utiliser l'API Capacitor pour mobile
-        const coordinates = await Geolocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 10000
-        });
-        
-        const newPosition = new LatLng(coordinates.coords.latitude, coordinates.coords.longitude);
-        setPosition(newPosition);
-        // Supprimer le flyTo automatique vers la position de l'utilisateur
-        setError(null);
-        setIsLoading(false);
-      } else {
-        // Utiliser l'API Web standard pour le navigateur
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const newPosition = new LatLng(position.coords.latitude, position.coords.longitude);
-            setPosition(newPosition);
-            // Supprimer le flyTo automatique vers la position de l'utilisateur
-            setError(null);
-            setIsLoading(false);
-          },
-          (error) => {
-            handleLocationError(error);
-            setIsLoading(false);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
-        );
-      }
-    } catch (err: any) {
-      handleLocationError(err);
-      setIsLoading(false);
-    }
-  };
-
-  const handleLocationError = (err: any) => {
-    console.error('Erreur de géolocalisation:', err);
-    const now = Date.now();
-    if (now - lastErrorTime.current < 3000) return;
-    lastErrorTime.current = now;
-
-    let errorMessage = "Erreur de géolocalisation";
-    if (err.message?.includes('permission') || err.code === 1) {
-      errorMessage = "L'accès à la géolocalisation a été refusé. Veuillez autoriser l'accès dans les paramètres.";
-    } else if (err.message?.includes('unavailable') || err.code === 2) {
-      errorMessage = "La position n'est pas disponible. Vérifiez que la géolocalisation est activée.";
-    } else if (err.message?.includes('timeout') || err.code === 3) {
-      errorMessage = "La demande de géolocalisation a expiré. Veuillez réessayer.";
-    }
-    setError(errorMessage);
-  };
-
-  useEffect(() => {
-    if (!isLocationEnabled) {
-      setPosition(null);
-      setError(null);
-      return;
-    }
-
-    requestLocation();
-
-    // Surveiller la position
-    if (Capacitor.isNativePlatform()) {
-      // Utiliser l'API Capacitor pour mobile
-      Geolocation.watchPosition({
-        enableHighAccuracy: true,
-        timeout: 10000
-      }, (position: Position | null) => {
-        if (position) {
-          const newPosition = new LatLng(position.coords.latitude, position.coords.longitude);
-          setPosition(newPosition);
-          setError(null);
-        }
-      }).then((watchId) => {
-        watchIdRef.current = watchId;
-      });
-    } else {
-      // Utiliser l'API Web standard pour le navigateur
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const newPosition = new LatLng(position.coords.latitude, position.coords.longitude);
-          setPosition(newPosition);
-          setError(null);
-        },
-        (error) => {
-          handleLocationError(error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      );
-      watchIdRef.current = watchId;
-    }
-
-    return () => {
-      if (watchIdRef.current) {
-        if (Capacitor.isNativePlatform()) {
-          Geolocation.clearWatch({ id: watchIdRef.current as string });
-        } else {
-          navigator.geolocation.clearWatch(watchIdRef.current as number);
-        }
-      }
-    };
-  }, [isLocationEnabled]);
-
-  if (isLoading) {
-    return (
-      <div className="location-loading">
-        <div className="location-loading-spinner"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="location-error">
-        <p>{error}</p>
-        <div className="location-error-buttons">
-          <button 
-            className="retry-button" 
-            onClick={() => {
-              setError(null);
-              setIsLoading(true);
-              requestLocation();
-            }}
-          >
-            Réessayer
-          </button>
-          <button 
-            className="retry-button" 
-            onClick={() => {
-              setError(null);
-              setIsLocationEnabled(false);
-              localStorage.setItem('location', 'false');
-              window.dispatchEvent(new StorageEvent('storage', {
-                key: 'location',
-                newValue: 'false',
-                oldValue: 'true',
-                storageArea: localStorage
-              }));
-            }}
-          >
-            Annuler
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const handleRecenter = () => {
-    if (position) {
-      map.flyTo(position, 16, {
-        duration: 1.5
-      });
-    } else {
-      requestLocation();
-    }
-  };
-
-  return (
-    <>
-      {position === null ? null : (
-        <>
-          <Marker position={position} icon={UserIcon} interactive={false}>
-          </Marker>
-          <button className="recenter-button" onClick={handleRecenter} title="Me localiser">
-            <svg 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-              <circle cx="12" cy="9" r="2.5"/>
-            </svg>
-          </button>
-        </>
-      )}
-    </>
-  );
-}
-
-// Composant pour gérer les clics sur la carte
-function MapEvents({ onMapClick }: { onMapClick: (e: { latlng: { lat: number; lng: number } }) => void }) {
-  useMapEvents({
-    click: onMapClick,
-  });
-  return null;
-}
-
-// Composant pour écouter les changements de zoom
-function ZoomListener({ onZoomChange }: { onZoomChange: (zoom: number) => void }) {
-  const map = useMap();
-  
-  useEffect(() => {
-    const handleZoom = () => {
-      const zoom = map.getZoom();
-      onZoomChange(zoom);
-    };
-    
-    // Écouter les événements de zoom
-    map.on('zoomend', handleZoom);
-    // Initialiser avec le zoom actuel
-    handleZoom();
-    
-    return () => {
-      map.off('zoomend', handleZoom);
-    };
-  }, [map, onZoomChange]);
-  
-  return null;
-}
+// Components moved to src/components/map/
 
 interface Message {
   id?: string; // id Firebase
@@ -576,12 +264,8 @@ function App() {
     return () => window.removeEventListener('storage', handleLocationChange);
   }, [location.pathname]);
 
-  const mapRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
-  const indicationMarkersRef = useRef<L.Marker[]>([]);
   const eventsButtonRef = useRef<HTMLButtonElement | null>(null);
   const calendarButtonRef = useRef<HTMLButtonElement | null>(null);
-  const [currentZoom, setCurrentZoom] = useState<number>(13);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   // Refs pour accéder aux valeurs actuelles dans les handlers de popup
@@ -619,7 +303,6 @@ function App() {
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [previousTab, setPreviousTab] = useState<TabType>('map');
-  const [appAction, setAppAction] = useState(0);
   
   // Effet pour gérer le lieu sélectionné depuis la page Home
   useEffect(() => {
@@ -1033,33 +716,10 @@ function App() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  const [mapStyle, setMapStyle] = useState('osm');
+  // Use custom hooks for map state and filters
+  const { mapStyle, setMapStyle, currentZoom, setCurrentZoom, mapRef, markersRef, indicationMarkersRef, appAction, triggerMarkerUpdate } = useMapState();
+  const { eventFilter, setEventFilter, delegationFilter, setDelegationFilter, venueFilter, setVenueFilter, showFemale, setShowFemale, showMale, setShowMale, showMixed, setShowMixed, showFilters, setShowFilters } = useEventFilters();
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [eventFilter, setEventFilter] = useState<string>(() => {
-    const saved = localStorage.getItem('mapEventFilter');
-    return saved || 'all';
-  });
-  const [delegationFilter, setDelegationFilter] = useState<string>(() => {
-    const saved = localStorage.getItem('mapDelegationFilter');
-    return saved || 'all';
-  });
-  const [venueFilter, setVenueFilter] = useState<string>(() => {
-    const saved = localStorage.getItem('mapVenueFilter');
-    return saved || 'Tous';
-  });
-  const [showFemale, setShowFemale] = useState<boolean>(() => {
-    const saved = localStorage.getItem('mapShowFemale');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-  const [showMale, setShowMale] = useState<boolean>(() => {
-    const saved = localStorage.getItem('mapShowMale');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-  const [showMixed, setShowMixed] = useState<boolean>(() => {
-    const saved = localStorage.getItem('mapShowMixed');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-  const [showFilters, setShowFilters] = useState<boolean>(false);
   const [fromEvents, setFromEvents] = useState(false);
 
   // État pour l'historique des actions et l'index actuel
@@ -1071,13 +731,7 @@ function App() {
     return savedFavorites ? JSON.parse(savedFavorites) : [];
   });
 
-  // Déplacer la définition de triggerMarkerUpdate ici, avant son utilisation
-  const triggerMarkerUpdate = () => {
-    setAppAction(prev => prev + 1);
-    if (mapRef.current) {
-      updateMapMarkers();
-    }
-  };
+  // triggerMarkerUpdate is now provided by useMapState hook
 
   // Écouter les changements de préférences
   useEffect(() => {
@@ -1120,24 +774,7 @@ function App() {
   }, []);
 
 
-  const mapStyles = {
-    osm: {
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    },
-    cyclosm: {
-      url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    },
-    humanitarian: {
-      url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    },
-    osmfr: {
-      url: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }
-  };
+  // mapStyles moved to useMapState hook
 
   const sportEmojis: { [key: string]: string } = {
     Football: '⚽',
@@ -3650,6 +3287,7 @@ function App() {
           <MapEvents onMapClick={handleMapClick} />
           <ZoomListener onZoomChange={(zoom) => {
             setCurrentZoom(zoom);
+            setCurrentZoom(zoom);
             // Mettre à jour la visibilité des marqueurs d'indication
             indicationMarkersRef.current.forEach(marker => {
               if (zoom >= 17) {
@@ -3751,7 +3389,9 @@ function App() {
                 parties={parties}
                 isAdmin={isAdmin}
                 onEventSelect={handleEventSelect}
-                triggerMarkerUpdate={triggerMarkerUpdate}
+                triggerMarkerUpdate={() => {
+                  triggerMarkerUpdate(updateMapMarkers);
+                }}
                 isVenuesLoading={isVenuesLoading}
               />
             )}
