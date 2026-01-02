@@ -37,10 +37,14 @@ import { FormProvider } from './contexts/FormContext';
 import { EditingProvider } from './contexts/EditingContext';
 import { setupCapacitor } from './config/capacitor';
 import { initializeAnalytics } from './config/analytics';
+import { setupTheme } from './config/theme-setup';
+import { setupAnalytics } from './config/analytics-setup';
+import Loader from './components/Loader';
 
 // Composant racine de l'application
 const AppRoot = (
   <React.StrictMode>
+    <Loader />
     <OrientationLock />
     <AppProvider>
       <NavigationProvider>
@@ -72,15 +76,21 @@ const AppRoot = (
   </React.StrictMode>
 );
 
-// Configuration Capacitor et Analytics avant le rendu React
+// Configuration avant le rendu React
 (async () => {
+  // Configurer le thème en premier (évite le FOUC)
+  setupTheme();
+  
+  // Configurer Google Analytics (gtag.js)
+  setupAnalytics();
+  
   try {
     await setupCapacitor();
   } catch (error) {
     console.error('Erreur lors de la configuration Capacitor:', error);
   }
   
-  // Initialiser Google Analytics
+  // Initialiser ReactGA (complémentaire à gtag.js)
   initializeAnalytics();
   
   // Rendre l'app après la configuration (ou même si elle échoue)
