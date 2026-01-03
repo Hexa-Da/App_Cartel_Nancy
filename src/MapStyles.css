@@ -91,7 +91,7 @@
 .leaflet-bottom,
 .leaflet-right,
 .leaflet-left {
-  z-index: var(--z-content-high) !important;
+  z-index: var(--z-modal) !important;
 }
 
 .leaflet-control-zoom {
@@ -122,6 +122,8 @@
   align-items: center !important;
   justify-content: center !important;
   font-weight: 500 !important;
+  position: relative !important;
+  z-index: var(--z-modal) !important;
 }
 
 .leaflet-control-zoom-in {
@@ -173,7 +175,7 @@
 /* Media queries */
 @media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .leaflet-control-container {
-    z-index: var(--z-content-high) !important;
+    z-index: var(--z-modal) !important;
   }
 }
 

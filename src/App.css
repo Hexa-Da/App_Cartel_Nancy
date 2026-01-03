@@ -589,7 +589,7 @@
 
 .add-venue-button {
   position: fixed;  
-  bottom: calc(var(--above-bottom-nav) + 60px);
+  bottom: calc(var(--above-bottom-nav) + 50px);
   left: 20px;
   width: 48px;
   height: 48px;
@@ -611,7 +611,7 @@
 
 .recenter-button {
   position: fixed;
-  bottom: calc(var(--above-bottom-nav) + 60px);
+  bottom: calc(var(--above-bottom-nav) + 50px);
   right: 20px;
   width: 48px;
   height: 48px;
@@ -652,7 +652,7 @@ body .recenter-button {
 .location-loading {
   position: fixed;
   right: 20px;
-  bottom: calc(var(--above-bottom-nav) + 60px);
+  bottom: calc(var(--above-bottom-nav) + 50px);
   z-index: var(--z-modal);
 }
 
@@ -668,7 +668,7 @@ body .recenter-button {
 .map-loading-indicator {
   position: fixed;
   left: 20px;
-  bottom: calc(var(--above-bottom-nav) + 60px);
+  bottom: calc(var(--above-bottom-nav) + 50px);
   z-index: var(--z-modal);
 }
 
@@ -679,7 +679,7 @@ body .recenter-button {
 
 .location-error {
   position: fixed;
-  bottom: calc(var(--above-bottom-nav) + 60px);
+  bottom: calc(var(--above-bottom-nav) + 50px);
   right: 20px;
   background-color: var(--danger-color);
   color: white;

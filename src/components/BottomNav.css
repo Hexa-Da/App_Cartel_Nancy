@@ -7,15 +7,15 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  /* Hauteur adaptative pour iOS */
+  /* Hauteur adaptative */
   height: auto;
   min-height: 80px; /* Sécurité tactile */
-  /* Box-sizing : content-box pour que le padding s'ajoute à la hauteur */
-  box-sizing: content-box;
+  /* Box-sizing : border-box pour que le padding soit inclus dans la hauteur */
+  box-sizing: border-box;
   margin: 0;
-  /* Gestion Safe Area iOS - Padding uniquement en bas */
+  /* Gestion Safe Area - Padding uniquement en bas */
   padding-top: 10px; /* Petit espace au-dessus des icônes */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(--safe-bottom);
   padding-left: 0;
   padding-right: 0;
   overflow: visible;

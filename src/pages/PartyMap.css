@@ -106,7 +106,7 @@
   bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: var(--z-header);
+  z-index: var(--z-modal);
   display: flex;
   gap: 8px;
   align-items: center;

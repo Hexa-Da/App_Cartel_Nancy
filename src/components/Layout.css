@@ -23,13 +23,11 @@
 .app-main {
   /* ✅ PLEIN ÉCRAN : Prend toute la largeur */
   width: 100vw;
-  /* ✅ Règle Globale : Le Rembourrage - Hauteur fixe 100vh pour comportement overlay iOS */
-  min-height: 100vh;
-  /* ✅ ÉTAPE 2 : Utiliser les Variables Globales pour le "Sandwich" Parfait */
-  /* Pour les pages scrollables (Home, Info, Formulaires) : Padding sur le conteneur QUI SCROLL */
-  padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-mobile-margin)); /* Header + encoche + spacing mobile */
-  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px); /* Nav + barre home + 20px d'air */
-  /* ✅ Box-sizing : Le padding est inclus dans la hauteur */
+  /* ✅ Hauteur fixe 100vh pour comportement overlay iOS */
+  height: 100vh;
+  /* ✅ Pas de padding - chaque page se positionne elle-même */
+  padding: 0;
+  /* ✅ Box-sizing */
   box-sizing: border-box;
   /* ✅ Pas de marge latérale */
   margin: 0;
@@ -37,17 +35,8 @@
   /* ✅ Fond explicite : Élimine les bandes noires latérales */
   background-color: var(--bg-color);
   /* ✅ Overflow géré par les pages individuelles */
-  overflow-x: hidden;
-  /* ✅ Le scroll natif se fait sur .app-main pour les pages scrollables */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  /* NOTE: Avec keyboardResize: 'none', .app-main reste en hauteur fixe
-     Le clavier iOS passe par-dessus sans redimensionner le layout */
-}
-
-/* ✅ Exception pour la Page Home : Réduire le padding-top pour occuper toute la hauteur */
-.app-main:has(.home-page) {
-  padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-mobile-margin));
+  overflow: hidden;
+  /* NOTE: Chaque page gère son propre scroll et positionnement */
 }
 
 /* ✅ Exception pour la Page Map : Le .map-container ignore le padding du parent */
@@ -293,25 +282,5 @@ body {
   }
 }
 
-/* Responsive spacing pour tablet */
-@media (min-width: 601px) and (max-width: 1024px) { /* BREAKPOINTS.tablet */
-  .app-main {
-    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-tablet-margin));
-  }
-  
-  .app-main:has(.home-page) {
-    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-tablet-margin));
-  }
-}
-
-/* Responsive spacing pour desktop */
-@media (min-width: 1025px) { /* BREAKPOINTS.desktop */
-  .app-main {
-    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-desktop-margin));
-  }
-  
-  .app-main:has(.home-page) {
-    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-desktop-margin));
-  }
-}
+/* NOTE: Les paddings responsive sont maintenant gérés directement par chaque page */
 

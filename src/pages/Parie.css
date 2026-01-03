@@ -1,21 +1,21 @@
-/* Permettre le scroll quand la page Parie est active */
-.app-main.scrollable {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
-
-.app-main.scrollable > * {
-  overflow: visible !important;
-  height: auto !important;
-}
-
-/* Page Paris - Container scrollable */
+/* Page Parie - Positionnement direct par rapport au header et BottomNav */
 .parie-page {
+  /* ✅ Positionnement direct par rapport au header et BottomNav */
+  position: absolute;
+  top: calc(var(--header-height) + var(--safe-top));
+  bottom: calc(var(--nav-height) + var(--safe-bottom));
+  left: 0;
+  right: 0;
+  width: 100%;
+  /* ✅ Scroll géré directement sur la page */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   padding: 20px;
   padding-top: var(--spacing-page-top-mobile-padding);
-  padding-bottom: 120px;
+  padding-bottom: 20px;
   background-color: var(--bg-color);
-  min-height: 100%;
+  box-sizing: border-box;
 }
 
 .parie-header {

@@ -2,32 +2,29 @@
    INFO PAGE - Layout Flexbox Standardisé
    ============================================ */
 .info-page {
-  /* ✅ Centrage de la Page Info : Centre verticalement et horizontalement */
+  /* ✅ Positionnement direct par rapport au header et BottomNav */
+  position: absolute;
+  top: calc(var(--header-height) + var(--safe-top));
+  bottom: calc(var(--nav-height) + var(--safe-bottom));
+  left: 0;
+  right: 0;
+  width: 100%;
+  /* ✅ Centrage de la Page Info : Centre horizontalement, contenu en haut */
   display: flex;
   flex-direction: column;
   align-items: center; /* Centre horizontalement */
-  /* ✅ Justify-content: center avec protection scroll */
-  /* Sur grand écran : centre verticalement */
-  /* Sur petit écran : le scroll natif de .app-main permet de voir tout le contenu */
-  justify-content: center; /* Centre verticalement */
-  /* ✅ Largeur 100% */
-  width: 100%;
-  /* ✅ Min-height pour permettre le centrage vertical */
-  min-height: 100%;
-  /* ✅ NE TOUCHE PAS au margin (ça ne marche pas bien avec le scroll) */
-  margin: 0;
-  /* ✅ Padding à l'intérieur du composant (pas sur le conteneur) */
+  /* ✅ Justify-content: flex-start pour éviter l'espace vertical excessif */
+  justify-content: flex-start;
+  /* ✅ Scroll géré directement sur la page */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* ✅ Padding à l'intérieur du composant */
   padding: 20px;
   padding-top: var(--spacing-page-top-mobile-padding);
-  position: relative;
+  padding-bottom: 20px;
   z-index: var(--z-base);
-  /* ✅ Overflow visible pour permettre le scroll si le contenu dépasse */
-  overflow: visible;
-  overflow-x: hidden;
-  /* ✅ Pas de overflow-y: auto ici (le scroll se fait sur .app-main) */
-  /* ✅ Sécurité scroll : margin auto sur le contenu interne si nécessaire */
   box-sizing: border-box;
-  /* NOTE: Les paddings top/bottom pour Header et Nav sont sur .app-main qui scroll */
 }
 
 /* ✅ Protection scroll : Si le contenu dépasse, on passe en mode flex-start */
@@ -57,8 +54,202 @@
   }
 }
 
-/* ✅ Grille Info : Styles gérés dans Info.tsx avec Bento Grid et Glassmorphism */
+/* ============================================
+   TITRE INFO
+   ============================================ */
+.info-title {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 700;
+  text-align: center;
+  margin-top: 0;
+  margin-top: var(--spacing-page-top-mobile-margin);
+  color: var(--text-color);
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: min(800px, 95vw);
+  box-sizing: border-box;
+}
 
+/* ============================================
+   GRILLE INFO - Bento Grid Layout
+   ============================================ */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(120px, auto);
+  gap: clamp(12px, 2vw, 20px);
+  padding: 0 clamp(10px, 2vw, 20px);
+  max-width: min(900px, 95vw);
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 0;
+  box-sizing: border-box;
+}
+
+/* Bento Grid Layout - Tailles variables */
+.info-card-small {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.info-card-medium {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.info-card-wide {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.info-card-large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* ============================================
+   CARTES INFO - Glassmorphism Effect
+   ============================================ */
+.info-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: clamp(12px, 2vw, 16px);
+  padding: clamp(15px, 3vw, 20px);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(100px, 15vh, 140px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark theme glassmorphism */
+[data-theme="dark"] .info-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Light theme glassmorphism */
+[data-theme="light"] .info-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Micro-interaction au clic */
+.info-card:active {
+  transform: scale(0.98);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-card:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .info-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="light"] .info-card:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.info-icon {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  margin-bottom: clamp(6px, 1.5vh, 10px);
+  color: var(--text-color);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.info-card-title {
+  font-size: clamp(0.75rem, 2vw, 0.95rem);
+  margin: 0;
+  color: var(--text-color);
+  font-weight: 600;
+  line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   RESPONSIVE - Mobile First
+   ============================================ */
+@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(10px, 3vw, 16px);
+    padding: 0 clamp(8px, 2vw, 12px);
+  }
+
+  .info-card-small,
+  .info-card-medium,
+  .info-card-wide {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .info-card-large {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .info-card {
+    min-height: clamp(90px, 18vh, 130px);
+    padding: clamp(12px, 2.5vw, 16px);
+  }
+
+  .info-icon {
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+  }
+
+  .info-card-title {
+    font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  }
+
+  .info-title {
+    font-size: clamp(1.6rem, 5vw, 2rem);
+    margin-bottom: clamp(12px, 2vh, 18px);
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) { /* BREAKPOINTS.tablet to desktop */
+  .info-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .info-card-wide {
+    grid-column: span 3;
+  }
+
+  .info-card-medium {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1025px) { /* BREAKPOINTS.desktop */
+  .info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ============================================
+   SECTIONS INFO (pour InfoSection)
+   ============================================ */
 .info-section {
   background: white;
   border-radius: var(--radius-md);
