@@ -7,9 +7,9 @@
   background-color: var(--bg-color);
   display: flex;
   justify-content: center;
-  align-items: center;
-  /* ✅ z-index: base pour rester sous le Header/Nav (z-index: header) */
-  z-index: var(--z-base);
+  align-items: stretch;
+  /* ✅ z-index: content-high pour être au-dessus du contenu mais sous Header/Nav */
+  z-index: var(--z-content-high);
   backdrop-filter: blur(5px);
 }
 
@@ -24,14 +24,17 @@
   margin: 0;
   left: 0;
   right: 0;
-  /* ✅ Utiliser les variables globales pour le nouveau système responsive */
-  /* Padding pour ne pas être caché par Header et Nav (réduit à 5px d'air) */
-  padding-top: calc(var(--header-height) + 5px);
-  padding-bottom: calc(var(--nav-height) + 20px);
-  /* ✅ max-height avec variables CSS */
-  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 40px);
-  max-height: calc(100svh - var(--header-height) - var(--nav-height) - 40px);
-  position: relative;
+  /* ✅ Position fixe pour occuper tout l'espace entre header et nav */
+  position: fixed;
+  top: var(--header-height);
+  /* ✅ Bottom avec hauteur de la nav (min-height 80px selon BottomNav.css) */
+  bottom: 80px;
+  /* ✅ Hauteur calculée explicitement pour éviter les problèmes de flex */
+  height: calc(100vh - var(--header-height) - 80px);
+  height: calc(100svh - var(--header-height) - 80px);
+  /* ✅ Padding pour ne pas être caché par Header et Nav */
+  padding-top: 5px;
+  padding-bottom: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border-color);
   display: flex;
@@ -48,7 +51,7 @@
   padding: 0 1rem;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
-  z-index: var(--z-base);
+  z-index: var(--z-content-high);
   flex-shrink: 0;
   height: 60px;
 }
@@ -80,7 +83,8 @@
   padding: 1rem;
   flex: 1;
   min-height: 0;
-  padding-bottom: 2rem;
+  /* ✅ Padding-bottom pour permettre le scroll jusqu'en bas sans être caché par la nav */
+  padding-bottom: 1rem;
 }
 
 .form-group {
@@ -225,13 +229,17 @@
   .vss-form-container {
     width: 100%;
     max-width: 100%;
-    height: 100%;
-    max-height: 100%;
     border-radius: 0;
     border: none;
     margin: 0;
     left: 0;
     right: 0;
+    /* ✅ Position et hauteur conservées pour mobile */
+    top: var(--header-height);
+    bottom: 80px;
+    height: calc(100vh - var(--header-height) - 80px);
+    height: calc(100svh - var(--header-height) - 80px);
+    box-shadow: none;
   }
 
   .form-group {

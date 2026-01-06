@@ -13,9 +13,11 @@
 }
 
 .parie-header {
-  text-align: center;
-  margin-bottom: var(--page-title-margin-bottom);
-  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
 }
 
 .parie-header h1 {
@@ -23,6 +25,7 @@
   font-weight: 700;
   color: var(--text-color);
   margin: var(--page-title-margin-top) 0 var(--page-title-margin-bottom) 0;
+  text-align: center;
 }
 
 .parie-content {
@@ -517,7 +520,7 @@
   }
 
   .parie-header h1 {
-    font-size: 1.8rem;
+    font-size: clamp(1.6rem, 5vw, 2rem);
   }
 
   .parie-icon {

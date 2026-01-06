@@ -19,6 +19,7 @@ import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import NotificationService from '../services/NotificationService';
 import logger from '../services/Logger';
+import { useModal } from '../contexts/ModalContext';
 import './ChatPanel.css';
 
 interface Message {
@@ -35,6 +36,7 @@ interface ChatPanelProps {
 }
 
 const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
+  const { setShowVSSForm } = useModal();
   const [messages, setMessages] = useState<Message[]>([]);
   const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
   const [showAddMessage, setShowAddMessage] = useState(false);
@@ -42,6 +44,11 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
   const [newMessageSender, setNewMessageSender] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Fermer le formulaire VSS quand le chat s'ouvre
+  useEffect(() => {
+    setShowVSSForm(false);
+  }, [setShowVSSForm]);
 
   // Annuler l'ajout de message si isEditing passe à false
   useEffect(() => {

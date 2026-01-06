@@ -101,7 +101,7 @@
 /* Conteneur d'édition (panneau flottant pour ajouter des marqueurs) */
 .plan-editor-container {
   position: fixed;
-  bottom: 80px;
+  bottom: calc(80px + var(--spacing-lg));
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--z-modal);
@@ -163,16 +163,20 @@
 }
 
 /* Bouton supprimer dans la popup */
+.leaflet-popup-content-wrapper .plan-delete-button,
+.leaflet-popup-content .plan-delete-button,
+.venue-popup .plan-delete-button,
 .plan-delete-button {
-  margin-top: 8px;
-  padding: 6px 12px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  width: 100%;
-  min-height: 44px;
+  margin-top: 8px !important;
+  padding: 4px 6px !important;
+  background-color: #e74c3c !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  width: 100% !important;
+  min-height: 36px !important;
 }
 

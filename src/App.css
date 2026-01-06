@@ -409,15 +409,77 @@
   border-radius: var(--spacing-xs);
 }
 
+/* Styles spécifiques pour les boutons dans les popups Leaflet */
+.leaflet-popup-content-wrapper .maps-button,
+.leaflet-popup-content .maps-button,
+.venue-popup .maps-button {
+  width: 100% !important;
+  padding: 4px 6px !important;
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 36px !important;
+}
+
+.leaflet-popup-content-wrapper .copy-button,
+.leaflet-popup-content .copy-button,
+.venue-popup .copy-button {
+  width: 100% !important;
+  padding: 4px 6px !important;
+  background-color: #673AB7 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 36px !important;
+}
+
+.leaflet-popup-content-wrapper .call-button,
+.leaflet-popup-content .call-button,
+.venue-popup .call-button {
+  width: 100% !important;
+  padding: 4px 6px !important;
+  background-color: #5dabae !important;
+  color: white !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 36px !important;
+}
+
+/* Fallback pour compatibilité */
 .maps-button {
   width: 100%;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
   background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -428,13 +490,13 @@
 
 .copy-button {
   width: 100%;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
   background-color: #673AB7;
   color: white;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -445,13 +507,13 @@
 
 .call-button {
   width: 100%;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
   background-color: #5dabae;
   color: white;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -460,14 +522,82 @@
   min-height: 44px;
 }
 
+/* Styles spécifiques pour les boutons dans les popups Leaflet */
+.leaflet-popup-content-wrapper .popup-buttons .modif-button,
+.leaflet-popup-content .popup-buttons .modif-button,
+.venue-popup .popup-buttons .modif-button {
+  background-color: #FF9800 !important;
+  color: white !important;
+  border: none !important;
+  padding: 4px 6px !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  width: 100% !important;
+  transition: all 0.3s ease !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 36px !important;
+}
+
+.leaflet-popup-content-wrapper .popup-buttons .delete-button,
+.leaflet-popup-content .popup-buttons .delete-button,
+.venue-popup .popup-buttons .delete-button {
+  background-color: var(--danger-color) !important;
+  color: white !important;
+  border: none !important;
+  padding: 4px 6px !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  width: 100% !important;
+  transition: all 0.3s ease !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 36px !important;
+}
+
+.leaflet-popup-content-wrapper .party-map-button,
+.leaflet-popup-content .party-map-button,
+.venue-popup .party-map-button,
+.leaflet-popup-content-wrapper .edit-result-button,
+.leaflet-popup-content .edit-result-button,
+.venue-popup .edit-result-button,
+.leaflet-popup-content-wrapper .edit-description-button,
+.leaflet-popup-content .edit-description-button,
+.venue-popup .edit-description-button {
+  width: 100% !important;
+  padding: 4px 6px !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 36px !important;
+}
+
+/* Fallback pour compatibilité */
 .popup-buttons .modif-button {
   background-color: #FF9800;
   color: white;
   border: none;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
   width: 100%;
   transition: all 0.3s ease;
   margin: 0;
@@ -482,10 +612,10 @@
   background-color: var(--danger-color);
   color: white;
   border: none;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
   width: 100%;
   transition: all 0.3s ease;
   margin: 0;
@@ -500,11 +630,11 @@
 .edit-result-button,
 .edit-description-button {
   width: 100%;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
   font-weight: 600;
   transition: all 0.3s ease;
   display: flex;
@@ -533,6 +663,61 @@
    BOUTONS DE MATCH - Styles des boutons de match
    ============================================ */
 
+/* Styles spécifiques pour les boutons de match dans les popups Leaflet */
+.leaflet-popup-content-wrapper .edit-match-button,
+.leaflet-popup-content .edit-match-button,
+.venue-popup .edit-match-button,
+.leaflet-popup-content-wrapper .delete-match-button,
+.leaflet-popup-content .delete-match-button,
+.venue-popup .delete-match-button,
+.leaflet-popup-content-wrapper .add-match-button,
+.leaflet-popup-content .add-match-button,
+.venue-popup .add-match-button {
+  padding: 4px 6px !important;
+  font-size: clamp(0.75rem, 2.5vw, 0.85rem) !important;
+  font-weight: normal !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  min-height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+.leaflet-popup-content-wrapper .edit-match-button,
+.leaflet-popup-content .edit-match-button,
+.venue-popup .edit-match-button {
+  background-color: #2196F3 !important;
+  color: white !important;
+}
+
+.leaflet-popup-content-wrapper .delete-match-button,
+.leaflet-popup-content .delete-match-button,
+.venue-popup .delete-match-button {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.leaflet-popup-content-wrapper .add-match-button,
+.leaflet-popup-content .add-match-button,
+.venue-popup .add-match-button {
+  background-color: var(--success-color) !important;
+  color: white !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.leaflet-popup-content-wrapper .add-match-button:active,
+.leaflet-popup-content .add-match-button:active,
+.venue-popup .add-match-button:active {
+  transform: translateY(0) !important;
+  background-color: var(--success-color) !important;
+}
+
+/* Fallback pour compatibilité */
 .edit-match-button,
 .delete-match-button,
 .add-match-button {
@@ -572,6 +757,25 @@
 .add-match-button:active {
   transform: translateY(0);
   background-color: var(--success-color);
+}
+
+/* Styles spécifiques pour match-actions dans les popups Leaflet */
+.leaflet-popup-content-wrapper .match-actions,
+.leaflet-popup-content .match-actions,
+.venue-popup .match-actions {
+  display: flex !important;
+  gap: var(--spacing-xs) !important;
+  margin-top: var(--spacing-xs) !important;
+}
+
+.leaflet-popup-content-wrapper .match-actions .edit-match-button,
+.leaflet-popup-content .match-actions .edit-match-button,
+.venue-popup .match-actions .edit-match-button,
+.leaflet-popup-content-wrapper .match-actions .delete-match-button,
+.leaflet-popup-content .match-actions .delete-match-button,
+.venue-popup .match-actions .delete-match-button {
+  flex: 1 !important;
+  min-width: 0 !important;
 }
 
 .match-actions {

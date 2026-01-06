@@ -16,10 +16,11 @@
  * - Conformité avec les exigences de protection des victimes
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ref, get } from 'firebase/database';
 import { database } from '../firebase';
 import logger from '../services/Logger';
+import { useModal } from '../contexts/ModalContext';
 import './VSSForm.css';
 
 // Configuration anti-spam
@@ -46,6 +47,7 @@ interface VSSFormProps {
 }
 
 const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
+  const { setShowChat } = useModal();
   const [formData, setFormData] = useState({
     description: '',
     date: '',
@@ -57,6 +59,11 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Fermer le chat quand le formulaire VSS s'ouvre
+  useEffect(() => {
+    setShowChat(false);
+  }, [setShowChat]);
 
   // ============ SYSTÈME ANTI-SPAM ============
 
