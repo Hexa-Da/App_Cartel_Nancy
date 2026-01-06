@@ -3,13 +3,11 @@
  * 
  * Ce fichier contient :
  * - Styles de base pour les filtres dynamiques
- * - Styles spécifiques iOS avec body.ios
  * - Responsive design pour mobile
  * - Animations et transitions
  * 
  * Nécessaire car :
  * - Séparation des styles du composant React
- * - Styles iOS spécifiques pour les filtres
  * - Meilleure maintenabilité du code
  * - Performance optimisée
  */
@@ -48,44 +46,32 @@
    PLANNING FILES PAGE - Layout Flexbox Standardisé
    ============================================ */
 .planning-files-page {
-  /* ✅ Positionnement direct par rapport au header et BottomNav */
-  position: absolute;
-  top: calc(var(--header-height) + var(--safe-top));
-  bottom: calc(var(--nav-height) + var(--safe-bottom));
-  left: 0;
-  right: 0;
-  width: 100%;
-  /* ✅ Padding-top ajusté pour correspondre au positionnement du filters-container */
-  padding-top: calc(var(--spacing-page-top-mobile-padding) + 75px);
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 20px;
+  /* ✅ Positionnement géré par .page-content.scrollable dans Layout.css */
+  /* ✅ Standard de page unifié avec offset pour les filtres fixes */
+  display: var(--page-display);
+  flex-direction: var(--page-flex-direction);
+  align-items: var(--page-align-items);
+  justify-content: var(--page-justify-content);
+  padding-top: calc(var(--page-padding-top) + 75px); /* Offset pour filters-container fixe */
+  padding-left: var(--page-padding-horizontal);
+  padding-right: var(--page-padding-horizontal);
+  padding-bottom: var(--page-padding-bottom);
   background-color: var(--bg-color);
+  color: var(--text-color);
   transition: opacity 0.3s ease;
-  /* ✅ Scroll géré directement sur la page */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  /* ✅ Scroll vertical pour le contenu */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
 }
 
 .filters-container {
   position: fixed;
-  top: calc(var(--header-height) + var(--safe-top) + 25px);
+  top: calc(var(--header-height) + 25px);
   left: 0;
   right: 0;
   z-index: var(--z-content-high);
   background: var(--bg-color);
-  padding: 15px 20px;
+  padding: var(--spacing-md) var(--spacing-md);
   display: flex;
-  gap: 15px;
+  gap: var(--spacing-md);
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: center;
@@ -96,7 +82,7 @@
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--spacing-xs);
   width: 100%;
   /* Changé: Largeur adaptative */
   max-width: min(300px, 85vw);
@@ -109,8 +95,8 @@
 }
 
 .filter-select {
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
   border: 2px solid var(--border-color);
   background: var(--bg-color);
   font-size: 16px;
@@ -130,79 +116,15 @@
 }
 
 .planning-container {
-  padding: 20px;
+  padding: var(--spacing-md);
   background-color: var(--bg-secondary);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px var(--shadow-color);
   width: 100%;
   max-width: min(300px, 85vw);
   margin: 0 auto;
   box-sizing: border-box;
 }
-
-/* ===== STYLES iOS SPÉCIFIQUES ===== */
-
-/* Détection iOS et application des styles */
-body.ios .filters-container {
-  /* ✅ Conservé : Ajustements visuels spécifiques iOS (backdrop-filter, tap-highlight, etc.) */
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-touch-callout: none !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-  box-shadow: none !important;
-  border: none !important;
-  background: var(--bg-color) !important;
-}
-
-body.ios .filter-group {
-  display: flex !important;
-  flex-direction: column !important;
-  width: 100% !important;
-  /* Changé: Largeur adaptative */
-  max-width: min(300px, 85vw) !important;
-  gap: 12px !important; /* Augmenté de 8px à 12px */
-  margin: 0 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  border: none !important;
-  background: transparent !important;
-}
-
-body.ios .filter-select {
-  font-size: 16px !important;
-  appearance: none !important;
-  border-radius: 6px !important;
-  user-select: none !important;
-  padding: 10px 12px !important;
-  min-height: 44px !important; /* Taille minimale recommandée pour iOS */
-  box-shadow: none !important;
-  border: 1px solid var(--border-color) !important;
-  background-color: var(--bg-color) !important;
-  margin: 0 !important;
-  line-height: 1.2 !important;
-  transition: none !important;
-  transform: none !important;
-}
-
-body.ios .planning-container {
-  width: 100% !important;
-  max-width: min(300px, 85vw) !important;
-  margin: 0 auto !important;
-  box-sizing: border-box !important;
-}
-
-/* Chevrons iOS - Mode sombre */
-body.ios[data-theme="dark"] .planning-files-page .filter-select {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-}
-
-/* Chevrons iOS - Mode clair */
-body.ios[data-theme="light"] .planning-files-page .filter-select {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23181818' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-}
-
 
 /* ===== STYLES POUR LES BARRES DE CHARGEMENT ===== */
 
@@ -214,12 +136,12 @@ body.ios[data-theme="light"] .planning-files-page .filter-select {
   z-index: var(--z-max);
   background: rgba(20,20,20,0.95);
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  padding: 20px;
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: all 0.3s;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 2px solid var(--accent-color);
   /* Changé: Dimensions adaptatives */
   min-width: min(300px, 90vw);
@@ -233,41 +155,15 @@ body.ios[data-theme="light"] .planning-files-page .filter-select {
   transform: translate(-50%, -50%);
   z-index: var(--z-header);
   background: rgba(20,20,20,0.95);
-  padding: 20px;
-  border-radius: 12px;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
   border: 2px solid var(--accent-color);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: var(--spacing-md);
 }
 
-/* Styles iOS pour les barres de chargement */
-body.ios .upload-progress-bar,
-body.ios .page-loading-indicator {
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-body.ios .upload-progress-bar {
-  /* Changé: Dimensions adaptatives */
-  min-width: min(280px, 85vw);
-  max-width: var(--modal-width-small);
-  padding: 24px;
-}
-
-body.ios .page-loading-indicator {
-  /* Changé: Dimensions adaptatives */
-  min-width: min(260px, 80vw);
-  max-width: var(--modal-width-small);
-  padding: 24px;
-}
 
 /* ===== SPINNER DE CHARGEMENT (Style copié de ChatPanel) ===== */
 .planning-files-page .chat-loading-spinner-container {
@@ -275,9 +171,9 @@ body.ios .page-loading-indicator {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
-  gap: 1rem;
-  margin-top: 2rem;
+  padding: calc(var(--spacing-lg) * 1.25) var(--spacing-md);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
 }
 
 .planning-files-page .chat-loading-spinner {
@@ -296,14 +192,6 @@ body.ios .page-loading-indicator {
   text-align: center;
 }
 
-body.ios .planning-files-page .chat-loading-spinner-container {
-  padding: 2rem 1rem;
-}
-
-body.ios .planning-files-page .chat-loading-spinner {
-  -webkit-animation: spin 1s linear infinite;
-  animation: spin 1s linear infinite;
-}
 
 /* ===== ANIMATIONS ===== */
 
@@ -318,46 +206,25 @@ body.ios .planning-files-page .chat-loading-spinner {
   }
 }
 
-body.ios .upload-progress-bar div[style*="animation: spin"],
-body.ios .page-loading-indicator div[style*="animation: spin"] {
-  -webkit-animation: spin 1s linear infinite;
-  animation: spin 1s linear infinite;
-}
-
-/* ===== SUPPORT SIMULATEUR iOS ===== */
-
-body.ios-simulator .upload-progress-bar,
-body.ios-simulator .page-loading-indicator {
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
-}
-
-body.ios-simulator .planning-files-page {
-  padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-mobile-padding) + 75px) !important;
-}
-
-body.ios-simulator .filters-container {
-  top: 120px !important;
-}
 
 /* ===== RESPONSIVE DESIGN ===== */
 
 @media (min-width: 601px) and (max-width: 1024px) { /* BREAKPOINTS.tablet */
   .planning-files-page {
-    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-tablet-padding) + 75px);
+    padding-top: calc(var(--header-height) + var(--spacing-page-top-tablet-padding) + 75px);
   }
 }
 
 @media (min-width: 1025px) { /* BREAKPOINTS.desktop */
   .planning-files-page {
-    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-desktop-padding) + 75px);
+    padding-top: calc(var(--header-height) + var(--spacing-page-top-desktop-padding) + 75px);
   }
 }
 
 @media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .filters-container {
     flex-direction: column;
-    gap: 10px;
+    gap: var(--spacing-sm);
   }
   
   .filter-group {
@@ -365,7 +232,7 @@ body.ios-simulator .filters-container {
   }
   
   .filter-select {
-    font-size: 16px; /* Évite le zoom sur iOS */
+    font-size: 16px;
   }
   
   .planning-container {
@@ -377,13 +244,13 @@ body.ios-simulator .filters-container {
 
 @media (max-width: 480px) { /* BREAKPOINTS.mobile */
   .planning-files-page {
-    padding-top: calc(var(--header-height) + var(--safe-top) + var(--spacing-page-top-mobile-padding) + 75px);
+    padding-top: calc(var(--header-height) + var(--spacing-page-top-mobile-padding) + 75px);
     padding-left: 15px;
     padding-right: 15px;
   }
   
   .filters-container {
-    padding: 10px 15px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
   .filter-group {
@@ -394,7 +261,7 @@ body.ios-simulator .filters-container {
     max-width: calc(100% - 30px);
     margin-left: 15px;
     margin-right: 15px;
-    padding: 15px;
+    padding: var(--spacing-md);
   }
 }
 
@@ -408,25 +275,4 @@ body.ios-simulator .filters-container {
   opacity: 1;
 }
 
-/* ===== CORRECTIONS SPÉCIFIQUES iOS ===== */
-
-/* Force le layout en colonne sur iOS */
-body.ios .filters-container > * {
-  display: flex !important;
-  flex-direction: column !important;
-  width: 100% !important;
-  /* Changé: Largeur adaptative */
-  max-width: min(300px, 85vw) !important;
-}
-
-/* Évite les problèmes de zoom sur iOS */
-body.ios .filter-select {
-  font-size: 16px !important;
-}
-
-/* Force la hauteur minimale pour les éléments tactiles */
-body.ios .filter-select {
-  min-height: 44px !important;
-  line-height: 1.2 !important;
-}
 

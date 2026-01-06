@@ -28,11 +28,11 @@
   right: 0;
   /* ✅ Utiliser les variables globales pour le nouveau système responsive */
   /* Padding pour ne pas être caché par Header et Nav (réduit à 5px d'air) */
-  padding-top: calc(var(--header-height) + var(--safe-top) + 5px);
-  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
+  padding-top: calc(var(--header-height) + 5px);
+  padding-bottom: calc(var(--nav-height) + 20px);
   /* ✅ max-height avec variables CSS */
-  max-height: calc(100vh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom) - 40px);
-  max-height: calc(100svh - var(--header-height) - var(--safe-top) - var(--nav-height) - var(--safe-bottom) - 40px);
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 40px);
+  max-height: calc(100svh - var(--header-height) - var(--nav-height) - 40px);
   position: relative;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   border: 1px solid var(--border-color);

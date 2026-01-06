@@ -1,34 +1,28 @@
 /* Page Parie - Positionnement direct par rapport au header et BottomNav */
 .parie-page {
-  /* ✅ Positionnement direct par rapport au header et BottomNav */
-  position: absolute;
-  top: calc(var(--header-height) + var(--safe-top));
-  bottom: calc(var(--nav-height) + var(--safe-bottom));
-  left: 0;
-  right: 0;
-  width: 100%;
-  /* ✅ Scroll géré directement sur la page */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding: 20px;
-  padding-top: var(--spacing-page-top-mobile-padding);
-  padding-bottom: 20px;
+  /* ✅ Positionnement géré par .page-content.scrollable dans Layout.css */
+  /* ✅ Standard de page unifié */
+  display: var(--page-display);
+  flex-direction: var(--page-flex-direction);
+  align-items: var(--page-align-items);
+  justify-content: var(--page-justify-content);
+  padding: var(--page-padding);
   background-color: var(--bg-color);
+  color: var(--text-color);
   box-sizing: border-box;
 }
 
 .parie-header {
   text-align: center;
-  margin-bottom: 30px;
-  padding-top: 0;
+  margin-bottom: var(--page-title-margin-bottom);
+  margin-top: 0;
 }
 
 .parie-header h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   color: var(--text-color);
-  margin: 0;
+  margin: var(--page-title-margin-top) 0 var(--page-title-margin-bottom) 0;
 }
 
 .parie-content {
@@ -58,7 +52,7 @@
 .parie-icon {
   font-size: 4rem;
   color: var(--primary-color);
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .parie-setup h2 {
@@ -70,28 +64,28 @@
 .parie-description {
   color: var(--text-color-light);
   font-size: 0.95rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 /* Formulaire */
 .parie-form {
   background-color: var(--bg-secondary);
-  padding: 1.5rem;
+  padding: var(--spacing-lg);
   border-radius: var(--radius-md);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 .parie-form label {
   display: block;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-xs);
   color: var(--text-color);
   font-size: 0.9rem;
 }
 
 .parie-input {
   width: 100%;
-  padding: 1rem;
+  padding: var(--spacing-md);
   border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
   font-size: 1.2rem;
@@ -99,7 +93,7 @@
   background-color: var(--bg-color);
   color: var(--text-color);
   box-sizing: border-box;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .parie-input:disabled {
@@ -118,7 +112,7 @@
 
 .parie-button {
   width: 100%;
-  padding: 1rem;
+  padding: var(--spacing-md);
   border: none;
   border-radius: var(--radius-sm);
   font-size: 1rem;
@@ -139,8 +133,8 @@
 .parie-warning {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
   background-color: rgba(241, 196, 15, 0.1);
   border: 1px solid rgba(241, 196, 15, 0.3);
   border-radius: var(--radius-sm);
@@ -163,16 +157,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding: var(--spacing-md) var(--spacing-md);
   background-color: var(--bg-secondary);
   border-radius: var(--radius-md);
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .bracelet-badge {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--success-color);
@@ -186,7 +180,7 @@
 .bets-counter {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   font-size: 0.85rem;
   color: var(--text-color-light);
   font-weight: 500;
@@ -230,21 +224,21 @@
 
 .save-message {
   text-align: center;
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   background-color: rgba(46, 204, 113, 0.15);
   color: #2ecc71;
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-weight: 500;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 /* Timer */
 .timer-container {
   background-color: var(--bg-secondary);
   border-radius: var(--radius-md);
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
   text-align: center;
 }
 
@@ -252,16 +246,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   font-size: 0.85rem;
   color: var(--text-color-light);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-xs);
 }
 
 .timer-countdown {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
 }
 
 .timer-unit {
@@ -286,23 +280,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-md);
   background-color: rgba(231, 76, 60, 0.15);
   color: #e74c3c;
   border-radius: var(--radius-md);
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .betting-closed-message {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
   background-color: rgba(241, 196, 15, 0.1);
   border-radius: var(--radius-sm);
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
   color: #f1c40f;
 }
 
@@ -316,14 +310,14 @@
   text-align: center;
   color: var(--text-color-light);
   font-size: 0.9rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 /* Liste des sports */
 .sports-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--spacing-md);
   padding-bottom: 150px;
 }
 
@@ -352,7 +346,7 @@
 .sport-left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-md);
 }
 
 .sport-icon {
@@ -370,12 +364,12 @@
 .sport-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-md);
 }
 
 .selected-badge {
   font-size: 0.75rem;
-  padding: 0.25rem 0.6rem;
+  padding: var(--spacing-xs) var(--spacing-xs);
   background-color: rgba(46, 204, 113, 0.2);
   color: #2ecc71;
   border-radius: var(--radius-md);
@@ -390,9 +384,9 @@
 .delegation-vote-badge {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: var(--spacing-xs);
   font-size: 0.7rem;
-  padding: 0.2rem 0.5rem;
+  padding: var(--spacing-xs) var(--spacing-xs);
   background-color: rgba(52, 152, 219, 0.15);
   color: #3498db;
   border-radius: var(--radius-md);
@@ -428,7 +422,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1.25rem;
+  padding: var(--spacing-md) var(--spacing-lg);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -446,7 +440,7 @@
 
 /* Vote de la délégation */
 .delegation-vote-info {
-  padding: 0.75rem 1rem;
+  padding: var(--spacing-md) var(--spacing-md);
   background-color: rgba(52, 152, 219, 0.1);
   border-top: 1px solid var(--border-color);
 }
@@ -462,7 +456,7 @@
 .delegation-vote-result {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   flex-wrap: wrap;
 }
 
@@ -551,7 +545,7 @@
   }
 
   .delegation-item {
-    padding: 0.75rem 1rem;
+    padding: var(--spacing-md) var(--spacing-md);
   }
 
   .selected-badge {
@@ -569,7 +563,7 @@
 
   .sport-right {
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--spacing-xs);
   }
 }
 
@@ -624,7 +618,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
   position: relative;
   flex-shrink: 0;
@@ -647,13 +641,13 @@
   right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   line-height: 1;
   -webkit-tap-highlight-color: transparent;
 }
 
 .bracelet-login-form {
-  padding: 1rem;
+  padding: var(--spacing-md);
   background-color: var(--bg-color);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -667,7 +661,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .bracelet-login-form .form-group label {
@@ -718,12 +712,12 @@
 .parie-warning-modal {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-md);
   padding: 0.75rem;
   background-color: rgba(241, 196, 15, 0.1);
   border: 1px solid rgba(241, 196, 15, 0.3);
   border-radius: var(--radius-sm);
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .parie-warning-modal .warning-icon {
@@ -803,7 +797,6 @@
   }
 }
 
-/* Styles spécifiques pour iOS */
 
 /* Boutons admin */
 .admin-buttons-container {
@@ -812,11 +805,11 @@
   margin-bottom: clamp(1rem, 3vh, 2rem) !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  padding: 1rem;
+  padding: var(--spacing-md);
   display: flex !important;
   flex-direction: column !important;
   /* Changé: Espacement vertical entre les boutons */
-  gap: 12px;
+  gap: var(--spacing-md);
   justify-content: center !important;
   align-items: center !important;
   width: 100%;
@@ -829,7 +822,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   padding: 0.75rem 1.5rem;
   background-color: var(--primary-color);
   color: white;
@@ -879,7 +872,7 @@
   align-items: center;
   justify-content: center;
   z-index: var(--z-header);
-  padding: 1rem;
+  padding: var(--spacing-md);
 }
 
 .winners-modal-content {
@@ -898,7 +891,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -919,25 +912,25 @@
 }
 
 .winners-modal-body {
-  padding: 1rem;
+  padding: var(--spacing-md);
   overflow-y: auto;
   flex: 1;
 }
 
 .winner-sport-item {
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .winner-sport-label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-xs);
   font-weight: 500;
   color: var(--text-color);
 }
 
 .winner-select {
   width: 100%;
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   background-color: var(--bg-color);
@@ -946,7 +939,7 @@
 }
 
 .winners-modal-footer {
-  padding: 1rem;
+  padding: var(--spacing-md);
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;

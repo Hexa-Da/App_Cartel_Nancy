@@ -2,42 +2,31 @@
    INFO SECTION PAGE - Layout Flexbox Standardisé
    ============================================ */
 .info-section-page {
-  /* ✅ Positionnement direct par rapport au header et BottomNav */
-  position: absolute;
-  top: calc(var(--header-height) + var(--safe-top));
-  bottom: calc(var(--nav-height) + var(--safe-bottom));
-  left: 0;
-  right: 0;
-  width: 100%;
-  /* ✅ Padding horizontal seulement */
-  padding: 0 20px 20px 20px;
-  margin: 0;
+  /* ✅ Positionnement géré par .page-content.scrollable dans Layout.css */
+  /* ✅ Standard de page unifié */
+  display: var(--page-display);
+  flex-direction: var(--page-flex-direction);
+  align-items: var(--page-align-items);
+  justify-content: var(--page-justify-content);
+  padding: var(--page-padding);
   background-color: var(--bg-color);
   color: var(--text-color);
-  /* ✅ Scroll vertical pour le contenu */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
 }
-
 
 .info-section-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 40px;
-  /* ✅ Padding-top réduit car la page est déjà positionnée sous le header */
-  padding-top: var(--spacing-page-top-mobile-padding);
-  /* ✅ Supprimer les marges négatives s'il y en a */
+  margin-bottom: var(--spacing-xl);
   margin-top: 0;
 }
 
 .info-section-header h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   color: var(--text-color);
-  margin: 0;
+  margin: var(--page-title-margin-top) 0 var(--page-title-margin-bottom) 0;
   text-align: center;
 }
 
@@ -50,7 +39,7 @@
 .info-section-list-item {
   display: flex;
   align-items: center;
-  padding: 20px 10px;
+  padding: var(--spacing-md) var(--spacing-sm);
   font-size: 1.2rem;
   border-bottom: 1px solid var(--border-color);
   cursor: pointer;
@@ -65,7 +54,7 @@
 
 .info-section-list-item .item-icon {
   font-size: 1.8rem;
-  margin-right: 20px;
+  margin-right: var(--spacing-md);
   width: 40px;
   text-align: center;
   color: var(--text-primary);
@@ -82,12 +71,12 @@
 
   .info-section-list-item {
     font-size: 1rem;
-    padding: 15px 5px;
+    padding: var(--spacing-md) var(--spacing-xs);
   }
 
   .info-section-list-item .item-icon {
     font-size: 1.5rem;
-    margin-right: 15px;
+    margin-right: var(--spacing-md);
   }
 }
 
@@ -105,20 +94,20 @@
 .faq-section {
   margin-bottom: 1rem;
   background-color: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border-color);
 }
 
 .faq-section.open {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .faq-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  padding: var(--spacing-md) var(--spacing-lg);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -128,7 +117,7 @@
 .faq-section-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 .faq-section-icon {
@@ -169,7 +158,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  padding: var(--spacing-md) var(--spacing-lg);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -181,7 +170,7 @@
   font-weight: 500;
   color: var(--text-color);
   flex: 1;
-  padding-right: 1rem;
+    padding-right: var(--spacing-md);
   line-height: 1.4;
 }
 
@@ -192,7 +181,7 @@
 }
 
 .faq-answer {
-  padding: 0 1.25rem 1.25rem 1.25rem;
+  padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--text-color-light);
@@ -202,16 +191,16 @@
 /* Responsive FAQ */
 @media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .faq-container {
-    padding: 0 5px;
-    padding-bottom: 100px;
+    padding: 0 var(--spacing-xs);
+    padding-bottom: calc(var(--spacing-xl) * 3);
   }
 
   .faq-section {
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--spacing-md);
   }
 
   .faq-section-header {
-    padding: 0.85rem 1rem;
+    padding: var(--spacing-md) var(--spacing-md);
   }
 
   .faq-section-icon {
@@ -223,7 +212,7 @@
   }
 
   .faq-question {
-    padding: 0.85rem 1rem;
+    padding: var(--spacing-md) var(--spacing-md);
   }
 
   .faq-question span {
@@ -231,7 +220,7 @@
   }
 
   .faq-answer {
-    padding: 0 1rem 1rem 1rem;
+    padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
     font-size: 0.85rem;
   }
 }

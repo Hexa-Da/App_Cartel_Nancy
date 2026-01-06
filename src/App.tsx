@@ -285,24 +285,6 @@ function App() {
     isEditingRef.current = isEditing;
   }, [isEditing]);
 
-  // Synchroniser la largeur du bouton Calendrier avec celui d'Événements
-  useEffect(() => {
-    const syncButtonWidths = () => {
-      if (activeTab === 'map' && eventsButtonRef.current && calendarButtonRef.current) {
-        const eventsWidth = eventsButtonRef.current.offsetWidth;
-        calendarButtonRef.current.style.width = `${eventsWidth}px`;
-      }
-    };
-
-    // Synchroniser immédiatement
-    syncButtonWidths();
-
-    // Synchroniser après un court délai pour s'assurer que le DOM est mis à jour
-    const timeoutId = setTimeout(syncButtonWidths, 0);
-
-    return () => clearTimeout(timeoutId);
-  }, [activeTab]);
-
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);

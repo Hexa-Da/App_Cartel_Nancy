@@ -2,56 +2,16 @@
    INFO PAGE - Layout Flexbox Standardisé
    ============================================ */
 .info-page {
-  /* ✅ Positionnement direct par rapport au header et BottomNav */
-  position: absolute;
-  top: calc(var(--header-height) + var(--safe-top));
-  bottom: calc(var(--nav-height) + var(--safe-bottom));
-  left: 0;
-  right: 0;
-  width: 100%;
-  /* ✅ Centrage de la Page Info : Centre horizontalement, contenu en haut */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centre horizontalement */
-  /* ✅ Justify-content: flex-start pour éviter l'espace vertical excessif */
-  justify-content: flex-start;
-  /* ✅ Scroll géré directement sur la page */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  /* ✅ Padding à l'intérieur du composant */
-  padding: 20px;
-  padding-top: var(--spacing-page-top-mobile-padding);
-  padding-bottom: 20px;
-  z-index: var(--z-base);
+  /* ✅ Positionnement géré par .page-content.scrollable dans Layout.css */
+  /* ✅ Standard de page unifié */
+  display: var(--page-display);
+  flex-direction: var(--page-flex-direction);
+  align-items: center; /* Centre horizontalement pour cette page */
+  justify-content: var(--page-justify-content);
+  padding: var(--page-padding);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   box-sizing: border-box;
-}
-
-/* ✅ Protection scroll : Si le contenu dépasse, on passe en mode flex-start */
-@media (max-height: 600px) {
-  .info-page {
-    justify-content: flex-start;
-    padding-top: var(--spacing-page-top-mobile-padding);
-  }
-}
-
-/* ✅ Harmonisation avec Home.css : Media queries pour tablet et desktop */
-@media (min-height: 700px) {
-  .info-page {
-    padding-top: var(--spacing-page-top-tablet-padding);
-  }
-}
-
-@media (min-height: 900px) {
-  .info-page {
-    padding-top: var(--spacing-page-top-desktop-padding);
-  }
-}
-
-@media (min-width: 701px) {
-  .info-page {
-    padding-top: var(--spacing-page-top-desktop-padding);
-  }
 }
 
 /* ============================================
@@ -61,13 +21,13 @@
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   text-align: center;
-  margin-top: 0;
-  margin-top: var(--spacing-page-top-mobile-margin);
+  margin-top: var(--page-title-margin-top);
+  margin-bottom: var(--page-title-margin-bottom);
   color: var(--text-color);
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-  max-width: min(800px, 95vw);
+  max-width: var(--page-content-max-width);
   box-sizing: border-box;
 }
 
@@ -78,8 +38,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: minmax(120px, auto);
-  gap: clamp(12px, 2vw, 20px);
-  padding: 0 clamp(10px, 2vw, 20px);
+  gap: clamp(var(--spacing-md), 2vw, var(--spacing-lg));
+  padding: 0 clamp(var(--spacing-sm), 2vw, var(--spacing-md));
   max-width: min(900px, 95vw);
   width: 100%;
   margin: 0 auto;
@@ -116,8 +76,8 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: clamp(12px, 2vw, 16px);
-  padding: clamp(15px, 3vw, 20px);
+  border-radius: clamp(var(--radius-md), 2vw, var(--radius-lg));
+  padding: clamp(var(--spacing-md), 3vw, var(--spacing-lg));
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
@@ -128,7 +88,7 @@
   align-items: center;
   justify-content: center;
   min-height: clamp(100px, 15vh, 140px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--shadow-color);
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -159,7 +119,7 @@
 
 .info-card:hover {
   border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px color-mix(in srgb, var(--shadow-color) 150%, transparent);
 }
 
 [data-theme="dark"] .info-card:hover {
@@ -192,8 +152,8 @@
 @media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .info-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: clamp(10px, 3vw, 16px);
-    padding: 0 clamp(8px, 2vw, 12px);
+  gap: clamp(var(--spacing-sm), 3vw, var(--spacing-md));
+  padding: 0 clamp(var(--spacing-sm), 2vw, var(--spacing-md));
   }
 
   .info-card-small,
@@ -210,7 +170,7 @@
 
   .info-card {
     min-height: clamp(90px, 18vh, 130px);
-    padding: clamp(12px, 2.5vw, 16px);
+    padding: clamp(var(--spacing-md), 2.5vw, var(--spacing-md));
   }
 
   .info-icon {
@@ -223,7 +183,7 @@
 
   .info-title {
     font-size: clamp(1.6rem, 5vw, 2rem);
-    margin-bottom: clamp(12px, 2vh, 18px);
+    margin-bottom: clamp(var(--spacing-md), 2vh, var(--spacing-lg));
   }
 }
 
@@ -251,23 +211,23 @@
    SECTIONS INFO (pour InfoSection)
    ============================================ */
 .info-section {
-  background: white;
+  background: var(--bg-color);
   border-radius: var(--radius-md);
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .info-section h2 {
-  color: #333;
-  margin-bottom: 15px;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
   font-size: 1.5em;
 }
 
 .info-section p {
-  color: #666;
+  color: var(--text-color-light);
   line-height: 1.6;
-  margin-bottom: 10px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .info-section ul {
@@ -276,9 +236,9 @@
 }
 
 .info-section li {
-  color: #666;
-  margin-bottom: 10px;
+  color: var(--text-color-light);
+  margin-bottom: var(--spacing-sm);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--spacing-sm);
 }

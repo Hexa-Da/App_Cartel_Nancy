@@ -104,77 +104,77 @@
 .venue-popup {
   min-width: var(--card-size-small);
   max-width: var(--modal-width-small);
-  padding: clamp(12px, 2vw, 16px);
+  padding: clamp(var(--spacing-md), 2vw, var(--spacing-md));
   background-color: var(--bg-color);
-  border-radius: clamp(12px, 2vw, 16px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-radius: clamp(var(--radius-md), 2vw, var(--radius-lg));
+  box-shadow: 0 8px 24px var(--shadow-color);
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 2vw, 16px);
+  gap: clamp(var(--spacing-md), 2vw, var(--spacing-md));
 }
 
 /* Section 1 : Informations du lieu - Carte distincte */
 .venue-popup > h3 {
   margin: 0;
-  padding: clamp(12px, 2vw, 16px);
+  padding: clamp(var(--spacing-md), 2vw, var(--spacing-md));
   color: rgba(255, 255, 255, 0.95);
   font-size: clamp(1rem, 3.5vw, 1.2rem);
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px var(--shadow-color);
   letter-spacing: -0.01em;
   background: rgba(30, 30, 30, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: clamp(10px, 2vw, 14px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: clamp(var(--radius-sm), 2vw, var(--radius-md));
+  box-shadow: 0 4px 12px var(--shadow-color);
   text-align: center;
 }
 
 .venue-popup > p {
   margin: 0;
-  padding: clamp(12px, 2vw, 16px);
+  padding: clamp(var(--spacing-md), 2vw, var(--spacing-md));
   color: rgba(255, 255, 255, 0.85);
   font-size: clamp(0.8rem, 2.5vw, 0.9rem);
   line-height: 1.5;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px var(--shadow-color);
   text-align: center;
   background: rgba(25, 25, 25, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: clamp(10px, 2vw, 14px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: clamp(var(--radius-sm), 2vw, var(--radius-md));
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 /* Informations supplémentaires (adresse, téléphone) */
 .venue-popup .venue-address,
 .venue-popup .venue-phone {
-  padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 16px);
-  margin: clamp(6px, 1vw, 8px) 0 0 0;
+  padding: clamp(var(--spacing-sm), 1.5vw, var(--spacing-md)) clamp(var(--spacing-md), 2vw, var(--spacing-md));
+  margin: clamp(var(--spacing-xs), 1vw, var(--spacing-sm)) 0 0 0;
   color: rgba(255, 255, 255, 0.7);
   font-size: clamp(0.7rem, 2vw, 0.8rem);
   text-align: center;
   background: rgba(20, 20, 20, 0.4);
-  border-radius: clamp(6px, 1.2vw, 10px);
+  border-radius: clamp(var(--radius-sm), 1.2vw, var(--radius-sm));
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .venue-popup .venue-address {
-  margin-top: clamp(8px, 1.5vw, 12px);
+  margin-top: clamp(var(--spacing-sm), 1.5vw, var(--spacing-md));
 }
 
 /* Augmentation de spécificité pour venue-address et venue-phone */
 .venue-popup .venue-address {
   font-style: italic;
   color: var(--text-color-light);
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .venue-popup .venue-phone {
   font-weight: italic;
   color: var(--text-color-light);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-xs);
   margin-top: -0.5rem;
 }
 
@@ -199,13 +199,13 @@
 
 .matches-list {
   margin: 0;
-  padding: clamp(12px, 2vw, 16px);
+  padding: clamp(var(--spacing-md), 2vw, var(--spacing-md));
   background: rgba(20, 20, 20, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: clamp(10px, 2vw, 14px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-radius: clamp(var(--radius-sm), 2vw, var(--radius-md));
+  box-shadow: 0 4px 16px var(--shadow-color);
   max-height: clamp(200px, 40vh, 300px);
   overflow-y: auto;
   scrollbar-gutter: stable;
@@ -221,14 +221,14 @@
   font-size: clamp(0.8rem, 2.5vw, 0.9rem);
   text-align: center;
   font-style: italic;
-  margin: clamp(8px, 1.5vw, 12px) 0;
+  margin: clamp(var(--spacing-sm), 1.5vw, var(--spacing-md)) 0;
 }
 
 .matches-scroll-container {
   max-height: clamp(200px, 40vh, 300px);
   overflow-y: auto;
-  padding-right: 8px;
-  padding-left: 4px;
+  padding-right: var(--spacing-sm);
+  padding-left: var(--spacing-xs);
   scrollbar-width: thin;
   scrollbar-color: rgba(76, 175, 80, 0.7) rgba(0, 0, 0, 0.3);
   position: relative;
@@ -243,7 +243,7 @@
 
 .matches-scroll-container::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -251,7 +251,7 @@
   background: linear-gradient(180deg, 
     rgba(76, 175, 80, 0.8) 0%, 
     rgba(76, 175, 80, 0.6) 100%);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(76, 175, 80, 0.3);
   min-height: 30px;
 }
@@ -268,10 +268,10 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: clamp(12px, 2vw, 16px);
-  padding: clamp(10px, 2vw, 14px);
-  margin-bottom: clamp(12px, 2vh, 16px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: clamp(var(--radius-md), 2vw, var(--radius-lg));
+  padding: clamp(var(--spacing-sm), 2vw, var(--spacing-md));
+  margin-bottom: clamp(var(--spacing-md), 2vh, var(--spacing-md));
+  box-shadow: 0 4px 12px var(--shadow-color);
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
               box-shadow 0.2s ease,
               border-color 0.2s ease;
@@ -288,7 +288,7 @@
 .match-item:not(:last-child)::after {
   content: '';
   position: absolute;
-  bottom: clamp(-6px, -1vh, -8px);
+  bottom: clamp(calc(var(--spacing-xs) * -1.5), -1vh, calc(var(--spacing-sm) * -1));
   left: 15%;
   right: 15%;
   height: 2px;
@@ -326,7 +326,7 @@
   color: rgba(255, 152, 0, 1);
   font-weight: 700;
   font-size: clamp(0.85rem, 3vw, 1rem);
-  margin: 0 0 clamp(8px, 1.5vh, 12px) 0;
+  margin: 0 0 clamp(var(--spacing-sm), 1.5vh, var(--spacing-md)) 0;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -339,7 +339,7 @@
   color: rgba(255, 255, 255, 0.95);
   font-weight: 700;
   font-size: clamp(0.95rem, 3.5vw, 1.15rem);
-  margin: 0 0 clamp(8px, 1.5vh, 12px) 0;
+  margin: 0 0 clamp(var(--spacing-sm), 1.5vh, var(--spacing-md)) 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: -0.01em;
   line-height: 1.3;
@@ -351,7 +351,7 @@
 .match-item .match-description {
   color: rgba(255, 255, 255, 1);
   font-size: clamp(0.7rem, 2.5vw, 0.85rem);
-  margin: 0 0 clamp(6px, 1vh, 10px) 0;
+  margin: 0 0 clamp(var(--spacing-xs), 1vh, var(--spacing-sm)) 0;
   line-height: 1.4;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   font-weight: 400;
@@ -365,7 +365,7 @@
   color: rgba(76, 175, 80, 1);
   font-weight: 700;
   font-size: clamp(0.75rem, 2.5vw, 0.9rem);
-  margin: clamp(6px, 1vh, 10px) 0 0 0;
+  margin: clamp(var(--spacing-xs), 1vh, var(--spacing-sm)) 0 0 0;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   line-height: 1.3;
   text-align: center;
@@ -384,15 +384,15 @@
 .popup-buttons {
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1.5vw, 10px);
+  gap: clamp(var(--spacing-sm), 1.5vw, var(--spacing-sm));
   margin: 0;
-  padding: clamp(12px, 2vw, 16px);
+  padding: clamp(var(--spacing-md), 2vw, var(--spacing-md));
   background: rgba(25, 25, 25, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: clamp(10px, 2vw, 14px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: clamp(var(--radius-sm), 2vw, var(--radius-md));
+  box-shadow: 0 4px 12px var(--shadow-color);
   position: relative;
 }
 
@@ -400,22 +400,22 @@
 .popup-buttons::before {
   content: '';
   position: absolute;
-  top: -clamp(6px, 1vw, 8px);
+  top: clamp(calc(var(--spacing-xs) * -1.5), -1vw, calc(var(--spacing-sm) * -1));
   left: 50%;
   transform: translateX(-50%);
   width: 30px;
   height: 2px;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  border-radius: 2px;
+  border-radius: var(--spacing-xs);
 }
 
 .maps-button {
   width: 100%;
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
@@ -423,15 +423,16 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .copy-button {
   width: 100%;
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   background-color: #673AB7;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
@@ -439,15 +440,16 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .call-button {
   width: 100%;
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   background-color: #5dabae;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   transition: all 0.3s ease;
@@ -455,14 +457,15 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .popup-buttons .modif-button {
   background-color: #FF9800;
   color: white;
   border: none;
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
@@ -472,14 +475,15 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .popup-buttons .delete-button {
   background-color: var(--danger-color);
   color: white;
   border: none;
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
@@ -489,15 +493,16 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .party-map-button,
 .edit-result-button,
 .edit-description-button {
   width: 100%;
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   font-weight: 600;
@@ -506,6 +511,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .party-map-button {
@@ -530,12 +536,13 @@
 .edit-match-button,
 .delete-match-button,
 .add-match-button {
-  padding: 0.25rem 0.5rem;
+  padding: var(--spacing-xs) var(--spacing-xs);
   font-size: 0.8rem;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 44px;
 }
 
 .edit-match-button {
@@ -552,13 +559,14 @@
   background-color: var(--success-color);
   color: white;
   border: none;
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.8rem, 3vw, 0.9rem);
   width: 100%;
   transition: all 0.3s ease;
   margin: 0;
+  min-height: 44px;
 }
 
 .add-match-button:active {
@@ -568,19 +576,20 @@
 
 .match-actions {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xs);
 }
 
 .delete-match-button {
-  padding: 0.25rem 0.5rem;
+  padding: var(--spacing-xs) var(--spacing-xs);
   background-color: var(--danger-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: clamp(0.7rem, 2.8vw, 0.8rem);
   transition: all 0.3s ease;
+  min-height: 44px;
 }
 
 /* ============================================
@@ -589,15 +598,15 @@
 
 .add-venue-button {
   position: fixed;  
-  bottom: calc(var(--above-bottom-nav) + 50px);
-  left: 20px;
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-sm));
+  left: var(--spacing-md);
   width: 48px;
   height: 48px;
   border-radius: 9999px;
   background-color: var(--bg-color);
   color: var(--text-color);
   border: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px var(--shadow-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -611,13 +620,13 @@
 
 .recenter-button {
   position: fixed;
-  bottom: calc(var(--above-bottom-nav) + 50px);
-  right: 20px;
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-sm));
+  right: var(--spacing-md);
   width: 48px;
   height: 48px;
   border-radius: 50%;
   background-color: var(--bg-color);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px var(--shadow-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -651,8 +660,8 @@ body .recenter-button {
 
 .location-loading {
   position: fixed;
-  right: 20px;
-  bottom: calc(var(--above-bottom-nav) + 50px);
+  right: var(--spacing-md);
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-sm));
   z-index: var(--z-modal);
 }
 
@@ -667,8 +676,8 @@ body .recenter-button {
 
 .map-loading-indicator {
   position: fixed;
-  left: 20px;
-  bottom: calc(var(--above-bottom-nav) + 50px);
+  left: var(--spacing-md);
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-sm));
   z-index: var(--z-modal);
 }
 
@@ -679,12 +688,12 @@ body .recenter-button {
 
 .location-error {
   position: fixed;
-  bottom: calc(var(--above-bottom-nav) + 50px);
-  right: 20px;
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-sm));
+  right: var(--spacing-md);
   background-color: var(--danger-color);
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
   text-align: left;
   box-shadow: 0 2px 6px var(--shadow-color);
   z-index: var(--z-modal);
@@ -695,17 +704,17 @@ body .recenter-button {
 }
 
 .location-error-buttons {
-  margin-top: 0.3rem;
+  margin-top: var(--spacing-xs);
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
   justify-content: flex-start;
   pointer-events: auto;
 }
 
 .retry-button {
   font-size: clamp(0.8rem, 3vw, 0.9rem);
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
   background: white;
@@ -717,6 +726,7 @@ body .recenter-button {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  min-height: 44px;
 }
 
 .retry-button:hover {
@@ -741,17 +751,18 @@ body .recenter-button {
 .retry-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
-  margin-top: 0.5rem;
+  margin-top: var(--spacing-xs);
   box-shadow: 0 2px 4px var(--shadow-color);
+  min-height: 44px;
 }
 
 /* ============================================
@@ -760,12 +771,14 @@ body .recenter-button {
 
 .map-style-selector {
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background-color: var(--bg-color);
   color: var(--text-color);
   font-size: clamp(0.8rem, 3vw, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
+  padding: var(--spacing-xs) var(--spacing-md);
+  min-height: 44px;
 }
 
 .map-style-selector:focus {
@@ -777,10 +790,10 @@ body .recenter-button {
 .emoji-selector {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
   background: var(--bg-color);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   max-height: clamp(150px, 25vh, 250px);
   overflow-y: auto;
@@ -790,12 +803,14 @@ body .recenter-button {
   background: none;
   border: none;
   font-size: 1.5rem;
-  padding: 0.5rem;
+  padding: var(--spacing-xs);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: all 0.2s;
   width: 40px;
   height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -810,12 +825,12 @@ body .recenter-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 0.5rem;
+  margin-top: var(--spacing-xs);
 }
 
 .selected-emoji {
   font-size: 2rem;
-  margin-top: 0.25rem;
+  margin-top: var(--spacing-xs);
   background-color: var(--bg-secondary);
   width: 50px;
   height: 50px;
@@ -834,9 +849,9 @@ body .recenter-button {
 body .events-toggle-button,
 body .calendar-toggle-button {
   position: fixed;
-  left: 10px;
+  left: var(--spacing-sm);
   z-index: var(--z-modal);
-  padding: 0.5rem 1rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
   background-color: var(--bg-color);
   color: var(--text-color);
   font-size: 14px;
@@ -845,10 +860,11 @@ body .calendar-toggle-button {
   display: flex;
   align-items: center;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   transition: none;
-  width: fit-content;
+  width: clamp(135px, 18vw, 200px);
   justify-content: center;
+  height: clamp(40px, 4vh, 40px);
 }
 
 body .events-toggle-button {
@@ -856,7 +872,7 @@ body .events-toggle-button {
 }
 
 body .calendar-toggle-button {
-  top: calc(var(--below-header-with-margin) + 50px);
+  top: calc(var(--below-header-with-margin) + var(--spacing-xxl));
 }
 
 .events-toggle-button.active,
@@ -869,9 +885,9 @@ body .calendar-toggle-button {
   flex: 1;
   min-width: 0;
   width: 100%;
-  padding: 8px 12px;
+  padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background-color: var(--bg-color);
   color: var(--text-color);
   font-size: 14px;
@@ -880,8 +896,9 @@ body .calendar-toggle-button {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='var(--text-primary)' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
+  background-position: right var(--spacing-sm) center;
   background-size: 12px;
+  min-height: 44px;
 }
 
 /* Augmentation de spécificité pour filter-select selon le thème */
@@ -913,7 +930,7 @@ body .calendar-toggle-button {
   
   .emoji-button {
     font-size: 1.2rem;
-    padding: 0.4rem;
+    padding: var(--spacing-xs);
     width: 35px;
     height: 35px;
   }

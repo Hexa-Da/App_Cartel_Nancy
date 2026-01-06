@@ -116,7 +116,7 @@ body {
   width: var(--modal-width);
   max-width: var(--modal-width);
   z-index: var(--z-popup);
-  max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
+  max-height: calc(100vh - 40px);
   overflow-y: auto;
   padding: clamp(15px, 3vw, 20px);
 }
@@ -435,7 +435,7 @@ select,
   /* Augmentation de spécificité pour override en mobile */
   body .edit-form {
     width: var(--modal-width);
-    max-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 40px);
+    max-height: calc(100vh - 40px);
     padding: clamp(12px, 2.5vw, 15px);
     position: fixed;
     top: 50%;

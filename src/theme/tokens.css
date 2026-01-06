@@ -1,11 +1,8 @@
 /**
  * Design Tokens - Variables CSS globales
  * 
- * Ce fichier centralise toutes les variables CSS utilisées dans l'application :
- * - Thème (couleurs, ombres)
- * - Dimensions (hauteurs, largeurs)
- * - Safe Areas (encoches iOS/Android)
- * - Breakpoints responsive
+ * Ce fichier centralise toutes les variables CSS utilisées dans l'application.
+ * Organisation : Fondations → Couleurs → Layout → Spacing → Composants → Z-Index
  */
 
 :root {
@@ -24,36 +21,41 @@
   -moz-osx-font-smoothing: grayscale;
 
   /* ============================================
-     THÈME CLAIR (Par défaut)
+     COULEURS DE BASE (Thème clair par défaut)
      ============================================ */
-  --bg-primary: #ffffff;
+  /* Backgrounds */
   --bg-color: #ffffff;
   --bg-secondary: #f5f5f5;
+  
+  /* Text */
   --text-color: #181818;
-  --text-primary: #181818; /* Alias pour text-color */
+  --text-color-light: #7f8c8d;
+  
+  /* Borders */
   --border-color: #e0e0e0;
+  
+  /* Couleurs sémantiques */
   --primary-color: #646cff;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
   --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --accent-color: #4CAF50;
+  --party-color: #9C27B0;
+  
+  /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* Filters */
   --calendar-filter: none;
   --checkbox-filter: none;
 
   /* ============================================
-     VARIABLES UTILITAIRES (Hover, Accent, États)
+     COULEURS D'ÉTAT (Hover, Disabled)
      ============================================ */
-  /* Variables de hover */
   --primary-hover: #2980b9;
   --success-hover: #27ae60;
-  --danger-hover: #c0392b;
   --warning-hover: #d35400;
-  
-  /* Variables utilitaires */
-  --text-color-light: #7f8c8d;
-  --accent-color: #4CAF50;
-  --party-color: #9C27B0;
-  --error-color: #f44336;
+  --danger-hover: #c0392b;
   --bg-hover: #f0f0f0;
   --bg-disabled: #e0e0e0;
 
@@ -67,92 +69,69 @@
   --bp-large: 1200px;
 
   /* ============================================
-     SAFE AREAS (Encoches iOS/Android)
+     LAYOUT - HAUTEURS FIXES
      ============================================ */
-  /* On utilise env() pour respecter l'encoche de l'iPhone et les barres Android */
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-area-left: env(safe-area-inset-left, 0px);
-  --safe-area-right: env(safe-area-inset-right, 0px);
-  
-  /* Aliases pour compatibilité (dépréciés, utiliser --safe-area-*) */
-  --safe-top: var(--safe-area-top);
-  --safe-bottom: var(--safe-area-bottom);
+  --header-height: 10vh;
+  --nav-height: 10vh;
+  --app-height: 100vh;
 
   /* ============================================
-     HAUTEURS FIXES (Layout)
+     LAYOUT - POSITIONS CALCULÉES
      ============================================ */
-  --header-height: 10vh; /* Hauteur exacte du Header (position fixed) */
-  --nav-height: 5vh; /* Hauteur exacte de la BottomNav (position fixed) */
-  
-  /* Hauteur disponible réelle (viewport - safe areas) */
-  --app-height: calc(100vh - var(--safe-area-top) - var(--safe-area-bottom));
-
-  /* Variables calculées pour les positions (compatibilité) */
-  --header-total-height: calc(var(--header-height) + var(--safe-top));
-  --bottom-nav-total-height: calc(var(--nav-height) + var(--safe-bottom));
-  --bottom-nav-height: var(--nav-height); /* Alias pour compatibilité */
-  --bottom-nav-height-ios: var(--nav-height); /* Alias pour compatibilité */
-  
-  /* Position au-dessus de la barre de navigation */
-  --above-bottom-nav: calc(var(--nav-height) + var(--safe-bottom));
-  --above-bottom-nav-ios: calc(var(--nav-height) + var(--safe-bottom));
-  
-  /* Position en dessous du header */
-  --below-header: var(--header-total-height);
-  --below-header-with-margin: calc(var(--header-total-height) + 10px);
-
-  /* ============================================
-     LARGEURS INTELLIGENTES (Responsive)
-     ============================================ */
-  /* Modales - Correspond à MODAL_SIZES de responsive.ts */
-  --modal-width-small: min(350px, 90vw);
-  --modal-width-medium: min(500px, 90vw);
-  --modal-width-large: min(800px, 95vw);
-  
-  /* Alias pour compatibilité */
-  --modal-width: var(--modal-width-small);
-  
-  /* Panel Chat: Max 400px, sinon 95% de l'écran */
-  --panel-width: min(400px, 95vw);
-  
-  /* Event Card: Largeur standard pour les cartes d'événements */
-  --event-card-width: min(300px, 90vw);
-  
-  /* Cartes - Correspond à CARD_SIZES de responsive.ts */
-  --card-size-event: min(350px, 85vw);
-  --card-size-small: min(280px, 90vw);
-  --card-size-medium: min(300px, 85vw);
-
-  /* ============================================
-     HAUTEURS INTELLIGENTES (Responsive)
-     ============================================ */
-  /* Calendrier : Minimum 400px, Idéalement tout l'espace libre, Max 700px */
-  --calendar-height: clamp(400px, calc(100vh - var(--header-total-height) - var(--bottom-nav-total-height)), 700px);
-
-  /* ============================================
-     SPACING PAGE TOP (Espacement en haut de page)
-     ============================================ */
-  /* Mobile : margin-top et padding-top adaptatifs */
-  --spacing-page-top-mobile-margin: clamp(25px, 3vh, 35px);
-  --spacing-page-top-mobile-padding: clamp(40px, 4vh, 55px);
-  
-  /* Tablet : margin-top et padding-top adaptatifs */
-  --spacing-page-top-tablet-margin: clamp(40px, 4vh, 50px);
-  --spacing-page-top-tablet-padding: clamp(75px, 5vh, 90px);
-  
-  /* Desktop : margin-top et padding-top adaptatifs */
-  --spacing-page-top-desktop-margin: clamp(45px, 5vh, 50px);
-  --spacing-page-top-desktop-padding: clamp(85px, 6vh, 110px);
+  --below-header: var(--header-height);
+  --above-bottom-nav: var(--nav-height);
 
   /* ============================================
      SPACING (Espacements cohérents)
      ============================================ */
+  --spacing-xxs: 2px;
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
+  --spacing-xxl: 52px;
+
+  /* ============================================
+     SPACING PAGE TOP (Espacement en haut de page)
+     ============================================ */
+  /* Mobile */
+  --spacing-page-top-mobile-margin: clamp(25px, 3vh, 35px);
+  --spacing-page-top-mobile-padding: clamp(40px, 4vh, 55px);
+  
+  /* Tablet */
+  --spacing-page-top-tablet-margin: clamp(40px, 4vh, 50px);
+  --spacing-page-top-tablet-padding: clamp(75px, 5vh, 90px);
+  
+  /* Desktop */
+  --spacing-page-top-desktop-margin: clamp(45px, 5vh, 50px);
+  --spacing-page-top-desktop-padding: clamp(85px, 6vh, 110px);
+
+  /* ============================================
+     STANDARD DE PAGE (Layout unifié)
+     ============================================ */
+  /* Padding horizontal standard pour toutes les pages */
+  --page-padding-horizontal: var(--spacing-md);
+  
+  /* Padding vertical standard */
+  --page-padding-top: var(--spacing-page-top-mobile-padding);
+  --page-padding-bottom: var(--spacing-md);
+  
+  /* Padding complet standard */
+  --page-padding: var(--page-padding-top) var(--page-padding-horizontal) var(--page-padding-bottom) var(--page-padding-horizontal);
+  
+  /* Margin pour les titres de page */
+  --page-title-margin-top: var(--spacing-page-top-mobile-margin);
+  --page-title-margin-bottom: var(--spacing-lg);
+  
+  /* Max-width pour le contenu centré */
+  --page-content-max-width: min(900px, 95vw);
+  
+  /* Structure flexbox standard */
+  --page-display: flex;
+  --page-flex-direction: column;
+  --page-justify-content: flex-start;
+  --page-align-items: stretch;
 
   /* ============================================
      BORDER RADIUS (Harmonisation)
@@ -162,70 +141,78 @@
   --radius-lg: 16px;
 
   /* ============================================
+     COMPOSANTS - LARGEURS RESPONSIVES
+     ============================================ */
+  /* Modales */
+  --modal-width-small: min(350px, 90vw);
+  --modal-width-medium: min(500px, 90vw);
+  --modal-width-large: min(800px, 95vw);
+  
+  /* Panels */
+  --panel-width: min(400px, 95vw);
+  
+  /* Cartes d'événements */
+  --event-card-width: min(300px, 90vw);
+  
+  /* Cartes génériques */
+  --card-size-small: min(280px, 90vw);
+  --card-size-medium: min(300px, 85vw);
+  --card-size-large: min(350px, 85vw);
+
+  /* ============================================
+     COMPOSANTS - HAUTEURS RESPONSIVES
+     ============================================ */
+  --calendar-height: clamp(400px, calc(100vh - var(--header-height) - var(--nav-height)), 700px);
+
+  /* ============================================
      Z-INDEX (Système de superposition)
      ============================================ */
-  /* Base : Contenu normal */
-  --z-base: 1;
-  
-  /* Content : Overlays légers au-dessus du contenu */
-  --z-content-overlay: 2;
-  
-  /* Content : Éléments de contenu importants */
-  --z-content: 10;
-  
-  /* Content High : Éléments de contenu prioritaires (badges, tooltips) */
-  --z-content-high: 100;
-  
-  /* Header : Navigation fixe (Header et BottomNav) */
-  --z-header: 1000;
-  
-  /* Header Overlay : Éléments au-dessus du header */
-  --z-header-overlay: 1100;
-  
-  /* Modal : Modales et dialogs */
-  --z-modal: 2000;
-  
-  /* Modal Overlay : Overlays de modales */
-  --z-modal-overlay: 2100;
-  
-  /* Popup : Popups et messages flottants */
-  --z-popup: 3000;
-  
-  /* Popup Overlay : Overlays de popups */
-  --z-popup-overlay: 3100;
-  
-  /* Loader : Écran de chargement */
-  --z-loader: 9999;
-  
-  /* Max : Niveau maximum (popups spéciales, form overlays) */
-  --z-max: 10000;
-  
-  /* Below : En dessous du contenu */
   --z-below: -1;
+  --z-base: 1;
+  --z-content-overlay: 2;
+  --z-content: 10;
+  --z-content-high: 100;
+  --z-header: 1000;
+  --z-header-overlay: 1100;
+  --z-modal: 2000;
+  --z-modal-overlay: 2100;
+  --z-popup: 3000;
+  --z-popup-overlay: 3100;
+  --z-loader: 9999;
+  --z-max: 10000;
 }
 
 /* ============================================
    THÈME SOMBRE
    ============================================ */
 [data-theme="dark"] {
-  --bg-primary: #000000;
+  /* Backgrounds */
   --bg-color: #1a1a1a;
   --bg-secondary: #2d2d2d;
+  
+  /* Text */
   --text-color: rgb(255, 255, 255);
-  --text-primary: rgb(255, 255, 255); /* Alias pour text-color */
+  --text-color-light: #b0b0b0;
+  
+  /* Borders */
   --border-color: #404040;
+  
+  /* Couleurs sémantiques (conservées) */
   --primary-color: #646cff;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
   --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --accent-color: #4CAF50;
+  --party-color: #9C27B0;
+  
+  /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  /* Filters */
   --calendar-filter: invert(0);
   --checkbox-filter: invert(0);
   
-  /* Variables utilitaires (dark theme) */
-  --accent-color: #4CAF50;
-  --party-color: #9C27B0;
-  --error-color: #f44336;
+  /* États */
   --bg-hover: #333333;
   --bg-disabled: #404040;
 }
@@ -234,24 +221,54 @@
    THÈME CLAIR (Explicite)
    ============================================ */
 [data-theme="light"] {
+  /* Backgrounds */
   --bg-color: #ffffff;
   --bg-secondary: #f5f5f5;
+  
+  /* Text */
   --text-color: #181818;
-  --text-primary: #181818; /* Alias pour text-color */
+  --text-color-light: #7f8c8d;
+  
+  /* Borders */
   --border-color: #e0e0e0;
+  
+  /* Couleurs sémantiques (conservées) */
   --primary-color: #646cff;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
   --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --accent-color: #4CAF50;
+  --party-color: #9C27B0;
+  
+  /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  /* Filters */
   --calendar-filter: invert(1);
   --checkbox-filter: invert(1);
   
-  /* Variables utilitaires (light theme) */
-  --accent-color: #4CAF50;
-  --party-color: #9C27B0;
-  --error-color: #f44336;
+  /* États */
   --bg-hover: #f0f0f0;
   --bg-disabled: #e0e0e0;
 }
 
+/* ============================================
+   ALIASES DE COMPATIBILITÉ (Dépréciés)
+   ============================================ */
+:root {
+  /* Layout (simplifiés) */
+  --header-total-height: var(--header-height);
+  --bottom-nav-total-height: var(--nav-height);
+  --below-header-with-margin: calc(var(--header-height) + var(--spacing-sm));
+  
+  /* Couleurs (doublons supprimés) */
+  --bg-primary: var(--bg-color);
+  --text-primary: var(--text-color);
+  --error-color: var(--danger-color);
+  
+  /* Modales */
+  --modal-width: var(--modal-width-small);
+  
+  /* Cartes (doublons supprimés) */
+  --card-size-event: var(--card-size-large);
+}

@@ -539,7 +539,7 @@ const Parie: React.FC = () => {
 
   if (isActivated) {
     return (
-      <div className="parie-page">
+      <div className="page-content scrollable parie-page">
         <div className="parie-header">
           <h1>FAITES VOS PARIS</h1>
         </div>
@@ -706,7 +706,7 @@ const Parie: React.FC = () => {
   }
 
   return (
-    <div className="parie-page">
+    <div className="page-content scrollable parie-page">
       <div className="parie-header">
         <h1>FAITES VOS PARIS</h1>
       </div>

@@ -15,14 +15,13 @@
   margin: 0;
   /* Gestion Safe Area - Padding uniquement en bas */
   padding-top: 10px; /* Petit espace au-dessus des icônes */
-  padding-bottom: var(--safe-bottom);
+  padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
   overflow: visible;
   /* Z-Index : Nav au-dessus du contenu */
   z-index: var(--z-header);
   pointer-events: auto;
-  /* Force d'affichage iOS - Hack GPU */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   /* Styles visuels */
@@ -45,7 +44,8 @@
   border: none;
   background: none;
   cursor: pointer;
-  padding: clamp(3px, 0.5vh, 5px) clamp(16px, 3vw, 20px);
+  /* Padding réduit en haut pour rapprocher les boutons du haut de la barre nav */
+  padding: clamp(0px, 0vh, 2px) clamp(16px, 3vw, 20px);
   color: var(--text-color);
   border-radius: 0;
   margin: 0;
@@ -113,21 +113,10 @@
 
 @media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
   .bottom-nav {
-    /* Hauteur adaptative pour iOS */
     height: auto;
     min-height: 80px;
   }
 
-  body.ios .nav-button {
-    min-height: auto;
-    min-width: clamp(75px, 12vw, 90px);
-    padding: clamp(3px, 0.5vh, 5px);
-    margin: 0;
-    background: none;
-    border-radius: 0;
-    -webkit-tap-highlight-color: transparent;
-    transform: none;
-  }
 
   .nav-icon {
     font-size: clamp(18px, 3vw, 22px);
@@ -144,7 +133,6 @@
 /* Styles simplifiés pour mobile */
 @media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .bottom-nav {
-    /* Hauteur adaptative pour iOS */
     height: auto;
     min-height: 80px;
   }
@@ -153,7 +141,6 @@
 /* Media query spécifique pour très petits écrans (iPhone 6, SE, etc.) */
 @media (max-width: 375px) {
   .bottom-nav {
-    /* Hauteur adaptative pour iOS */
     height: auto;
     min-height: 80px;
   }
@@ -164,11 +151,6 @@
     padding: clamp(2px, 0.4vh, 4px) clamp(5px, 1.5vw, 6px);
   }
 
-  body.ios .nav-button {
-    min-height: auto;
-    min-width: clamp(50px, 9vw, 55px);
-    padding: clamp(2px, 0.4vh, 4px) clamp(5px, 1.5vw, 6px);
-  }
 
   .nav-icon {
     font-size: clamp(16px, 2.8vw, 18px);
@@ -182,7 +164,6 @@
 /* Media query spécifique pour iPhone 5 et très petits écrans (320px) */
 @media (max-width: 320px) {
   .bottom-nav {
-    /* Hauteur adaptative pour iOS */
     height: auto;
     min-height: 80px;
   }

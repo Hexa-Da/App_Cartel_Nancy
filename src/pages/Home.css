@@ -2,28 +2,15 @@
    HOME PAGE - Layout Flexbox Standardisé
    ============================================ */
 .home-page {
-  /* ✅ Positionnement direct par rapport au header et BottomNav */
-  position: absolute;
-  top: calc(var(--header-height) + var(--safe-top));
-  bottom: calc(var(--nav-height) + var(--safe-bottom));
-  left: 0;
-  right: 0;
-  width: 100%;
-  /* ✅ Scroll géré directement sur la page */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  /* ✅ Padding adaptatif amélioré pour plus d'espace */
-  padding: clamp(16px, 3vh, 24px) clamp(12px, 3vw, 20px);
-  /* ✅ Padding-top minimal pour que le titre de la première liste soit visible */
-  padding-top: clamp(16px, 3vh, 24px);
-  /* ✅ Padding-bottom pour éviter le chevauchement avec BottomNav */
-  padding-bottom: clamp(16px, 3vh, 24px);
+  /* ✅ Positionnement géré par .page-content.scrollable dans Layout.css */
+  /* ✅ Standard de page unifié */
+  display: var(--page-display);
+  flex-direction: var(--page-flex-direction);
+  align-items: var(--page-align-items);
+  justify-content: var(--page-justify-content);
+  padding: var(--page-padding);
   background-color: var(--bg-color);
   color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   box-sizing: border-box;
 }
 
@@ -32,10 +19,10 @@
   font-size: clamp(2.2rem, 7vw, 3.5rem);
   font-weight: 700;
   color: var(--text-color);
-  margin: 0 0 clamp(8px, 1.5vh, 12px) 0;
-  margin-top: clamp(-8px, -1vh, -10px);
+  margin: 0 0 clamp(var(--spacing-sm), 1.5vh, var(--spacing-md)) 0;
+  margin-top: clamp(calc(var(--spacing-sm) * -1), -1vh, calc(var(--spacing-sm) * -1.25));
   /* Changé: Padding adaptatif */
-  padding: 0 clamp(8px, 2vw, 10px) clamp(6px, 1vh, 8px) clamp(8px, 2vw, 10px);
+  padding: 0 clamp(var(--spacing-sm), 2vw, var(--spacing-sm)) clamp(var(--spacing-xs), 1vh, var(--spacing-sm)) clamp(var(--spacing-sm), 2vw, var(--spacing-sm));
   text-align: center;
   line-height: 1.1;
   /* Changé: Protection contre débordement */
@@ -44,24 +31,24 @@
 }
 
 .matches-section {
-  margin: clamp(12px, 2vh, 18px) 0;    
+  margin: clamp(var(--spacing-md), 2vh, var(--spacing-lg)) 0;    
   width: 100%;
 }
 
 .matches-section:first-of-type {
-  margin-top: clamp(12px, 2vh, 18px);
+  margin-top: clamp(var(--spacing-md), 2vh, var(--spacing-lg));
 }
 
 .matches-section:last-of-type {
-  margin-bottom: clamp(16px, 3vh, 24px);
+  margin-bottom: clamp(var(--spacing-md), 3vh, var(--spacing-lg));
 }
 
 .matches-section h2 {
   font-size: clamp(1.1rem, 3.5vw, 1.5rem);
   font-weight: 700;
   color: var(--text-color);
-  margin: 0 0 clamp(12px, 2vh, 18px) 0;
-  padding: 0 clamp(20px, 5vw, 32px);
+  margin: 0 0 clamp(var(--spacing-md), 2vh, var(--spacing-lg)) 0;
+  padding: 0 clamp(var(--spacing-md), 5vw, var(--spacing-xl));
   letter-spacing: -0.02em;
   line-height: 1.2;
   text-align: left;
@@ -70,7 +57,7 @@
 
 .matches-section:first-of-type h2 {
   /* ✅ Assurer que le premier titre est visible sous le header */
-  margin-top: clamp(8px, 1.5vh, 12px);
+  margin-top: clamp(var(--spacing-sm), 1.5vh, var(--spacing-md));
 }
 
 .horizontal-scroll {
@@ -79,9 +66,9 @@
   /* ✅ Empêcher le scroll vertical local - le scroll vertical se fait sur .app-main */
   overflow-y: visible;
   /* Gap adaptatif */
-  gap: clamp(10px, 2vw, 14px);
+  gap: clamp(var(--spacing-sm), 2vw, var(--spacing-md));
   /* Padding latéral suffisant pour éviter les cartes coupées */
-  padding: 0 clamp(20px, 5vw, 32px);
+  padding: 0 clamp(var(--spacing-md), 5vw, var(--spacing-xl));
   margin: 0;
   -webkit-overflow-scrolling: touch;
   /* Hauteur ajustée pour tenir sur la page */
@@ -102,8 +89,8 @@
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
-  padding: clamp(12px, 2.5vw, 16px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: clamp(var(--spacing-md), 2.5vw, var(--spacing-md));
+  box-shadow: 0 4px 12px var(--shadow-color);
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
               box-shadow 0.2s ease,
               border-color 0.2s ease;
@@ -146,7 +133,7 @@
 
 .event-item:hover {
   border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px color-mix(in srgb, var(--shadow-color) 150%, transparent);
 }
 
 [data-theme="dark"] .event-item:hover {
@@ -246,16 +233,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: clamp(8px, 1.5vh, 12px);
+  margin-bottom: clamp(var(--spacing-sm), 1.5vh, var(--spacing-md));
   flex-wrap: nowrap;
-  gap: clamp(8px, 1.5vw, 12px);
+  gap: clamp(var(--spacing-sm), 1.5vw, var(--spacing-md));
   width: 100%;
 }
 
 .event-type-badge {
   background: rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.95);
-  padding: clamp(6px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
+  padding: clamp(var(--spacing-xs), 1.5vw, var(--spacing-sm)) clamp(var(--spacing-sm), 2vw, var(--spacing-md));
   border-radius: var(--radius-lg);
   font-size: clamp(0.6rem, 2.5vw, 0.75rem);
   font-weight: 700;
@@ -357,7 +344,7 @@
 .event-description {
   color: rgba(255, 255, 255, 0.8);
   font-size: clamp(0.7rem, 2.5vw, 0.85rem);
-  margin: clamp(4px, 0.8vh, 6px) 0;
+  margin: clamp(var(--spacing-xs), 0.8vh, var(--spacing-xs)) 0;
   line-height: 1.3;
   overflow: hidden;
   display: -webkit-box;
@@ -372,7 +359,7 @@
 .event-result {
   color: color-mix(in srgb, var(--accent-color) 95%, transparent);
   font-weight: 700;
-  margin: clamp(4px, 0.8vh, 6px) 0;
+  margin: clamp(var(--spacing-xs), 0.8vh, var(--spacing-xs)) 0;
   font-size: clamp(0.75rem, 2.8vw, 0.9rem);
   text-align: center;
   overflow: hidden;
@@ -386,7 +373,7 @@
 .event-venue {
   color: rgba(255, 255, 255, 0.7);
   font-size: clamp(0.7rem, 2.5vw, 0.85rem);
-  margin: clamp(4px, 0.8vh, 6px) 0;
+  margin: clamp(var(--spacing-xs), 0.8vh, var(--spacing-xs)) 0;
   line-height: 1.2;
   text-align: center;
   overflow: hidden;
@@ -403,7 +390,7 @@
   width: 100%;
   font-size: clamp(0.8rem, 3vw, 1rem);
   text-align: center;
-  padding: 20px;
+  padding: var(--spacing-md);
   background-color: var(--bg-secondary);
   border-radius: var(--radius-sm);
   margin: 8px 0;
@@ -412,12 +399,12 @@
 
 /* Quand no-matches est directement dans matches-section (pas dans horizontal-scroll) */
 .matches-section > .no-matches {
-  padding: 20px clamp(20px, 5vw, 32px);
+  padding: var(--spacing-md) clamp(var(--spacing-md), 5vw, var(--spacing-xl));
 }
 
 /* Quand no-matches est dans horizontal-scroll, utiliser le padding du conteneur */
 .horizontal-scroll > .no-matches {
-  padding: 20px;
+  padding: var(--spacing-md);
 }
 
 /* Conteneur de chargement */
@@ -863,7 +850,7 @@
 
 @media (min-width: 701px) {
   .home-page {
-    padding: 20px;
+    padding: var(--spacing-md);
     margin-top: var(--spacing-page-top-desktop-margin);
     /* Changé: Largeur adaptative */
     max-width: min(1200px, 95vw); /* BREAKPOINTS.large */
