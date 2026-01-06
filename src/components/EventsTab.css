@@ -15,7 +15,7 @@
 }
 
 .events-panel-header {
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
   margin-top: 0;
   background-color: var(--bg-color);
   position: sticky;
@@ -40,7 +40,8 @@
 
 .events-panel-header .filter-toggle-button {
   position: absolute !important;
-  top: 0.825rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   right: 10px !important;
   padding: 0 !important;
   background-color: transparent !important;
@@ -68,32 +69,43 @@
 }
 
 .event-filters {
-  padding: var(--spacing-xs);
   background-color: var(--bg-color);
   border-bottom: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  align-items: stretch;
+  flex-shrink: 0; /* Empêche la section filtres de se rétrécir */
   height: 0;
   overflow: hidden;
   transition: height 0.3s ease;
   opacity: 0;
   visibility: hidden;
-  margin-top: 0;
-  padding: 0;
-  flex-shrink: 0;
 }
 
 .event-filters.show {
   height: auto;
-  margin-top: -10px;
-  padding: var(--spacing-xs);
   opacity: 1;
   visibility: visible;
 }
 
-.filter-buttons-row {
+.event-filters .filter-row {
+  margin-top: -0.12rem;
+  padding: 0 0.5rem;
+}
+
+.event-filters .filter-row:focus,
+.event-filters .filter-row *:focus {
+  outline: none;
+}
+
+.event-filters .filter-row:focus,
+.event-filters .filter-row *:focus {
+  outline: none;
+}
+
+.event-filters .filter-row:last-child {
+  margin-bottom: 0.5rem;
+}
+
+.event-filters .filter-buttons-row {
+  /* ✅ Alignement des boutons de filtre avec flexbox */
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
@@ -103,11 +115,16 @@
   align-items: center;
 }
 
+
 .filter-row {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: 0.5rem;
   margin-top: 0px;
   margin-bottom: 0px;
+  /* Forcer les filter-row à ne pas être grisées */
+  opacity: 1 !important;
+  filter: none !important;
+  background-color: transparent !important;
 }
 
 .filter-toggle-button {
@@ -145,7 +162,8 @@
 
 .events-panel-header .filter-reset-button {
   position: absolute !important;
-  top: 0.825rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   right: calc(10px + 30px + 12px + 30px + 14px) !important;
   padding: 0 !important;
   border: none !important;
@@ -174,7 +192,8 @@
 .events-panel-header button.filter-reset-button.star,
 .events-panel-header .filter-reset-button.star {
   position: absolute !important;
-  top: 0.825rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   right: calc(10px + 30px + 12px) !important;
   padding: 0 !important;
   border: none !important;
@@ -227,7 +246,7 @@
 
 .event-filters .gender-filter-button {
   border: 1px solid var(--border-color) !important;
-  border-radius: 4px !important;
+  border-radius: var(--radius-sm) !important;
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
   font-size: 14px !important;
@@ -236,6 +255,7 @@
   padding: 8px 12px !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
+  outline: none !important;
 }
 
 .event-filters .gender-filter-button:focus {
@@ -259,6 +279,7 @@
   padding: 8px 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+  outline: none;
 }
 
 .gender-filter-button:focus {
@@ -272,25 +293,6 @@
 }
 
 .event-filters .filter-select {
-  flex: 1 !important;
-  min-width: 0 !important;
-  width: 100% !important;
-  padding: 8px 12px !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 4px !important;
-  background-color: var(--bg-color) !important;
-  color: var(--text-color) !important;
-  font-size: 14.4px !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  appearance: none !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='var(--text-primary)' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 10px center !important;
-  background-size: 12px !important;
-}
-
-.filter-select {
   flex: 1;
   min-width: 0;
   width: 100%;
@@ -299,30 +301,35 @@
   border-radius: var(--radius-sm);
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-size: 14px;
+  font-size: 14.4px;
   cursor: pointer;
   transition: all 0.3s ease;
   appearance: none;
+  outline: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='var(--text-primary)' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 12px;
 }
 
-/* Chevrons des filtres - Mode sombre */
-[data-theme="dark"] .filter-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
-}
-
-/* Chevrons des filtres - Mode clair */
-[data-theme="light"] .filter-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23181818' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E") !important;
+.event-filters .filter-select:focus {
+  outline: none;
+  border-color: var(--border-color);
 }
 
 @media (prefers-color-scheme: dark) {
-  .filter-select {
+  .event-filters .filter-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   }
+}
+
+.filter-select {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 /* Styles pour la liste d'événements */

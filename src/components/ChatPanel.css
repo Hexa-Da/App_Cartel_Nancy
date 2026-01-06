@@ -11,9 +11,9 @@
 .chat-panel {
   position: fixed;
   top: var(--header-height);
+  bottom: 80px;
   left: 0;
   width: 100vw;
-  height: calc(100vh - var(--header-height) - var(--nav-height));
   background-color: var(--bg-color);
   z-index: var(--z-content-high);
   display: flex;
@@ -47,7 +47,6 @@
 
 .chat-container {
   padding: var(--spacing-md);
-  height: calc(100vh - 120px);
   overflow-y: auto;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -154,9 +153,9 @@
 .home-info-chat {
   position: fixed;
   top: 0;
+  bottom: 80px;
   left: 0;
   width: 100vw;
-  height: 100vh;
   background-color: var(--bg-color);
   z-index: var(--z-content-high);
   display: flex;
@@ -191,11 +190,11 @@
 
 .home-info-chat .chat-container {
   padding: var(--spacing-md);
-  height: calc(100vh - 120px);
   overflow-y: auto;
   background-color: var(--bg-color);
   color: var(--text-color);
   margin-bottom: var(--spacing-sm);
+  flex: 1;
 }
 
 .home-page .chat-panel-header h3,

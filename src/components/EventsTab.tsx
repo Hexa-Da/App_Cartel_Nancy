@@ -78,7 +78,10 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
     const saved = localStorage.getItem('mapShowMixed');
     return saved !== null ? JSON.parse(saved) : true;
   });
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(() => {
+    const saved = localStorage.getItem('eventsTabShowFilters');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
   const [isStarFilterActive, setIsStarFilterActive] = useState(() => {
     const saved = localStorage.getItem('starFilterActive');
     return saved !== null ? JSON.parse(saved) : false;
@@ -634,7 +637,11 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
         )}
         <button 
           className="filter-toggle-button"
-          onClick={() => setShowFilters(!showFilters)}
+          onClick={() => {
+            const newValue = !showFilters;
+            setShowFilters(newValue);
+            localStorage.setItem('eventsTabShowFilters', JSON.stringify(newValue));
+          }}
         >
           <svg 
             width="28" 
@@ -656,7 +663,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
       </div>
       <div className={`event-filters ${showFilters ? 'show' : ''}`}>
         {showFilters && (
-          <>
+          <div className="filter-row">
             <div className="filter-buttons-row"></div>
             <select 
               className="filter-select"
@@ -744,7 +751,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
                 </div>
               );
             })()}
-          </>
+          </div>
         )}
       </div>
       <div className="events-list">

@@ -18,8 +18,8 @@
   top: var(--header-height);
   left: 0;
   right: 0;
-  /* ✅ Aller jusqu'en bas en tenant compte de la nav */
-  bottom: var(--nav-height);
+  /* ✅ Aller jusqu'en bas en tenant compte de la nav (min-height: 80px) */
+  bottom: 80px;
   border-radius: 0;
   width: 100%;
   overflow-y: auto;
@@ -60,7 +60,7 @@
 }
 
 .calendar-fixed-header {
-  padding: var(--spacing-xs);
+  padding: var(--spacing-md);
   background-color: var(--bg-color);
   position: sticky;
   /* ✅ Utiliser les variables globales : Header */
@@ -81,7 +81,7 @@
 }
 
 .calendar-panel-header {
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
   /* ✅ Pas de margin-top car le conteneur parent (.calendar-popup) est déjà positionné */
   margin-top: 0;
   background-color: var(--bg-color);
@@ -109,7 +109,8 @@
 
 .calendar-panel-header .filter-reset-button {
   position: absolute !important;
-  top: 0.825rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   /* Gap : toggle (30px) + gap (12px) + star (30px) + gap (14px) */
   right: calc(10px + 30px + 12px + 30px + 14px) !important;
   padding: 0 !important;
@@ -139,7 +140,8 @@
 .calendar-panel-header button.filter-reset-button.star,
 .calendar-panel-header .filter-reset-button.star {
   position: absolute !important;
-  top: 0.825rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   /* Gap uniforme de 12px : toggle (30px) + gap (12px) */
   right: calc(10px + 30px + 12px) !important;
   padding: 0 !important;
@@ -168,7 +170,8 @@
 
 .calendar-panel-header .filter-toggle-button {
   position: absolute !important;
-  top: 0.825rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   right: 10px !important;
   padding: 0 !important;
   background-color: transparent !important;
@@ -207,6 +210,11 @@
   padding: 0 0.5rem;
 }
 
+.calendar-filters-section .filter-row:focus,
+.calendar-filters-section .filter-row *:focus {
+  outline: none;
+}
+
 .calendar-filters-section .filter-row:last-child {
   margin-bottom: 0.5rem;
 }
@@ -235,10 +243,16 @@
   cursor: pointer;
   transition: all 0.3s ease;
   appearance: none;
+  outline: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='var(--text-primary)' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 12px;
+}
+
+.calendar-filters-section .filter-select:focus {
+  outline: none;
+  border-color: var(--border-color);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -247,8 +261,16 @@
   }
 }
 
+.calendar-filters-section .gender-filter-button {
+  outline: none;
+}
+
+.calendar-filters-section .gender-filter-button:focus {
+  outline: none;
+}
+
 .calendar-popup-header {
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
   background-color: var(--bg-color);
   position: sticky;
   /* ✅ Top: 0 car le panel est déjà positionné sous le Header */
@@ -405,7 +427,6 @@
   height: var(--calendar-height);
   max-height: var(--calendar-height);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
   margin: 0px;
   background-color: var(--border-color);
 }
@@ -428,7 +449,7 @@
 
 .calendar-event {
   position: absolute;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   color: white;
   box-shadow: 0 2px 4px var(--shadow-color);
   overflow: hidden;
