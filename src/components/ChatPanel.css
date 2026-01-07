@@ -11,9 +11,10 @@
 .chat-panel {
   position: fixed;
   top: var(--header-height);
-  bottom: 80px;
   left: 0;
   width: 100vw;
+  /* ✅ Hauteur calculée explicitement : 100vh - header - nav */
+  height: calc(100vh - var(--header-height) - var(--nav-height) + var(--spacing-md));
   background-color: var(--bg-color);
   z-index: var(--z-content-high);
   display: flex;
@@ -49,9 +50,9 @@
 .chat-container {
   padding: var(--spacing-md);
   overflow-y: auto;
+  padding-bottom: var(--spacing-xxl);
   background-color: var(--bg-color);
   color: var(--text-color);
-  margin-bottom: var(--spacing-sm);
   flex: 1;
 }
 
@@ -150,53 +151,7 @@
   min-height: 28px;
 }
 
-/* Style spécifique pour le chat panel sur Home et Info */
-.home-info-chat {
-  position: fixed;
-  top: 0;
-  bottom: 80px;
-  left: 0;
-  width: 100vw;
-  background-color: var(--bg-color);
-  z-index: var(--z-content-high);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  pointer-events: auto;
-}
 
-.home-info-chat .chat-panel-header {
-  padding: var(--spacing-sm);
-  background-color: var(--bg-color);
-  position: sticky;
-  top: 0;
-  z-index: var(--z-content-overlay);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-  margin-top: calc(var(--header-height) + var(--spacing-md));
-  padding-top: var(--spacing-sm);
-}
-
-.home-info-chat .chat-panel-header h3 {
-  margin-top: 0;
-  color: var(--text-color);
-  font-size: 1.15rem;
-  align-items: center;
-  justify-content: center;
-  position: flex;
-  font-weight: 700;
-}
-
-.home-info-chat .chat-container {
-  padding: var(--spacing-md);
-  overflow-y: auto;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  margin-bottom: var(--spacing-sm);
-  flex: 1;
-}
 
 .home-page .chat-panel-header h3,
 .info-page .chat-panel-header h3 {

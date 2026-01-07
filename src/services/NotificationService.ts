@@ -28,6 +28,8 @@ class NotificationService {
   private isInitialized = false;
   private fcmToken: string | null = null;
   private readonly chatTopic = 'chat';
+  private lastNetworkErrorTime: number = 0;
+  private readonly NETWORK_ERROR_LOG_INTERVAL = 60000; // Logger l'erreur réseau max 1 fois par minute
 
   private constructor() {}
 
@@ -69,10 +71,18 @@ class NotificationService {
         'Votre message a été envoyé avec succès'
       );
 
-      const endpoint = import.meta.env.VITE_FCM_NOTIFICATION_ENDPOINT;
+      // Construire l'URL de l'endpoint si elle n'est pas définie
+      let endpoint = import.meta.env.VITE_FCM_NOTIFICATION_ENDPOINT;
       if (!endpoint) {
-        logger.warn('[NotificationService] VITE_FCM_NOTIFICATION_ENDPOINT manquant : impossible de déclencher la notification distante.');
-        return;
+        const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+        if (!projectId) {
+          logger.warn('[NotificationService] VITE_FCM_NOTIFICATION_ENDPOINT et VITE_FIREBASE_PROJECT_ID manquants : impossible de déclencher la notification distante.');
+          return;
+        }
+        // Format par défaut pour Firebase Functions v2 (région: europe-west1)
+        endpoint = `https://europe-west1-${projectId}.cloudfunctions.net/sendChatNotification`;
+        logger.warn('[NotificationService] URL Cloud Function construite automatiquement:', endpoint);
+        logger.warn('[NotificationService] Pour utiliser une région différente, définissez VITE_FCM_NOTIFICATION_ENDPOINT dans .env');
       }
 
       await this.callSecuredEndpoint(endpoint, {
@@ -81,8 +91,28 @@ class NotificationService {
         topic: this.chatTopic,
         timestamp: Date.now()
       });
+      
+      // Réinitialiser le cache d'erreur en cas de succès
+      this.lastNetworkErrorTime = 0;
+      logger.log('[NotificationService] Notification de chat envoyée avec succès');
     } catch (error) {
-      logger.error('Erreur lors de l\'envoi de la notification de chat:', error);
+      // L'erreur est loggée mais ne bloque pas l'envoi du message (déjà sauvegardé dans Firebase)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isNetworkError = errorMessage.includes('réseau') || errorMessage.includes('Failed to fetch') || errorMessage.includes('Timeout');
+      
+      // Logger les erreurs réseau max 1 fois par minute pour éviter le spam
+      const now = Date.now();
+      const shouldLog = !isNetworkError || (now - this.lastNetworkErrorTime) > this.NETWORK_ERROR_LOG_INTERVAL;
+      
+      if (shouldLog) {
+        if (isNetworkError) {
+          logger.warn(`[NotificationService] Endpoint de notification non disponible: ${errorMessage}. Les notifications push peuvent être indisponibles.`);
+          this.lastNetworkErrorTime = now;
+        } else {
+          logger.error(`[NotificationService] Erreur lors de l'envoi de la notification de chat: ${errorMessage}`);
+        }
+      }
+      // Ne pas propager l'erreur pour ne pas bloquer l'utilisateur
     }
   }
 
@@ -124,10 +154,17 @@ class NotificationService {
     if (!this.fcmToken) return;
 
     try {
-      const endpoint = import.meta.env.VITE_FCM_SUBSCRIBE_ENDPOINT;
+      // Construire l'URL de l'endpoint si elle n'est pas définie
+      let endpoint = import.meta.env.VITE_FCM_SUBSCRIBE_ENDPOINT;
       if (!endpoint) {
-        logger.warn(`[NotificationService] VITE_FCM_SUBSCRIBE_ENDPOINT manquant : abonnement au topic "${topic}" ignoré.`);
-        return;
+        const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+        if (!projectId) {
+          logger.warn(`[NotificationService] VITE_FCM_SUBSCRIBE_ENDPOINT et VITE_FIREBASE_PROJECT_ID manquants : abonnement au topic "${topic}" ignoré.`);
+          return;
+        }
+        // Format par défaut pour Firebase Functions v2 (région: europe-west1)
+        endpoint = `https://europe-west1-${projectId}.cloudfunctions.net/subscribeToTopic`;
+        logger.warn('[NotificationService] URL Cloud Function construite automatiquement:', endpoint);
       }
 
       await this.callSecuredEndpoint(endpoint, {
@@ -135,31 +172,60 @@ class NotificationService {
         topic
       });
         
-        logger.log(`Abonné au topic ${topic}`);
+      logger.log(`Abonné au topic ${topic}`);
     } catch (error) {
       logger.error(`Erreur lors de l'abonnement au topic ${topic}:`, error);
     }
   }
 
   private async callSecuredEndpoint(url: string, payload: Record<string, unknown>) {
+    // Validation de l'URL
+    if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+      throw new Error(`URL invalide pour l'endpoint: ${url}`);
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
 
     const authKey = import.meta.env.VITE_FCM_ENDPOINT_AUTH_KEY;
-    if (authKey) {
-      headers.Authorization = `Bearer ${authKey}`;
+    if (!authKey) {
+      throw new Error('VITE_FCM_ENDPOINT_AUTH_KEY manquant dans les variables d\'environnement. Configurez cette variable dans votre fichier .env');
     }
+    
+    headers.Authorization = `Bearer ${authKey}`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload)
-    });
+    try {
+      // Timeout de 10 secondes pour éviter les blocages
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    if (!response.ok) {
-      const errorPayload = await response.text();
-      throw new Error(`Erreur HTTP ${response.status} (${response.statusText}) : ${errorPayload}`);
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorPayload = await response.text().catch(() => 'Impossible de lire le message d\'erreur');
+        throw new Error(`Erreur HTTP ${response.status} (${response.statusText}) : ${errorPayload}`);
+      }
+    } catch (error) {
+      // Gestion spécifique des erreurs réseau
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error(`Timeout lors de l'appel à l'endpoint ${url} (délai dépassé)`);
+        }
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          throw new Error(`Erreur réseau : impossible de contacter l'endpoint ${url}. Vérifiez votre connexion internet.`);
+        }
+        // Propager les autres erreurs telles quelles
+        throw error;
+      }
+      throw new Error(`Erreur inconnue lors de l'appel à l'endpoint: ${String(error)}`);
     }
   }
 

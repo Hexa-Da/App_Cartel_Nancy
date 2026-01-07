@@ -84,14 +84,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
     return () => unsubscribe();
   }, []);
 
-  // Mettre à jour le timestamp de dernière lecture quand le chat est ouvert
-  useEffect(() => {
-    if (messages.length > 0) {
-      const mostRecentMsg = messages[0];
-      const newTimestamp = mostRecentMsg.timestamp;
-      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
-    }
-  }, [messages]);
+  // Le timestamp de dernière lecture est géré par les composants parents (App.tsx, Layout.tsx)
+  // lors de l'ouverture du chat, pour permettre l'incrémentation correcte du badge
 
   // Ajout d'un message dans Firebase (avec nom personnalisé)
   const handleAddMessage = async (msg: string, sender: string) => {

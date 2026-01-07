@@ -172,6 +172,13 @@
   transition: all 0.3s ease;
 }
 
+/* ============================================
+   iOS SPECIFIC - Marge supplémentaire pour les boutons
+   ============================================ */
+body.ios .leaflet-control-zoom {
+  top: calc(var(--below-header-with-margin) + var(--spacing-md)) !important;
+}
+
 /* Media queries */
 @media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .leaflet-control-container {

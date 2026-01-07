@@ -5,41 +5,17 @@
  * - Optimisations de performance (-webkit-transform: translateZ(0))
  * - Corrections de scroll (-webkit-overflow-scrolling: touch)
  * - Ajustements de rendu
- */
+ *
+**/
 
 /* ============================================
-   OPTIMISATIONS DE PERFORMANCE iOS
+   EMPÊCHER LE SCROLL SUR iOS
    ============================================ */
-body.ios * {
-  /* Force l'accélération matérielle pour améliorer les performances */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
 
-/* ============================================
-   SCROLL NATIF iOS
-   ============================================ */
-body.ios .horizontal-scroll,
-body.ios .calendar-scrollable-content,
-body.ios .matches-list,
-body.ios .modal-form-content,
-body.ios .vss-form-content,
-body.ios .chat-container,
-body.ios .emoji-selector,
-body.ios .planning-files {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* ============================================
-   CORRECTIONS DE RENDU iOS
-   ============================================ */
 body.ios {
-  /* Force le recalcul sur iOS */
-  -webkit-overflow-scrolling: touch;
-}
-
-body.ios #root {
-  /* Force le recalcul sur iOS */
-  -webkit-overflow-scrolling: touch;
+  /* Réduction de la hauteur de navigation pour iPhone */
+  --nav-height: 8vh;
+  /* Augmentation de la hauteur du header pour iPhone */
+  --header-height: 12vh;
 }
 

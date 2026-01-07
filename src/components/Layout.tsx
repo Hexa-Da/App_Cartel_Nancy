@@ -299,9 +299,6 @@ const Layout: React.FC = () => {
     }
   }, [location.pathname]);
   
-  // Le timestamp de dernière lecture est maintenant géré automatiquement par ChatPanel
-
-
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
@@ -333,8 +330,6 @@ const Layout: React.FC = () => {
 
   // Fonction pour fermer les panneaux locaux (chat, urgence, admin)
   const closeLayoutPanels = () => {
-    // Le timestamp de dernière lecture est géré automatiquement par ChatPanel
-    
     setShowChat(false);
     setShowEmergency(false);
     setShowAdmin(false);
@@ -419,9 +414,15 @@ const Layout: React.FC = () => {
         path: location.pathname, 
         chat: true 
       }, '', location.pathname);
+      
+      // Mettre à jour le timestamp de dernière lecture quand le chat est ouvert
+      if (messages.length > 0) {
+        // Les messages sont triés par ordre décroissant, le premier est le plus récent
+        const mostRecentMsg = messages[0];
+        const newTimestamp = mostRecentMsg.timestamp;
+        localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
+      }
     }
-    
-    // Le timestamp de dernière lecture est géré automatiquement par ChatPanel
   };
 
 

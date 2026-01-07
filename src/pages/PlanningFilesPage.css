@@ -55,7 +55,9 @@
   padding-top: calc(var(--page-padding-top) + 75px); /* Offset pour filters-container fixe */
   padding-left: var(--page-padding-horizontal);
   padding-right: var(--page-padding-horizontal);
-  padding-bottom: var(--page-padding-bottom);
+  /* ✅ Padding-bottom calculé pour garantir le scroll jusqu'à la fin */
+  /* Hauteur nav (10vh) + espace supplémentaire pour confort */
+  padding-bottom: calc(var(--nav-height) + var(--spacing-xl));
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: opacity 0.3s ease;

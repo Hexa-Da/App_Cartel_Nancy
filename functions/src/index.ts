@@ -1,4 +1,5 @@
 import { onRequest } from "firebase-functions/v2/https";
+import { defineSecret } from "firebase-functions/params";
 import type { Request } from "firebase-functions/v2/https";
 import { initializeApp } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
@@ -8,68 +9,100 @@ const app = initializeApp();
 const messaging = getMessaging(app);
 const database = getDatabase(app);
 
-const SECRET = process.env.FUNCTION_SECRET;
+// Définir le secret pour Firebase Functions v2
+const functionSecret = defineSecret("FUNCTION_SECRET");
 
-function assertAuthorized(req: Request) {
+function assertAuthorized(req: Request, secret: string) {
+  if (!secret) {
+    throw new Error("FUNCTION_SECRET non configuré côté serveur");
+  }
+  
   const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith("Bearer ") || auth.substring(7) !== SECRET) {
-    throw new Error("Unauthorized");
+  if (!auth) {
+    throw new Error("Header Authorization manquant");
+  }
+  
+  if (!auth.startsWith("Bearer ")) {
+    throw new Error("Format Authorization invalide (attendu: Bearer <token>)");
+  }
+  
+  const token = auth.substring(7);
+  if (token !== secret) {
+    throw new Error("Token d'authentification invalide");
   }
 }
 
-export const subscribeToTopic = onRequest(async (req, res) => {
-  try {
-    assertAuthorized(req);
-    if (req.method !== "POST") {
-      res.status(405).send("Method Not Allowed");
-      return;
-    }
+export const subscribeToTopic = onRequest(
+  {
+    region: 'europe-west1', // Région cohérente avec les autres fonctions
+    cors: true, // Activer CORS pour les appels depuis le web
+    secrets: [functionSecret], // Déclarer le secret utilisé
+  },
+  async (req, res) => {
+    try {
+      assertAuthorized(req, functionSecret.value());
+      if (req.method !== "POST") {
+        res.status(405).send("Method Not Allowed");
+        return;
+      }
 
-    const { token, topic } = req.body ?? {};
-    if (!token || !topic) {
-      res.status(400).send("token et topic sont requis");
-      return;
-    }
+      const { token, topic } = req.body ?? {};
+      if (!token || !topic) {
+        res.status(400).send("token et topic sont requis");
+        return;
+      }
 
-    await messaging.subscribeToTopic([token], topic);
-    res.status(200).send({ success: true });
-  } catch (error) {
-    res.status(401).send({ error: (error as Error).message });
+      await messaging.subscribeToTopic([token], topic);
+      res.status(200).send({ success: true });
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      console.error('[subscribeToTopic] Erreur:', errorMessage);
+      res.status(500).send({ error: errorMessage });
+    }
   }
-});
+);
 
-export const sendChatNotification = onRequest(async (req, res) => {
-  try {
-    assertAuthorized(req);
-    if (req.method !== "POST") {
-      res.status(405).send("Method Not Allowed");
-      return;
+export const sendChatNotification = onRequest(
+  {
+    region: 'europe-west1', // Région cohérente avec syncAllDelegationVotes
+    cors: true, // Activer CORS pour les appels depuis le web
+    secrets: [functionSecret], // Déclarer le secret utilisé
+  },
+  async (req, res) => {
+    try {
+      assertAuthorized(req, functionSecret.value());
+      if (req.method !== "POST") {
+        res.status(405).send("Method Not Allowed");
+        return;
+      }
+
+      const { message, sender, topic, timestamp } = req.body ?? {};
+      if (!message || !topic) {
+        res.status(400).send("message et topic sont requis");
+        return;
+      }
+
+      await messaging.send({
+        topic,
+        notification: {
+          title: sender ? `Nouveau message de ${sender}` : "Nouveau message",
+          body: message,
+        },
+        data: {
+          sender: sender ?? "",
+          message,
+          timestamp: String(timestamp ?? Date.now()),
+        },
+      });
+
+      res.status(200).send({ success: true });
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      console.error('[sendChatNotification] Erreur:', errorMessage);
+      res.status(500).send({ error: errorMessage });
     }
-
-    const { message, sender, topic, timestamp } = req.body ?? {};
-    if (!message || !topic) {
-      res.status(400).send("message et topic sont requis");
-      return;
-    }
-
-    await messaging.send({
-      topic,
-      notification: {
-        title: sender ? `Nouveau message de ${sender}` : "Nouveau message",
-        body: message,
-      },
-      data: {
-        sender: sender ?? "",
-        message,
-        timestamp: String(timestamp ?? Date.now()),
-      },
-    });
-
-    res.status(200).send({ success: true });
-  } catch (error) {
-    res.status(401).send({ error: (error as Error).message });
   }
-});
+);
 
 interface DelegationVotes {
   [sportKey: string]: {
@@ -88,10 +121,11 @@ interface Participant {
 export const syncAllDelegationVotes = onRequest(
   {
     region: 'europe-west1', // Région par défaut, peut être modifiée selon vos besoins
+    secrets: [functionSecret], // Déclarer le secret utilisé
   },
   async (req, res) => {
     try {
-      assertAuthorized(req);
+      assertAuthorized(req, functionSecret.value());
       if (req.method !== "POST") {
         res.status(405).send("Method Not Allowed");
         return;

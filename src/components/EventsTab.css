@@ -28,6 +28,10 @@
   flex-shrink: 0;
 }
 
+body.ios .events-panel-header {
+  margin-top: var(--spacing-md);
+}
+
 .events-panel-header h3 {
   margin: 0;
   color: var(--text-color);
@@ -341,7 +345,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-xl);
+  /* ✅ Padding-bottom calculé pour garantir le scroll jusqu'à la fin */
+  /* Hauteur nav (10vh) + espace supplémentaire pour confort */
+  padding-bottom: calc(var(--nav-height) + 2*var(--spacing-xxl));
 }
 
 /* ===== SPINNER DE CHARGEMENT ===== */
@@ -456,6 +462,39 @@
 [data-theme="light"] .event-item.passed {
   background: rgba(30, 30, 30, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   iOS SPECIFIC - Corrections de hauteur pour event-item
+   ============================================ */
+body.ios .event-item {
+  /* Correction pour iOS : fit-content n'est pas bien supporté */
+  min-height: auto;
+  /* Forcer le recalcul de la hauteur */
+  height: auto;
+  /* Améliorer le rendu flexbox sur iOS */
+  -webkit-box-flex: 0;
+  flex: 0 0 auto;
+  /* Forcer le layout avec transform pour iOS */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* Améliorer le rendu du backdrop-filter sur iOS */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* Forcer le contenu à prendre toute la hauteur nécessaire */
+  align-content: flex-start;
+}
+
+/* Corrections iOS pour les éléments enfants */
+body.ios .event-item .event-header,
+body.ios .event-item .event-title-container,
+body.ios .event-item .event-description,
+body.ios .event-item .event-actions {
+  /* Forcer le rendu correct sur iOS */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* S'assurer que les éléments flex fonctionnent correctement */
+  flex-shrink: 0;
 }
 
 .event-header {
