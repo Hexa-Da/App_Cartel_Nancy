@@ -19,3 +19,28 @@ body.ios {
   --header-height: 12vh;
 }
 
+body.ios #root {
+  /* Empêche le scroll au niveau Root */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Empêche le scroll élastique iOS (bounce) */
+  overscroll-behavior: none;
+}/* ============================================
+   SCROLL NATIF iOS - Zones scrollables internes
+   ============================================ */
+body.ios .horizontal-scroll,
+body.ios .calendar-scrollable-content,
+body.ios .matches-list,
+body.ios .modal-form-content,
+body.ios .vss-form-content,
+body.ios .chat-container,
+body.ios .emoji-selector,
+body.ios .planning-files,
+body.ios .page-content.scrollable {
+  /* Scroll fluide natif iOS pour les zones scrollables internes */
+  -webkit-overflow-scrolling: touch;
+  /* Permet le scroll dans ces conteneurs */
+  touch-action: pan-y;
+}

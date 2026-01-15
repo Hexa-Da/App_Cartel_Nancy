@@ -100,12 +100,49 @@ export const setupCapacitor = async (): Promise<void> => {
       document.body.classList.add('ios-simulator');
     }
     
-    // Désactiver le zoom sur iOS pour éviter les problèmes de double-tap
+    // Empêcher le scroll de l'app sur iOS
+    // Selon les guidelines Apple : https://developer.apple.com/design/human-interface-guidelines/scroll-views
+    const preventAppScroll = (event: TouchEvent) => {
+      const target = event.target as Element;
+      
+      // Ne pas bloquer le scroll dans les zones scrollables internes
+      const scrollableContainers = [
+        '.page-content.scrollable',
+        '.chat-container',
+        '.modal-form-content',
+        '.vss-form-content',
+        '.calendar-scrollable-content',
+        '.matches-list',
+        '.planning-files',
+        '.emoji-selector',
+        '.horizontal-scroll'
+      ];
+      
+      const isScrollableContainer = scrollableContainers.some(selector => 
+        target.closest(selector)
+      );
+      
+      // Ne pas bloquer les interactions sur la barre de navigation
+      if (target.closest('.bottom-nav') || target.closest('.app-header')) {
+        return;
+      }
+      
+      // Bloquer le scroll si ce n'est pas dans un conteneur scrollable
+      if (!isScrollableContainer) {
+        event.preventDefault();
+      }
+    };
+    
+    // Empêcher le scroll au niveau document
+    document.addEventListener('touchmove', preventAppScroll, { passive: false });
+    
+    // Empêcher le scroll élastique (bounce) sur iOS
     document.addEventListener('touchstart', function(event) {
       // Ne pas bloquer les clics sur la barre de navigation
       if (event.target && (event.target as Element).closest('.bottom-nav')) {
         return;
       }
+      // Empêcher le zoom multi-touch
       if (event.touches.length > 1) {
         event.preventDefault();
       }
@@ -124,6 +161,18 @@ export const setupCapacitor = async (): Promise<void> => {
       }
       lastTouchEnd = now;
     }, false);
+    
+    // Empêcher le scroll au chargement de la page
+    // Applique immédiatement pour éviter tout scroll avant le chargement complet
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.position = 'fixed';
+    document.documentElement.style.width = '100%';
+    document.documentElement.style.height = '100%';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    });
   }
 };
 

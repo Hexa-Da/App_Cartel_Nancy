@@ -35,8 +35,8 @@ const config: CapacitorConfig = {
     },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
-      smallIcon: 'ic_stat_icon_config_sample',
-      iconColor: '#488AFF'
+      smallIcon: 'ic_notification', // Icône monochrome dans android/app/src/main/res/drawable-*/
+      iconColor: '#000000' // Couleur de l'icône (noir pour contraste)
     },
     Auth: {
       // Configuration spécifique au plugin d'authentification si nécessaire

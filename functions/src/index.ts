@@ -87,6 +87,17 @@ export const sendChatNotification = onRequest(
         notification: {
           title: sender ? `Nouveau message de ${sender}` : "Nouveau message",
           body: message,
+          imageUrl: 'https://cummap-7afee.web.app/logo.jpg', // Logo de l'app pour la notification étendue
+        },
+        android: {
+          notification: {
+            icon: 'ic_notification', // Nom de l'icône dans les ressources Android (sans extension)
+            color: '#000000', // Couleur de l'icône
+            imageUrl: 'https://cummap-7afee.web.app/logo.jpg', // Logo complet pour la notification étendue
+            priority: 'high' as const,
+            sound: 'default',
+            channelId: 'default', // Canal de notification par défaut
+          },
         },
         data: {
           sender: sender ?? "",
