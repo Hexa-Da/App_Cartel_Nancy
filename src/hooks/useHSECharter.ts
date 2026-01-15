@@ -31,11 +31,8 @@ export const useHSECharter = () => {
     return deviceId;
   };
 
-  const handleHSEAccept = async (braceletNumber: string) => {
-    localStorage.setItem('hseCharterAccepted', 'true');
-    setShowHSECharter(false);
-    
-    // Activer le bracelet dans Firebase
+  const handleHSEAccept = async (braceletNumber: string): Promise<{ success: boolean; error?: string }> => {
+    // Activer le bracelet dans Firebase AVANT de fermer le popup
     try {
       const trimmedNumber = braceletNumber.trim();
       const deviceId = getDeviceId();
@@ -43,26 +40,35 @@ export const useHSECharter = () => {
       const participantRef = ref(database, `participants/${trimmedNumber}`);
       const snapshot = await get(participantRef);
       
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        if (data.deviceId && data.deviceId !== deviceId) {
-          // Le bracelet est déjà utilisé sur un autre appareil
-          logger.warn('Ce bracelet est déjà utilisé sur un autre appareil');
-        }
-        
-        // Utiliser update pour préserver les champs existants
-        await update(participantRef, {
-          deviceId: deviceId,
-          activatedAt: Date.now()
-        });
-        
-        // Stocker le numéro de bracelet dans localStorage
-        localStorage.setItem('userBraceletNumber', trimmedNumber);
-      } else {
+      if (!snapshot.exists()) {
         logger.warn('Numéro de bracelet invalide');
+        return { success: false, error: 'Numéro de bracelet invalide' };
       }
+      
+      const data = snapshot.val();
+      if (data.deviceId && data.deviceId !== deviceId) {
+        // Le bracelet est déjà utilisé sur un autre appareil
+        logger.warn('Ce bracelet est déjà utilisé sur un autre appareil');
+        return { success: false, error: 'Ce bracelet est déjà utilisé sur un autre appareil' };
+      }
+      
+      // Utiliser update pour préserver les champs existants
+      await update(participantRef, {
+        deviceId: deviceId,
+        activatedAt: Date.now()
+      });
+      
+      // Stocker le numéro de bracelet dans localStorage
+      localStorage.setItem('userBraceletNumber', trimmedNumber);
+      
+      // Fermer le popup seulement si tout est OK
+      localStorage.setItem('hseCharterAccepted', 'true');
+      setShowHSECharter(false);
+      
+      return { success: true };
     } catch (err) {
       logger.error('Erreur activation bracelet:', err);
+      return { success: false, error: 'Erreur lors de l\'activation du bracelet' };
     }
   };
 

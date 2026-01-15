@@ -2,12 +2,12 @@
  * @fileoverview Popup de la charte HSE - Acceptation obligatoire au premier lancement
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BraceletModal from './BraceletModal';
 import './HSECharterPopup.css';
 
 interface HSECharterPopupProps {
-  onAccept: (braceletNumber: string) => void;
+  onAccept: (braceletNumber: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
@@ -15,6 +15,9 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
   const [braceletNumber, setBraceletNumber] = useState('');
   const [error, setError] = useState('');
   const [isBraceletModalOpen, setIsBraceletModalOpen] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const el = e.target as HTMLDivElement;
@@ -23,13 +26,29 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
     }
   };
 
+  // Scroll automatique vers le footer quand une erreur apparaît
+  useEffect(() => {
+    if (error && contentRef.current && footerRef.current) {
+      // Petit délai pour s'assurer que le DOM est mis à jour
+      setTimeout(() => {
+        if (contentRef.current) {
+          // Scroller jusqu'en bas du contenu pour voir l'erreur dans le footer
+          contentRef.current.scrollTo({
+            top: contentRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  }, [error]);
+
   const handleBraceletSubmit = (number: string) => {
     setBraceletNumber(number);
     setIsBraceletModalOpen(false);
     setError('');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!hasScrolledToBottom) {
       setError('Veuillez lire la charte en entier');
       return;
@@ -39,10 +58,19 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
       setIsBraceletModalOpen(true);
       return;
     }
-    onAccept(braceletNumber.trim());
+    
+    // Valider le bracelet dans Firebase avant de fermer
+    setIsValidating(true);
+    setError('');
+    const result = await onAccept(braceletNumber.trim());
+    setIsValidating(false);
+    
+    if (!result.success) {
+      setError(result.error || 'Erreur lors de la validation du bracelet');
+    }
   };
 
-  const canSubmit = hasScrolledToBottom && braceletNumber.trim().length > 0;
+  const canSubmit = hasScrolledToBottom && braceletNumber.trim().length > 0 && !isValidating;
 
   return (
     <div className="hse-popup-overlay">
@@ -52,7 +80,7 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
           <p className="hse-subtitle">Hygiène, Sécurité & Environnement</p>
         </div>
 
-        <div className="hse-popup-content" onScroll={handleScroll}>
+        <div className="hse-popup-content" onScroll={handleScroll} ref={contentRef}>
           <section className="hse-section">
             <h3>Préambule</h3>
             <p>Bienvenue au CARTEL Nancy ! En validant cette charte, vous vous engagez à respecter les règles ci-dessous.</p>
@@ -120,23 +148,26 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
           </section>
         </div>
 
-        <div className="hse-popup-footer">
+        <div className="hse-popup-footer" ref={footerRef}>
           {error && <p className="hse-error">{error}</p>}
           <button 
             className={`hse-accept-button ${canSubmit ? 'active' : ''}`}
             onClick={handleSubmit}
             disabled={!canSubmit}
           >
-            {hasScrolledToBottom ? "Valider" : "Lisez jusqu'en bas"}
+            {isValidating ? "Validation..." : hasScrolledToBottom ? "Valider" : "Lisez jusqu'en bas"}
           </button>
         </div>
       </div>
 
       <BraceletModal
         isOpen={isBraceletModalOpen}
-        onClose={() => setIsBraceletModalOpen(false)}
+        onClose={() => {
+          setIsBraceletModalOpen(false);
+          // Garder l'erreur affichée dans le footer même après fermeture du modal
+        }}
         onSubmit={handleBraceletSubmit}
-        error={error && !braceletNumber.trim() ? error : undefined}
+        error={error && isBraceletModalOpen ? error : undefined}
         initialValue={braceletNumber}
       />
     </div>

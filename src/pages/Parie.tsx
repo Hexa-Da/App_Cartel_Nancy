@@ -61,6 +61,7 @@ const Parie: React.FC = () => {
   const { isEditing } = useEditing();
   const [storedBracelet, setStoredBracelet] = useState<string | null>(null);
   const [isActivated, setIsActivated] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   
   // États pour les paris
   const [bets, setBets] = useState<{ [sportKey: string]: string | null }>({});
@@ -95,6 +96,9 @@ const Parie: React.FC = () => {
       // Charger les paris depuis Firebase
       loadBetsFromFirebase(stored);
     }
+    
+    // Marquer l'initialisation comme terminée
+    setIsInitializing(false);
     
     // Activer le scroll sur cette page
     document.body.classList.add('parie-page-active');
@@ -537,6 +541,23 @@ const Parie: React.FC = () => {
     );
   };
 
+  // Afficher un loader pendant l'initialisation
+  if (isInitializing) {
+    return (
+      <div className="page-content scrollable parie-page">
+        <div className="parie-header">
+          <h1>FAITES VOS PARIS</h1>
+        </div>
+        <div className="parie-content">
+          <div className="chat-loading-spinner-container">
+            <div className="chat-loading-spinner"></div>
+            <div className="chat-loading-text">Chargement...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isActivated) {
     return (
       <div className="page-content scrollable parie-page">
@@ -564,51 +585,52 @@ const Parie: React.FC = () => {
             </div>
           )}
 
-          {!bettingClosed && !isLoadingBets && (
-            <p className="parie-intro">
-              Sélectionnez la délégation que vous pensez gagnante pour chaque sport.
-            </p>
-          )}
+          <div className={`parie-main-content ${isLoadingBets ? 'loading' : 'loaded'}`}>
+            {!bettingClosed && (
+              <p className="parie-intro">
+                Sélectionnez la délégation que vous pensez gagnante pour chaque sport.
+              </p>
+            )}
 
-          {bettingClosed && (
-            <div className="betting-closed-message">
-              <FaExclamationTriangle />
-              <p>Les paris sont clos. Vous ne pouvez plus modifier vos pronostics.</p>
-            </div>
-          )}
+            {bettingClosed && (
+              <div className="betting-closed-message">
+                <FaExclamationTriangle />
+                <p>Les paris sont clos. Vous ne pouvez plus modifier vos pronostics.</p>
+              </div>
+            )}
 
-          {/* Boutons admin */}
-          {isAdmin && isEditing && (
-            <div className="admin-buttons-container">
-              <button
-                className="admin-sync-button"
-                onClick={syncAllDelegationVotes}
-                disabled={isSyncing}
-              >
-                {isSyncing ? (
-                  <>
-                    <FaSpinner className="spinner-icon" />
-                    Synchronisation en cours...
-                  </>
-                ) : (
-                  <>
-                    Synchroniser les votes des délégations
-                  </>
-                )}
-              </button>
-              <button
-                className="admin-sync-button admin-winners-button"
-                onClick={() => {
-                  loadCurrentWinners();
-                  setShowWinnersModal(true);
-                }}
-              >
-                Définir les gagnants
-              </button>
-            </div>
-          )}
+            {/* Boutons admin */}
+            {isAdmin && isEditing && (
+              <div className="admin-buttons-container">
+                <button
+                  className="admin-sync-button"
+                  onClick={syncAllDelegationVotes}
+                  disabled={isSyncing}
+                >
+                  {isSyncing ? (
+                    <>
+                      <FaSpinner className="spinner-icon" />
+                      Synchronisation en cours...
+                    </>
+                  ) : (
+                    <>
+                      Synchroniser les votes des délégations
+                    </>
+                  )}
+                </button>
+                <button
+                  className="admin-sync-button admin-winners-button"
+                  onClick={() => {
+                    loadCurrentWinners();
+                    setShowWinnersModal(true);
+                  }}
+                >
+                  Définir les gagnants
+                </button>
+              </div>
+            )}
 
-          <div className="sports-list">
+            <div className="sports-list">
             {sports.map((sportSection, index) => (
               <div key={sportSection.sportKey} className={`sport-section ${openSportIndex === index ? 'open' : ''} ${bettingClosed ? 'disabled' : ''}`}>
                 <div 
@@ -649,6 +671,7 @@ const Parie: React.FC = () => {
                 )}
               </div>
             ))}
+            </div>
           </div>
 
           {/* Modal pour définir les gagnants */}

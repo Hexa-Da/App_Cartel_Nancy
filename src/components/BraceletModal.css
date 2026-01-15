@@ -129,13 +129,7 @@
 }
 
 .bracelet-error {
-  color: var(--danger-color);
-  font-size: 0.85rem;
-  margin: 0 0 1rem;
-  padding: 0.5rem;
-  background-color: rgba(231, 76, 60, 0.1);
-  border-radius: 6px;
-  text-align: center;
+  display: none;
 }
 
 .bracelet-submit-button {

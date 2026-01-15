@@ -318,6 +318,24 @@
   margin-bottom: var(--spacing-lg);
 }
 
+/* Contenu principal avec transition */
+.parie-main-content {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.parie-main-content.loaded {
+  opacity: 1;
+  visibility: visible;
+}
+
+.parie-main-content.loading {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* Liste des sports */
 .sports-list {
   display: flex;
