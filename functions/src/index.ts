@@ -85,15 +85,13 @@ export const sendChatNotification = onRequest(
       await messaging.send({
         topic,
         notification: {
-          title: sender ? `Nouveau message de ${sender}` : "Nouveau message",
+          title: sender ? `Nouveau message : ${sender}` : "Nouveau message",
           body: message,
-          imageUrl: 'https://cummap-7afee.web.app/logo.jpg', // Logo de l'app pour la notification étendue
         },
         android: {
           notification: {
             icon: 'ic_notification', // Nom de l'icône dans les ressources Android (sans extension)
             color: '#000000', // Couleur de l'icône
-            imageUrl: 'https://cummap-7afee.web.app/logo.jpg', // Logo complet pour la notification étendue
             priority: 'high' as const,
             sound: 'default',
             channelId: 'default', // Canal de notification par défaut
@@ -132,6 +130,7 @@ interface Participant {
 export const syncAllDelegationVotes = onRequest(
   {
     region: 'europe-west1', // Région par défaut, peut être modifiée selon vos besoins
+    cors: true, // Activer CORS pour les appels depuis le web
     secrets: [functionSecret], // Déclarer le secret utilisé
   },
   async (req, res) => {

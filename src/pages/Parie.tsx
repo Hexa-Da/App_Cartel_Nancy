@@ -227,16 +227,26 @@ const Parie: React.FC = () => {
         throw new Error('VITE_FCM_ENDPOINT_AUTH_KEY manquant dans les variables d\'environnement');
       }
 
+      logger.log('[Parie] Appel de la Cloud Function:', functionUrl);
+
+      // Timeout de 30 secondes pour la synchronisation
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authKey}`
-        }
+        },
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
+        logger.error('[Parie] Erreur HTTP:', response.status, errorText);
         throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
       }
 
@@ -248,16 +258,21 @@ const Parie: React.FC = () => {
       if (currentDelegation) {
         await loadDelegationVotes(currentDelegation);
       }
+
+      // Afficher un message de succès
+      alert(`Synchronisation réussie: ${result.message || 'Votes synchronisés avec succès'}`);
     } catch (err) {
       logger.error('Erreur synchronisation votes délégation:', err);
       const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
       
       // Message d'erreur plus détaillé
-      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('AbortError')) {
+        const isTimeout = errorMessage.includes('AbortError');
         alert('Impossible de contacter la Cloud Function. Vérifiez que:\n' +
               '1. La fonction est déployée (firebase deploy --only functions)\n' +
               '2. L\'URL est correcte dans VITE_SYNC_VOTES_ENDPOINT\n' +
-              '3. Vous êtes connecté à Internet');
+              '3. Vous êtes connecté à Internet\n' +
+              (isTimeout ? '4. Le délai d\'attente a été dépassé (30s)' : ''));
       } else {
         alert(`Erreur lors de la synchronisation: ${errorMessage}`);
       }

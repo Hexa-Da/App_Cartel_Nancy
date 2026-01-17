@@ -316,35 +316,48 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
     }
   };
 
+  // Fonction helper pour dispatcher un CustomEvent de synchronisation des filtres
+  const dispatchFilterChangeEvent = (key: string, value: string | boolean) => {
+    window.dispatchEvent(new CustomEvent('filterChange', {
+      detail: { key, value }
+    }));
+  };
+
   // Fonctions wrapper pour sauvegarder les filtres dans le localStorage
   const setEventFilterWithSave = (value: string) => {
     setEventFilter(value);
     localStorage.setItem('mapEventFilter', value);
+    dispatchFilterChangeEvent('mapEventFilter', value);
   };
 
   const setDelegationFilterWithSave = (value: string) => {
     setDelegationFilter(value);
     localStorage.setItem('mapDelegationFilter', value);
+    dispatchFilterChangeEvent('mapDelegationFilter', value);
   };
 
   const setVenueFilterWithSave = (value: string) => {
     setVenueFilter(value);
     localStorage.setItem('mapVenueFilter', value);
+    dispatchFilterChangeEvent('mapVenueFilter', value);
   };
 
   const setShowFemaleWithSave = (value: boolean) => {
     setShowFemale(value);
     localStorage.setItem('mapShowFemale', JSON.stringify(value));
+    dispatchFilterChangeEvent('mapShowFemale', value);
   };
 
   const setShowMaleWithSave = (value: boolean) => {
     setShowMale(value);
     localStorage.setItem('mapShowMale', JSON.stringify(value));
+    dispatchFilterChangeEvent('mapShowMale', value);
   };
 
   const setShowMixedWithSave = (value: boolean) => {
     setShowMixed(value);
     localStorage.setItem('mapShowMixed', JSON.stringify(value));
+    dispatchFilterChangeEvent('mapShowMixed', value);
   };
 
   // Handlers pour les changements de filtres
@@ -586,18 +599,118 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
     }
   }, [eventFilter, delegationFilter, showFemale, showMale, showMixed, isStarFilterActive]);
 
-  // Écouter les changements de l'état de l'étoile dans le localStorage
+  // Écouter les changements des filtres dans le localStorage pour synchronisation
+  // (depuis d'autres onglets/fenêtres)
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'starFilterActive') {
-        const newValue = e.newValue === 'true';
-        setIsStarFilterActive(newValue);
+      if (!e.key) return;
+      
+      switch (e.key) {
+        case 'starFilterActive':
+          if (e.newValue !== null) {
+            const newValue = e.newValue === 'true';
+            setIsStarFilterActive(newValue);
+          }
+          break;
+        case 'mapEventFilter':
+          if (e.newValue !== null && e.newValue !== eventFilter) {
+            setEventFilter(e.newValue);
+          }
+          break;
+        case 'mapDelegationFilter':
+          if (e.newValue !== null && e.newValue !== delegationFilter) {
+            setDelegationFilter(e.newValue);
+          }
+          break;
+        case 'mapVenueFilter':
+          if (e.newValue !== null && e.newValue !== venueFilter) {
+            setVenueFilter(e.newValue);
+          }
+          break;
+        case 'mapShowFemale':
+          if (e.newValue !== null) {
+            const newValue = e.newValue === 'true';
+            if (newValue !== showFemale) {
+              setShowFemale(newValue);
+            }
+          }
+          break;
+        case 'mapShowMale':
+          if (e.newValue !== null) {
+            const newValue = e.newValue === 'true';
+            if (newValue !== showMale) {
+              setShowMale(newValue);
+            }
+          }
+          break;
+        case 'mapShowMixed':
+          if (e.newValue !== null) {
+            const newValue = e.newValue === 'true';
+            if (newValue !== showMixed) {
+              setShowMixed(newValue);
+            }
+          }
+          break;
+        case 'eventsTabShowFilters':
+          if (e.newValue !== null) {
+            const newValue = e.newValue === 'true';
+            setShowFilters(newValue);
+          }
+          break;
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed]);
+
+  // Écouter les changements de filtres via CustomEvent (même onglet)
+  useEffect(() => {
+    const handleFilterChange = (e: CustomEvent<{ key: string; value: string | boolean }>) => {
+      const { key, value } = e.detail;
+      
+      switch (key) {
+        case 'mapEventFilter':
+          if (typeof value === 'string' && value !== eventFilter) {
+            setEventFilter(value);
+          }
+          break;
+        case 'mapDelegationFilter':
+          if (typeof value === 'string' && value !== delegationFilter) {
+            setDelegationFilter(value);
+          }
+          break;
+        case 'mapVenueFilter':
+          if (typeof value === 'string' && value !== venueFilter) {
+            setVenueFilter(value);
+          }
+          break;
+        case 'mapShowFemale':
+          if (typeof value === 'boolean' && value !== showFemale) {
+            setShowFemale(value);
+          }
+          break;
+        case 'mapShowMale':
+          if (typeof value === 'boolean' && value !== showMale) {
+            setShowMale(value);
+          }
+          break;
+        case 'mapShowMixed':
+          if (typeof value === 'boolean' && value !== showMixed) {
+            setShowMixed(value);
+          }
+          break;
+        case 'eventsTabShowFilters':
+          if (typeof value === 'boolean' && value !== showFilters) {
+            setShowFilters(value);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('filterChange', handleFilterChange as EventListener);
+    return () => window.removeEventListener('filterChange', handleFilterChange as EventListener);
+  }, [eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed, showFilters]);
 
   return (
     <div className="events-panel">
@@ -641,6 +754,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
             const newValue = !showFilters;
             setShowFilters(newValue);
             localStorage.setItem('eventsTabShowFilters', JSON.stringify(newValue));
+            dispatchFilterChangeEvent('eventsTabShowFilters', newValue);
           }}
         >
           <svg 

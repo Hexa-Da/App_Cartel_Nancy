@@ -3211,34 +3211,53 @@ function App() {
 
 
   // Fonctions wrapper pour sauvegarder les filtres dans le localStorage
+  // Fonction helper pour dispatcher un CustomEvent de synchronisation des filtres
+  const dispatchFilterChangeEvent = (key: string, value: string | boolean) => {
+    window.dispatchEvent(new CustomEvent('filterChange', {
+      detail: { key, value }
+    }));
+  };
+
   const setEventFilterWithSave = (value: string) => {
     setEventFilter(value);
     localStorage.setItem('mapEventFilter', value);
+    dispatchFilterChangeEvent('mapEventFilter', value);
   };
 
   const setDelegationFilterWithSave = (value: string) => {
     setDelegationFilter(value);
     localStorage.setItem('mapDelegationFilter', value);
+    dispatchFilterChangeEvent('mapDelegationFilter', value);
   };
 
   const setVenueFilterWithSave = (value: string) => {
     setVenueFilter(value);
     localStorage.setItem('mapVenueFilter', value);
+    dispatchFilterChangeEvent('mapVenueFilter', value);
   };
 
   const setShowFemaleWithSave = (value: boolean) => {
     setShowFemale(value);
     localStorage.setItem('mapShowFemale', JSON.stringify(value));
+    dispatchFilterChangeEvent('mapShowFemale', value);
   };
 
   const setShowMaleWithSave = (value: boolean) => {
     setShowMale(value);
     localStorage.setItem('mapShowMale', JSON.stringify(value));
+    dispatchFilterChangeEvent('mapShowMale', value);
   };
 
   const setShowMixedWithSave = (value: boolean) => {
     setShowMixed(value);
     localStorage.setItem('mapShowMixed', JSON.stringify(value));
+    dispatchFilterChangeEvent('mapShowMixed', value);
+  };
+
+  const setShowFiltersWithSave = (value: boolean) => {
+    setShowFilters(value);
+    localStorage.setItem('eventsTabShowFilters', JSON.stringify(value));
+    dispatchFilterChangeEvent('eventsTabShowFilters', value);
   };
 
 
@@ -4090,7 +4109,7 @@ function App() {
           setShowMixedWithSave(mixed);
         }}
         showFilters={showFilters}
-        onShowFiltersChange={setShowFilters}
+        onShowFiltersChange={setShowFiltersWithSave}
         // Props pour le Header
         onChat={handleOpenChat}
         onEmergency={() => setShowEmergency(true)}
