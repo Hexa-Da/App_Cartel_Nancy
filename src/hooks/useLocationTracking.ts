@@ -17,7 +17,6 @@ import { useState, useEffect, useRef } from 'react';
 import { LatLng } from 'leaflet';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
-import NotificationService from '../services/NotificationService';
 import logger from '../services/Logger';
 
 export const useLocationTracking = () => {
@@ -93,18 +92,6 @@ export const useLocationTracking = () => {
 
   // Écouter les changements de l'état de localisation
   useEffect(() => {
-    // Initialiser le service de notifications au démarrage
-    const initNotifications = async () => {
-      try {
-        const notificationService = NotificationService.getInstance();
-        await notificationService.initialize();
-      } catch (error) {
-        logger.error('Erreur lors de l\'initialisation des notifications:', error);
-      }
-    };
-    
-    initNotifications();
-
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'location') {
         const newValue = e.newValue === 'true';
@@ -119,7 +106,10 @@ export const useLocationTracking = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   useEffect(() => {

@@ -12,7 +12,17 @@ interface SettingsMenuProps {
 // Fonction utilitaire pour obtenir la valeur initiale depuis localStorage
 const getInitial = (key: string, defaultValue: any) => {
   const stored = localStorage.getItem(key);
-  if (stored === null) return defaultValue;
+  if (stored === null) {
+    // Si aucune valeur n'est stockée, utiliser la valeur par défaut et la sauvegarder
+    if (typeof defaultValue === 'boolean') {
+      localStorage.setItem(key, defaultValue ? 'true' : 'false');
+    } else if (typeof defaultValue === 'number') {
+      localStorage.setItem(key, String(defaultValue));
+    } else {
+      localStorage.setItem(key, defaultValue);
+    }
+    return defaultValue;
+  }
   if (typeof defaultValue === 'boolean') return stored === 'true';
   if (typeof defaultValue === 'number') return Number(stored);
   return stored;
@@ -117,19 +127,31 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
 
   // Gérer le changement d'état des notifications
   const handleNotificationChange = async (enabled: boolean) => {
-    if (enabled) {
-      const granted = await notificationService.requestPermission();
-      if (granted) {
-        setNotifications(true);
-        handlePreferenceChange('notifications', 'true');
-      } else {
-        setNotifications(false);
-        handlePreferenceChange('notifications', 'false');
-        alert('Les notifications ont été refusées. Veuillez les activer dans les paramètres de votre appareil.');
+    // 🚀 OPTIMISATION : Changer l'état UI immédiatement pour une réactivité instantanée
+    setNotifications(enabled);
+    handlePreferenceChange('notifications', enabled ? 'true' : 'false');
+    
+    // Exécuter les opérations asynchrones en arrière-plan
+    // Si elles échouent, on restaurera l'état précédent
+    const previousState = !enabled;
+    
+    try {
+      const success = await notificationService.toggleNotifications(enabled);
+      
+      if (!success) {
+        // Si l'opération a échoué (ex: permission refusée), restaurer l'état précédent
+        setNotifications(previousState);
+        handlePreferenceChange('notifications', previousState ? 'true' : 'false');
+        
+        if (enabled) {
+          alert('Les notifications ont été refusées. Veuillez les activer dans les paramètres de votre appareil.');
+        }
       }
-    } else {
-      setNotifications(false);
-      handlePreferenceChange('notifications', 'false');
+    } catch (error) {
+      // En cas d'erreur, restaurer l'état précédent
+      setNotifications(previousState);
+      handlePreferenceChange('notifications', previousState ? 'true' : 'false');
+      console.error('Erreur lors du changement d\'état des notifications:', error);
     }
   };
 

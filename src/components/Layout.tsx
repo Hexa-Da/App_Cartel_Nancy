@@ -32,6 +32,7 @@ import ChatPanel from './ChatPanel';
 import HSECharterHandler from './forms/HSECharterHandler';
 import VenueForm from './forms/VenueForm';
 import MatchForm from './forms/MatchForm';
+import { useNotifications } from '../hooks/useNotifications';
 
 interface Message {
   id?: string;
@@ -43,6 +44,9 @@ interface Message {
 
 const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
+  
+  // Initialiser le service de notifications au démarrage (une seule fois au niveau racine)
+  useNotifications();
   
   const { activeTab, setActiveTab } = useNavigation();
   const { isEditing, setIsEditing } = useEditing();

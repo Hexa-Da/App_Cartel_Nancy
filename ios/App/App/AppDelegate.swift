@@ -1,6 +1,7 @@
 import UIKit
 import Capacitor
 import GoogleSignIn
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -9,6 +10,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // Configuration des notifications push pour iOS
+        // Capacitor PushNotifications plugin gère cela automatiquement, mais on s'assure que les permissions sont demandées
+        UNUserNotificationCenter.current().delegate = self
         
         // Configurer la fenêtre avec SplashViewController comme ViewController initial
         window = UIWindow(frame: UIScreen.main.bounds)
@@ -59,5 +64,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // tracking app url opens, make sure to keep this call
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
+    
+    // Gestion du token FCM pour les notifications push
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        // Le plugin Capacitor PushNotifications gère cela automatiquement
+        // Cette méthode est appelée quand iOS enregistre l'app pour les notifications push
+        print("[AppDelegate] Device token reçu pour les notifications push")
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("[AppDelegate] Échec de l'enregistrement pour les notifications push: \(error.localizedDescription)")
+    }
 
+}
+
+// Extension pour gérer les notifications en premier plan (iOS 10+)
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    // Cette méthode est appelée quand une notification arrive alors que l'app est au premier plan
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Afficher la notification même si l'app est au premier plan
+        completionHandler([.banner, .sound, .badge])
+    }
+    
+    // Cette méthode est appelée quand l'utilisateur interagit avec une notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
 }

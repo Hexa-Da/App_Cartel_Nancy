@@ -39,6 +39,12 @@ export const subscribeToTopic = onRequest(
     secrets: [functionSecret], // Déclarer le secret utilisé
   },
   async (req, res) => {
+    // Gérer la requête preflight OPTIONS pour CORS
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
     try {
       assertAuthorized(req, functionSecret.value());
       if (req.method !== "POST") {
@@ -52,11 +58,91 @@ export const subscribeToTopic = onRequest(
         return;
       }
 
-      await messaging.subscribeToTopic([token], topic);
-      res.status(200).send({ success: true });
+      // Validation du format du token FCM
+      if (typeof token !== 'string' || token.length < 10) {
+        res.status(400).send({ error: "Format de token invalide" });
+        return;
+      }
+
+      // Validation du topic
+      if (typeof topic !== 'string' || topic.length === 0) {
+        res.status(400).send({ error: "Format de topic invalide" });
+        return;
+      }
+
+      try {
+        await messaging.subscribeToTopic([token], topic);
+        res.status(200).send({ success: true, message: `Abonné au topic ${topic}` });
+      } catch (fcmError) {
+        const fcmErrorMessage = (fcmError as Error).message;
+        console.error(`[subscribeToTopic] Erreur FCM lors de l'abonnement:`, fcmErrorMessage);
+        
+        // Gestion spécifique des erreurs FCM courantes
+        if (fcmErrorMessage.includes('invalid-argument') || fcmErrorMessage.includes('Invalid')) {
+          res.status(400).send({ error: "Token ou topic invalide", details: fcmErrorMessage });
+        } else if (fcmErrorMessage.includes('unavailable') || fcmErrorMessage.includes('timeout')) {
+          res.status(503).send({ error: "Service FCM temporairement indisponible", details: fcmErrorMessage });
+        } else {
+          res.status(500).send({ error: "Erreur lors de l'abonnement", details: fcmErrorMessage });
+        }
+      }
     } catch (error) {
       const errorMessage = (error as Error).message;
-      console.error('[subscribeToTopic] Erreur:', errorMessage);
+      console.error('[subscribeToTopic] Erreur générale:', errorMessage);
+      res.status(500).send({ error: errorMessage });
+    }
+  }
+);
+
+export const unsubscribeFromTopic = onRequest(
+  {
+    region: 'europe-west1', // Région cohérente avec les autres fonctions
+    cors: true, // Activer CORS pour les appels depuis le web
+    secrets: [functionSecret], // Déclarer le secret utilisé
+  },
+  async (req, res) => {
+    // Gérer la requête preflight OPTIONS pour CORS
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    try {
+      assertAuthorized(req, functionSecret.value());
+      if (req.method !== "POST") {
+        res.status(405).send("Method Not Allowed");
+        return;
+      }
+
+      const { token, topic } = req.body ?? {};
+      if (!token || !topic) {
+        res.status(400).send("token et topic sont requis");
+        return;
+      }
+
+      // Validation du format du token FCM
+      if (typeof token !== 'string' || token.length < 10) {
+        res.status(400).send({ error: "Format de token invalide" });
+        return;
+      }
+      
+      try {
+        await messaging.unsubscribeFromTopic([token], topic);
+        res.status(200).send({ success: true, message: `Désabonné du topic ${topic}` });
+      } catch (fcmError) {
+        const fcmErrorMessage = (fcmError as Error).message;
+        console.error(`[unsubscribeFromTopic] Erreur FCM lors du désabonnement:`, fcmErrorMessage);
+        
+        // Gestion spécifique des erreurs FCM courantes
+        if (fcmErrorMessage.includes('invalid-argument') || fcmErrorMessage.includes('Invalid')) {
+          res.status(400).send({ error: "Token ou topic invalide", details: fcmErrorMessage });
+        } else {
+          res.status(500).send({ error: "Erreur lors du désabonnement", details: fcmErrorMessage });
+        }
+      }
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      console.error('[unsubscribeFromTopic] Erreur générale:', errorMessage);
       res.status(500).send({ error: errorMessage });
     }
   }
@@ -69,6 +155,12 @@ export const sendChatNotification = onRequest(
     secrets: [functionSecret], // Déclarer le secret utilisé
   },
   async (req, res) => {
+    // Gérer la requête preflight OPTIONS pour CORS
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
     try {
       assertAuthorized(req, functionSecret.value());
       if (req.method !== "POST") {
