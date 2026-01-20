@@ -15,7 +15,7 @@
  * - UX claire pour la connexion administrateur
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AdminLoginModal.css';
 
 interface AdminLoginModalProps {
@@ -27,6 +27,34 @@ interface AdminLoginModalProps {
 const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLogin }) => {
   const [code, setCode] = useState('');
   const adminCodeId = `admin-code-${Math.random().toString(36).substr(2, 9)}`;
+
+  // Bloquer le scroll du body/html quand le modal est ouvert
+  useEffect(() => {
+    if (isOpen) {
+      // Sauvegarder la position de scroll actuelle
+      const scrollY = window.scrollY;
+      const body = document.body;
+      const html = document.documentElement;
+      
+      // Bloquer le scroll au niveau du body et html
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollY}px`;
+      body.style.width = '100%';
+      body.style.overflow = 'hidden';
+      
+      html.style.overflow = 'hidden';
+      
+      return () => {
+        // Restaurer le scroll
+        body.style.position = '';
+        body.style.top = '';
+        body.style.width = '';
+        body.style.overflow = '';
+        html.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -15,6 +15,10 @@
   padding: 1rem;
   /* Positionner un peu plus haut, pas au centre */
   padding-top: 15vh;
+  /* Empêcher le scroll tactile sur mobile */
+  touch-action: none;
+  /* Empêcher le scroll élastique iOS */
+  overscroll-behavior: none;
 }
 
 /* Sur mobile, remonter le modal quand le clavier apparaît */
@@ -88,9 +92,9 @@
 .admin-login-form {
   padding: 1rem;
   background-color: var(--bg-color);
-  overflow-y: auto;
-  max-height: calc(100dvh - 8rem);
-  -webkit-overflow-scrolling: touch;
+  /* Pas de scroll nécessaire pour ce formulaire simple */
+  overflow-y: visible;
+  max-height: none;
 }
 
 .form-group {

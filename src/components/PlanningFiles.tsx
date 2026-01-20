@@ -574,12 +574,13 @@ export default function PlanningFiles({
           throw error;
         },
         async () => {
+          let fileData: any | undefined;
           try {
             // Upload réussi, obtenir l'URL
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
             // Calculer la taille des données de la base
-            const fileData: any = {
+            fileData = {
               ...newFile,
               url: downloadURL,
               uploadDate: Date.now(),
@@ -888,38 +889,28 @@ export default function PlanningFiles({
               <div key={file.id} className="file-item">
                 <div className="file-name">{file.name}</div>
                 <div className="file-actions-container">
-                  {isImage ? (
-                <button
-                      onClick={() => window.open(file.url, '_blank')}
-                      className="file-view-button"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                      Voir
-                    </button>
-                  ) : (
+                  <button
+                    onClick={() => window.open(file.url, '_blank')}
+                    className="file-view-button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    Voir
+                  </button>
+                  {isAdmin && (
                     <button
-                      onClick={() => window.open(file.url, '_blank')}
-                      className="file-view-button"
+                      onClick={() => handleDeleteFile(file.id)}
+                      className="delete-button"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                      Voir
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        <line x1="10" y1="11" x2="10" y2="17"/>
+                        <line x1="14" y1="11" x2="14" y2="17"/>
+                      </svg>
                     </button>
                   )}
-                {isAdmin && (
-                  <button
-                    onClick={() => handleDeleteFile(file.id)}
-                      className="delete-button"
-                  >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="3 6 5 6 21 6"/>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                      <line x1="10" y1="11" x2="10" y2="17"/>
-                      <line x1="14" y1="11" x2="14" y2="17"/>
-                    </svg>
-                  </button>
-                )}
+                </div>
               </div>
-            </div>
             );
           })}
         </div>

@@ -414,7 +414,7 @@ const PlanningFilesPage: React.FC = () => {
 
       {/* Composant PlanningFiles avec filtre */}
       <div 
-        className="planning-container" 
+        className={`planning-container ${isEditing ? 'is-editing' : ''}`}
         style={{ 
           opacity: isPageLoading ? 0 : 1,
           pointerEvents: isPageLoading ? 'none' : 'auto',
