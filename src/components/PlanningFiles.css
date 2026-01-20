@@ -495,8 +495,16 @@
   padding-bottom: var(--spacing-md);
 }
 
+.planning-container.has-two-filters .files-list {
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 225px);
+}
+
 .planning-container.is-editing .files-list {
   max-height: calc(100vh - var(--header-height) - var(--nav-height) - 231px);
+}
+
+.planning-container.is-editing.has-two-filters .files-list {
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 311px);
 }
 
 /* File item - override existing styles */

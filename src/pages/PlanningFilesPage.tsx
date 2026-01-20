@@ -366,7 +366,10 @@ const PlanningFilesPage: React.FC = () => {
       {uploadBar}
 
       {/* Système de filtres en cascade - Utilise les classes CSS */}
-      <div id="filters-container" className="filters-container">
+      <div 
+        id="filters-container" 
+        className={`filters-container ${eventType !== 'all' ? 'has-two-filters' : ''}`}
+      >
           <div className="filter-group">
             <label className="filter-label">
               Type d'événement :
@@ -414,7 +417,7 @@ const PlanningFilesPage: React.FC = () => {
 
       {/* Composant PlanningFiles avec filtre */}
       <div 
-        className={`planning-container ${isEditing ? 'is-editing' : ''}`}
+        className={`planning-container ${isEditing ? 'is-editing' : ''} ${eventType !== 'all' ? 'has-two-filters' : ''}`}
         style={{ 
           opacity: isPageLoading ? 0 : 1,
           pointerEvents: isPageLoading ? 'none' : 'auto',
