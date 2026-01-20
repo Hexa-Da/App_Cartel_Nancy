@@ -8,13 +8,13 @@
   left: 0;
   width: 100%;
   /* Hauteur adaptative */
-  height: auto;
+  height: var(--nav-height);
   min-height: 80px; /* Sécurité tactile */
   /* Box-sizing : border-box pour que le padding soit inclus dans la hauteur */
   box-sizing: border-box;
   margin: 0;
   /* Gestion Safe Area - Padding uniquement en bas */
-  padding-top: 10px; /* Petit espace au-dessus des icônes */
+  padding-top: 12px; /* Petit espace au-dessus des icônes */
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
@@ -112,12 +112,6 @@
 
 
 @media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
-  .bottom-nav {
-    height: auto;
-    min-height: 80px;
-  }
-
-
   .nav-icon {
     font-size: clamp(18px, 3vw, 22px);
   }
@@ -130,21 +124,8 @@
   }
 }
 
-/* Styles simplifiés pour mobile */
-@media (max-width: 768px) { /* BREAKPOINTS.tablet */
-  .bottom-nav {
-    height: auto;
-    min-height: 80px;
-  }
-}
-
 /* Media query spécifique pour très petits écrans (iPhone 6, SE, etc.) */
 @media (max-width: 375px) {
-  .bottom-nav {
-    height: auto;
-    min-height: 80px;
-  }
-
   .nav-button {
     min-height: auto;
     min-width: clamp(45px, 8vw, 50px);
@@ -163,11 +144,6 @@
 
 /* Media query spécifique pour iPhone 5 et très petits écrans (320px) */
 @media (max-width: 320px) {
-  .bottom-nav {
-    height: auto;
-    min-height: 80px;
-  }
-
   .nav-button {
     min-height: auto;
     min-width: clamp(40px, 7vw, 45px);

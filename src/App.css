@@ -822,6 +822,10 @@
   pointer-events: auto;
 }
 
+body.ios .add-venue-button {
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-xxs));
+}
+
 .recenter-button {
   position: fixed;
   bottom: calc(var(--above-bottom-nav) + var(--spacing-sm));
@@ -844,10 +848,8 @@
   padding: 0;
 }
 
-/* Augmentation de spécificité pour override potentiel */
-body .recenter-button {
-  background-color: var(--bg-color);
-  opacity: 1;
+body.ios .recenter-button {
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-xxs));
 }
 
 .recenter-button svg {
@@ -878,11 +880,19 @@ body .recenter-button {
   animation: spin 1s linear infinite;
 }
 
+body.ios .location-loading {
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-xxs));
+}
+
 .map-loading-indicator {
   position: fixed;
   left: var(--spacing-md);
   bottom: calc(var(--above-bottom-nav) + var(--spacing-sm));
   z-index: var(--z-modal);
+}
+
+body.ios .map-loading-indicator {
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-xxs));
 }
 
 @keyframes spin {
@@ -913,6 +923,10 @@ body .recenter-button {
   gap: var(--spacing-sm);
   justify-content: flex-end;
   pointer-events: auto;
+}
+
+body.ios .location-error {
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-xxs));
 }
 
 .retry-button {
