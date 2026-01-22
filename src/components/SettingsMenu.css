@@ -43,9 +43,19 @@
 }
 
 .settings-menu-header .close-button {
+  /* Réinitialisation complète des styles globaux de button */
+  all: unset;
+  /* Réapplication des styles nécessaires */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
+  background-color: transparent;
   border: none;
+  border-radius: 0;
   font-size: 1.5rem;
+  font-weight: normal;
+  font-family: inherit;
   cursor: pointer;
   color: var(--text-color);
   position: absolute;
@@ -58,19 +68,26 @@
   pointer-events: auto;
   min-width: 44px;
   min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: none;
+  /* Désactivation des effets de tap highlight et focus */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  outline: none;
+  box-shadow: none;
 }
 
-.settings-menu-header .close-button:hover {
-  opacity: 0.7;
-  transform: translateY(-50%) scale(1.1);
-}
-
-.settings-menu-header .close-button:active {
-  transform: translateY(-50%) scale(0.95);
+.settings-menu-header .close-button:hover,
+.settings-menu-header .close-button:active,
+.settings-menu-header .close-button:focus,
+.settings-menu-header .close-button:focus-visible {
+  background: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  transform: translateY(-50%);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .settings-menu-content {

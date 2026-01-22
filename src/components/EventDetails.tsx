@@ -143,7 +143,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
   };
 
   return (
-    <div className="event-details-overlay" onClick={onClose}>
+    <div className="event-details-overlay" onClick={(e) => { e.stopPropagation(); onClose(); }}>
       <div className="event-details-content" onClick={e => e.stopPropagation()}>
         <div className="event-details-main">
           {/* Badge de type d'événement */}

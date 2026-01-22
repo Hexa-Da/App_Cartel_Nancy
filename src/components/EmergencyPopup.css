@@ -41,9 +41,19 @@
 }
 
 .emergency-popup-header .close-button {
+  /* Réinitialisation complète des styles globaux de button */
+  all: unset;
+  /* Réapplication des styles nécessaires */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
+  background-color: transparent;
   border: none;
+  border-radius: 0;
   font-size: 1.5rem;
+  font-weight: normal;
+  font-family: inherit;
   cursor: pointer;
   color: var(--text-color);
   position: absolute;
@@ -52,6 +62,31 @@
   transform: translateY(-50%);
   padding: 0.5rem;
   line-height: 1;
+  z-index: var(--z-modal-overlay);
+  pointer-events: auto;
+  min-width: 44px;
+  min-height: 44px;
+  transition: none;
+  /* Désactivation des effets de tap highlight et focus */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.emergency-popup-header .close-button:hover,
+.emergency-popup-header .close-button:active,
+.emergency-popup-header .close-button:focus,
+.emergency-popup-header .close-button:focus-visible {
+  background: none;
+  background-color: transparent;
+  color: var(--text-color);
+  border: none;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  transform: translateY(-50%);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .emergency-popup-content ul {

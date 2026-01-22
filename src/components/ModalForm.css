@@ -63,17 +63,40 @@
 }
 
 .modal-form-header .close-button {
+  /* Réinitialisation complète des styles globaux de button */
+  all: unset;
+  /* Réapplication des styles nécessaires */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
+  background-color: transparent;
   border: none;
-  font-size: 1.5rem;
+  border-radius: 0;
+  font-size: 1.75rem;
+  font-weight: normal;
+  font-family: inherit;
   cursor: pointer;
   color: var(--text-color);
-  padding: 0.25rem;
+  padding: 1rem;
   border-radius: 4px;
   transition: background-color 0.2s ease;
   position: static;
   margin-right: -10px;
   z-index: auto;
+}
+
+.modal-form-header .close-button:hover,
+.modal-form-header .close-button:active,
+.modal-form-header .close-button:focus,
+.modal-form-header .close-button:focus-visible {
+  background: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Contenu scrollable */

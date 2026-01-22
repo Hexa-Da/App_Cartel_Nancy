@@ -16,7 +16,7 @@
  * - Assure la cohérence de l'interface utilisateur
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import './Layout.css';
@@ -113,6 +113,17 @@ const Layout: React.FC = () => {
         setActiveTab('info');
       }
     }, [location.pathname]);
+
+  // Fermer EventDetails si l'utilisateur quitte /home ou change de page
+  const previousPathnameRef = useRef<string>(location.pathname);
+  useEffect(() => {
+    // Si on quitte /home, fermer EventDetails
+    if (previousPathnameRef.current === '/home' && location.pathname !== '/home' && selectedEvent) {
+      setSelectedEvent(null);
+    }
+    // Mettre à jour la référence pour le prochain changement
+    previousPathnameRef.current = location.pathname;
+  }, [location.pathname, selectedEvent, setSelectedEvent]);
 
   // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
   useEffect(() => {

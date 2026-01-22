@@ -81,7 +81,6 @@
   transform: translateY(-50%);
   padding: 0.5rem;
   line-height: 1;
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
   min-width: 44px;
   min-height: 44px;
   display: flex;

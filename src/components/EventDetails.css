@@ -27,6 +27,7 @@
   border-radius: clamp(16px, 3vw, 20px);
   max-width: var(--modal-width-small);
   width: 100%;
+  min-width: min(400px, 90vw);
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0 8px 24px var(--shadow-color);
@@ -112,7 +113,7 @@
   display: flex;
   gap: clamp(12px, 2vw, 16px);
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   padding: clamp(12px, 2vw, 16px);
   background: var(--bg-color);
   backdrop-filter: blur(8px);
@@ -127,6 +128,8 @@
   flex-direction: column;
   align-items: center;
   gap: clamp(4px, 1vw, 6px);
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .time-label {
@@ -139,12 +142,13 @@
 
 .time-value {
   color: rgba(255, 152, 0, 1);
-  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
   font-weight: 700;
   background: rgba(255, 152, 0, 0.15);
-  padding: clamp(6px, 1.2vw, 8px) clamp(12px, 2vw, 16px);
+  padding: clamp(6px, 1.2vw, 8px) clamp(10px, 1.8vw, 14px);
   border-radius: clamp(8px, 1.5vw, 10px);
   border: 1px solid rgba(255, 152, 0, 0.3);
+  white-space: nowrap;
 }
 
 /* Détails de l'événement - Cartes distinctes */
@@ -354,6 +358,7 @@
 @media (max-width: 480px) { /* BREAKPOINTS.mobile */
   .event-details-content {
     width: 95vw;
+    min-width: min(360px, 95vw);
     max-height: 90vh;
   }
   
@@ -366,12 +371,14 @@
   }
   
   .event-time-section {
-    gap: clamp(10px, 2vw, 14px);
+    gap: clamp(8px, 1.5vw, 12px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .time-value {
-    font-size: clamp(0.85rem, 2vw, 0.95rem);
-    padding: clamp(5px, 1vw, 7px) clamp(10px, 2vw, 14px);
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    padding: clamp(5px, 1vw, 7px) clamp(8px, 1.5vw, 12px);
   }
   
   .action-button {
@@ -383,6 +390,7 @@
 @media (max-width: 360px) {
   .event-details-content {
     width: 98vw;
+    min-width: min(320px, 98vw);
   }
   
   .event-details-main {
@@ -404,5 +412,14 @@
   .detail-value {
     font-size: clamp(0.75rem, 2vw, 0.85rem);
     padding: clamp(8px, 1.5vw, 12px);
+  }
+  
+  .event-time-section {
+    gap: clamp(6px, 1.2vw, 10px);
+  }
+  
+  .time-value {
+    font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+    padding: clamp(4px, 0.8vw, 6px) clamp(6px, 1.2vw, 10px);
   }
 }

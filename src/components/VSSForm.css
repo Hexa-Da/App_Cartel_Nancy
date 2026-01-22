@@ -63,17 +63,48 @@
 }
 
 .vss-form-header .close-button {
+  /* Réinitialisation complète des styles globaux de button */
+  all: unset;
+  /* Réapplication des styles nécessaires */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
+  background-color: transparent;
   border: none;
+  border-radius: 0;
   font-size: 1.5rem;
+  font-weight: normal;
+  font-family: inherit;
   cursor: pointer;
   color: var(--text-color);
-  padding: 0.25rem;
+  padding: 1rem;
   border-radius: 4px;
   transition: background-color 0.2s ease;
   position: static;
   margin-right: -10px;
   z-index: auto;
+}
+
+.vss-form-header .close-button svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--text-color);
+  stroke: var(--text-color);
+  stroke-width: 2;
+}
+
+.vss-form-header .close-button:hover,
+.vss-form-header .close-button:active,
+.vss-form-header .close-button:focus,
+.vss-form-header .close-button:focus-visible {
+  background: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .vss-form-content {

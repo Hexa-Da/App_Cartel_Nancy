@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import './CalendarPopup.css';
 import { Venue } from '../types';
 import Header from './Header';
@@ -75,6 +76,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   isVenuesLoading
 }) => {
   const { selectedEvent, setSelectedEvent } = useForm();
+  const location = useLocation();
+  const previousPathnameRef = useRef<string>(location.pathname);
   const [isLoading, setIsLoading] = useState(true);
   const hasInitialized = useRef(false);
   const [isStarFilterActive, setIsStarFilterActive] = useState(() => {
@@ -209,6 +212,21 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
       localStorage.setItem('starFilterActive', JSON.stringify(shouldBeActive));
     }
   }, [eventFilter, delegationFilter, showFemale, showMale, showMixed, isStarFilterActive]);
+
+  // Fermer EventDetails si le popup se ferme
+  useEffect(() => {
+    if (!isOpen && selectedEvent) {
+      setSelectedEvent(null);
+    }
+  }, [isOpen, selectedEvent, setSelectedEvent]);
+
+  // Fermer EventDetails si l'utilisateur change de page
+  useEffect(() => {
+    if (selectedEvent && location.pathname !== previousPathnameRef.current) {
+      setSelectedEvent(null);
+    }
+    previousPathnameRef.current = location.pathname;
+  }, [location.pathname, selectedEvent, setSelectedEvent]);
 
   const sportOptions = [
     { value: 'none', label: 'Aucun' },
