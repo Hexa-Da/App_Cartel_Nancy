@@ -189,6 +189,18 @@ export const sendChatNotification = onRequest(
             channelId: 'default', // Canal de notification par défaut
           },
         },
+        apns: {
+          payload: {
+            aps: {
+              alert: {
+                title: sender ? `Nouveau message : ${sender}` : "Nouveau message",
+                body: message,
+              },
+              sound: 'default',
+              badge: 1,
+            },
+          },
+        },
         data: {
           sender: sender ?? "",
           message,

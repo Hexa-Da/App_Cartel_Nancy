@@ -298,12 +298,18 @@ class NotificationService {
   }
 
   private async initializeNativePush() {
+    const platform = Capacitor.getPlatform();
+    logger.log(`[NotificationService] Initialisation des notifications natives (${platform})`);
+    
     // 1. Permissions
     await LocalNotifications.requestPermissions();
 
     const permissionStatus = await PushNotifications.checkPermissions();
+    logger.log(`[NotificationService] État des permissions (${platform}):`, permissionStatus);
+    
     if (permissionStatus.receive === 'prompt') {
-      await PushNotifications.requestPermissions();
+      const result = await PushNotifications.requestPermissions();
+      logger.log(`[NotificationService] Résultat de la demande de permission (${platform}):`, result);
     }
 
     const notificationsEnabled = localStorage.getItem('notifications') !== 'false';
@@ -365,6 +371,9 @@ class NotificationService {
     // 2. On attache le listener 'registration' et on attend qu'il soit prêt
     await PushNotifications.addListener('registration', async (token) => {
       try {
+        const platform = Capacitor.getPlatform();
+        logger.log(`[NotificationService] Token FCM reçu (${platform}):`, token.value.substring(0, 20) + '...');
+        
         this.fcmToken = token.value;
         localStorage.setItem('fcm_token', token.value);
         
@@ -378,6 +387,8 @@ class NotificationService {
             await this.saveTokenToFirebase(token.value);
             await this.subscribeToTopic(this.chatTopic);
             this.notifyServiceWorker(true);
+            
+            logger.log(`[NotificationService] Notifications activées avec succès (${platform})`);
           } catch (error) {
             logger.error('[NotificationService] Échec de l\'abonnement:', error);
             // Le retry est géré dans subscribeToTopic avec délais progressifs
@@ -390,7 +401,16 @@ class NotificationService {
 
     // 3. On attache les autres listeners
     await PushNotifications.addListener('registrationError', (error) => {
-      logger.error('Erreur lors de l\'enregistrement FCM:', error.error);
+      const platform = Capacitor.getPlatform();
+      logger.error(`[NotificationService] Erreur lors de l'enregistrement FCM (${platform}):`, error.error);
+      
+      // Logs spécifiques pour iOS
+      if (platform === 'ios') {
+        logger.error('[NotificationService] Vérifiez que :');
+        logger.error('  - Le certificat APNs est configuré dans Firebase Console');
+        logger.error('  - Les Push Notifications sont activées dans Xcode (Signing & Capabilities)');
+        logger.error('  - Le Bundle ID correspond dans Firebase et Xcode');
+      }
     });
 
     await PushNotifications.addListener('pushNotificationReceived', (notification) => {
