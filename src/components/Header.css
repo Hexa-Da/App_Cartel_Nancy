@@ -72,7 +72,6 @@
   width: clamp(26px, 4vw, 30px);
   height: clamp(26px, 4vw, 30px);
   transition: all 0.2s ease;
-  filter: drop-shadow(0 1px 2px var(--shadow-color));
 }
 
 /* Conteneurs gauche et droite du header */
@@ -144,7 +143,6 @@
 }
 
 .chat-button.active svg {
-  filter: drop-shadow(0 2px 4px var(--shadow-color));
 }
 
 .unread-badge {

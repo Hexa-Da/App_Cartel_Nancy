@@ -63,7 +63,7 @@
 .leaflet-popup-content .match-item .match-description,
 .matches-list .match-item .match-description,
 .matches-scroll-container .match-item .match-description {
-  color: rgba(255, 255, 255, 1) !important;
+  color: var(--text-color) !important;
 }
 
 .leaflet-popup-content-wrapper .venue-popup .matches-list .matches-scroll-container .match-item .match-result,

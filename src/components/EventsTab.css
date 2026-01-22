@@ -421,10 +421,10 @@ body.ios .events-panel-header {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Light theme - fond sombre adapté */
+/* Light theme - fond clair adapté */
 [data-theme="light"] .event-item {
-  background: rgba(40, 40, 40, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .event-item:active {
@@ -460,8 +460,8 @@ body.ios .events-panel-header {
 }
 
 [data-theme="light"] .event-item.passed {
-  background: rgba(30, 30, 30, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(240, 240, 240, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* ============================================
@@ -513,12 +513,13 @@ body.ios .event-item .event-actions {
   padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--radius-lg);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 36px;
-  min-height: 28px;
+  min-height: 32px;
+  line-height: 1.2;
   border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px var(--shadow-color);
@@ -526,11 +527,21 @@ body.ios .event-item .event-actions {
   letter-spacing: 0.02em;
   text-transform: uppercase;
   font-size: 0.7rem;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-md);
 }
 
 .event-type-badge span {
   display: inline-block;
+  line-height: 1.2;
+}
+
+.event-type-badge span:first-child {
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.event-type-badge span:last-child {
+  margin-left: var(--spacing-xs);
 }
 
 .match-event .event-type-badge {
@@ -567,7 +578,6 @@ body.ios .event-item .event-actions {
   font-weight: 700;
   font-size: clamp(0.85rem, 3vw, 1rem);
   white-space: nowrap;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   letter-spacing: -0.01em;
   flex-shrink: 0;
   text-align: right;
@@ -594,14 +604,13 @@ body.ios .event-item .event-actions {
 
 .event-name {
   margin: 0;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-color);
   font-size: clamp(0.85rem, 3vw, 1rem);
   font-weight: 700;
   text-align: center;
   line-height: 1.3;
   overflow: visible;
   word-break: break-word;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: -0.01em;
   margin-bottom: clamp(4px, 0.8vh, 6px);
   flex: 0 0 auto;
@@ -612,13 +621,12 @@ body.ios .event-item .event-actions {
 }
 
 .event-description {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-color);
   font-size: clamp(0.7rem, 2.5vw, 0.85rem);
   margin: clamp(var(--spacing-xs), 0.8vh, var(--spacing-xs)) 0;
   line-height: 1.4;
   overflow: visible;
   word-break: break-word;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   font-weight: 400;
   flex: 0 0 auto;
 }
@@ -656,17 +664,16 @@ body.ios .event-item .event-actions {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   word-break: break-word;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .party-result,
 .party-results {
   margin: 0;
   padding: clamp(var(--spacing-md), 2vw, var(--spacing-md));
-  background: rgba(25, 25, 25, 0.5);
+  background: var(--bg-color);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   border-radius: clamp(var(--radius-sm), 2vw, var(--radius-md));
   box-shadow: 0 2px 8px var(--shadow-color);
   text-align: center !important;

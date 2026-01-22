@@ -183,6 +183,22 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     if (sport === 'none') {
       setPreferredChampionship(['none']);
       handlePreferenceChange('preferredChampionship', JSON.stringify(['none']));
+    } else {
+      // Vérifier si le championnat actuel est valide pour le nouveau sport
+      const currentChampionship = preferredChampionship[0] || 'none';
+      if (currentChampionship !== 'none') {
+        const { hasFemale, hasMale, hasMixed } = hasGenderMatches(sport);
+        const isValidChampionship = 
+          (currentChampionship === 'female' && hasFemale) ||
+          (currentChampionship === 'male' && hasMale) ||
+          (currentChampionship === 'mixed' && hasMixed);
+        
+        // Si le championnat n'est plus valide, le réinitialiser
+        if (!isValidChampionship) {
+          setPreferredChampionship(['none']);
+          handlePreferenceChange('preferredChampionship', JSON.stringify(['none']));
+        }
+      }
     }
   };
 
@@ -319,6 +335,37 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     window.addEventListener('preferenceChange', handlePreferenceChange as EventListener);
     return () => window.removeEventListener('preferenceChange', handlePreferenceChange as EventListener);
   }, [onLocationChange]);
+
+  // Valider que le championnat sélectionné est toujours valide pour le sport sélectionné
+  useEffect(() => {
+    const currentSport = favoriteSports[0];
+    const currentChampionship = preferredChampionship[0] || 'none';
+    
+    // Si aucun sport n'est sélectionné ou "Tous les sports", réinitialiser le championnat
+    if (!currentSport || currentSport === 'none') {
+      if (currentChampionship !== 'none') {
+        setPreferredChampionship(['none']);
+        handlePreferenceChange('preferredChampionship', JSON.stringify(['none']));
+      }
+      return;
+    }
+    
+    // Si un championnat est sélectionné, vérifier qu'il est valide pour le sport
+    if (currentChampionship !== 'none') {
+      const { hasFemale, hasMale, hasMixed } = hasGenderMatches(currentSport);
+      const isValidChampionship = 
+        (currentChampionship === 'female' && hasFemale) ||
+        (currentChampionship === 'male' && hasMale) ||
+        (currentChampionship === 'mixed' && hasMixed);
+      
+      // Si le championnat n'est plus valide, le réinitialiser
+      if (!isValidChampionship) {
+        setPreferredChampionship(['none']);
+        handlePreferenceChange('preferredChampionship', JSON.stringify(['none']));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [favoriteSports, hasGenderMatches]);
 
   if (!isOpen) return null;
 

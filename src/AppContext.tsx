@@ -208,19 +208,20 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Fonction pour vérifier les championnats disponibles pour un sport
-  // Note: Le championnat (féminin/masculin/mixte) est défini au niveau de la venue, pas du match
+  // Le championnat (féminin/masculin/mixte) est défini dans match.description
   const hasGenderMatches = (sport: string): { hasFemale: boolean, hasMale: boolean, hasMixed: boolean } => {
     let hasFemale = false;
     let hasMale = false;
     let hasMixed = false;
 
     venues.forEach(venue => {
-      if (venue.sport === sport && venue.matches && venue.matches.length > 0) {
-        // Vérifier la description de la venue (pas des matchs)
-        const venueDescription = venue.description?.toLowerCase() || '';
-        if (venueDescription.includes('féminin')) hasFemale = true;
-        if (venueDescription.includes('masculin')) hasMale = true;
-        if (venueDescription.includes('mixte')) hasMixed = true;
+      if (venue.sport === sport && venue.matches) {
+        venue.matches.forEach(match => {
+          const matchDescription = match.description?.toLowerCase() || '';
+          if (matchDescription.includes('féminin')) hasFemale = true;
+          if (matchDescription.includes('masculin')) hasMale = true;
+          if (matchDescription.includes('mixte')) hasMixed = true;
+        });
       }
     });
 

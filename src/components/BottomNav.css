@@ -76,7 +76,6 @@
   /* Changé: Taille d'icône adaptative - réduite pour barre plus petite */
   font-size: clamp(18px, 3vw, 22px);
   margin-bottom: clamp(0px, 0.1vh, 1px);
-  filter: drop-shadow(0 2px 4px var(--shadow-color));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,11 +85,9 @@
   /* Changé: SVG adaptatif - réduit pour barre plus petite */
   width: clamp(18px, 3vw, 22px);
   height: clamp(18px, 3vw, 22px);
-  filter: drop-shadow(0 2px 4px var(--shadow-color));
 }
 
 .nav-button.active .nav-icon svg {
-  filter: drop-shadow(0 4px 8px var(--shadow-color));
 }
 
 .nav-label {
@@ -100,7 +97,6 @@
   letter-spacing: 0.02em;
   color: inherit;
   margin-bottom: clamp(1px, 0.2vh, 2px);
-  text-shadow: 0 1px 2px var(--shadow-color);
   /* Changé: Protection contre débordement */
   overflow: hidden;
   text-overflow: ellipsis;

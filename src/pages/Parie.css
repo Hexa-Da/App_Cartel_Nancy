@@ -253,7 +253,7 @@
   justify-content: center;
   gap: var(--spacing-xs);
   font-size: 0.85rem;
-  color: var(--text-color-light);
+  color: var(--text-color);
   margin-bottom: var(--spacing-xs);
 }
 
@@ -272,13 +272,13 @@
 .timer-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-color);
   font-variant-numeric: tabular-nums;
 }
 
 .timer-text {
   font-size: 0.85rem;
-  color: var(--text-color-light);
+  color: var(--text-color);
 }
 
 .timer-closed {
