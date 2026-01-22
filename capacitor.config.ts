@@ -9,8 +9,8 @@ const config: CapacitorConfig = {
   },
   ios: {
     scheme: 'Cartel Nancy',
-    contentInset: 'automatic',
-    scrollEnabled: true,
+    contentInset: 'never', // La WebView ignore les safe areas natives et s'étend sous la barre d'état
+    scrollEnabled: false, // Désactive le UIScrollView natif - Solution radicale contre le rebond
     backgroundColor: '#000000',
     allowsLinkPreview: false,
     handleApplicationURL: true,

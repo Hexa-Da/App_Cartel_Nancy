@@ -1,46 +1,55 @@
 /**
- * iOS Specific Hacks & Fixes
+ * iOS Specific Fixes
  * 
- * Ce fichier contient les corrections spécifiques pour iOS :
- * - Optimisations de performance (-webkit-transform: translateZ(0))
- * - Corrections de scroll (-webkit-overflow-scrolling: touch)
- * - Ajustements de rendu
- *
+ * Solution moderne pour bloquer l'effet "Rubber Band" (rebond élastique) sur iOS
+ * Combine : capacitor.config.ts (scrollEnabled: false) + CSS (overscroll-behavior)
 **/
 
-/* ============================================
-   EMPÊCHER LE SCROLL SUR iOS
-   ============================================ */
-
-body.ios {
-  /* Réduction de la hauteur de navigation pour iPhone */
-  --nav-height: 8vh;
-  /* Augmentation de la hauteur du header pour iPhone */
-  --header-height: 12vh;
+/* 1. Bloquer le scroll sur les conteneurs racines */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Empêche le débordement */
+  overscroll-behavior-y: none; /* Bloque l'effet rebond natif CSS - CRUCIAL */
+  -webkit-overflow-scrolling: touch;
+  position: fixed; /* Force le body à ne pas bouger */
+  background-color: #000000;
+  -webkit-font-smoothing: antialiased;
 }
 
-body.ios #root {
-  /* Empêche le scroll au niveau Root */
-  position: fixed;
+/* 2. Conteneur principal React - Mode Edge-to-Edge */
+#root {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  /* Empêche le scroll élastique iOS (bounce) */
-  overscroll-behavior: none;
-}/* ============================================
-   SCROLL NATIF iOS - Zones scrollables internes
-   ============================================ */
-body.ios .horizontal-scroll,
-body.ios .calendar-scrollable-content,
-body.ios .matches-list,
-body.ios .modal-form-content,
-body.ios .vss-form-content,
-body.ios .chat-container,
-body.ios .emoji-selector,
-body.ios .planning-files,
-body.ios .page-content.scrollable {
-  /* Scroll fluide natif iOS pour les zones scrollables internes */
-  -webkit-overflow-scrolling: touch;
-  /* Permet le scroll dans ces conteneurs */
-  touch-action: pan-y;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  /* Gestion de la Safe Area (Encoche) - Padding intelligent pour éviter que le contenu soit caché
+     Ces variables CSS sont fournies par le navigateur quand viewport-fit=cover est actif */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  
+  /* Couleur de fond pour que la zone sous la status bar soit de la bonne couleur */
+  background-color: var(--bg-color, #000000);
+}
+
+/* 3. Variables spécifiques (tu peux garder tes valeurs ou ajuster) */
+body.ios {
+  --nav-height: 8vh;
+  --header-height: 12vh;
+}
+
+/* 4. Classe utilitaire pour les zones qui DOIVENT scroller 
+   Ajoute cette classe à tes div de contenu (ex: .page-content) */
+.scrollable-content {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Momentum scroll natif fluide */
+  overscroll-behavior-y: contain; /* Empêche de propager le scroll au parent */
+  height: 100%; /* Important */
 }

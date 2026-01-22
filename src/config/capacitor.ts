@@ -5,7 +5,7 @@
  * - StatusBar (barre d'état transparente, mode Edge-to-Edge)
  * - Keyboard (comportement overlay sur iOS)
  * - Platform class sur le body
- * - Prévention du zoom sur iOS
+ * - Prévention du zoom sur iOS (pinch-zoom uniquement)
  * 
  * APPROCHE CHOISIE : Fonction setupCapacitor() appelée dans main.tsx
  * 
@@ -21,6 +21,11 @@
  * - Appelée dans main.tsx AVANT ReactDOM.render()
  * - Ne doit jamais être appelée dans un composant React
  * - Configuration appliquée une seule fois au démarrage
+ * 
+ * NOTE : Le blocage du scroll global iOS se fait désormais via :
+ * 1. capacitor.config.ts -> ios.scrollEnabled = false (désactive le UIScrollView natif)
+ * 2. CSS -> overscroll-behavior-y: none (bloque l'effet rebond CSS)
+ * Plus besoin de logique JS complexe et instable.
  */
 
 import { Capacitor } from '@capacitor/core';
@@ -36,143 +41,63 @@ import logger from '../services/Logger';
  * 
  * Configuration appliquée :
  * 1. Ajoute la classe de plateforme au body (ios/android/web)
- * 2. Configure StatusBar en mode Edge-to-Edge (transparent, overlay)
- * 3. Configure Keyboard en mode overlay sur iOS
- * 4. Détecte et marque les simulateurs iOS
- * 5. Préviens le zoom sur iOS (double-tap, pinch)
+ * 2. Configure le meta viewport pour iOS
+ * 3. Configure StatusBar en mode Edge-to-Edge (transparent, overlay)
+ * 4. Configure Keyboard en mode overlay sur iOS
+ * 5. Détecte et marque les simulateurs iOS
  * 
  * @throws {Error} Log les erreurs mais ne bloque pas le démarrage de l'app
  */
 export const setupCapacitor = async (): Promise<void> => {
   const platform = Capacitor.getPlatform();
   
-  // Ajouter la classe de la plateforme au body
+  // 1. Ajouter la classe de la plateforme au body
   document.body.classList.add(platform);
   
-  // Configuration StatusBar pour mode Edge-to-Edge (Plein écran réel)
+  // 2. Gestion Safe Area (Viewport) - Assurez-vous que la meta tag viewport est correcte
+  const viewport = document.querySelector('meta[name=viewport]');
+  if (viewport) {
+    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+  }
+
+  // --- CONFIGURATION STATUS BAR ---
   if (Capacitor.isNativePlatform()) {
     try {
-      // 1. Rend la barre d'état transparente (ou sombre selon le thème)
       await StatusBar.setStyle({ style: Style.Dark });
-      
-      // 2. CRUCIAL : Dit à l'app de passer SOUS la barre d'état
       await StatusBar.setOverlaysWebView({ overlay: true });
-      
-      // Configuration spécifique Android
       if (platform === 'android') {
-        await StatusBar.setBackgroundColor({ color: '#00000000' }); // Transparent
+        await StatusBar.setBackgroundColor({ color: '#00000000' });
       }
     } catch (error) {
       logger.warn('Erreur StatusBar:', error);
     }
   }
   
-  // Configuration Keyboard pour iOS (comportement overlay)
+  // --- CONFIGURATION KEYBOARD ---
   if (platform === 'ios' && Capacitor.isNativePlatform()) {
     try {
-      // Mode overlay : le clavier passe par-dessus l'app sans redimensionner
       await Keyboard.setResizeMode({ mode: KeyboardResize.None });
-      // Permet le scroll automatique vers l'input focalisé
+      // Important : scroll à true pour permettre le scroll automatique vers l'input focalisé
+      // Le scroll global est bloqué par capacitor.config.ts (scrollEnabled: false) et CSS
       await Keyboard.setScroll({ isDisabled: false });
-      
       logger.log('[Keyboard] Configuration overlay appliquée sur iOS');
-      
-      // Écouter les événements pour debug
-      Keyboard.addListener('keyboardWillShow', (info) => {
-        logger.log('[Keyboard] Clavier va s\'ouvrir, hauteur:', info.keyboardHeight);
-      });
-      
-      Keyboard.addListener('keyboardWillHide', () => {
-        logger.log('[Keyboard] Clavier va se fermer');
-      });
     } catch (error) {
       logger.error('Erreur configuration Keyboard:', error);
     }
   }
   
-  // Détecter si on est dans un simulateur iOS
+  // --- CONFIGURATION IOS SPÉCIFIQUE SIMPLIFIÉE ---
   if (platform === 'ios') {
     const isSimulator = window.navigator.userAgent.includes('Simulator') || 
-                       window.navigator.userAgent.includes('iPhone Simulator') ||
-                       window.navigator.userAgent.includes('iPad Simulator');
-    
+                       window.navigator.userAgent.includes('iPhone Simulator');
     if (isSimulator) {
       document.body.classList.add('ios-simulator');
     }
     
-    // Empêcher le scroll de l'app sur iOS
-    // Selon les guidelines Apple : https://developer.apple.com/design/human-interface-guidelines/scroll-views
-    const preventAppScroll = (event: TouchEvent) => {
-      const target = event.target as Element;
-      
-      // Ne pas bloquer le scroll dans les zones scrollables internes
-      const scrollableContainers = [
-        '.page-content.scrollable',
-        '.chat-container',
-        '.modal-form-content',
-        '.vss-form-content',
-        '.calendar-scrollable-content',
-        '.matches-list',
-        '.planning-files',
-        '.emoji-selector',
-        '.horizontal-scroll'
-      ];
-      
-      const isScrollableContainer = scrollableContainers.some(selector => 
-        target.closest(selector)
-      );
-      
-      // Ne pas bloquer les interactions sur la barre de navigation
-      if (target.closest('.bottom-nav') || target.closest('.app-header')) {
-        return;
-      }
-      
-      // Bloquer le scroll si ce n'est pas dans un conteneur scrollable
-      if (!isScrollableContainer) {
-        event.preventDefault();
-      }
-    };
+    // Le blocage JS complexe a été supprimé au profit de:
+    // 1. capacitor.config.ts -> ios.scrollEnabled = false (désactive le UIScrollView natif)
+    // 2. CSS -> overscroll-behavior-y: none (bloque l'effet rebond CSS)
     
-    // Empêcher le scroll au niveau document
-    document.addEventListener('touchmove', preventAppScroll, { passive: false });
-    
-    // Empêcher le scroll élastique (bounce) sur iOS
-    document.addEventListener('touchstart', function(event) {
-      // Ne pas bloquer les clics sur la barre de navigation
-      if (event.target && (event.target as Element).closest('.bottom-nav')) {
-        return;
-      }
-      // Empêcher le zoom multi-touch
-      if (event.touches.length > 1) {
-        event.preventDefault();
-      }
-    }, { passive: false });
-    
-    // Prévenir le zoom sur double-tap
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function(event) {
-      // Ne pas bloquer les clics sur la barre de navigation
-      if (event.target && (event.target as Element).closest('.bottom-nav')) {
-        return;
-      }
-      const now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
-      lastTouchEnd = now;
-    }, false);
-    
-    // Empêcher le scroll au chargement de la page
-    // Applique immédiatement pour éviter tout scroll avant le chargement complet
-    document.documentElement.style.overflow = 'hidden';
-    document.documentElement.style.position = 'fixed';
-    document.documentElement.style.width = '100%';
-    document.documentElement.style.height = '100%';
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    });
+    logger.log('[iOS] Configuration terminée (Scroll géré nativement via scrollEnabled: false)');
   }
 };
-
