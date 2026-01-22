@@ -1,61 +1,217 @@
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# ============================================
+# Build outputs
+# ============================================
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+.vite/
+.cache/
+
+# ============================================
+# Environment variables
+# ============================================
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============================================
 # Logs
-logs
+# ============================================
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.pnpm-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ============================================
+# Runtime data
+# ============================================
+pids/
+*.pid
+*.seed
+*.pid.lock
 
+# ============================================
+# Coverage & Testing
+# ============================================
+coverage/
+*.lcov
+.nyc_output/
+.jest/
+*.test.js.snap
+
+# ============================================
 # Editor directories and files
+# ============================================
 .vscode/*
 !.vscode/extensions.json
-.idea
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.env
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
-# Configuration admin
+# ============================================
+# Configuration admin (sensitive)
+# ============================================
 src/config/admin.ts
 
+# ============================================
+# Firebase
+# ============================================
+.firebase/
+.firebaserc.local
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firestore/
+firebase-export-*/
+.runtimeconfig.json
+functions/.env
+functions/lib/
+functions/node_modules/
+
+# ============================================
 # Android
+# ============================================
 android/app/build/
 android/build/
+android/.gradle/
 android/app/keystore.properties
 android/app/*.jks
+android/app/*.keystore
 android/app/google-services.json
 android/local.properties
 android/cartel-nancy-debug.keystore
+android/.idea/
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/gradle/wrapper/gradle-wrapper.jar
+android/gradle/wrapper/gradle-wrapper.properties
+android/.externalNativeBuild/
+android/.cxx/
+android/app/release/
+android/app/debug/
 
+# ============================================
 # iOS
+# ============================================
 ios/App/build/
 ios/Pods/
+ios/Podfile.lock
+ios/.symlinks/
 ios/App/App.xcodeproj/xcuserdata/
 ios/App/App.xcworkspace/xcuserdata/
 ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/project.xcworkspace/
+ios/App/GoogleService-Info.plist
+ios/App/App.entitlements.local
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+*.xcworkspace
+!default.xcworkspace
 
+# ============================================
 # Capacitor
+# ============================================
 android/capacitor-cordova-android-plugins/build/
 ios/capacitor-cordova-ios-plugins/build/
+.capacitor/
 
-# Cursor rules
-.cursor
+# ============================================
+# Temporary files
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+.cache/
+.temp/
+.tmp/
+
+# ============================================
+# OS files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ============================================
+# Package manager locks (keep only one)
+# ============================================
+# Uncomment if using yarn or pnpm exclusively
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ============================================
+# Cursor / IDE specific
+# ============================================
+.cursor/
 .cursorrules
-.cursor/docs/architecture.md
-.cursor/docs/coding-standards.md
-.cursor/docs/project-structure.md
-.cursor/docs/tech-stack.md
-.cursor/docs/testing-and-debugging.md
-.cursor/docs/deployment.md
-.cursor/docs/security.md
-.cursor/docs/best-practices.md
-.cursor/docs/performance.md
+.cursor/docs/
+
+# ============================================
+# Misc
+# ============================================
+*.local
+.vercel/
+.netlify/
+.turbo/
+.next/
+.nuxt/
+.output/
