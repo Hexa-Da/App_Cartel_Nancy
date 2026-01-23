@@ -62,12 +62,6 @@ const hotelOptions = [
   { value: '8', label: 'Hotel Cerise Nancy' }
 ];
 
-const restaurantOptions = [
-  { value: '0000', label: 'Aucun' },
-  { value: 'none', label: 'Tous les restaurants' },
-  { value: '1', label: 'Crous ARTEM' },
-  { value: '2', label: 'Parc Saint-Marie' }
-];
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
   const { getAllDelegations, hasGenderMatches, isAdmin } = useApp();
@@ -122,8 +116,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
   // Hôtel préféré
   const [preferredHotel, setPreferredHotel] = React.useState(() => getInitial('preferredHotel', 'none'));
-  // Restaurant préféré
-  const [preferredRestaurant, setPreferredRestaurant] = React.useState(() => getInitial('preferredRestaurant', 'none'));
+  // Afficher les restaurants
+  const [showRestaurants, setShowRestaurants] = React.useState(() => getInitial('showRestaurants', true));
 
   const notificationService = NotificationService.getInstance();
 
@@ -223,10 +217,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     handlePreferenceChange('preferredHotel', hotel);
   };
 
-  // Gérer le changement de restaurant
-  const handleRestaurantChange = (restaurant: string) => {
-    setPreferredRestaurant(restaurant);
-    handlePreferenceChange('preferredRestaurant', restaurant);
+  // Gérer l'affichage des restaurants
+  const handleRestaurantToggle = (enabled: boolean) => {
+    setShowRestaurants(enabled);
+    handlePreferenceChange('showRestaurants', enabled ? 'true' : 'false');
   };
 
   // Fonction générique pour gérer les changements de préférences
@@ -286,8 +280,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       if (e.key === 'preferredHotel' && e.newValue !== null) {
         setPreferredHotel(e.newValue);
       }
-      if (e.key === 'preferredRestaurant' && e.newValue !== null) {
-        setPreferredRestaurant(e.newValue);
+      if (e.key === 'showRestaurants' && e.newValue !== null) {
+        setShowRestaurants(e.newValue === 'true');
       }
     };
 
@@ -329,8 +323,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       if (e.detail.key === 'preferredHotel') {
         setPreferredHotel(e.detail.value);
       }
-      if (e.detail.key === 'preferredRestaurant') {
-        setPreferredRestaurant(e.detail.value);
+      if (e.detail.key === 'showRestaurants') {
+        setShowRestaurants(e.detail.value === 'true');
       }
     };
 
@@ -491,19 +485,16 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
             </select>
           </div>
           <div className="settings-item">
-            <label htmlFor="preferred-restaurant">Votre Restaurant</label>
-            <select 
-              id="preferred-restaurant" 
-              className="settings-select" 
-              value={preferredRestaurant} 
-              onChange={e => handleRestaurantChange(e.target.value)}
-            >
-              {restaurantOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="show-restaurants">Afficher les restaurants</label>
+            <label className="switch">
+              <input
+                type="checkbox"
+                id="show-restaurants"
+                checked={showRestaurants}
+                onChange={(e) => handleRestaurantToggle(e.target.checked)}
+              />
+              <span className="slider round"></span>
+            </label>
           </div>
           
           {isAdmin && (

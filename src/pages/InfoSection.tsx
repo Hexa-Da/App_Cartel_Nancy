@@ -37,48 +37,51 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
         icon: <FaCoffee />,
         title: "Infos P'tit dej",
         faqs: [
-          { question: "À quelle heure est servi le petit-déjeuner ?", answer: "Le petit-déjeuner est servi de 7h00 à 9h30 dans les espaces dédiés de chaque hôtel partenaire." },
-          { question: "Le petit-déjeuner est-il inclus ?", answer: "Oui, le petit-déjeuner est inclus dans votre pack participant. Présentez simplement votre bracelet." },
-          { question: "Y a-t-il des options végétariennes ?", answer: "Absolument ! Chaque buffet propose des options végétariennes et sans gluten. N'hésitez pas à demander au personnel." },
-          { question: "Puis-je prendre mon petit-déjeuner à emporter ?", answer: "Des sachets à emporter sont disponibles sur demande pour les participants ayant des matchs tôt le matin." },
+          { question: "Où se trouve le petit-déjeuner ?", answer: "réponse à venir" },
+          { question: "À quelle heure est servi le petit-déjeuner ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des options végétariennes ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des options sans lactose ou sans gluten ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaBreadSlice />,
         title: "Infos Déjeuner",
         faqs: [
-          { question: "Où sont servis les déjeuners ?", answer: "Les déjeuners sont servis dans les espaces restauration proches des terrains de sport, identifiés sur la carte de l'app." },
-          { question: "Quels sont les horaires du déjeuner ?", answer: "Le déjeuner est servi de 12h00 à 14h30. Un service continu est assuré pour s'adapter aux plannings des matchs." },
-          { question: "Comment fonctionne le système de ticket ?", answer: "Votre bracelet fait office de ticket. Scannez-le à l'entrée du restaurant pour valider votre repas." },
-          { question: "Peut-on manger sur les terrains ?", answer: "Non, la consommation de nourriture est interdite sur les terrains de sport. Des zones pique-nique sont aménagées à proximité." },
+          { question: "Où sont servis les déjeuners ?", answer: "réponse à venir" },
+          { question: "Quels sont les horaires du déjeuner ?", answer: "réponse à venir" },
+          { question: "Combien de temps faut-il prévoir pour le déjeuner ?", answer: "réponse à venir" },
+          { question: "Puis-je prendre un déjeuner supplémentaire si j'ai faim ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaUtensils />,
         title: "Infos Dîner",
         faqs: [
-          { question: "Où se déroulent les dîners ?", answer: "Les dîners ont lieu dans différents restaurants partenaires selon le planning. Consultez l'app pour connaître votre restaurant du soir." },
-          { question: "Dois-je réserver ma place ?", answer: "Non, votre place est automatiquement réservée. Présentez-vous simplement au restaurant indiqué avec votre bracelet." },
-          { question: "À quelle heure commence le service ?", answer: "Le service du dîner commence à 19h30 et se termine vers 22h00." },
-          { question: "Y a-t-il un dress code ?", answer: "Tenue correcte exigée pour les dîners. Le samedi soir (Gala), une tenue plus habillée est recommandée." },
+          { question: "Où se déroulent les dîners ?", answer: "réponse à venir" },
+          { question: "À quelle heure commence le service ?", answer: "réponse à venir" },
+          { question: "Le menu est-il fixe ou au choix ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des options végétaliennes ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaCalendarAlt />,
         title: "Planning Dîner",
         faqs: [
-          { question: "Comment connaître mon restaurant du soir ?", answer: "Le planning des dîners est disponible dans l'onglet Fichiers de l'app. Vous recevrez aussi une notification le jour même." },
-          { question: "Puis-je changer de restaurant ?", answer: "Les changements sont possibles jusqu'à 48h avant, sous réserve de disponibilité. Contactez l'organisation." },
-          { question: "Que faire si j'ai un match le soir ?", answer: "Les plannings sont coordonnés. Si vous avez un match tardif, un repas froid peut être prévu. Signalez-le à l'avance." },
+          { question: "Comment connaître mon restaurant du soir ?", answer: "réponse à venir" },
+          { question: "Puis-je changer de restaurant ?", answer: "réponse à venir" },
+          { question: "Que faire si j'ai un match le soir ?", answer: "réponse à venir" },
+          { question: "Que faire si je suis en retard au dîner ?", answer: "réponse à venir" },
+          { question: "Puis-je annuler ma participation à un dîner ?", answer: "réponse à venir" },
+          { question: "Les restaurants sont-ils accessibles en fauteuil roulant ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaPizzaSlice />,
         title: "Alternatives",
         faqs: [
-          { question: "Y a-t-il des fast-foods à proximité ?", answer: "Oui, plusieurs restaurants rapides sont accessibles à pied depuis les sites. La carte de l'app les indique." },
-          { question: "Puis-je manger en dehors des repas officiels ?", answer: "Bien sûr ! Vous êtes libres de manger où vous voulez, mais les repas officiels sont inclus dans votre inscription." },
-          { question: "Des snacks sont-ils disponibles ?", answer: "Des stands de snacks et boissons sont présents sur tous les sites sportifs pendant la journée." },
+          { question: "Y a-t-il des fast-foods à proximité ?", answer: "réponse à venir" },
+          { question: "Puis-je manger en dehors des repas officiels ?", answer: "réponse à venir" },
+          { question: "Des snacks sont-ils disponibles ?", answer: "réponse à venir" },
         ]
       },
     ]
@@ -90,40 +93,48 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
         icon: <FaBullhorn />,
         title: "Cérémonie d'ouverture",
         faqs: [
-          { question: "Quand a lieu la cérémonie d'ouverture ?", answer: "La cérémonie d'ouverture se tiendra le jeudi à 18h00 sur le site principal. Soyez présents 30 minutes avant." },
-          { question: "La présence est-elle obligatoire ?", answer: "Oui, la cérémonie est un moment fort de l'événement. Tous les participants sont attendus en tenue de délégation." },
-          { question: "Que se passe-t-il pendant la cérémonie ?", answer: "Défilé des délégations, discours officiels, présentation des sports et spectacle d'ouverture." },
-          { question: "Combien de temps dure la cérémonie ?", answer: "La cérémonie dure environ 1h30, suivie d'un cocktail de bienvenue." },
+          { question: "Quand a lieu la cérémonie d'ouverture ?", answer: "réponse à venir" },
+          { question: "La présence est-elle obligatoire ?", answer: "réponse à venir" },
+          { question: "Que se passe-t-il pendant la cérémonie ?", answer: "réponse à venir" },
+          { question: "Combien de temps dure la cérémonie ?", answer: "réponse à venir" },
+          { question: "Comment se rendre à la cérémonie d'ouverture ?", answer: "réponse à venir" },
+          { question: "Puis-je prendre des photos pendant la cérémonie ?", answer: "réponse à venir" },
+          { question: "Que faire si je ne peux pas assister à la cérémonie ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaMapMarkerAlt />,
         title: "Terrains de sport",
         faqs: [
-          { question: "Où se trouvent les terrains ?", answer: "Les terrains sont répartis sur plusieurs sites à Nancy. Consultez la carte interactive de l'app pour les localiser." },
-          { question: "Comment accéder aux terrains ?", answer: "Des navettes gratuites circulent entre les hôtels et les sites sportifs. Horaires disponibles dans l'app." },
-          { question: "Y a-t-il des vestiaires ?", answer: "Oui, chaque site dispose de vestiaires avec douches. Apportez votre cadenas personnel." },
-          { question: "Où puis-je m'échauffer ?", answer: "Des zones d'échauffement sont prévues à proximité de chaque terrain. Respectez les créneaux horaires." },
+          { question: "Comment accéder aux terrains ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des vestiaires ?", answer: "réponse à venir" },
+          { question: "Où puis-je m'échauffer ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un service de premiers secours sur les terrains ?", answer: "réponse à venir" },
+          { question: "Que faire en cas de mauvais temps ?", answer: "réponse à venir" },
+          { question: "Les terrains sont-ils accessibles en fauteuil roulant ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des casiers pour ranger mes affaires ?", answer: "réponse à venir" },
+          { question: "Puis-je utiliser les douches après mon match ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaBook />,
         title: "Règles et fair-play",
         faqs: [
-          { question: "Quelles règles s'appliquent ?", answer: "Les règles officielles de chaque fédération s'appliquent, avec quelques adaptations pour le format tournoi. Détails dans les fichiers sport." },
-          { question: "Que faire en cas de litige ?", answer: "Les arbitres ont le dernier mot. En cas de désaccord, un référent sport peut être sollicité." },
-          { question: "Y a-t-il des sanctions ?", answer: "Oui, cartons jaunes/rouges selon les sports. Un carton rouge peut entraîner une suspension pour les matchs suivants." },
-          { question: "Comment signaler un comportement inapproprié ?", answer: "Utilisez le formulaire VSS de l'app ou adressez-vous à un organisateur sur place." },
+          { question: "Quelles règles s'appliquent ?", answer: "réponse à venir" },
+          { question: "Que faire en cas de litige ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des sanctions ?", answer: "réponse à venir" },
+          { question: "Comment signaler un comportement inapproprié ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaTrophy />,
         title: "Podiums et médailles",
         faqs: [
-          { question: "Quand ont lieu les remises de médailles ?", answer: "Les podiums sont organisés à la fin de chaque tournoi, généralement le samedi après-midi." },
-          { question: "Y a-t-il un classement général ?", answer: "Oui ! Un classement par délégation cumule les points de tous les sports. Résultats en direct dans l'app." },
-          { question: "Quelles récompenses pour les vainqueurs ?", answer: "Médailles d'or, d'argent et de bronze pour chaque sport, plus un trophée pour la délégation gagnante." },
-          { question: "Où a lieu la cérémonie finale ?", answer: "La grande cérémonie de clôture et remise des trophées a lieu samedi soir pendant le Gala." },
+          { question: "Quand ont lieu les remises de médailles ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un classement général ?", answer: "réponse à venir" },
+          { question: "Où a lieu la cérémonie finale ?", answer: "réponse à venir" },
+          { question: "Comment connaître les résultats en temps réel ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des récompenses pour les seconds et troisièmes ?", answer: "réponse à venir" },
         ]
       },
     ]
@@ -133,42 +144,45 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
     sections: [
       {
         icon: <FaMusic />,
-        title: "Jeudi soir",
+        title: "Jeudi soir - Show Pompoms",
         faqs: [
-          { question: "Que se passe-t-il jeudi soir ?", answer: "Soirée d'intégration après la cérémonie d'ouverture ! DJ set, bar ouvert et ambiance décontractée." },
-          { question: "Où a lieu la soirée ?", answer: "Dans un bar/club du centre-ville. L'adresse exacte sera communiquée le jour même via l'app." },
-          { question: "Y a-t-il un dress code ?", answer: "Non, venez comme vous êtes ! Tenue décontractée recommandée." },
-          { question: "Jusqu'à quelle heure ?", answer: "La soirée se termine vers 2h00. Des navettes retour sont prévues." },
+          { question: "Que se passe-t-il jeudi soir ?", answer: "réponse à venir" },
+          { question: "Où a lieu la soirée ?", answer: "réponse à venir" },
+          { question: "Jusqu'à quelle heure ?", answer: "réponse à venir" },
+          { question: "L'entrée est-elle gratuite avec le bracelet ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un âge minimum pour participer ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un vestiaire pour déposer mes affaires ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaGlassCheers />,
-        title: "Vendredi soir",
+        title: "Vendredi soir - Showcase",
         faqs: [
-          { question: "Quel est le programme du vendredi ?", answer: "Soirée thématique avec animations, DJ contest et surprises ! Le thème sera révélé le jour J." },
-          { question: "Faut-il se déguiser ?", answer: "Le déguisement n'est pas obligatoire mais fortement encouragé selon le thème annoncé !" },
-          { question: "Y a-t-il des consommations offertes ?", answer: "Un ticket boisson est inclus dans votre bracelet. Consommations supplémentaires à votre charge." },
-          { question: "Comment rentrer à l'hôtel ?", answer: "Navettes retour toutes les 30 minutes de minuit à 3h00. Arrêts à tous les hôtels partenaires." },
+          { question: "Quel est le programme du vendredi ?", answer: "réponse à venir" },
+          { question: "Comment rentrer à l'hôtel ?", answer: "réponse à venir" },
+          { question: "À quelle heure commence la soirée ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaUsers />,
-        title: "Samedi soir - Gala",
+        title: "Samedi soir - DJ Contest",
         faqs: [
-          { question: "En quoi consiste le Gala ?", answer: "Soirée de clôture avec dîner de gala, remise des trophées, spectacles et soirée dansante jusqu'au bout de la nuit !" },
-          { question: "Quelle tenue pour le Gala ?", answer: "Tenue de soirée exigée : costume/chemise pour les hommes, robe/tenue habillée pour les femmes." },
-          { question: "À quelle heure arrive-t-on ?", answer: "Accueil dès 19h00, début du dîner à 20h00. Ne soyez pas en retard !" },
-          { question: "Jusqu'à quelle heure dure la soirée ?", answer: "La soirée se prolonge jusqu'à 4h00 du matin. Petit-déjeuner tardif prévu le dimanche !" },
+          { question: "Jusqu'à quelle heure dure la soirée ?", answer: "réponse à venir" },
+          { question: "Puis-je inviter quelqu'un qui n'est pas participant ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un photographe professionnel ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaBus />,
         title: "Infos navettes",
         faqs: [
-          { question: "Comment fonctionnent les navettes ?", answer: "Des bus gratuits circulent entre les hôtels, sites sportifs et lieux de soirée. Horaires dans l'app." },
-          { question: "Faut-il réserver sa place ?", answer: "Non, les navettes fonctionnent en continu. Présentez simplement votre bracelet au chauffeur." },
-          { question: "Y a-t-il des navettes de nuit ?", answer: "Oui ! Navettes retour après chaque soirée, de minuit à la fermeture." },
-          { question: "Et si je rate la dernière navette ?", answer: "Des taxis partenaires sont disponibles à tarif préférentiel. Numéro dans l'onglet Infos de l'app." },
+          { question: "Comment fonctionnent les navettes ?", answer: "réponse à venir" },
+          { question: "Faut-il réserver sa place ?", answer: "réponse à venir" },
+          { question: "Et si je rate la dernière navette ?", answer: "réponse à venir" },
+          { question: "Quelle est la fréquence des navettes ?", answer: "réponse à venir" },
+          { question: "Où sont les arrêts de navettes ?", answer: "réponse à venir" },
+          { question: "Les navettes sont-elles accessibles aux personnes à mobilité réduite ?", answer: "réponse à venir" },
+          { question: "Que faire si une navette est en retard ?", answer: "réponse à venir" },
         ]
       },
       ]
@@ -180,40 +194,56 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
         icon: <FaMapMarkerAlt />,
         title: "Localisation des hôtels",
         faqs: [
-          { question: "Où sont situés les hôtels ?", answer: "Les hôtels partenaires sont tous situés dans le centre de Nancy ou à proximité immédiate des sites sportifs." },
-          { question: "Comment connaître mon hôtel ?", answer: "Votre affectation hôtel vous a été communiquée par email. Elle est aussi visible dans votre espace participant." },
-          { question: "Puis-je changer d'hôtel ?", answer: "Les changements sont exceptionnels et soumis à disponibilité. Contactez l'organisation au plus tôt." },
-          { question: "Y a-t-il un parking ?", answer: "La plupart des hôtels disposent d'un parking payant. Tarifs préférentiels pour les participants sur présentation du bracelet." },
+          { question: "Où sont situés les hôtels ?", answer: "réponse à venir" },
+          { question: "Comment connaître mon hôtel ?", answer: "réponse à venir" },
+          { question: "Puis-je changer d'hôtel ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un parking ?", answer: "réponse à venir" },
+          { question: "Quelle est la distance entre l'hôtel et les sites sportifs ?", answer: "réponse à venir" },
+          { question: "Y a-t-il des transports en commun à proximité ?", answer: "réponse à venir" },
+          { question: "Puis-je réserver une chambre supplémentaire pour un invité ?", answer: "réponse à venir" },
+          { question: "Les hôtels sont-ils accessibles en transport en commun depuis la gare ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaClock />,
         title: "Horaires de réception",
         faqs: [
-          { question: "À quelle heure puis-je faire le check-in ?", answer: "Le check-in est possible à partir de 14h00. Bagagerie disponible si vous arrivez plus tôt." },
-          { question: "Jusqu'à quelle heure le check-out ?", answer: "Check-out avant 11h00 le dimanche. Une consigne bagages est disponible pour la journée." },
-          { question: "La réception est-elle ouverte 24h/24 ?", answer: "Oui, tous nos hôtels partenaires ont une réception disponible jour et nuit." },
-          { question: "Puis-je récupérer ma clé en avance ?", answer: "Oui, vous pouvez récupérer votre clé dès votre arrivée, même si la chambre n'est pas encore prête." },
+          { question: "À quelle heure puis-je faire le check-in ?", answer: "réponse à venir" },
+          { question: "Jusqu'à quelle heure le check-out ?", answer: "réponse à venir" },
+          { question: "La réception est-elle ouverte 24h/24 ?", answer: "réponse à venir" },
+          { question: "Puis-je récupérer ma clé en avance ?", answer: "réponse à venir" },
+          { question: "Puis-je laisser mes bagages après le check-out ?", answer: "réponse à venir" },
+          { question: "Y a-t-il une consigne à bagages ?", answer: "réponse à venir" },
+          { question: "Puis-je faire un check-in anticipé si j'arrive tôt ?", answer: "réponse à venir" },
+          { question: "Que faire si j'arrive après minuit ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaWrench />,
         title: "Services disponibles",
         faqs: [
-          { question: "Le Wi-Fi est-il gratuit ?", answer: "Oui, tous les hôtels proposent un Wi-Fi gratuit. Code d'accès fourni à la réception." },
-          { question: "Y a-t-il une salle de sport ?", answer: "Certains hôtels disposent d'une salle de fitness. Renseignez-vous à la réception de votre hôtel." },
-          { question: "Puis-je faire laver mon linge ?", answer: "Un service de blanchisserie express est disponible dans la plupart des hôtels (service payant)." },
-          { question: "Le petit-déjeuner est-il en chambre ?", answer: "Le petit-déjeuner est servi en salle. Room service disponible avec supplément dans certains hôtels." },
+          { question: "Le Wi-Fi est-il gratuit ?", answer: "réponse à venir" },
+          { question: "Y a-t-il une salle de sport ?", answer: "réponse à venir" },
+          { question: "Puis-je faire laver mon linge ?", answer: "réponse à venir" },
+          { question: "Le petit-déjeuner est-il en chambre ?", answer: "réponse à venir" },
+          { question: "Y a-t-il la climatisation dans les chambres ?", answer: "réponse à venir" },
+          { question: "Puis-je amener mon animal de compagnie ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un minibar dans la chambre ?", answer: "réponse à venir" },
+          { question: "Le petit-déjeuner est-il servi en buffet ou à la carte ?", answer: "réponse à venir" },
         ]
       },
       {
         icon: <FaQuestionCircle />,
         title: "Contact et assistance",
         faqs: [
-          { question: "Qui contacter en cas de problème ?", answer: "Pour tout souci, contactez d'abord la réception de l'hôtel. En cas d'urgence, un numéro d'astreinte organisation est disponible 24h/24." },
-          { question: "J'ai oublié quelque chose, que faire ?", answer: "Contactez directement l'hôtel après votre départ. Les objets trouvés sont conservés 30 jours." },
-          { question: "Comment signaler un problème dans ma chambre ?", answer: "Signalez tout problème à la réception qui interviendra dans les plus brefs délais." },
-          { question: "Puis-je inviter quelqu'un dans ma chambre ?", answer: "Les visiteurs extérieurs doivent se signaler à la réception. Respect du règlement de l'hôtel obligatoire." },
+          { question: "Qui contacter en cas de problème ?", answer: "réponse à venir" },
+          { question: "J'ai oublié quelque chose, que faire ?", answer: "réponse à venir" },
+          { question: "Comment signaler un problème dans ma chambre ?", answer: "réponse à venir" },
+          { question: "Puis-je inviter quelqu'un dans ma chambre ?", answer: "réponse à venir" },
+          { question: "Y a-t-il un numéro d'urgence 24h/24 ?", answer: "réponse à venir" },
+          { question: "Comment réserver une chambre supplémentaire ?", answer: "réponse à venir" },
+          { question: "Que faire en cas d'urgence médicale ?", answer: "réponse à venir" },
+          { question: "Puis-je payer ma chambre avec une carte bancaire ?", answer: "réponse à venir" },
         ]
       },
     ]
@@ -290,37 +320,50 @@ const braceletFaqData: SectionFAQ[] = [
     icon: <FaQuestionCircle />,
     title: "À quoi sert le bracelet ?",
     faqs: [
-      { question: "Le bracelet est-il obligatoire ?", answer: "Oui, le port du bracelet est obligatoire pendant toute la durée de l'événement. Il doit être visible en permanence." },
-      { question: "Que permet le bracelet ?", answer: "Le bracelet vous donne accès à toutes les zones de l'événement : terrains de sport, espaces restauration, soirées et hôtels partenaires." },
-      { question: "Puis-je l'enlever ?", answer: "Non, le bracelet ne doit pas être enlevé. Une fois retiré, il ne peut pas être remis et vous devrez contacter l'organisation." },
-      { question: "Comment activer mon bracelet dans l'app ?", answer: "Rendez-vous dans la section \"Faites vos paris\" pour saisir votre numéro de bracelet et l'activer." },
+      { question: "Le bracelet est-il obligatoire ?", answer: "réponse à venir" },
+      { question: "Que permet le bracelet ?", answer: "réponse à venir" },
+      { question: "Puis-je l'enlever ?", answer: "réponse à venir" },
+      { question: "Comment activer mon bracelet dans l'app ?", answer: "réponse à venir" },
+      { question: "Le bracelet permet-il de payer des achats ?", answer: "réponse à venir" },
+      { question: "Puis-je accéder aux zones VIP avec mon bracelet ?", answer: "réponse à venir" },
+      { question: "Y a-t-il une photo sur le bracelet ?", answer: "réponse à venir" },
+      { question: "Mes données personnelles sont-elles stockées dans le bracelet ?", answer: "réponse à venir" },
     ]
   },
   {
     icon: <FaShieldAlt />,
     title: "Règles et sécurité",
     faqs: [
-      { question: "Puis-je prêter mon bracelet ?", answer: "Non, le bracelet est strictement personnel et non cessible. Il est nominatif et lié à votre inscription." },
-      { question: "Mon bracelet est abîmé, que faire ?", answer: "Si votre bracelet est endommagé mais toujours lisible, pas de souci. S'il est illisible, rendez-vous au point accueil pour un remplacement." },
-      { question: "Le bracelet est-il waterproof ?", answer: "Oui, le bracelet résiste à l'eau. Vous pouvez le garder sous la douche ou à la piscine." },
+      { question: "Puis-je prêter mon bracelet ?", answer: "réponse à venir" },
+      { question: "Mon bracelet est abîmé, que faire ?", answer: "réponse à venir" },
+      { question: "Le bracelet est-il waterproof ?", answer: "réponse à venir" },
+      { question: "Que faire si mon bracelet ne fonctionne plus ?", answer: "réponse à venir" },
+      { question: "Le bracelet est-il résistant aux chocs ?", answer: "réponse à venir" },
+      { question: "Puis-je personnaliser mon bracelet ?", answer: "réponse à venir" },
     ]
   },
   {
     icon: <FaExclamationTriangle />,
     title: "Perte ou vol",
     faqs: [
-      { question: "J'ai perdu mon bracelet, que faire ?", answer: "Rendez-vous immédiatement au point accueil le plus proche avec une pièce d'identité pour obtenir un nouveau bracelet." },
-      { question: "Mon bracelet a été volé", answer: "Signalez le vol au point accueil. Votre ancien bracelet sera désactivé et un nouveau vous sera remis." },
-      { question: "Le remplacement est-il payant ?", answer: "Le premier remplacement est gratuit. Les remplacements suivants peuvent être facturés selon les circonstances." },
+      { question: "J'ai perdu mon bracelet, que faire ?", answer: "réponse à venir" },
+      { question: "Mon bracelet a été volé", answer: "réponse à venir" },
+      { question: "Le remplacement est-il payant ?", answer: "réponse à venir" },
+      { question: "Combien de temps faut-il pour obtenir un nouveau bracelet ?", answer: "réponse à venir" },
+      { question: "Dois-je apporter une preuve d'identité pour le remplacement ?", answer: "réponse à venir" },
+      { question: "Que faire si je trouve mon bracelet après l'avoir signalé perdu ?", answer: "réponse à venir" },
     ]
   },
   {
     icon: <FaWrench />,
     title: "Contact et assistance",
     faqs: [
-      { question: "Où se trouvent les points accueil ?", answer: "Un point accueil est présent sur chaque site sportif et dans chaque hôtel partenaire. Localisez-les sur la carte de l'app." },
-      { question: "Les points accueil sont-ils toujours ouverts ?", answer: "Oui, un point accueil est disponible 24h/24 pendant toute la durée de l'événement." },
-      { question: "Puis-je contacter l'organisation par téléphone ?", answer: "Oui, un numéro d'urgence est disponible dans l'onglet Infos de l'app. À utiliser uniquement en cas de besoin urgent." },
+      { question: "Où se trouvent les points accueil ?", answer: "réponse à venir" },
+      { question: "Les points accueil sont-ils toujours ouverts ?", answer: "réponse à venir" },
+      { question: "Puis-je contacter l'organisation par téléphone ?", answer: "réponse à venir" },
+      { question: "Y a-t-il un email de contact pour l'organisation ?", answer: "réponse à venir" },
+      { question: "Puis-je contacter l'organisation via l'application ?", answer: "réponse à venir" },
+      { question: "Y a-t-il un chat en direct disponible ?", answer: "réponse à venir" },
     ]
   },
 ];

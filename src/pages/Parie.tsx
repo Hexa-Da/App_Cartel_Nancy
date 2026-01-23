@@ -535,7 +535,7 @@ const Parie: React.FC = () => {
           <div className={`parie-main-content ${isLoadingBets ? 'loading' : 'loaded'}`}>
             {!bettingClosed && (
               <p className="parie-intro">
-                Sélectionnez la délégation que vous pensez gagnante pour chaque sport.
+                Sélectionnez la délégation que vous pensez gagnante pour chaque compétition.
               </p>
             )}
 

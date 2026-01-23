@@ -557,32 +557,32 @@ function App() {
     return [
       {
         id: '1',
-        name: "Crous ARTEM",
-        position: [48.673570, 6.169268],
-        description: "Repas du soir",
-        address: "Rue Michel Dinet, 54000 Nancy",
+        name: "Salle des fêtes de Gentilly",
+        position: [48.698430, 6.139541],
+        description: "Repas du Vendredi soir",
+        address: "5001F Av. du Rhin, 54100 Nancy",
         type: 'restaurant',
         date: '',
-        latitude: 48.673570,
-        longitude: 6.169268,
+        latitude: 48.698430, 
+        longitude: 6.139541,
         emoji: '🍽️',
-        sport: 'Restaurant',
+        sport: 'Restaurant', 
         mealType: 'soir',
         matches: []
       },
       {
         id: '2',
-        name: "Parc Saint-Marie",
-        position: [48.680449, 6.170722],
-        description: "Repas du midi",
-        address: "1 Av. Boffrand, 54000 Nancy",
+        name: "Parc Expo Hall B",
+        position: [48.662595, 6.190721],
+        description: "Repas du Jeudi et Vendredi soir",
+        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'restaurant',
         date: '',
-        latitude: 48.680449,
-        longitude: 6.170722,
+        latitude: 48.662595,
+        longitude: 6.190721,
         emoji: '🍽️',
         sport: 'Restaurant',
-        mealType: 'midi',
+        mealType: 'soir',
         matches: []
       }
     ];
@@ -606,7 +606,7 @@ function App() {
       },
       {
         id: '2',
-        name: "Parc Expo",
+        name: "Parc Expo Hall A",
         position: [48.663030, 6.191597],
         description: "Soirée Pompoms du 16 avril, 21h-3h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
@@ -620,7 +620,7 @@ function App() {
       },
       {
         id: '3',
-        name: "Parc Expo",
+        name: "Parc Expo Hall A",
         position: [48.663481, 6.189737],
         description: "Soirée Showcase 17 avril, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
@@ -2285,14 +2285,14 @@ function App() {
         });
 
     // Recréer les marqueurs de restaurants selon la préférence actuelle
-    const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
-    restaurants.forEach(restaurant => {
-      if (preferredRestaurant === 'none' || restaurant.id === preferredRestaurant) {
+    const showRestaurants = localStorage.getItem('showRestaurants') !== 'false'; // true par défaut
+    if (showRestaurants) {
+      restaurants.forEach(restaurant => {
         const marker = createRestaurantMarker(restaurant);
         marker.addTo(map);
         markersRef.current.push(marker);
-      }
-    });
+      });
+    }
   };
 
   // Effet pour créer les marqueurs d'hôtels et restaurants au premier chargement
@@ -2317,16 +2317,16 @@ function App() {
           }
         });
 
-        const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
-        restaurants.forEach(restaurant => {
-          if (preferredRestaurant === 'none' || restaurant.id === preferredRestaurant) {
+        const showRestaurants = localStorage.getItem('showRestaurants') !== 'false'; // true par défaut
+        if (showRestaurants) {
+          restaurants.forEach(restaurant => {
             const marker = createRestaurantMarker(restaurant);
             if (mapRef.current) {
               marker.addTo(mapRef.current);
               markersRef.current.push(marker);
             }
-          }
-        });
+          });
+        }
       }
     }
   }, [mapRef.current, locationError, hotels, restaurants, isAdmin, isEditing]);
@@ -2334,14 +2334,14 @@ function App() {
   // Effet pour gérer les changements de préférences d'hôtels et restaurants
   useEffect(() => {
     const handlePreferenceChange = (e: StorageEvent) => {
-      if (e.key === 'preferredHotel' || e.key === 'preferredRestaurant') {
+      if (e.key === 'preferredHotel' || e.key === 'showRestaurants') {
         createHotelAndRestaurantMarkers();
       }
     };
 
     // Écouter aussi les événements personnalisés pour les changements dans le même onglet
     const handleCustomPreferenceChange = (e: CustomEvent) => {
-      if (e.detail.key === 'preferredHotel' || e.detail.key === 'preferredRestaurant') {
+      if (e.detail.key === 'preferredHotel' || e.detail.key === 'showRestaurants') {
         createHotelAndRestaurantMarkers();
       }
     };
@@ -2851,8 +2851,8 @@ function App() {
             } else {
               const restaurant = restaurantsMap.get(key);
               if (restaurant) {
-                const preferredRestaurant = localStorage.getItem('preferredRestaurant') || 'none';
-                shouldShow = preferredRestaurant === 'none' || restaurant.id === preferredRestaurant;
+                const showRestaurants = localStorage.getItem('showRestaurants') !== 'false'; // true par défaut
+                shouldShow = showRestaurants;
               }
             }
           }
@@ -3336,7 +3336,7 @@ function App() {
           </div>
         )}
         <MapContainer
-          center={[48.686881, 6.1880492]}
+          center={[48.687697, 6.174308]}
           zoom={12}
               style={{ height: '100%', width: '100%' }}
               ref={(map) => { mapRef.current = map || null; }}
