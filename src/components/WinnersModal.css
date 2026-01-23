@@ -1,0 +1,169 @@
+/* Modal pour définir les gagnants */
+.winners-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-modal);
+  padding: var(--spacing-md);
+}
+
+.winners-modal-content {
+  background-color: var(--bg-color);
+  border-radius: 12px;
+  width: 90%;
+  /* Changé: Largeur adaptative */
+  max-width: var(--modal-width-medium);
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  position: relative;
+}
+
+.winners-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.winners-modal-header h2 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.winners-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.winners-modal-body {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--bg-color);
+}
+
+.winner-sport-item {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.winner-sport-item:last-child {
+  border-bottom: none;
+}
+
+.winner-sport-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.winner-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.winner-select:focus {
+  outline: none;
+  border: 1px solid var(--border-color);
+}
+
+.winners-modal-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.winners-save-button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.winners-save-button:hover:not(:disabled) {
+  background-color: var(--primary-color-dark, #1976d2);
+}
+
+.winners-save-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.winners-save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Suppression des effets de focus et de sélection */
+.winners-modal-content * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.winners-modal-content button:focus,
+.winners-modal-content select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Permettre la sélection de texte pour les labels */
+.winners-modal-content label {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

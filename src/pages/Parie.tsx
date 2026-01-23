@@ -12,6 +12,7 @@ import {
   FaCheckCircle, FaExclamationTriangle, FaChevronDown, FaChevronUp, FaClock, FaSpinner
 } from 'react-icons/fa';
 import './Parie.css';
+import WinnersModal from '../components/WinnersModal';
 import logger from '../services/Logger';
 
 interface SportSection {
@@ -70,8 +71,6 @@ const Parie: React.FC = () => {
   const [isSavingBet, setIsSavingBet] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [showWinnersModal, setShowWinnersModal] = useState(false);
-  const [winners, setWinners] = useState<{ [sportKey: string]: string }>({});
-  const [isSavingWinners, setIsSavingWinners] = useState(false);
   
   // Délégation du participant et votes agrégés
   const [userDelegation, setUserDelegation] = useState<string | null>(null);
@@ -281,73 +280,6 @@ const Parie: React.FC = () => {
     }
   }, [loadDelegationVotes]);
 
-  // Fonction pour charger les gagnants actuels depuis delegationBets
-  const loadCurrentWinners = useCallback(async () => {
-    try {
-      const allDelegations = getAllDelegations();
-      if (allDelegations.length === 0) return;
-
-      // Charger les votes d'une délégation pour obtenir la structure des sports
-      const firstDelegationRef = ref(database, `delegationBets/${allDelegations[0]}`);
-      const snapshot = await get(firstDelegationRef);
-      
-      if (snapshot.exists()) {
-        const votes = snapshot.val();
-        const currentWinners: { [sportKey: string]: string } = {};
-        
-        // Parcourir tous les sports pour récupérer les winners
-        Object.keys(votes).forEach(sportKey => {
-          if (votes[sportKey].winner) {
-            currentWinners[sportKey] = votes[sportKey].winner;
-          }
-        });
-        
-        setWinners(currentWinners);
-      }
-    } catch (err) {
-      logger.error('Erreur chargement gagnants:', err);
-    }
-  }, [getAllDelegations]);
-
-  // Fonction pour sauvegarder les gagnants dans delegationBets
-  const saveWinners = useCallback(async () => {
-    setIsSavingWinners(true);
-    try {
-      const allDelegations = getAllDelegations();
-      const updatePromises: Promise<void>[] = [];
-
-      // Pour chaque délégation, mettre à jour les winners
-      for (const delegation of allDelegations) {
-        const delegationBetsRef = ref(database, `delegationBets/${delegation}`);
-        
-        // Charger les votes actuels de la délégation
-        const snapshot = await get(delegationBetsRef);
-        if (snapshot.exists()) {
-          const votes = snapshot.val();
-          
-          // Mettre à jour le winner pour chaque sport
-          Object.keys(winners).forEach(sportKey => {
-            if (votes[sportKey]) {
-              votes[sportKey].winner = winners[sportKey] || null;
-            }
-          });
-          
-          // Sauvegarder les votes mis à jour
-          const updatePromise = set(delegationBetsRef, votes).catch(err => {
-            logger.error(`Erreur sauvegarde winners délégation ${delegation}:`, err);
-          });
-          updatePromises.push(updatePromise);
-        }
-      }
-
-      await Promise.all(updatePromises);
-      setShowWinnersModal(false);
-    } catch (err) {
-      logger.error('Erreur sauvegarde gagnants:', err);
-    } finally {
-      setIsSavingWinners(false);
-    }
-  }, [winners, getAllDelegations]);
 
   // Écouter les changements dans delegationBets au lieu de participants pour éviter les resynchronisations
   // Cette approche est beaucoup plus efficace car elle évite de recalculer tous les votes à chaque changement
@@ -635,10 +567,7 @@ const Parie: React.FC = () => {
                 </button>
                 <button
                   className="admin-sync-button admin-winners-button"
-                  onClick={() => {
-                    loadCurrentWinners();
-                    setShowWinnersModal(true);
-                  }}
+                  onClick={() => setShowWinnersModal(true)}
                 >
                   Définir les gagnants
                 </button>
@@ -690,54 +619,11 @@ const Parie: React.FC = () => {
           </div>
 
           {/* Modal pour définir les gagnants */}
-          {showWinnersModal && (
-            <div className="winners-modal-overlay" onClick={() => setShowWinnersModal(false)}>
-              <div className="winners-modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="winners-modal-header">
-                  <h2>Définir les gagnants</h2>
-                  <button className="winners-modal-close" onClick={() => setShowWinnersModal(false)} type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                </div>
-                <div className="winners-modal-body">
-                  {sports.map(sportSection => {
-                    const allDelegationsForSport = sportSection.delegations;
-                    return (
-                      <div key={sportSection.sportKey} className="winner-sport-item">
-                        <label className="winner-sport-label">
-                          {getSportEmoji(sportSection.sport)} {getSportLabel(sportSection.sport, sportSection.gender)}
-                        </label>
-                        <select
-                          className="winner-select"
-                          value={winners[sportSection.sportKey] || ''}
-                          onChange={(e) => setWinners({ ...winners, [sportSection.sportKey]: e.target.value })}
-                        >
-                          <option value="">Aucun gagnant</option>
-                          {allDelegationsForSport.map(delegation => (
-                            <option key={delegation} value={delegation}>
-                              {delegation}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="winners-modal-footer">
-                  <button
-                    className="winners-save-button"
-                    onClick={saveWinners}
-                    disabled={isSavingWinners}
-                  >
-                    {isSavingWinners ? 'Sauvegarde...' : 'Sauvegarder'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <WinnersModal
+            isOpen={showWinnersModal}
+            onClose={() => setShowWinnersModal(false)}
+            sports={sports}
+          />
         </div>
       </div>
     );
@@ -782,10 +668,7 @@ const Parie: React.FC = () => {
             </button>
               <button
                 className="admin-sync-button admin-winners-button"
-                onClick={() => {
-                  loadCurrentWinners();
-                  setShowWinnersModal(true);
-                }}
+                onClick={() => setShowWinnersModal(true)}
               >
                 Définir les gagnants
               </button>
@@ -793,54 +676,11 @@ const Parie: React.FC = () => {
         )}
 
         {/* Modal pour définir les gagnants */}
-        {showWinnersModal && (
-          <div className="winners-modal-overlay" onClick={() => setShowWinnersModal(false)}>
-            <div className="winners-modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="winners-modal-header">
-                <h2>Définir les gagnants</h2>
-                <button className="winners-modal-close" onClick={() => setShowWinnersModal(false)} type="button">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              </div>
-              <div className="winners-modal-body">
-                {sports.map(sportSection => {
-                  const allDelegationsForSport = sportSection.delegations;
-                  return (
-                    <div key={sportSection.sportKey} className="winner-sport-item">
-                      <label className="winner-sport-label">
-                        {getSportEmoji(sportSection.sport)} {getSportLabel(sportSection.sport, sportSection.gender)}
-                      </label>
-                      <select
-                        className="winner-select"
-                        value={winners[sportSection.sportKey] || ''}
-                        onChange={(e) => setWinners({ ...winners, [sportSection.sportKey]: e.target.value })}
-                      >
-                        <option value="">Aucun gagnant</option>
-                        {allDelegationsForSport.map(delegation => (
-                          <option key={delegation} value={delegation}>
-                            {delegation}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="winners-modal-footer">
-                <button
-                  className="winners-save-button"
-                  onClick={saveWinners}
-                  disabled={isSavingWinners}
-                >
-                  {isSavingWinners ? 'Sauvegarde...' : 'Sauvegarder'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <WinnersModal
+          isOpen={showWinnersModal}
+          onClose={() => setShowWinnersModal(false)}
+          sports={sports}
+        />
       </div>
     </div>
   );
