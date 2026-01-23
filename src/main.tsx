@@ -38,15 +38,18 @@ import { setupCapacitor } from './config/capacitor';
 import { initializeAnalytics } from './config/analytics';
 import { setupTheme } from './config/theme-setup';
 import { setupAnalytics } from './config/analytics-setup';
+import { initializeFirebase } from './firebase';
 import Loader from './components/Loader';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import logger from './services/Logger';
 
 // Composant racine de l'application
 const AppRoot = (
   <React.StrictMode>
-    <Loader />
-    <OrientationLock />
-    <AppProvider>
+    <ErrorBoundary>
+      <Loader />
+      <OrientationLock />
+      <AppProvider>
       <NavigationProvider>
         <ModalProvider>
           <FormProvider>
@@ -71,26 +74,39 @@ const AppRoot = (
         </ModalProvider>
       </NavigationProvider>
     </AppProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );
 
 // Configuration avant le rendu React
 (async () => {
-  // Configurer le thème en premier (évite le FOUC)
+  // 1. Configurer le thème en premier (évite le FOUC)
   setupTheme();
   
-  // Configurer Google Analytics (gtag.js)
+  // 2. Initialiser Firebase TRÈS TÔT (avant tout le reste)
+  // Sur iOS, cela garantit que les clés sont disponibles avant que les composants
+  // ne tentent d'accéder aux données Firebase
+  try {
+    initializeFirebase();
+    logger.log('[Main] Firebase initialisé avec succès');
+  } catch (error) {
+    logger.error('[Main] ERREUR CRITIQUE: Firebase n\'a pas pu être initialisé:', error);
+    // On continue quand même pour éviter un écran blanc, mais l'app ne fonctionnera pas
+  }
+  
+  // 3. Configurer Google Analytics (gtag.js)
   setupAnalytics();
   
+  // 4. Configurer Capacitor (plugins natifs)
   try {
     await setupCapacitor();
   } catch (error) {
     logger.error('Erreur lors de la configuration Capacitor:', error);
   }
   
-  // Initialiser ReactGA (complémentaire à gtag.js)
+  // 5. Initialiser ReactGA (complémentaire à gtag.js)
   initializeAnalytics();
   
-  // Rendre l'app après la configuration (ou même si elle échoue)
+  // 6. Rendre l'app après la configuration (ou même si elle échoue)
   ReactDOM.createRoot(document.getElementById('root')!).render(AppRoot);
 })();

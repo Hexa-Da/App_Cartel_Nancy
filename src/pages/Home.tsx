@@ -23,7 +23,6 @@ import './Home.css';
 import '../components/EventDetails.css';
 import { useApp } from '../AppContext';
 import { useForm } from '../contexts/FormContext';
-import FirebaseErrorLogs from '../components/FirebaseErrorLogs';
 
 type Place = Venue;
 
@@ -633,9 +632,6 @@ const Home: React.FC = () => {
           venues={events}
         />
       )}
-
-      {/* Affichage des logs d'erreur Firebase */}
-      <FirebaseErrorLogs />
     </div>
   );
 };

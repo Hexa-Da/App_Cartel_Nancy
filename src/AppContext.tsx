@@ -15,8 +15,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ref, onValue } from 'firebase/database';
-import { database } from './firebase';
+import { database, isFirebaseInitialized } from './firebase';
 import { firebaseLogger } from './services/FirebaseLogger';
+import logger from './services/Logger';
 
 interface Venue {
   id?: string;
@@ -86,81 +87,116 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Lecture des venues depuis Firebase
   useEffect(() => {
-    setIsLoadingVenues(true);
-    const venuesRef = ref(database, 'venues');
-    let isStillLoading = true;
-    
-    // Timeout pour détecter les problèmes de connexion
-    const connectionTimeout = setTimeout(() => {
-      if (isStillLoading) {
-        firebaseLogger.logError(
-          'read:venues',
-          'venues',
-          { code: 'TIMEOUT', message: 'Timeout de connexion après 10 secondes' },
-          { timeout: 10000 }
-        );
-      }
-    }, 10000);
-
-    const unsubscribe = onValue(
-      venuesRef, 
-      (snapshot) => {
-        clearTimeout(connectionTimeout);
-        isStillLoading = false;
-        try {
-          const data = snapshot.val() || {};
-          const venuesArray = Object.entries(data).map(([id, value]) => ({ 
-            id, 
-            ...(value as Omit<Venue, 'id'>) 
-          }));
-          setVenues(venuesArray);
+    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
+    if (!isFirebaseInitialized()) {
+      logger.warn('[AppContext] Firebase n\'est pas initialisé, attente...');
+      setIsLoadingVenues(true);
+      
+      // Réessayer après un court délai
+      const retryTimeout = setTimeout(() => {
+        if (isFirebaseInitialized()) {
+          // Firebase est maintenant prêt, relancer l'effet
           setIsLoadingVenues(false);
-        } catch (error) {
-          firebaseLogger.logError('read:venues', 'venues', error, { snapshot: snapshot.val() });
+        } else {
+          logger.error('[AppContext] Firebase n\'est toujours pas initialisé après attente');
           setIsLoadingVenues(false);
         }
-      }, 
-      (error) => {
+      }, 500);
+      
+      return () => clearTimeout(retryTimeout);
+    }
+
+    setIsLoadingVenues(true);
+    let isStillLoading = true;
+    
+    try {
+      const venuesRef = ref(database, 'venues');
+      
+      // Timeout pour détecter les problèmes de connexion
+      const connectionTimeout = setTimeout(() => {
+        if (isStillLoading) {
+          firebaseLogger.logError(
+            'read:venues',
+            'venues',
+            { code: 'TIMEOUT', message: 'Timeout de connexion après 10 secondes' },
+            { timeout: 10000 }
+          );
+        }
+      }, 10000);
+
+      const unsubscribe = onValue(
+        venuesRef, 
+        (snapshot) => {
+          clearTimeout(connectionTimeout);
+          isStillLoading = false;
+          try {
+            const data = snapshot.val() || {};
+            const venuesArray = Object.entries(data).map(([id, value]) => ({ 
+              id, 
+              ...(value as Omit<Venue, 'id'>) 
+            }));
+            setVenues(venuesArray);
+            setIsLoadingVenues(false);
+          } catch (error) {
+            firebaseLogger.logError('read:venues', 'venues', error, { snapshot: snapshot.val() });
+            setIsLoadingVenues(false);
+          }
+        }, 
+        (error) => {
+          clearTimeout(connectionTimeout);
+          isStillLoading = false;
+          firebaseLogger.logError('read:venues', 'venues', error);
+          setIsLoadingVenues(false);
+        }
+      );
+      
+      return () => {
         clearTimeout(connectionTimeout);
         isStillLoading = false;
-        firebaseLogger.logError('read:venues', 'venues', error);
-        setIsLoadingVenues(false);
-      }
-    );
-    
-    return () => {
-      clearTimeout(connectionTimeout);
-      isStillLoading = false;
-      unsubscribe();
-    };
+        unsubscribe();
+      };
+    } catch (error) {
+      logger.error('[AppContext] Erreur lors de l\'accès à Firebase:', error);
+      setIsLoadingVenues(false);
+    }
   }, []);
 
   // Lecture des messages depuis Firebase
   useEffect(() => {
-    const messagesRef = ref(database, 'chatMessages');
-    const unsubscribe = onValue(
-      messagesRef, 
-      (snapshot) => {
-        try {
-          const data = snapshot.val() || {};
-          const messagesArray = Object.entries(data).map(([id, value]) => ({ 
-            id, 
-            ...(value as any) 
-          }));
-          
-          // Trier les messages par timestamp décroissant (plus récents en premier)
-          const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
-          
-          setMessages(sortedMessages);
-        } catch (error) {
-          firebaseLogger.logError('read:messages', 'chatMessages', error, { snapshot: snapshot.val() });
+    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
+    if (!isFirebaseInitialized()) {
+      logger.warn('[AppContext] Firebase n\'est pas initialisé pour les messages, attente...');
+      return;
+    }
+
+    try {
+      const messagesRef = ref(database, 'chatMessages');
+      const unsubscribe = onValue(
+        messagesRef, 
+        (snapshot) => {
+          try {
+            const data = snapshot.val() || {};
+            const messagesArray = Object.entries(data).map(([id, value]) => ({ 
+              id, 
+              ...(value as any) 
+            }));
+            
+            // Trier les messages par timestamp décroissant (plus récents en premier)
+            const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
+            
+            setMessages(sortedMessages);
+          } catch (error) {
+            firebaseLogger.logError('read:messages', 'chatMessages', error, { snapshot: snapshot.val() });
+          }
+        },
+        (error) => {
+          firebaseLogger.logError('read:messages', 'chatMessages', error);
         }
-      },
-      (error) => {
-        firebaseLogger.logError('read:messages', 'chatMessages', error);
-      }
-    );
-    return () => unsubscribe();
+      );
+      return () => unsubscribe();
+    } catch (error) {
+      logger.error('[AppContext] Erreur lors de l\'accès à Firebase pour les messages:', error);
+    }
   }, []);
 
   // Fonction pour obtenir les événements filtrés

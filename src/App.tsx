@@ -24,11 +24,11 @@ import { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import './App.css';
 import './GlobalUtilities.css';
 import './MapStyles.css';
-import { ref, onValue, set, push, remove, update, get } from 'firebase/database';
-import { database } from './firebase';
+import { ref, onValue, set, update, get } from 'firebase/database';
+import { database, isFirebaseInitialized } from './firebase';
+import logger from './services/Logger';
 import L from 'leaflet';
 import ReactGA from 'react-ga4';
-import { v4 as uuidv4 } from 'uuid';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import { Hotel, Restaurant, Party } from './types/venue';
@@ -46,10 +46,7 @@ import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
 import { venueService } from './services/VenueService';
 import { matchService } from './services/MatchService';
-import logger from './services/Logger';
 import { mapService } from './services/MapService';
-import { MatchFormModal } from './components/forms/MatchFormModal';
-import { VenueFormModal } from './components/forms/VenueFormModal';
 import { LocationMarker } from './components/map/LocationMarker';
 import { MapEvents } from './components/map/MapEvents';
 import { ZoomListener } from './components/map/ZoomListener';
@@ -396,18 +393,28 @@ function App() {
 
   // Lecture en temps réel des messages depuis Firebase (uniquement pour le calcul du nombre de messages non lus)
   useEffect(() => {
-    const messagesRef = ref(database, 'chatMessages');
-    const unsubscribe = onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      // Transforme l'objet en tableau [{id, ...}]
-      const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
-      
-      // Trier les messages par timestamp décroissant (plus récents en premier)
-      const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
-      
-      setMessages(sortedMessages);
-    });
-    return () => unsubscribe();
+    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
+    if (!isFirebaseInitialized()) {
+      logger.warn('[App] Firebase n\'est pas initialisé pour les messages, attente...');
+      return;
+    }
+
+    try {
+      const messagesRef = ref(database, 'chatMessages');
+      const unsubscribe = onValue(messagesRef, (snapshot) => {
+        const data = snapshot.val() || {};
+        // Transforme l'objet en tableau [{id, ...}]
+        const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
+        
+        // Trier les messages par timestamp décroissant (plus récents en premier)
+        const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
+        
+        setMessages(sortedMessages);
+      });
+      return () => unsubscribe();
+    } catch (error) {
+      logger.error('[App] Erreur lors de l\'accès à Firebase pour les messages:', error);
+    }
   }, []);
 
   // Fonction pour vérifier les droits d'administration avant d'exécuter une action
@@ -660,41 +667,66 @@ function App() {
 
   // Charger les lieux depuis Firebase au démarrage avec optimisation
   useEffect(() => {
-    setIsVenuesLoading(true);
-    const venuesRef = ref(database, 'venues');
-    const unsubscribe = onValue(venuesRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        // Utiliser requestIdleCallback pour différer le traitement lourd
-        const processData = () => {
-          const venuesArray = Object.entries(data).map(([key, value]: [string, any]) => ({
-            ...value,
-            id: key,
-            matches: value.matches || [],  // Assurer que matches est toujours un tableau
-            sport: value.sport || '',
-            date: value.date || '',
-            latitude: value.position ? value.position[0] : 0,
-            longitude: value.position ? value.position[1] : 0,
-            emoji: value.emoji || ''
-          }));
-          setVenues(venuesArray);
+    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
+    if (!isFirebaseInitialized()) {
+      logger.warn('[App] Firebase n\'est pas initialisé pour les venues, attente...');
+      setIsVenuesLoading(true);
+      
+      // Réessayer après un court délai
+      const retryTimeout = setTimeout(() => {
+        if (isFirebaseInitialized()) {
+          // Firebase est maintenant prêt, relancer l'effet
           setIsVenuesLoading(false);
-        };
-
-        // Utiliser requestIdleCallback si disponible, sinon setTimeout
-        if (window.requestIdleCallback) {
-          window.requestIdleCallback(processData, { timeout: 100 });
         } else {
-          setTimeout(processData, 0);
+          logger.error('[App] Firebase n\'est toujours pas initialisé après attente');
+          setIsVenuesLoading(false);
         }
-      } else {
-        setVenues([]); // Si pas de données, initialiser avec un tableau vide
-        setIsVenuesLoading(false);
-      }
-    });
+      }, 500);
+      
+      return () => clearTimeout(retryTimeout);
+    }
 
-    // Cleanup function
-    return () => unsubscribe();
+    setIsVenuesLoading(true);
+    
+    try {
+      const venuesRef = ref(database, 'venues');
+      const unsubscribe = onValue(venuesRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Utiliser requestIdleCallback pour différer le traitement lourd
+          const processData = () => {
+            const venuesArray = Object.entries(data).map(([key, value]: [string, any]) => ({
+              ...value,
+              id: key,
+              matches: value.matches || [],  // Assurer que matches est toujours un tableau
+              sport: value.sport || '',
+              date: value.date || '',
+              latitude: value.position ? value.position[0] : 0,
+              longitude: value.position ? value.position[1] : 0,
+              emoji: value.emoji || ''
+            }));
+            setVenues(venuesArray);
+            setIsVenuesLoading(false);
+          };
+
+          // Utiliser requestIdleCallback si disponible, sinon setTimeout
+          if (window.requestIdleCallback) {
+            window.requestIdleCallback(processData, { timeout: 100 });
+          } else {
+            setTimeout(processData, 0);
+          }
+        } else {
+          setVenues([]); // Si pas de données, initialiser avec un tableau vide
+          setIsVenuesLoading(false);
+        }
+      });
+
+      // Cleanup function
+      return () => unsubscribe();
+    } catch (error) {
+      logger.error('[App] Erreur lors de l\'accès à Firebase pour les venues:', error);
+      setIsVenuesLoading(false);
+    }
   }, []);
 
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
