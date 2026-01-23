@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './SettingsMenu.css';
 import NotificationService from '../services/NotificationService';
 import { useApp } from '../AppContext';
+import DiagnosticPanel from './DiagnosticPanel';
 
 interface SettingsMenuProps {
   isOpen: boolean;
@@ -69,7 +70,8 @@ const restaurantOptions = [
 ];
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
-  const { getAllDelegations, hasGenderMatches } = useApp();
+  const { getAllDelegations, hasGenderMatches, isAdmin } = useApp();
+  const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const stored = localStorage.getItem('theme');
@@ -503,8 +505,24 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
               ))}
             </select>
           </div>
+          
+          {isAdmin && (
+            <div className="settings-item settings-item-button">
+              <button 
+                className="diagnostic-button"
+                onClick={() => setIsDiagnosticOpen(true)}
+              >
+                Diagnostic
+              </button>
+            </div>
+          )}
         </div>
       </div>
+      
+      <DiagnosticPanel 
+        isOpen={isDiagnosticOpen} 
+        onClose={() => setIsDiagnosticOpen(false)} 
+      />
     </div>
   );
 };

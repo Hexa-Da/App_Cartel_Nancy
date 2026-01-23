@@ -215,3 +215,41 @@ input:checked + .slider:before {
   -ms-user-select: text;
   user-select: text;
 }
+
+/* Style pour le bouton de diagnostic */
+.settings-item-button {
+  justify-content: center;
+  padding: var(--spacing-md, 1rem) 0;
+  margin-top: var(--spacing-sm, 0.5rem);
+}
+
+.diagnostic-button {
+  width: 100%;
+  padding: var(--spacing-md, 1rem);
+  background: var(--primary-color, #2196f3);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--font-size-md, 1rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.diagnostic-button:hover {
+  background: var(--primary-color-dark, #1976d2);
+}
+
+.diagnostic-button:active {
+  transform: scale(0.98);
+}
+
+.diagnostic-button:focus {
+  outline: 2px solid var(--primary-color, #2196f3);
+  outline-offset: 2px;
+}
