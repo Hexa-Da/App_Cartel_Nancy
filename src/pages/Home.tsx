@@ -451,7 +451,7 @@ const Home: React.FC = () => {
       <div className="matches-section">
         <section className="matches-section">
           <h2>Vos Matchs</h2>
-          {userPreferences.favoriteSports.length > 0 ? (
+          {userPreferences.favoriteSports.length > 0 && !userPreferences.favoriteSports.includes('none') ? (
             userPreferences.favoriteSports.map((sport: string) => {
               const matches = getMatchesByDelegationAndSport(events, userPreferences.delegation, sport);
               return (
@@ -484,9 +484,9 @@ const Home: React.FC = () => {
                       </div>
                     ) : (
                       <p className="no-matches">
-                        {userPreferences.delegation 
+                        {userPreferences.delegation && userPreferences.delegation !== 'all'
                           ? `Aucun match de ${sport} trouvé pour la délégation de ${userPreferences.delegation}`
-                          : `Aucun match de ${sport} trouvé. Veuillez sélectionner votre délégation.`}
+                          : `Aucun match de ${sport} trouvé. Veuillez sélectionner votre délégation dans les paramètres.`}
                       </p>
                     )
                   )}
@@ -500,7 +500,7 @@ const Home: React.FC = () => {
                   <div className="section-loading-spinner"></div>
                 </div>
               ) : (
-                <p className="no-matches">Veuillez sélectionner votre sports dans les préférences</p>
+                <p className="no-matches">Veuillez sélectionner votre sport dans les paramètres</p>
               )}
             </div>
           )}
@@ -510,7 +510,7 @@ const Home: React.FC = () => {
         <section className="matches-section">
           <h2>Votre Délégation</h2>
           <div className="horizontal-scroll">
-            {userPreferences.delegation ? (
+            {userPreferences.delegation && userPreferences.delegation !== 'all' ? (
               getMatchesByDelegation(events, userPreferences.delegation).length > 0 ? (
                 getMatchesByDelegation(events, userPreferences.delegation).map(match => (
                   <div 
@@ -539,7 +539,7 @@ const Home: React.FC = () => {
                   </div>
                 ) : (
                   <p className="no-matches">Aucun match trouvé pour la délégation {userPreferences.delegation} <br />
-                  Veuillez sélectionner votre délégation dans les préférences</p>
+                  Veuillez sélectionner votre délégation dans les paramètres</p>
                 )
               )
             ) : (
@@ -548,7 +548,7 @@ const Home: React.FC = () => {
                   <div className="section-loading-spinner"></div>
                 </div>
               ) : (
-                <p className="no-matches">Veuillez sélectionner votre délégation dans les préférences</p>
+                <p className="no-matches">Veuillez sélectionner votre délégation dans les paramètres</p>
               )
             )}
           </div>

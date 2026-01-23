@@ -20,6 +20,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './BottomNav.css';
 import { useNavigation } from '../contexts/NavigationContext';
 import { useModal } from '../contexts/ModalContext';
+import { useForm } from '../contexts/FormContext';
 import { Capacitor } from '@capacitor/core';
 
 interface BottomNavProps {
@@ -31,6 +32,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
   const location = useLocation();
   const { setActiveTab } = useNavigation();
   const { closeAllModals, setShowAddMessage, setShowEmergency } = useModal();
+  const { setSelectedEvent } = useForm();
   
   const closeAllPanels = () => {
     setActiveTab('map');
@@ -47,6 +49,10 @@ const BottomNav: React.FC<BottomNavProps> = ({ closeLayoutPanels }) => {
   const handleNavClick = (path: string) => {
     closeAllPanels();
     closeAllModals(); // Fermer tous les modals (settings, emergency, admin)
+    // Fermer EventDetails si on navigue vers home
+    if (path === '/home') {
+      setSelectedEvent(null);
+    }
     if (closeLayoutPanels) closeLayoutPanels();
     navigate(path, { replace: false });
   };
