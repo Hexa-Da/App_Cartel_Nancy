@@ -90,129 +90,307 @@ const tramLine: TramLine = {
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Essey',
-          url: 'https://www.google.fr/maps/place/Vandoeuvre+Brabois+-+H./@48.6493121,6.1463284,19.94z/data=!4m8!3m7!1s0x4794a211dc51595d:0xdefafe326cca9ba!6m1!1v4!8m2!3d48.64947!4d6.1464475!16s%2Fg%2F11mcbbvy0n?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Vandoeuvre+Brabois+-+H./@48.6497914,6.146256,151m/data=!3m1!1e3!4m8!3m7!1s0x4794a211de22cd97:0x683561f03c2f471d!6m1!1v5!8m2!3d48.649532!4d6.146593!16s%2Fg%2F11xfzjfttc?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
     },
     { 
       name: 'Technopôle', 
       coords: [48.650733, 6.148218] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Technop%C3%B4le/@48.6505696,6.1480625,19.18z/data=!4m8!3m7!1s0x4794a20de2bf326d:0x2af08ce1fe359328!6m1!1v4!8m2!3d48.6507855!4d6.1482375!16s%2Fg%2F11x65j4q_c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Technopole/@48.6504813,6.1478832,153m/data=!3m1!1e3!4m8!3m7!1s0x4794a20e0a5c493f:0xb7147ccc53ccada4!6m1!1v5!8m2!3d48.6508815!4d6.1481107!16s%2Fg%2F11rkdnt0z9?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Technop%C3%B4le/@48.6504813,6.1478832,153m/data=!3m1!1e3!4m8!3m7!1s0x4794a20de0260f55:0x3001b4d8a63fda42!6m1!1v5!8m2!3d48.6507449!4d6.1485011!16s%2Fg%2F11ywtb8xnc?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Parc de Brabois', 
       coords: [48.653917, 6.152300] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Parc+de+Brabois/@48.6538678,6.152215,21z/data=!4m8!3m7!1s0x4794a20c95b24b09:0xf3e69129a22176!6m1!1v4!8m2!3d48.653887!4d6.152348!16s%2Fg%2F11x65kj0fb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Parc+de+Brabois/@48.6537292,6.1521949,123m/data=!3m1!1e3!4m8!3m7!1s0x4794a20cf1870513:0x6a5c4b1f03ba5261!6m1!1v5!8m2!3d48.653561!4d6.151883!16s%2Fg%2F11ycrr3gl8?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Parc+de+Brabois/@48.6540745,6.1525919,125m/data=!3m1!1e3!4m8!3m7!1s0x4794a20cf1870513:0xc965c6a0bc38bd93!6m1!1v5!8m2!3d48.6542073!4d6.1527526!16s%2Fg%2F11hdsfpp9k?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
-      name: 'Notre-Dame-des-Pauvres Direction Sud', 
-      coords: [48.657364, 6.155514] as [number, number],
+      name: 'Doyen Roubault', 
+      coords: [48.655905, 6.154130] as [number, number],
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Vandeouvre',
-          url: 'https://www.google.fr/maps/place/Notre-Dame-des-Pauvres/@48.6569281,6.1546025,17.86z/data=!4m8!3m7!1s0x4794a2748fa4eff3:0xe48f24141f628937!6m1!1v4!8m2!3d48.657397!4d6.155494!16s%2Fg%2F11x65jkk5f?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Doyen+Roubault/@48.6566031,6.1546652,137m/data=!3m1!1e3!4m8!3m7!1s0x4794a274a21e551d:0x3e2c2887f8183f3c!6m1!1v5!8m2!3d48.65657!4d6.15479!16s%2Fg%2F11y4b1spzy?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
     },
     { 
       name: 'Saint-André - Jardin Botanique', 
       coords: [48.660226, 6.159446] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Saint-Andr%C3%A9+-+Jardin+Botanique/@48.6602025,6.1583062,18.06z/data=!4m8!3m7!1s0x4794a27675eabf6d:0xac4c3c8372c4e2c4!6m1!1v4!8m2!3d48.6602275!4d6.159422!16s%2Fg%2F11hdsft4gv?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Saint-Andr%C3%A9+-+Jardin+Botanique/@48.6597547,6.1588938,247m/data=!3m1!1e3!4m8!3m7!1s0x4794a27675eabf6d:0xac4c3c8372c4e2c4!6m1!1v5!8m2!3d48.6601269!4d6.159274!16s%2Fg%2F11hdsft4gv?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Saint-Andr%C3%A9+-+Jardin+Botanique/@48.6601355,6.1594012,61m/data=!3m1!1e3!4m8!3m7!1s0x4794a2767507ec33:0x103c4ab6729054f1!6m1!1v5!8m2!3d48.6603199!4d6.1595921!16s%2Fg%2F11yvmvzpht?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Le Reclus', 
       coords: [48.662663, 6.162116] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Le+Reclus/@48.6625734,6.1613286,18.37z/data=!4m8!3m7!1s0x4794989d81dc665b:0xb4e6e0354a5393f5!6m1!1v4!8m2!3d48.662461!4d6.161903!16s%2Fg%2F11hdsfzcks?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Le+Reclus/@48.6624196,6.1619815,94m/data=!3m1!1e3!4m8!3m7!1s0x4794989d7f63fcfb:0x6ad98359b1df5df3!6m1!1v5!8m2!3d48.6625867!4d6.1619546!16s%2Fg%2F11fn2615w4?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Vélodrome - Callot', 
       coords: [48.665981, 6.165730] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Callot/@48.665933,6.1652135,18.37z/data=!4m8!3m7!1s0x4794988322755d57:0xe606e48b5a7edfaf!6m1!1v4!8m2!3d48.6661411!4d6.166052!16s%2Fg%2F1thzmv4b?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/V%C3%A9lodrome+-+Callot/@48.6661615,6.1664183,296m/data=!3m1!1e3!4m8!3m7!1s0x479498832199c241:0x6e1f0c6c8d751c2!6m1!1v5!8m2!3d48.6660329!4d6.1658511!16s%2Fg%2F11yvmzzgfn?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Callot/@48.6660361,6.1661174,49m/data=!3m1!1e3!4m8!3m7!1s0x4794988322755d57:0xe606e48b5a7edfaf!6m1!1v5!8m2!3d48.6661411!4d6.166052!16s%2Fg%2F1thzmv4b?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Montet Octroi', 
       coords: [48.668397, 6.168561] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Montet+Octroi/@48.6684455,6.1685113,21z/data=!4m8!3m7!1s0x479498838c8c0383:0xdc3e28efa34f16be!6m1!1v4!8m2!3d48.6684475!4d6.1685625!16s%2Fg%2F11mcbbykq4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Montet+Octroi/@48.6683404,6.1685493,109m/data=!3m1!1e3!4m8!3m7!1s0x479498838c8c0383:0xdc3e28efa34f16be!6m1!1v5!8m2!3d48.6683959!4d6.1684431!16s%2Fg%2F11mcbbykq4?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Montet+Octroi/@48.6683404,6.1685493,109m/data=!3m1!1e3!4m8!3m7!1s0x479498838b582b75:0x2e39acac89ba33c7!6m1!1v5!8m2!3d48.6684909!4d6.1686951!16s%2Fg%2F11hdsg65j_?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'ARTEM - Blandant - Thermal', 
       coords: [48.671964, 6.172453] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/ARTEM+-+Blandan+-+Thermal/@48.6720045,6.1723681,21z/data=!4m8!3m7!1s0x47949886fda87255:0x63caae178d22b4ef!6m1!1v4!8m2!3d48.6720305!4d6.172642!16s%2Fg%2F11x8hz8x2h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/ARTEM+-+Blandan+-+Thermal/@48.6719053,6.1724845,99m/data=!3m1!1e3!4m8!3m7!1s0x47949886fda87293:0x408a91bddda628de!6m1!1v5!8m2!3d48.6719789!4d6.1723281!16s%2Fg%2F11myzt_17_?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/ARTEM+-+Blandan+-+Thermal/@48.6719053,6.1724845,99m/data=!3m1!1e3!4m8!3m7!1s0x47949886fda87255:0x63caae178d22b4ef!6m1!1v5!8m2!3d48.6720305!4d6.172642!16s%2Fg%2F11x8hz8x2h?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Exelmans', 
       coords: [48.675217, 6.176070] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Exelmans/@48.6748551,6.1753736,19.51z/data=!4m8!3m7!1s0x4794987d4fe9b613:0xbc301fb9447045cd!6m1!1v4!8m2!3d48.675103!4d6.175924!16s%2Fg%2F1tp_59tn?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.com/maps/place/Exelmans/@48.6752469,6.1758841,16z/data=!4m8!3m7!1s0x4794987d4f7cc1ab:0xabc2e0a1d45c1f62!6m1!1v5!8m2!3d48.6752469!4d6.1758841!16s%2Fg%2F11ywt9grnh!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.com/maps/place/Exelmans/@48.6750019,6.1758161,16z/data=!4m8!3m7!1s0x4794987d5009e525:0x5ea06c5de0d4bcff!6m1!1v5!8m2!3d48.6750019!4d6.1758161!16s%2Fg%2F11yvmtprld!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Jean Jaurès T1', 
       coords: [48.679043, 6.179830] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Jean+Jaur%C3%A8s/@48.6793597,6.1799183,18.46z/data=!4m8!3m7!1s0x479498637d3774cd:0x53d4ca921edb36f!6m1!1v4!8m2!3d48.6793105!4d6.1797245!16s%2Fg%2F11fn265wzr?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Jean+Jaures/@48.6790416,6.180007,65m/data=!3m1!1e3!4m8!3m7!1s0x479498637d3774cd:0x53d4ca921edb36f!6m1!1v5!8m2!3d48.6791609!4d6.1797851!16s%2Fg%2F11fn265wzr?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Jean+Jaures/@48.6794013,6.1796788,66m/data=!3m1!1e3!4m8!3m7!1s0x479498649cf03b49:0x24b11180877d2856!6m1!1v5!8m2!3d48.6794599!4d6.1796641!16s%2Fg%2F11myznrq30?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Garenne - Rose Wild', 
       coords: [48.681119, 6.178509] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Garenne+-+Rose+Wild/@48.6809323,6.1784107,19.27z/data=!4m8!3m7!1s0x47949864d0491d15:0xc08b6c2e90aa96db!6m1!1v4!8m2!3d48.6812298!4d6.1785468!16s%2Fg%2F11x8j0cmhf?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Garenne+-+Rose+Wild/@48.6811223,6.1785043,49m/data=!3m1!1e3!4m8!3m7!1s0x47949864d0491d15:0xc08b6c2e90aa96db!6m1!1v5!8m2!3d48.6812298!4d6.1785468!16s%2Fg%2F11x8j0cmhf?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Garenne+-+Rose+Wild/@48.6811223,6.1785043,49m/data=!3m1!1e3!4m8!3m7!1s0x47949864d0491d15:0xc08b6c2e90aa96db!6m1!1v5!8m2!3d48.6812298!4d6.1785468!16s%2Fg%2F11x8j0cmhf?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Mont Désert - Thermal', 
       coords: [48.684268, 6.176490] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Mon+D%C3%A9sert+-+Thermal/@48.6843069,6.176435,19.97z/data=!4m8!3m7!1s0x4794987a9cc13507:0x95ddf0810e50bfc3!6m1!1v4!8m2!3d48.6844035!4d6.1764598!16s%2Fg%2F11x65lbd1b?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Mon+D%C3%A9sert+-+Thermal/@48.6842583,6.1764847,46m/data=!3m1!1e3!4m8!3m7!1s0x4794987a9cc13507:0x95ddf0810e50bfc3!6m1!1v5!8m2!3d48.6844035!4d6.1764598!16s%2Fg%2F11x65lbd1b?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Gare - Saint-Léon', 
       coords: [48.687458, 6.174090] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Gare+-+Saint-L%C3%A9on/@48.6873599,6.1741505,19.65z/data=!4m8!3m7!1s0x47949871289b11d5:0xcffd5e9d8116276d!6m1!1v4!8m2!3d48.6874882!4d6.1741815!16s%2Fg%2F11x65jp8px?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Gare+-+Saint-L%C3%A9on/@48.6867377,6.1745052,86a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x47949871289b11d5:0xcffd5e9d8116276d!6m1!1v5!8m2!3d48.6874882!4d6.1741815!16s%2Fg%2F11x65jp8px?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Gare - Pierre Semard', 
       coords: [48.689095, 6.177189] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Gare+-+Pierre+Semard/@48.6891417,6.1770759,20.63z/data=!4m8!3m7!1s0x479498718411de2b:0x8f09a939b68ed6d7!6m1!1v4!8m2!3d48.6891225!4d6.177214!16s%2Fg%2F11x8hzby70?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Gare+-+Pierre+Semard/@48.6890731,6.1771436,74a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x479498718411de2b:0x8f09a939b68ed6d7!6m1!1v5!8m2!3d48.6890909!4d6.1770521!16s%2Fg%2F11x8hzby70?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Point Central', 
       coords: [48.690794, 6.182471] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Point+Central/@48.6907614,6.1820377,20.39z/data=!4m8!3m7!1s0x4794986db923e7e3:0x9302cd0f6edc3012!6m1!1v4!8m2!3d48.690805!4d6.182384!16s%2Fg%2F11x8j04x71?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Point+Central/@48.6907821,6.1827702,91a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794986db0d9a1c9:0x7209d3f8eb81dadb!6m1!1v5!8m2!3d48.6909751!4d6.1828688!16s%2Fg%2F1tfbb28h?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Point+Central/@48.6906412,6.1818321,88a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794986db8ec0a5b:0x3589176738d67977!6m1!1v5!8m2!3d48.6906419!4d6.1819491!16s%2Fg%2F11hdsfswyp?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Place Stanislas - Cathédrale', 
       coords: [48.691948, 6.186005] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Place+Stanislas+-+Cath%C3%A9drale/@48.6916274,6.1853283,19.23z/data=!4m8!3m7!1s0x4794986c889f63e5:0xf8f0e358a4549a95!6m1!1v4!8m2!3d48.6918295!4d6.1856525!16s%2Fg%2F11x8hzx_z8?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Cath%C3%A9drale/@48.6917588,6.185594,94a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794986c843d2219:0x8799d1f09996782a!6m1!1v5!8m2!3d48.6918729!4d6.1858171!16s%2Fg%2F11yvmtqqdg?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Place+Stanislas+-+Cath%C3%A9drale/@48.6916338,6.1852995,94a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794986c889f63e5:0xf8f0e358a4549a95!6m1!1v5!8m2!3d48.6917649!4d6.1855041!16s%2Fg%2F11x8hzx_z8?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Division de Fer', 
       coords: [48.693370, 6.190932] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Division+de+Fer/@48.693393,6.1909838,19.23z/data=!4m8!3m7!1s0x4794986ab5762d6b:0xb1a68d53a768315c!6m1!1v4!8m2!3d48.6935929!4d6.191462!16s%2Fg%2F11x65l4309?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Division+de+Fer/@48.6935064,6.1913588,78a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794986ab5762d6b:0xb1a68d53a768315c!6m1!1v5!8m2!3d48.6935349!4d6.1913201!16s%2Fg%2F11x65l4309?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Division+de+Fer/@48.6935064,6.1913588,78a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794986ab35f87c5:0x33f8c49c9c0a17fd!6m1!1v5!8m2!3d48.6936499!4d6.1916031!16s%2Fg%2F11ywth70qn?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Deux Rives - Olympes de Gouges', 
       coords: [48.695032, 6.194019] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Deux+Rives+-+O.+de+Gouges/@48.6955688,6.1950588,19.23z/data=!4m8!3m7!1s0x4794983fb17798cd:0x66e1c0196b6f3ab8!6m1!1v4!8m2!3d48.6957145!4d6.195355!16s%2Fg%2F11x65ht3x1?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Deux+Rives+-+O.+de+Gouges/@48.6955977,6.195341,80a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794983fb17798cd:0x66e1c0196b6f3ab8!6m1!1v5!8m2!3d48.6956529!4d6.1952551!16s%2Fg%2F11x65ht3x1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Deux+Rives+-+O.+de+Gouges/@48.6955977,6.195341,80a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794983fadfba983:0x8ee6aae429f2b819!6m1!1v5!8m2!3d48.6957429!4d6.1954981!16s%2Fg%2F11yvmtfd4b?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Cristalleries - Stade Marcel Picot', 
       coords: [48.697523, 6.198829] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Cristalleries+-+Stade+M.+Picot/@48.6974199,6.1984788,19.28z/data=!4m8!3m7!1s0x4794983eba48d66d:0xf2fade127808a2a8!6m1!1v4!8m2!3d48.697525!4d6.1988255!16s%2Fg%2F11x65j8xkm?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Cristalleries+-+Stade+M.+Picot/@48.6973888,6.1987929,77a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794983ebbcece39:0x918cd49d7037ad1c!6m1!1v5!8m2!3d48.697491!4d6.19865!16s%2Fg%2F11h_1kwbdq?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Cristalleries+-+Stade+M.+Picot/@48.6973888,6.1987929,77a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794983eb0f43b41:0xee859460e911aed6!6m1!1v5!8m2!3d48.6975589!4d6.199001!16s%2Fg%2F11ywtghkz0?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Mairie de Saint Max', 
       coords: [48.700510, 6.207530] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Mairie+de+Saint-Max/@48.7004973,6.2070828,19.06z/data=!4m8!3m7!1s0x4794983060646ccd:0x13ac836c5512b289!6m1!1v4!8m2!3d48.7005544!4d6.2077635!16s%2Fg%2F11x65hphlb?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Mairie+de+Saint-Max/@48.7005666,6.2076585,72a,38y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794983060646ccd:0x13ac836c5512b289!6m1!1v5!8m2!3d48.7005544!4d6.2077635!16s%2Fg%2F11x65hphlb?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Mairie+de+Saint-Max/@48.7005666,6.2076585,72a,38y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x4794983060646ccd:0x13ac836c5512b289!6m1!1v5!8m2!3d48.7005544!4d6.2077635!16s%2Fg%2F11x65hphlb?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Washington Foch', 
       coords: [48.702124, 6.213303] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Washington+Foch/@48.702441,6.2134798,19.06z/data=!4m8!3m7!1s0x4794983205ad5595:0x34bfe6e590cfe223!6m1!1v4!8m2!3d48.7021911!4d6.2132437!16s%2Fg%2F1tdf08lj?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Washington+Foch/@48.7021021,6.2133305,75a,35.4y,1.52t/data=!3m1!1e3!4m8!3m7!1s0x4794983205ad5595:0x34bfe6e590cfe223!6m1!1v5!8m2!3d48.7021911!4d6.2132437!16s%2Fg%2F1tdf08lj?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Clinique Pasteur', 
       coords: [48.703162, 6.216946] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Clinique+Pasteur/@48.7030829,6.2161898,19.06z/data=!4m8!3m7!1s0x4794982d42102d8f:0x58845e8a66c543cb!6m1!1v4!8m2!3d48.703242!4d6.217148!16s%2Fg%2F11c6cnt_n4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Clinique+Pasteur/@48.7031829,6.2168594,91a,35y,1.58t/data=!3m1!1e3!4m8!3m7!1s0x4794982d7a0e9997:0x4ac4a11cb14a8b03!6m1!1v5!8m2!3d48.7032191!4d6.2168322!16s%2Fg%2F11fn2665sm?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Clinique+Pasteur/@48.7031879,6.2171733,91a,35y,1.58t/data=!3m1!1e3!4m8!3m7!1s0x4794982d6994fec3:0xd894842ea69562d!6m1!1v5!8m2!3d48.703278!4d6.217435!16s%2Fg%2F11h_1kwbdl?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Essey-Centre', 
       coords: [48.703771, 6.221443] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Essey+Centre/@48.7038826,6.2206614,19.19z/data=!4m8!3m7!1s0x479499d2ec448d9b:0x29e78bed2ddfb9f1!6m1!1v4!8m2!3d48.7036518!4d6.2214678!16s%2Fg%2F11x65hvtvg?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.fr/maps/place/Essey+Centre/@48.70366,6.2207829,135a,35y,1.58t/data=!3m1!1e3!4m8!3m7!1s0x479499d2ec448d9b:0x29e78bed2ddfb9f1!6m1!1v5!8m2!3d48.7036389!4d6.221782!16s%2Fg%2F11x65hvtvg?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.fr/maps/place/Essey+Centre/@48.70366,6.2207829,135a,35y,1.58t/data=!3m1!1e3!4m8!3m7!1s0x479499d2ec4491e1:0x674472ea53cb065b!6m1!1v5!8m2!3d48.7036639!4d6.221153!16s%2Fg%2F11ywt7vp7j?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'ESSEY Mouzimpré', 
@@ -444,17 +622,44 @@ const tramLineT5: TramLine = {
     { 
       name: 'Montet Octroi', 
       coords: [48.668397, 6.168561] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Montet+Octroi/@48.6684982,6.1686891,21z/data=!4m8!3m7!1s0x479498838c8c0383:0xdc3e28efa34f16be!6m1!1v5!8m2!3d48.6684475!4d6.1685625!16s%2Fg%2F11mcbbykq4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre Roberval',
+          url: 'https://www.google.fr/maps/place/Montet+Octroi/@48.6683404,6.1685493,109m/data=!3m1!1e3!4m8!3m7!1s0x479498838c8c0383:0xdc3e28efa34f16be!6m1!1v5!8m2!3d48.6683959!4d6.1684431!16s%2Fg%2F11mcbbykq4?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/Montet+Octroi/@48.6683404,6.1685493,109m/data=!3m1!1e3!4m8!3m7!1s0x479498838b582b75:0x2e39acac89ba33c7!6m1!1v5!8m2!3d48.6684909!4d6.1686951!16s%2Fg%2F11hdsg65j_?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'ARTEM - Blandant - Thermal', 
       coords: [48.671964, 6.172453] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/ARTEM+-+Blandan+-+Thermal/@48.672093,6.1721975,19.24z/data=!4m8!3m7!1s0x47949886fda87255:0x63caae178d22b4ef!6m1!1v5!8m2!3d48.6720305!4d6.172642!16s%2Fg%2F11x8hz8x2h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre Roberval',
+          url: 'https://www.google.fr/maps/place/ARTEM+-+Blandan+-+Thermal/@48.6719053,6.1724845,99m/data=!3m1!1e3!4m8!3m7!1s0x47949886fda87293:0x408a91bddda628de!6m1!1v5!8m2!3d48.6719789!4d6.1723281!16s%2Fg%2F11myzt_17_?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.fr/maps/place/ARTEM+-+Blandan+-+Thermal/@48.6719053,6.1724845,99m/data=!3m1!1e3!4m8!3m7!1s0x47949886fda87255:0x63caae178d22b4ef!6m1!1v5!8m2!3d48.6720305!4d6.172642!16s%2Fg%2F11x8hz8x2h?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Exelmans', 
       coords: [48.675217, 6.176070] as [number, number],
-      googleMapsUrl: 'https://www.google.fr/maps/place/Exelmans/@48.6749411,6.1754651,19.77z/data=!4m8!3m7!1s0x4794987d4fe9b613:0xbc301fb9447045cd!6m1!1v5!8m2!3d48.675103!4d6.175924!16s%2Fg%2F11tp_59tn?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+      googleMapsUrls: [
+        {
+          direction: 'Horaires Direction Vandeouvre Roberval',
+          url: 'https://www.google.com/maps/place/Exelmans/@48.6752469,6.1758841,16z/data=!4m8!3m7!1s0x4794987d4f7cc1ab:0xabc2e0a1d45c1f62!6m1!1v5!8m2!3d48.6752469!4d6.1758841!16s%2Fg%2F11ywt9grnh!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Maxéville',
+          url: 'https://www.google.com/maps/place/Exelmans/@48.6750019,6.1758161,16z/data=!4m8!3m7!1s0x4794987d5009e525:0x5ea06c5de0d4bcff!6m1!1v5!8m2!3d48.6750019!4d6.1758161!16s%2Fg%2F11yvmtprld!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        }
+      ]
     },
     { 
       name: 'Jean Jaurès', 
@@ -3311,6 +3516,295 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
 
   const shouldShowMarkers = currentZoom >= 15 && stopsData !== null;
 
+  // Créer des listes des coordonnées des arrêts pour chaque ligne et chaque direction
+  // Structure: lineStopsByDirection[lineId][directionName] = [arrêts dans l'ordre]
+  const lineStopsByDirection = useMemo(() => {
+    const directionMap: Record<string, Record<string, Array<{ name: string; coords: [number, number] }>>> = {};
+    
+    filteredLines.forEach(line => {
+      directionMap[line.id] = {};
+      
+      // Extraire les deux terminus de la description
+      const parts = line.description.split('↔').map(p => p.trim());
+      if (parts.length !== 2) {
+        // Si pas de séparation claire, créer une seule liste par défaut
+        directionMap[line.id]['default'] = line.stops.map(stop => ({
+          name: stop.name,
+          coords: stop.coords
+        }));
+        return;
+      }
+      
+      const [terminus1, terminus2] = parts;
+      
+      // Créer des listes pour chaque direction en préservant l'ordre
+      const direction1Stops: Array<{ name: string; coords: [number, number] }> = [];
+      const direction2Stops: Array<{ name: string; coords: [number, number] }> = [];
+      
+      // Parcourir les arrêts dans l'ordre et les classer selon leur direction
+      line.stops.forEach((stop, index) => {
+        let belongsToDirection1 = false;
+        let belongsToDirection2 = false;
+        
+        // Vérifier si c'est un terminus (premier ou dernier arrêt)
+        const isFirstStop = index === 0;
+        const isLastStop = index === line.stops.length - 1;
+        
+        // Vérifier si l'arrêt correspond à un terminus par son nom
+        const stopNameLower = stop.name.toLowerCase();
+        const isTerminus1 = terminus1.toLowerCase().includes(stopNameLower) || 
+                           stopNameLower.includes(terminus1.toLowerCase().split(' ')[0]) ||
+                           terminus1.toLowerCase().split(' ').some(word => stopNameLower.includes(word));
+        const isTerminus2 = terminus2.toLowerCase().includes(stopNameLower) || 
+                           stopNameLower.includes(terminus2.toLowerCase().split(' ')[0]) ||
+                           terminus2.toLowerCase().split(' ').some(word => stopNameLower.includes(word));
+        
+        // Vérifier si l'arrêt a des directions spécifiques
+        if (stop.googleMapsUrls && stop.googleMapsUrls.length > 0) {
+          stop.googleMapsUrls.forEach(link => {
+            const directionMatch = link.direction.match(/Direction\s+(.+)$/);
+            if (directionMatch) {
+              const destinationCity = directionMatch[1].trim().toLowerCase();
+              
+              // Vérifier vers quel terminus cette direction pointe
+              const terminus1Lower = terminus1.toLowerCase();
+              const terminus2Lower = terminus2.toLowerCase();
+              
+              const matchesTerminus1 = terminus1Lower.includes(destinationCity) || 
+                                      destinationCity.includes(terminus1Lower.split(' ')[0]) ||
+                                      terminus1Lower.split(' ').some(word => word.length > 2 && destinationCity.includes(word)) ||
+                                      destinationCity.split(' ').some(word => word.length > 2 && terminus1Lower.includes(word));
+              const matchesTerminus2 = terminus2Lower.includes(destinationCity) || 
+                                      destinationCity.includes(terminus2Lower.split(' ')[0]) ||
+                                      terminus2Lower.split(' ').some(word => word.length > 2 && destinationCity.includes(word)) ||
+                                      destinationCity.split(' ').some(word => word.length > 2 && terminus2Lower.includes(word));
+              
+              if (matchesTerminus2) {
+                belongsToDirection2 = true;
+              } else if (matchesTerminus1) {
+                belongsToDirection1 = true;
+              }
+            }
+          });
+        } else if (stop.googleMapsUrl) {
+          // Arrêt sans direction spécifique, l'ajouter aux deux listes
+          belongsToDirection1 = true;
+          belongsToDirection2 = true;
+        }
+        
+        // Ajouter les terminus aux listes appropriées même s'ils n'ont pas de direction correspondante
+        if (isTerminus1 || (isFirstStop && !belongsToDirection1 && !belongsToDirection2)) {
+          belongsToDirection1 = true;
+        }
+        if (isTerminus2 || (isLastStop && !belongsToDirection1 && !belongsToDirection2)) {
+          belongsToDirection2 = true;
+        }
+        
+        // Ajouter l'arrêt aux listes appropriées
+        if (belongsToDirection1) {
+          direction1Stops.push({
+            name: stop.name,
+            coords: stop.coords
+          });
+        }
+        if (belongsToDirection2) {
+          direction2Stops.push({
+            name: stop.name,
+            coords: stop.coords
+          });
+        }
+      });
+      
+      // Les arrêts dans line.stops sont dans l'ordre du trajet de terminus1 vers terminus2
+      // direction1Stops et direction2Stops sont construits dans l'ordre original (terminus1 → terminus2)
+      // 
+      // Pour la direction vers terminus1 (depuis terminus2) :
+      // - On garde l'ordre original car on part de terminus2 et on va vers terminus1
+      // - direction1Stops est déjà dans le bon ordre : [terminus2, ..., terminus1]
+      //
+      // Pour la direction vers terminus2 (depuis terminus1) :
+      // - On doit inverser car on part de terminus1 et on va vers terminus2
+      // - direction2Stops doit être inversé : [terminus1, ..., terminus2] devient [terminus2, ..., terminus1]
+      // - Mais en fait, on veut [terminus1, ..., terminus2], donc on garde l'ordre original
+      
+      // En fait, les deux listes sont construites dans l'ordre original (terminus1 → terminus2)
+      // Pour direction1 (vers terminus1 depuis terminus2), on garde l'ordre car on part de terminus2
+      // Pour direction2 (vers terminus2 depuis terminus1), on garde aussi l'ordre car on part de terminus1
+      
+      // Stocker les listes avec les noms des terminus comme clés
+      if (direction1Stops.length > 0) {
+        directionMap[line.id][terminus1] = direction1Stops; // Ordre : terminus2 → terminus1 (ordre original)
+      }
+      if (direction2Stops.length > 0) {
+        directionMap[line.id][terminus2] = direction2Stops; // Ordre : terminus1 → terminus2 (ordre original)
+      }
+      
+      // Si aucune liste n'a été créée, créer une liste par défaut
+      if (Object.keys(directionMap[line.id]).length === 0) {
+        directionMap[line.id]['default'] = line.stops.map(stop => ({
+          name: stop.name,
+          coords: stop.coords
+        }));
+      }
+    });
+    
+    return directionMap;
+  }, [filteredLines]);
+
+  // Fonction pour trouver les coordonnées du prochain arrêt dans une direction donnée
+  const getNextStopCoords = useCallback((
+    currentStopName: string,
+    _currentStopCoords: [number, number],
+    lineId: string,
+    directionText: string
+  ): [number, number] | null => {
+    // Extraire le nom de la ville de destination depuis la direction
+    const directionMatch = directionText.match(/Direction\s+(.+)$/);
+    if (!directionMatch) return null;
+    
+    const destinationCity = directionMatch[1].trim();
+    
+    // Récupérer les listes d'arrêts par direction pour cette ligne
+    const lineDirections = lineStopsByDirection[lineId];
+    if (!lineDirections) return null;
+    
+    // Trouver la liste correspondant à cette direction
+    let stopsList: Array<{ name: string; coords: [number, number] }> | null = null;
+    
+    // D'abord, chercher dans les noms des terminus (plus fiable)
+    const fullLine = filteredLines.find(l => l.id === lineId);
+    if (fullLine) {
+      const parts = fullLine.description.split('↔').map(p => p.trim());
+      if (parts.length === 2) {
+        const [terminus1, terminus2] = parts;
+        const terminus1Lower = terminus1.toLowerCase();
+        const terminus2Lower = terminus2.toLowerCase();
+        const destinationCityLower = destinationCity.toLowerCase();
+        
+        // Vérifier si la destination correspond à un terminus (matching plus flexible)
+        const matchesTerminus1 = terminus1Lower.includes(destinationCityLower) || 
+                                destinationCityLower.includes(terminus1Lower.split(' ')[0]) ||
+                                terminus1Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
+                                destinationCityLower.split(' ').some(word => terminus1Lower.includes(word));
+        const matchesTerminus2 = terminus2Lower.includes(destinationCityLower) || 
+                                destinationCityLower.includes(terminus2Lower.split(' ')[0]) ||
+                                terminus2Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
+                                destinationCityLower.split(' ').some(word => terminus2Lower.includes(word));
+        
+        if (matchesTerminus1 && lineDirections[terminus1]) {
+          stopsList = lineDirections[terminus1];
+        } else if (matchesTerminus2 && lineDirections[terminus2]) {
+          stopsList = lineDirections[terminus2];
+        }
+      }
+    }
+    
+    // Si pas trouvé, chercher dans les clés de direction
+    if (!stopsList) {
+      for (const [directionName, stops] of Object.entries(lineDirections)) {
+        const directionNameLower = directionName.toLowerCase();
+        const destinationCityLower = destinationCity.toLowerCase();
+        
+        if (directionNameLower.includes(destinationCityLower) || 
+            destinationCityLower.includes(directionNameLower.split(' ')[0]) ||
+            directionNameLower.split(' ').some(word => destinationCityLower.includes(word)) ||
+            destinationCityLower.split(' ').some(word => directionNameLower.includes(word))) {
+          stopsList = stops;
+          break;
+        }
+      }
+    }
+    
+    // Si toujours pas trouvé, utiliser la liste par défaut
+    if (!stopsList && lineDirections['default']) {
+      stopsList = lineDirections['default'];
+    }
+    
+    if (!stopsList || stopsList.length === 0) return null;
+    
+    // Trouver l'index de l'arrêt actuel dans la liste de cette direction
+    // Utiliser un matching plus flexible pour trouver l'arrêt (gérer les variations de nom)
+    const currentStopIndex = stopsList.findIndex(stop => {
+      const stopNameLower = stop.name.toLowerCase();
+      const currentNameLower = currentStopName.toLowerCase();
+      return stopNameLower === currentNameLower || 
+             stopNameLower.includes(currentNameLower) || 
+             currentNameLower.includes(stopNameLower);
+    });
+    
+    if (currentStopIndex === -1) return null;
+    
+    // Déterminer la direction du trajet
+    // Si on va vers terminus2 depuis terminus1, on va vers l'avant (index + 1)
+    // Si on va vers terminus1 depuis terminus2, on va vers l'arrière (index - 1)
+    let goingForward = true;
+    
+    if (fullLine) {
+      const parts = fullLine.description.split('↔').map(p => p.trim());
+      if (parts.length === 2) {
+        const [terminus1, terminus2] = parts;
+        const terminus1Lower = terminus1.toLowerCase();
+        const terminus2Lower = terminus2.toLowerCase();
+        const destinationCityLower = destinationCity.toLowerCase();
+        
+        // Vérifier vers quel terminus on va
+        const matchesTerminus1 = terminus1Lower.includes(destinationCityLower) || 
+                                destinationCityLower.includes(terminus1Lower.split(' ')[0]) ||
+                                terminus1Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
+                                destinationCityLower.split(' ').some(word => terminus1Lower.includes(word));
+        const matchesTerminus2 = terminus2Lower.includes(destinationCityLower) || 
+                                destinationCityLower.includes(terminus2Lower.split(' ')[0]) ||
+                                terminus2Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
+                                destinationCityLower.split(' ').some(word => terminus2Lower.includes(word));
+        
+        // Les listes sont dans l'ordre original : terminus2 (début) → terminus1 (fin)
+        // Si on va vers terminus1, on va vers l'avant dans la liste (vers la fin)
+        // Si on va vers terminus2, on va vers l'arrière dans la liste (vers le début)
+        if (matchesTerminus1) {
+          goingForward = true; // Vers l'avant (vers la fin de la liste)
+        } else if (matchesTerminus2) {
+          goingForward = false; // Vers l'arrière (vers le début de la liste)
+        }
+      }
+    }
+    
+    // Trouver le prochain arrêt dans la bonne direction
+    if (goingForward) {
+      // Aller vers l'avant dans la liste
+      if (currentStopIndex < stopsList.length - 1) {
+        return stopsList[currentStopIndex + 1].coords;
+      }
+    } else {
+      // Aller vers l'arrière dans la liste
+      if (currentStopIndex > 0) {
+        return stopsList[currentStopIndex - 1].coords;
+      }
+    }
+    
+    return null;
+  }, [lineStopsByDirection, filteredLines]);
+
+  // Fonction pour calculer l'angle entre deux points géographiques (en degrés)
+  // Pour une carte web, l'angle doit être calculé en tenant compte que :
+  // - Longitude (lng) = axe X (est-ouest)
+  // - Latitude (lat) = axe Y (nord-sud, mais inversé sur l'écran)
+  const calculateAngle = useCallback((
+    from: [number, number], // [lat, lng]
+    to: [number, number]    // [lat, lng]
+  ): number => {
+    // Calculer les différences
+    const deltaLng = to[1] - from[1]; // Différence en longitude (X)
+    const deltaLat = from[0] - to[0]; // Différence en latitude (Y, inversé car lat augmente vers le nord)
+    
+    // Calculer l'angle avec atan2
+    // atan2(y, x) donne l'angle depuis l'axe X positif
+    // Sur une carte : 0° = Est, 90° = Nord, 180° = Ouest, 270° = Sud
+    const angle = Math.atan2(deltaLat, deltaLng) * 180 / Math.PI;
+    
+    // Normaliser l'angle entre 0 et 360
+    return (angle + 360) % 360;
+  }, []);
+
   return (
     <>
       <ZoomController onZoomChange={setCurrentZoom} />
@@ -3874,65 +4368,119 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
               click: () => setSelectedStop(`stop-${index}`)
             }}
           >
-            <Popup offset={[0, -10]}>
-              <div className="bus-stop-popup">
+            <Popup offset={[0, -10]} closeButton={false}>
+              <div className="venue-popup">
                 <h3>{stop.name}</h3>
                 {stop.lines.sort((a, b) => a.id.localeCompare(b.id)).map((line, lineIndex) => (
-                  <div key={`${line.id}-${lineIndex}`} style={{ marginBottom: lineIndex < stop.lines.length - 1 ? '12px' : '0' }}>
-                <p className="line-info">
-                  <span className="line-name" style={{ color: line.color }}>
-                    {line.name}
-                  </span>
-                  <br />
-                  <small>{line.description}</small>
-                </p>
+                  <div key={`${line.id}-${lineIndex}`}>
+                    <p className="line-info">
+                      <span className="line-name" style={{ color: line.color }}>
+                        {line.name}
+                      </span>
+                    </p>
                     {/* Gérer les deux types de structure */}
                     {line.googleMapsUrl ? (
                       // Structure simple avec un seul lien
-                      <button 
-                        className="schedule-button"
-                        style={{ backgroundColor: line.color }}
-                        onClick={async () => {
-                          if (Capacitor.isNativePlatform()) {
-                            try {
-                              await Browser.open({ url: line.googleMapsUrl! });
-                            } catch (error) {
-                              logger.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
-                              window.open(line.googleMapsUrl!, '_blank');
-                            }
-                          } else {
-                            window.open(line.googleMapsUrl!, '_blank');
-                          }
-                        }}
-                      >
-                        Voir les horaires {line.name}
-                      </button>
-                    ) : line.googleMapsUrls ? (
-                      // Structure avec plusieurs liens selon la direction
-                      line.googleMapsUrls.map((link, linkIndex) => (
+                      <div className="popup-buttons">
                         <button 
-                          key={linkIndex}
                           className="schedule-button"
-                          style={{ 
-                            backgroundColor: line.color,
-                            marginBottom: linkIndex < line.googleMapsUrls!.length - 1 ? '8px' : '0'
-                          }}
+                          style={{ backgroundColor: line.color }}
                           onClick={async () => {
                             if (Capacitor.isNativePlatform()) {
                               try {
-                                await Browser.open({ url: link.url });
+                                await Browser.open({ url: line.googleMapsUrl! });
                               } catch (error) {
                                 logger.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
-                                window.open(link.url, '_blank');
+                                window.open(line.googleMapsUrl!, '_blank');
                               }
                             } else {
-                              window.open(link.url, '_blank');
+                              window.open(line.googleMapsUrl!, '_blank');
                             }
                           }}
                         >
-                          {link.direction}
+                          Voir les horaires {line.name}
                         </button>
-                      ))
+                      </div>
+                    ) : line.googleMapsUrls ? (
+                      // Structure avec plusieurs liens selon la direction
+                      // Trier les boutons : Laxou en haut, Houdemont en bas, etc.
+                      (() => {
+                        const sortedLinks = [...line.googleMapsUrls].sort((a, b) => {
+                          const aDir = a.direction.toLowerCase();
+                          const bDir = b.direction.toLowerCase();
+                          
+                          // Ordre de tri : Laxou, puis Houdemont, puis autres par ordre alphabétique
+                          if (aDir.includes('laxou') && !bDir.includes('laxou')) return -1;
+                          if (!aDir.includes('laxou') && bDir.includes('laxou')) return 1;
+                          if (aDir.includes('houdemont') && !bDir.includes('houdemont')) return 1;
+                          if (!aDir.includes('houdemont') && bDir.includes('houdemont')) return -1;
+                          
+                          return aDir.localeCompare(bDir);
+                        });
+                        
+                        return (
+                          <div className="popup-buttons">
+                            {sortedLinks.map((link, linkIndex) => {
+                              // Trouver les coordonnées du prochain arrêt dans la liste ordonnée
+                              const nextStopCoords = getNextStopCoords(stop.name, stop.coords, line.id, link.direction);
+                              
+                              // Calculer l'angle de la flèche si on a les coordonnées du prochain arrêt
+                              const arrowAngle = nextStopCoords 
+                                ? calculateAngle(stop.coords, nextStopCoords)
+                                : null;
+                              
+                              return (
+                                <button 
+                                  key={linkIndex}
+                                  className="schedule-button"
+                                  style={{ backgroundColor: line.color }}
+                                  onClick={async () => {
+                                    if (Capacitor.isNativePlatform()) {
+                                      try {
+                                        await Browser.open({ url: link.url });
+                                      } catch (error) {
+                                        logger.error('Erreur lors de l\'ouverture dans le navigateur natif:', error);
+                                        window.open(link.url, '_blank');
+                                      }
+                                    } else {
+                                      window.open(link.url, '_blank');
+                                    }
+                                  }}
+                                >
+                                  <span>Horaires Direction : </span>
+                                  {arrowAngle !== null ? (
+                                    <span 
+                                      className="direction-arrow"
+                                      style={{
+                                        display: 'inline-block',
+                                        transform: `rotate(${arrowAngle}deg)`,
+                                        transition: 'transform 0.3s ease'
+                                      }}
+                                    >
+                                      <svg 
+                                        width="20" 
+                                        height="20" 
+                                        viewBox="0 0 24 24" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        strokeWidth="4" 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round"
+                                        style={{ display: 'block' }}
+                                      >
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                        <polyline points="12 5 19 12 12 19" />
+                                      </svg>
+                                    </span>
+                                  ) : (
+                                    <span>→</span>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()
                     ) : null}
                   </div>
                 ))}

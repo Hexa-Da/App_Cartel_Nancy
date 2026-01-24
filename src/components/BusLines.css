@@ -6,56 +6,60 @@
   transition: all 0.3s ease;
 }
 
-/* Popup des arrêts de bus - Style copié-collé exact des venues */
-.bus-stop-popup {
-  min-width: min(250px, 90vw);
-  padding: 1rem;
-  background-color: var(--bg-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px var(--shadow-color);
-}
-
-.bus-stop-popup h3 {
-  margin: 0 0 0.5rem 0;
+/* Styles pour les popups des arrêts - Utilisation du style venue-popup */
+.venue-popup .line-info {
+  margin: 0 0 clamp(var(--spacing-sm), 1.5vw, var(--spacing-sm)) 0;
+  padding: clamp(var(--spacing-sm), 1.5vw, var(--spacing-sm));
   color: var(--text-color);
-  font-size: clamp(1rem, 4vw, 1.2rem);
-  font-weight: 600;
+  font-size: clamp(0.7rem, 2vw, 0.8rem);
+  text-align: center;
+  background: var(--bg-color);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  border-radius: clamp(var(--radius-sm), 1.5vw, var(--radius-sm));
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
-.line-info {
-  margin: 0 0 0.5rem 0;
-  color: var(--text-color-light);
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-}
-
-.line-name {
-  font-weight: 600;
+.venue-popup .line-name {
+  font-weight: 700;
   color: var(--text-color);
+  font-size: clamp(0.85rem, 3vw, 1rem);
 }
 
-.line-info small {
-  color: var(--text-color-light);
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
+/* Bouton "Horaires Direction" - Style aligné avec les boutons des venues */
+.venue-popup .schedule-button,
+.leaflet-popup-content-wrapper .schedule-button,
+.leaflet-popup-content .schedule-button {
+  width: 100% !important;
+  padding: 3px 5px !important;
+  color: white !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: clamp(0.7rem, 2vw, 0.75rem) !important;
+  font-weight: normal !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 32px !important;
+  gap: 0.5rem !important;
 }
 
-/* Bouton "Voir les horaires" - Style copié-collé exact des boutons maps des venues */
-.schedule-button {
+.direction-arrow {
+  display: inline-block;
+  transform-origin: center;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+.direction-arrow svg {
   width: 100%;
-  padding: 0.75rem 1rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 3vw, 0.9rem);
-  transition: all 0.3s ease;
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
-  min-height: 44px;
+  height: 100%;
+  color: currentColor;
 }
 
-/* Media queries pour les petits écrans - Copié-collé exact des venues */
-@media (max-width: 600px) { /* BREAKPOINTS.smallTablet */
-  .bus-stop-popup {
-    max-width: 85vw;
-  }
-}
