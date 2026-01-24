@@ -932,15 +932,6 @@ body.ios .location-error {
   min-width: 44px;
 }
 
-.retry-button:hover {
-  background: var(--bg-secondary);
-  color: var(--danger-color);
-}
-
-.retry-button:active {
-  transform: scale(0.95);
-}
-
 .retry-icon {
   width: 24px;
   height: 24px;

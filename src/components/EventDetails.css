@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-header);
+  z-index: var(--z-content-high);
   padding: clamp(8px, 2vw, 16px);
 }
 

@@ -31,6 +31,7 @@ const VenueForm: React.FC = () => {
     selectedIndicationType,
     setSelectedIndicationType,
     tempMarker,
+    setTempMarker,
     editingVenue,
     setEditingVenue,
     isPlacingMarker,

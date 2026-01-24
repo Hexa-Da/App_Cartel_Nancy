@@ -44,6 +44,7 @@ import './components/ModalForm.css';
 import PartyMap from './pages/PartyMap';
 import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
+import EventDetails, { Event as EventDetailsEvent } from './components/EventDetails';
 import { venueService } from './services/VenueService';
 import { matchService } from './services/MatchService';
 import { mapService } from './services/MapService';
@@ -1421,12 +1422,21 @@ function App() {
         }
         
         try {
+          // Mise à jour Firebase - c'est l'opération critique
           await venueService.updateVenue(editingVenue.id, updatedVenue);
-          updateMapMarkers();
-          safeTriggerMarkerUpdate();
           
-          // Ajouter l'action à l'historique avec une fonction d'annulation
-          addToHistory(venueService.createUpdateHistoryAction(editingVenue.id, venueBefore, updatedVenue));
+          // Si la mise à jour Firebase réussit, on fait les opérations secondaires
+          // Ces opérations sont dans un try/catch séparé pour ne pas bloquer en cas d'erreur
+          try {
+            updateMapMarkers();
+            safeTriggerMarkerUpdate();
+            
+            // Ajouter l'action à l'historique avec une fonction d'annulation
+            addToHistory(venueService.createUpdateHistoryAction(editingVenue.id, venueBefore, updatedVenue));
+          } catch (secondaryError) {
+            // Log l'erreur mais ne bloque pas - la mise à jour a réussi
+            logger.error('Erreur lors des opérations secondaires après mise à jour:', secondaryError);
+          }
           
           // Réinitialiser le formulaire et l'état d'édition
           setNewVenueName('');
@@ -1440,6 +1450,7 @@ function App() {
           setEditingVenue({ id: null, venue: null });
           setIsAddingPlace(false);
         } catch (error) {
+          // Seulement cette erreur est critique - la mise à jour Firebase a échoué
           logger.error('Erreur lors de la mise à jour du lieu:', error);
           alert('Une erreur est survenue lors de la mise à jour du lieu.');
         }
@@ -3091,13 +3102,60 @@ function App() {
     };
   }, []);
 
-  const handleEventSelect = (event: any) => {
-    setSelectedEvent(event);
-    setActiveTab('map'); // Fermer le panneau en revenant à l'onglet map
+  // Fonction pour convertir un événement EventsTab au format EventDetails
+  const convertEventToEventDetails = (event: any): EventDetailsEvent | null => {
+    if (!event) return null;
+    
+    const [date, time] = event.date.split('T');
+    const timeOnly = time ? time.split('.')[0] : '';
+    const endTimeOnly = event.endTime ? event.endTime.split('T')[1]?.split('.')[0] : undefined;
+    
+    return {
+      type: event.type,
+      time: timeOnly,
+      endTime: endTimeOnly,
+      date: date,
+      name: event.type === 'match' ? (event.teams || event.name) : event.name,
+      teams: event.teams,
+      description: event.description,
+      color: event.type === 'party' ? '#9C27B0' : '#4CAF50',
+      sport: event.sport,
+      venue: event.venue || event.address,
+      result: event.result
+    };
+  };
+
+  // Fonction pour gérer l'affichage sur la carte depuis EventDetails
+  const handleViewOnMapFromDetails = (venue: Venue) => {
+    // Sauvegarder l'événement avant de le mettre à null
+    const currentEvent = selectedEvent;
+    setSelectedEvent(null); // Fermer EventDetails
+    
+    // Naviguer vers l'onglet map si nécessaire
+    if (activeTab !== 'map') {
+      setActiveTab('map');
+    }
+    
     safeTriggerMarkerUpdate();
     
-    if (event.type === 'party' && isAdmin) {
-      const partyId = event.id.split('-')[1];
+    // Voler vers le lieu sur la carte
+    if (venue.latitude && venue.longitude) {
+      mapRef.current?.flyTo([venue.latitude, venue.longitude], 18, {
+        duration: 2.5
+      });
+      const marker = markersRef.current.find(m => 
+        m.getLatLng().lat === venue.latitude && m.getLatLng().lng === venue.longitude
+      );
+      if (marker) {
+        setTimeout(() => {
+          marker.openPopup();
+        }, 2500);
+      }
+    }
+    
+    // Si c'est une soirée, gérer aussi le cas des parties
+    if (currentEvent && currentEvent.type === 'party' && isAdmin) {
+      const partyId = currentEvent.id.split('-')[1];
       const party = parties.find(p => p.id === partyId || p.name === partyId);
       if (party) {
         mapRef.current?.flyTo([party.latitude, party.longitude], 18, {
@@ -3112,23 +3170,12 @@ function App() {
           }, 2500);
         }
       }
-    } else {
-      // Pour les matchs, y compris la natation
-      const venue = venues.find(v => v.id === event.venueId);
-      if (venue) {
-        mapRef.current?.flyTo([venue.latitude, venue.longitude], 18, {
-          duration: 2.5
-        });
-        const marker = markersRef.current.find(m => 
-          m.getLatLng().lat === venue.latitude && m.getLatLng().lng === venue.longitude
-        );
-        if (marker) {
-          setTimeout(() => {
-            marker.openPopup();
-          }, 2500);
-        }
-      }
     }
+  };
+
+  const handleEventSelect = (event: any) => {
+    // Afficher EventDetails au lieu d'aller directement sur la carte
+    setSelectedEvent(event);
   };
 
   const handleAdminClick = async () => {
@@ -4327,6 +4374,16 @@ function App() {
         )}
 
       {activeTab === 'party-map' && <PartyMap />}
+
+      {/* EventDetails Modal */}
+      {selectedEvent && convertEventToEventDetails(selectedEvent) && (
+        <EventDetails
+          event={convertEventToEventDetails(selectedEvent)!}
+          onClose={() => setSelectedEvent(null)}
+          onViewOnMap={handleViewOnMapFromDetails}
+          venues={venues}
+        />
+      )}
 
       <Outlet />
     </div>

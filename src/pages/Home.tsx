@@ -445,6 +445,19 @@ const Home: React.FC = () => {
     setSelectedEvent(null);
   };
 
+  const getChampionshipLabel = (championship: string): string => {
+    switch (championship) {
+      case 'male':
+        return 'Masculin';
+      case 'female':
+        return 'Féminin';
+      case 'mixed':
+        return 'Mixte';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="page-content scrollable home-page">
       {/* <h1 className="welcome-title">Bienvenue Au Cartel de Nancy</h1> */}
@@ -485,7 +498,12 @@ const Home: React.FC = () => {
                     ) : (
                       <p className="no-matches">
                         {userPreferences.delegation && userPreferences.delegation !== 'all'
-                          ? `Aucun match de ${sport} trouvé pour la délégation de ${userPreferences.delegation}`
+                          ? (() => {
+                              const championshipLabel = userPreferences.championship !== 'none' 
+                                ? ` ${getChampionshipLabel(userPreferences.championship)}` 
+                                : '';
+                              return `Aucun match de ${sport}${championshipLabel} trouvé pour la délégation de ${userPreferences.delegation}`;
+                            })()
                           : `Aucun match de ${sport} trouvé. Veuillez sélectionner votre délégation dans les paramètres.`}
                       </p>
                     )

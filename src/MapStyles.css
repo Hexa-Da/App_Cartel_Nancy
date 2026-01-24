@@ -124,6 +124,10 @@
   font-weight: 500 !important;
   position: relative !important;
   z-index: var(--z-modal) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
 }
 
 .leaflet-control-zoom-in {

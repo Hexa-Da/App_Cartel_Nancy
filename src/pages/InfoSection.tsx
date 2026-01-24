@@ -57,6 +57,7 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
         icon: <FaUtensils />,
         title: "Infos Dîner",
         faqs: [
+          { question: "Qui a acces au repas du soir ?", answer: "réponse à venir" },
           { question: "Où se déroulent les dîners ?", answer: "réponse à venir" },
           { question: "À quelle heure commence le service ?", answer: "réponse à venir" },
           { question: "Le menu est-il fixe ou au choix ?", answer: "réponse à venir" },
@@ -128,7 +129,7 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
       },
       {
         icon: <FaTrophy />,
-        title: "Podiums et médailles",
+        title: "Podiums et résultats",
         faqs: [
           { question: "Quand ont lieu les remises de médailles ?", answer: "réponse à venir" },
           { question: "Y a-t-il un classement général ?", answer: "réponse à venir" },
@@ -253,6 +254,13 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
 // Composant Accordéon Section (cliquable pour afficher les questions)
 const SectionAccordion: React.FC<{ section: SectionFAQ; isOpen: boolean; onToggle: () => void }> = ({ section, isOpen, onToggle }) => {
   const [openQuestionIndex, setOpenQuestionIndex] = useState<number | null>(null);
+
+  // Fermer la question ouverte quand la section se ferme
+  useEffect(() => {
+    if (!isOpen) {
+      setOpenQuestionIndex(null);
+    }
+  }, [isOpen]);
 
   return (
     <div className={`faq-section ${isOpen ? 'open' : ''}`}>
