@@ -339,7 +339,7 @@ const PartyMap: React.FC = () => {
       try {
         const markersRef = ref(database, `planMarkers/${partyName}`);
         await firebaseLogger.wrapOperation(
-          () => push(markersRef, newMarker),
+          () => Promise.resolve(push(markersRef, newMarker)),
           'write:marker',
           `planMarkers/${partyName}`
         );

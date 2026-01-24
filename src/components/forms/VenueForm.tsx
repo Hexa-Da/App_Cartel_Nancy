@@ -34,7 +34,6 @@ const VenueForm: React.FC = () => {
     setTempMarker,
     editingVenue,
     setEditingVenue,
-    isPlacingMarker,
     setIsPlacingMarker
   } = useForm();
 

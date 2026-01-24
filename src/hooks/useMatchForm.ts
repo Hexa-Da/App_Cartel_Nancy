@@ -34,7 +34,6 @@ export const useMatchForm = ({
   isAdmin,
   venueId,
   matchData,
-  editingMatch,
   onSuccess,
   onError
 }: UseMatchFormProps) => {
@@ -51,10 +50,6 @@ export const useMatchForm = ({
       );
       const venue = snapshot.val();
       if (!venue) return;
-
-      // Extraire latitude/longitude de position si non définis
-      const lat = venue.latitude ?? (venue.position ? venue.position[0] : 0);
-      const lng = venue.longitude ?? (venue.position ? venue.position[1] : 0);
 
       const matchId = uuidv4();
       const match = {

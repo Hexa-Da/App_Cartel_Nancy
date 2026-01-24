@@ -142,9 +142,6 @@
   transform: scale(1.1);
 }
 
-.chat-button.active svg {
-}
-
 .unread-badge {
   position: absolute;
   top: 2px;

@@ -4,30 +4,16 @@
  * Ce composant gère uniquement l'affichage de la carte Leaflet avec :
  * - MapContainer et TileLayer
  * - Composants enfants (LocationMarker, MapEvents, etc.)
- * 
- * Note: OptimizedMarkers.tsx peut être utilisé comme enfant de ce composant,
- * mais nécessite une refactorisation de la logique de marqueurs actuelle
- * (qui utilise L.marker() directement) vers react-leaflet.
- * 
- * Exemple d'utilisation future :
- * <MapView ...>
- *   <OptimizedMarkers 
- *     venues={venues}
- *     onMarkerClick={handleMarkerClick}
- *     eventFilter={eventFilter}
- *     venueFilter={venueFilter}
- *   />
- * </MapView>
  */
 
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ReactNode } from 'react';
+import { ReactNode, MutableRefObject } from 'react';
 
 interface MapViewProps {
   center: [number, number];
   zoom: number;
-  mapRef: React.RefObject<L.Map | null>;
+  mapRef: MutableRefObject<L.Map | null>;
   mapStyle: string;
   children: ReactNode;
   onMapClick?: (e: { latlng: { lat: number; lng: number } }) => void;
@@ -50,16 +36,14 @@ export const MapView: React.FC<MapViewProps> = ({
   zoom,
   mapRef,
   mapStyle,
-  children,
-  onMapClick,
-  onZoomChange
+  children
 }) => {
   return (
     <MapContainer
       center={center}
       zoom={zoom}
       style={{ height: '100%', width: '100%' }}
-      ref={(map) => { mapRef.current = map || null; }}
+      ref={(map) => { (mapRef as MutableRefObject<L.Map | null>).current = map || null; }}
       zoomControl={false}
     >
       <TileLayer

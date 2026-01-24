@@ -87,9 +87,6 @@
   height: clamp(18px, 3vw, 22px);
 }
 
-.nav-button.active .nav-icon svg {
-}
-
 .nav-label {
   /* Changé: Taille de texte adaptative - réduite pour barre plus petite */
   font-size: clamp(8px, 1.8vw, 10px);

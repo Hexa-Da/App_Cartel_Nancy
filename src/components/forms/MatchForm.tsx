@@ -69,7 +69,8 @@ const MatchForm: React.FC = () => {
     }
   };
 
-  const handleUpdateMatch = (venueId: string, matchId: string, updatedData: any) => {
+  // venueId est requis par l'interface mais non utilisé car updateMatch utilise venueId depuis la closure du hook
+  const handleUpdateMatch = (_venueId: string, matchId: string, updatedData: any) => {
     updateMatch(matchId, updatedData);
   };
 

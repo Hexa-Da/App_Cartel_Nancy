@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useCallback } from 'react';
-import { List } from 'react-window';
+// @ts-ignore - react-window types may not be properly exported
+import { FixedSizeList } from 'react-window';
 import './EventsTab.css';
 
 interface Event {
@@ -17,13 +18,6 @@ interface Event {
   isPassed: boolean;
   sport?: string;
   result?: string;
-}
-
-interface EventItemRowProps {
-  events: Event[];
-  onEventClick: (event: Event) => void;
-  formatDateTime: (dateString: string, endTimeString?: string) => string;
-  getSportIcon: (sport: string) => string;
 }
 
 interface EventItemProps {
@@ -171,8 +165,15 @@ const VirtualizedEventList = memo(({
     );
   }
 
+  const Row = ({ index, style, data }: EventItemProps) => {
+    if (!data || !data.events || index >= data.events.length) {
+      return <div style={style} />;
+    }
+    return <EventItem index={index} style={style} data={data} />;
+  };
+
   return (
-    <List
+    <FixedSizeList
       height={height}
       itemCount={itemData.events.length}
       itemSize={itemHeight}
@@ -181,13 +182,8 @@ const VirtualizedEventList = memo(({
       itemData={itemData}
       style={{ padding: '1rem', paddingTop: '1.5rem' }}
     >
-      {({ index, style, data }) => {
-        if (!data || !data.events || index >= data.events.length) {
-          return <div style={style} />;
-        }
-        return <EventItem index={index} style={style} data={data} />;
-      }}
-    </List>
+      {Row as any}
+    </FixedSizeList>
   );
 });
 

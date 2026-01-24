@@ -17,9 +17,7 @@
 
 import React from 'react';
 import './Info.css';
-import { FaUtensils, FaShoppingCart, FaMapMarkedAlt, FaTrophy, FaIdCard, FaGavel, FaHotel, FaFileAlt, FaMoon, FaShieldAlt, FaGlassCheers, FaMusic, FaFileContract, FaRing, FaDice } from 'react-icons/fa';
-import { GiPartyPopper } from 'react-icons/gi';
-import { MdLeaderboard, MdEventNote } from 'react-icons/md';
+import { FaUtensils, FaTrophy, FaHotel, FaFileAlt, FaMusic, FaFileContract, FaRing, FaDice } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 interface InfoCardProps {

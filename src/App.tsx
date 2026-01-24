@@ -19,8 +19,7 @@
 
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Icon, LatLng } from 'leaflet';
-import { useState, useEffect, useRef, createContext, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import './GlobalUtilities.css';
 import './MapStyles.css';
@@ -37,6 +36,7 @@ import { useNavigation, TabType } from './contexts/NavigationContext';
 import { useModal } from './contexts/ModalContext';
 import { useForm } from './contexts/FormContext';
 import { useEditing } from './contexts/EditingContext';
+import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import BusLines from './components/BusLines';
@@ -54,26 +54,6 @@ import { ZoomListener } from './components/map/ZoomListener';
 import { useMapState, mapStyles } from './hooks/useMapState';
 import { useEventFilters } from './hooks/useEventFilters';
 
-// Fix for default marker icons in Leaflet with React
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-
-let DefaultIcon = new Icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  className: 'default-marker-icon'
-});
-
-let UserIcon = new Icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  className: 'user-location-icon' // Cette classe nous permettra de styliser l'icône
-});
-
 // Interfaces moved to src/types/venue.ts
 
 type Place = Venue | Hotel | Party | Restaurant;
@@ -87,14 +67,6 @@ interface HistoryAction {
 
 // Google Analytics initialization moved to src/config/analytics.ts and called in main.tsx
 
-// Créer un contexte pour la position
-const LocationContext = createContext<{
-  position: LatLng | null;
-  isLocationEnabled: boolean;
-}>({
-  position: null,
-  isLocationEnabled: true
-});
 
 // Components moved to src/components/map/
 
@@ -106,64 +78,15 @@ interface Message {
   isAdmin: boolean;
 }
 
-// Interface pour le contexte Outlet
-interface OutletContext {
-  isEditing: boolean;
-  setIsEditing: (isEditing: boolean) => void;
-  isAddingPlace: boolean;
-  setIsAddingPlace: (isAddingPlace: boolean) => void;
-  newVenueName: string;
-  setNewVenueName: (name: string) => void;
-  newVenueDescription: string;
-  setNewVenueDescription: (description: string) => void;
-  newVenueAddress: string;
-  setNewVenueAddress: (address: string) => void;
-  selectedSport: string;
-  setSelectedSport: (sport: string) => void;
-  selectedEmoji: string;
-  setSelectedEmoji: (emoji: string) => void;
-  tempMarker: [number, number] | null;
-  setTempMarker: (marker: [number, number] | null) => void;
-  isPlacingMarker: boolean;
-  setIsPlacingMarker: (isPlacing: boolean) => void;
-  editingVenue: { id: string | null, venue: Venue | null };
-  setEditingVenue: (editing: { id: string | null, venue: Venue | null }) => void;
-  handleAddVenue: () => Promise<void>;
-  handleUpdateVenue: () => Promise<void>;
-  deleteVenue: (id: string) => Promise<void>;
-  editingMatch: { venueId: string | null, match: Match | null };
-  setEditingMatch: (editing: { venueId: string | null, match: Match | null }) => void;
-  newMatch: { date: string, teams: string, description: string, endTime?: string, result?: string };
-  setNewMatch: (match: { date: string, teams: string, description: string, endTime?: string, result?: string }) => void;
-  handleAddMatch: (venueId: string) => Promise<void>;
-  handleUpdateMatch: (venueId: string, matchId: string, updatedData: Partial<Match>) => Promise<void>;
-  deleteMatch: (venueId: string, matchId: string) => Promise<void>;
-  startEditingMatch: (venueId: string, match: Match | null) => void;
-  finishEditingMatch: () => void;
-}
-
-
-
-import VSSForm from './components/VSSForm';
-
 function App() {
   const { activeTab, setActiveTab } = useNavigation();
   const { isEditing, setIsEditing } = useEditing();
   const {
-    showAddMessage,
-    setShowAddMessage,
-    showEmergency,
     setShowEmergency,
     showChat,
     setShowChat,
     chatOriginTab,
     setChatOriginTab,
-    showVSSForm,
-    setShowVSSForm,
-    showEditMatchModal,
-    setShowEditMatchModal,
-    showEditVenueModal,
-    setShowEditVenueModal,
     showEditResultModal,
     setShowEditResultModal,
     showEditDescriptionModal,
@@ -204,15 +127,9 @@ function App() {
     setEditingMatch,
     newMatch,
     setNewMatch,
-    selectedPartyForMap,
     setSelectedPartyForMap
   } = useForm();
   
-  const closeAllPanels = () => {
-    setActiveTab('map');
-    setShowAddMessage(false);
-    setShowEmergency(false);
-  };
   const location = useLocation();
 
   // Forcer l'orientation portrait au démarrage
@@ -283,7 +200,7 @@ function App() {
     isEditingRef.current = isEditing;
   }, [isEditing]);
 
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [_, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [previousTab, setPreviousTab] = useState<TabType>('map');
@@ -341,7 +258,7 @@ function App() {
   }, [location.pathname]);
   
   const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
 
   // Vérification des droits admin depuis localStorage
   useEffect(() => {
@@ -558,7 +475,7 @@ function App() {
     return [
       {
         id: '1',
-        name: "Salle des fêtes de Gentilly",
+        name: "Salle des Fêtes de Gentilly",
         position: [48.698430, 6.139541],
         description: "Repas du Vendredi soir",
         address: "5001F Av. du Rhin, 54100 Nancy",
@@ -730,7 +647,7 @@ function App() {
     }
   }, []);
 
-  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [_selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [editingPartyResult, setEditingPartyResult] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
   const [editingResult, setEditingResult] = useState('');
   const [editingPartyDescription, setEditingPartyDescription] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
@@ -739,24 +656,20 @@ function App() {
   const [editingHotelDescriptionText, setEditingHotelDescriptionText] = useState('');
   const [editingRestaurantDescription, setEditingRestaurantDescription] = useState<{restaurantId: string | null, isEditing: boolean}>({ restaurantId: null, isEditing: false });
   const [editingRestaurantDescriptionText, setEditingRestaurantDescriptionText] = useState('');
-  const [openPopup, setOpenPopup] = useState<string | null>(null);
+  const [_openPopup, setOpenPopup] = useState<string | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [_userLocation, setUserLocation] = useState<[number, number] | null>(null);
   // Use custom hooks for map state and filters
-  const { mapStyle, setMapStyle, currentZoom, setCurrentZoom, mapRef, markersRef, indicationMarkersRef, appAction, setAppAction, triggerMarkerUpdate } = useMapState();
+  const { mapStyle, setMapStyle: _setMapStyle, currentZoom, setCurrentZoom, mapRef, markersRef, indicationMarkersRef, appAction, setAppAction, triggerMarkerUpdate } = useMapState();
   const { eventFilter, setEventFilter, delegationFilter, setDelegationFilter, venueFilter, setVenueFilter, showFemale, setShowFemale, showMale, setShowMale, showMixed, setShowMixed, showFilters, setShowFilters } = useEventFilters();
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [fromEvents, setFromEvents] = useState(false);
+  const [_fromEvents, setFromEvents] = useState(false);
 
   // État pour l'historique des actions et l'index actuel
   const [history, setHistory] = useState<HistoryAction[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    const savedFavorites = localStorage.getItem('favorites');
-    return savedFavorites ? JSON.parse(savedFavorites) : [];
-  });
 
   // triggerMarkerUpdate is now provided by useMapState hook
 
@@ -1121,15 +1034,6 @@ function App() {
     };
   }, [history, historyIndex, venues]);
 
-  // Fonction utilitaire pour mettre à jour le timestamp de dernière lecture
-  const updateLastSeenTimestamp = () => {
-    if (messages.length > 0) {
-      const mostRecentMsg = messages[0];
-      const newTimestamp = mostRecentMsg.timestamp;
-      localStorage.setItem('lastSeenChatTimestamp', String(newTimestamp));
-    }
-  };
-
   // Modifier la fonction qui gère l'ajout d'un lieu
   const handleAddVenue = async () => {
     if (!checkAdminRights()) return;
@@ -1377,7 +1281,6 @@ function App() {
       if (venue) {
         // Sauvegarder l'état avant modification pour pouvoir annuler
         const venueBefore = { ...venue };
-        const venueRef = ref(database, `venues/${editingVenue.id}`);
         
         // Utiliser les coordonnées du marqueur temporaire si disponible
         const coordinates: [number, number] = tempMarker || [venue.latitude, venue.longitude];
@@ -1663,11 +1566,6 @@ function App() {
     setShowLocationPrompt(true);
   };
 
-  const handleDontAskAgain = () => {
-    setShowLocationPrompt(false);
-    setLocationError(null);
-  };
-
   const retryLocation = () => {
     setLocationError(null);
     navigator.geolocation.getCurrentPosition(
@@ -1675,16 +1573,6 @@ function App() {
       handleLocationError,
       { enableHighAccuracy: true }
     );
-  };
-
-  // Fonction pour copier au presse-papier
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Adresse copiée dans le presse-papier !');
-    }).catch(err => {
-      logger.error('Erreur lors de la copie :', err);
-      alert('Erreur lors de la copie de l\'adresse');
-    });
   };
 
   // Générer les marqueurs pour la carte
@@ -2920,127 +2808,6 @@ function App() {
     }
   };
 
-  // Fonction pour obtenir toutes les délégations uniques
-  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur)
-  const getAllDelegations = () => {
-    const delegations = new Set<string>();
-    const excludedKeywords = ['poule', 'perdant', 'vainqueur'];
-    
-    venues.forEach(venue => {
-      if (venue.matches) {
-        venue.matches.forEach(match => {
-          const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map(team => team.trim());
-          teams.forEach(team => {
-            const teamLower = team.toLowerCase();
-            const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
-            // Exclure les "...", les chaînes vides et les mots-clés de phases finales
-            if (team && team !== "..." && team !== "…" && !isExcluded) {
-              delegations.add(team);
-            }
-          });
-        });
-      }
-    });
-    return Array.from(delegations).sort();
-  };
-
-
-  const getVenueOptions = () => {
-    if (eventFilter === 'all' || eventFilter === 'match') {
-      // Proposer tous les lieux qui ont au moins un match correspondant à la délégation ET au(x) genre(s) sélectionné(s)
-      const filteredVenues = venues.filter(venue => {
-        // Filtrage par délégation
-        const delegationMatch =
-          delegationFilter === 'all' ||
-          (venue.matches && venue.matches.some(match =>
-            delegationMatches(match.teams, delegationFilter)
-          ));
-        // Filtrage par genre
-        let genderMatch = true;
-        if (venue.matches && venue.matches.length > 0) {
-          genderMatch = venue.matches.some(match => {
-            const desc = match.description?.toLowerCase() || '';
-            const isFemale = desc.includes('féminin');
-            const isMale = desc.includes('masculin');
-            const isMixed = desc.includes('mixte');
-            return (
-              (isFemale && showFemale) ||
-              (isMale && showMale) ||
-              (isMixed && showMixed) ||
-              (!isFemale && !isMale && !isMixed)
-            );
-          });
-        }
-        return delegationMatch && genderMatch;
-      });
-      return [
-        { value: 'Tous', label: 'Tous les lieux' },
-        ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
-      ];
-    }
-
-    // Pour les soirées et défilés, retourner les lieux fixes
-    if (eventFilter === 'party') {
-      return [
-        { value: 'Tous', label: 'Tous les lieux' },
-        { value: 'place-stanislas', label: 'Place Stanislas' },
-        { value: 'parc-expo', label: 'Parc Expo' },
-        { value: 'zenith', label: 'Zénith' }
-      ];
-    }
-
-    // Pour les sports spécifiques, filtrer les lieux par sport, délégation et genre
-    const filteredVenues = venues.filter(venue => {
-      if (venue.sport !== eventFilter) return false;
-      // Filtrage par délégation
-      const delegationMatch =
-        delegationFilter === 'all' ||
-        (venue.matches && venue.matches.some(match =>
-          match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
-        ));
-      // Filtrage par genre
-      let genderMatch = true;
-      if (venue.matches && venue.matches.length > 0) {
-        genderMatch = venue.matches.some(match => {
-          const desc = match.description?.toLowerCase() || '';
-          const isFemale = desc.includes('féminin');
-          const isMale = desc.includes('masculin');
-          const isMixed = desc.includes('mixte');
-          return (
-            (isFemale && showFemale) ||
-            (isMale && showMale) ||
-            (isMixed && showMixed) ||
-            (!isFemale && !isMale && !isMixed)
-          );
-        });
-      }
-      return delegationMatch && genderMatch;
-    });
-    return [
-      { value: 'Tous', label: 'Tous les lieux' },
-      ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
-    ];
-  };
-
-  const hasGenderMatches = (sport: string): { hasFemale: boolean, hasMale: boolean, hasMixed: boolean } => {
-    let hasFemale = false;
-    let hasMale = false;
-    let hasMixed = false;
-
-    venues.forEach(venue => {
-      if (venue.sport === sport && venue.matches) {
-        venue.matches.forEach(match => {
-          if (match.description?.toLowerCase().includes('féminin')) hasFemale = true;
-          if (match.description?.toLowerCase().includes('masculin')) hasMale = true;
-          if (match.description?.toLowerCase().includes('mixte')) hasMixed = true;
-        });
-      }
-    });
-
-    return { hasFemale, hasMale, hasMixed };
-  };
-
-
   // Calcul du nombre de messages non lus
   const lastSeenChatTimestamp = Number(localStorage.getItem('lastSeenChatTimestamp') || 0);
   const unreadCount = messages.filter(m => m.timestamp > lastSeenChatTimestamp).length;
@@ -3585,6 +3352,27 @@ function App() {
                 <button 
                   className="place-type-button"
                   onClick={() => {
+                    setSelectedPlaceType('indication');
+                    setShowPlaceTypeModal(false);
+                    setIsAddingPlace(true);
+                    setEditingVenue({ id: null, venue: null });
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
+                    setSelectedEventType('DJ contest');
+                    setSelectedIndicationType('Soins');
+                    setSelectedEmoji(indicationTypeEmojis['Soins'] || '📍');
+                    setTempMarker(null);
+                  }}
+                >
+                  <span className="place-type-icon">📍</span>
+                  <span className="place-type-label">Indication</span>
+                </button>
+                <button 
+                  className="place-type-button"
+                  disabled
+                  onClick={() => {
                     setSelectedPlaceType('hotel');
                     setShowPlaceTypeModal(false);
                     setIsAddingPlace(true);
@@ -3603,6 +3391,7 @@ function App() {
                 </button>
                 <button 
                   className="place-type-button"
+                  disabled
                   onClick={() => {
                     setSelectedPlaceType('soirée');
                     setShowPlaceTypeModal(false);
@@ -3623,6 +3412,7 @@ function App() {
                 </button>
                 <button 
                   className="place-type-button"
+                  disabled
                   onClick={() => {
                     setSelectedPlaceType('défilé');
                     setShowPlaceTypeModal(false);
@@ -3642,6 +3432,7 @@ function App() {
                 </button>
                 <button 
                   className="place-type-button"
+                  disabled
                   onClick={() => {
                     setSelectedPlaceType('resto');
                     setShowPlaceTypeModal(false);
@@ -3658,26 +3449,6 @@ function App() {
                 >
                   <span className="place-type-icon">🍽️</span>
                   <span className="place-type-label">Restaurant</span>
-                </button>
-                <button 
-                  className="place-type-button"
-                  onClick={() => {
-                    setSelectedPlaceType('indication');
-                    setShowPlaceTypeModal(false);
-                    setIsAddingPlace(true);
-                    setEditingVenue({ id: null, venue: null });
-                    setNewVenueName('');
-                    setNewVenueDescription('');
-                    setNewVenueAddress('');
-                    setSelectedSport('Football');
-                    setSelectedEventType('DJ contest');
-                    setSelectedIndicationType('Soins');
-                    setSelectedEmoji(indicationTypeEmojis['Soins'] || '📍');
-                    setTempMarker(null);
-                  }}
-                >
-                  <span className="place-type-icon">📍</span>
-                  <span className="place-type-label">Indication</span>
                 </button>
               </div>
               <div className="modal-form-actions">

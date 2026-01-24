@@ -20,11 +20,14 @@ const GA_MEASUREMENT_ID = 'G-C7EB2DWKD0';
  */
 export const setupAnalytics = (): void => {
   // Initialiser dataLayer
-  window.dataLayer = window.dataLayer || [];
+  const windowWithDataLayer = window as Window & { dataLayer: unknown[][] };
+  if (!windowWithDataLayer.dataLayer) {
+    windowWithDataLayer.dataLayer = [];
+  }
   
   // Définir la fonction gtag
   function gtag(...args: unknown[]): void {
-    window.dataLayer.push(args);
+    windowWithDataLayer.dataLayer.push(args);
   }
   
   // Exposer gtag globalement

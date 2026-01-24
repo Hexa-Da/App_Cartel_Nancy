@@ -10,7 +10,7 @@ import {
   FaCoffee, FaBreadSlice, FaUtensils, FaCalendarAlt, FaPizzaSlice, 
   FaBullhorn, FaMapMarkerAlt, FaBook, FaTrophy, FaMusic, FaGlassCheers, FaUsers, 
   FaBus, FaQuestionCircle, FaWrench, FaClock,
-  FaFileAlt, FaShieldAlt, FaHotel, FaExclamationTriangle, FaFolderOpen, FaCheckCircle,
+  FaFileAlt, FaShieldAlt, FaHotel, FaExclamationTriangle, FaFolderOpen,
   FaChevronDown, FaChevronUp
 } from 'react-icons/fa';
 import Parie from './Parie';

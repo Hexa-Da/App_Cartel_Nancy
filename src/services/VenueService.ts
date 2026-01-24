@@ -7,7 +7,7 @@
  * - Gestion de l'historique des actions
  */
 
-import { ref, set, push, remove } from 'firebase/database';
+import { ref, set, push } from 'firebase/database';
 import { database } from '../firebase';
 import { Venue } from '../types';
 import logger from './Logger';

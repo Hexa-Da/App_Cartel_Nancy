@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { ref, onValue, push, remove, set } from 'firebase/database';
-import { database, storage } from '../firebase';
+import { database, app } from '../firebase';
 import { PlanningFile } from '../types';
-import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject } from 'firebase/storage';
+import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject, getStorage } from 'firebase/storage';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import { BREAKPOINTS } from '../config/responsive';
 import logger from '../services/Logger';
@@ -172,7 +172,6 @@ export default function PlanningFiles({
   showFilterSelector = true,
   uploading: externalUploading,
   setUploading: externalSetUploading,
-  uploadProgress: externalUploadProgress,
   setUploadProgress: externalSetUploadProgress,
   hotels = EMPTY_HOTELS,
   restaurants = EMPTY_RESTAURANTS,
@@ -192,17 +191,19 @@ export default function PlanningFiles({
     eventType: ''
   });
   const [internalUploading, setInternalUploading] = useState(false);
-  const [internalUploadProgress, setInternalUploadProgress] = useState(0);
+  const [_, setInternalUploadProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
   // Utiliser les props externes si fournies, sinon les états internes
   const uploading = externalUploading !== undefined ? externalUploading : internalUploading;
-  const uploadProgress = externalUploadProgress !== undefined ? externalUploadProgress : internalUploadProgress;
   const setUploading = externalSetUploading || setInternalUploading;
   const setUploadProgress = externalSetUploadProgress || setInternalUploadProgress;
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Obtenir l'instance réelle de storage (le Proxy ne fonctionne pas avec storageRef)
+  const storageInstance = getStorage(app);
 
 
   // Liste des types d'événements disponibles
@@ -468,7 +469,7 @@ export default function PlanningFiles({
           // Supprimer du storage (ignorer les erreurs de permissions ou 404)
           try {
             await firebaseLogger.wrapOperation(
-              () => deleteObject(storageRef(storage, storagePath)),
+              () => deleteObject(storageRef(storageInstance, storagePath)),
               'delete:storageFile',
               `planningFiles/${storagePath}`
             );
@@ -551,7 +552,7 @@ export default function PlanningFiles({
       optimizer.trackTransfer(fileToUpload.size);
 
       // Upload file to Firebase Storage with progress tracking
-      const storageReference = storageRef(storage, storagePath);
+      const storageReference = storageRef(storageInstance, storagePath);
       const uploadTask = uploadBytesResumable(storageReference, fileToUpload);
 
       // Gérer le suivi de la progression
@@ -884,7 +885,6 @@ export default function PlanningFiles({
       ) : filteredFiles.length > 0 ? (
           <div className="files-list">
           {filteredFiles.map((file) => {
-            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name);
             return (
               <div key={file.id} className="file-item">
                 <div className="file-name">{file.name}</div>

@@ -3279,7 +3279,7 @@ interface BusLinesProps {
 }
 
 const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
-  const [selectedStop, setSelectedStop] = useState<string | null>(null);
+  const [_, setSelectedStop] = useState<string | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(15); // Initial zoom level
 
   const filteredLines = useMemo(() => {
@@ -3295,7 +3295,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
   }, []);
 
   // Utiliser le hook de chargement basé sur le zoom
-  const { data: stopsData, isLoading: isLoadingStops, loadData: loadStops } = useZoomBasedLoading(
+  const { data: stopsData, loadData: loadStops } = useZoomBasedLoading(
     loadStopsData,
     currentZoom,
     15, // Seuil de zoom
@@ -3309,7 +3309,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
     }
   }, [currentZoom, loadStops]);
 
-  const shouldShowMarkers = currentZoom >= 15 && stopsData !== null;48.669879, 6.206965
+  const shouldShowMarkers = currentZoom >= 15 && stopsData !== null;
 
   return (
     <>

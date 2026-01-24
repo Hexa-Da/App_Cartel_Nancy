@@ -35,7 +35,6 @@ export function useLazyData<T>(
   options: UseLazyDataOptions = {}
 ): UseLazyDataReturn<T> {
   const {
-    threshold = 0,
     delay = 0,
     enabled = true
   } = options;
@@ -44,7 +43,7 @@ export function useLazyData<T>(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadData = useCallback(async () => {
     if (!enabled || isLoading || isLoaded) return;
@@ -68,7 +67,7 @@ export function useLazyData<T>(
       clearTimeout(timeoutRef.current);
     }
 
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       loadData();
     }, delay);
   }, [loadData, delay]);

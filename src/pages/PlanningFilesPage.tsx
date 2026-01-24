@@ -36,8 +36,8 @@ const HOTELS = [
 
 // Données hardcodées des restaurants (synchronisées avec App.tsx)
 const RESTAURANTS = [
-  { id: '1', name: "Crous ARTEM" },
-  { id: '2', name: "Parc Saint-Marie" }
+  { id: '1', name: "Salle des Fêtes de Gentilly" },
+  { id: '2', name: "Parc Expo Hall B" }
 ];
 
 // Données hardcodées des soirées (synchronisées avec App.tsx)

@@ -38,10 +38,10 @@ interface DebugLog {
 }
 
 const Home: React.FC = () => {
-  const { getFilteredEvents, getAllDelegations, delegationMatches, isLoadingVenues } = useApp();
+  const { getFilteredEvents, delegationMatches, isLoadingVenues } = useApp();
   const { selectedEvent, setSelectedEvent } = useForm();
   const [events, setEvents] = useState<Place[]>([]);
-  const [debugLogs, setDebugLogs] = useState<DebugLog[]>([]);
+  const [_, setDebugLogs] = useState<DebugLog[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -293,22 +293,8 @@ const Home: React.FC = () => {
   }, [userPreferences, events]);
 
   const getUpcomingMatches = (places: Place[]) => {
-    const now = new Date();
     return places.flatMap(place => {
       if ('matches' in place && Array.isArray(place.matches)) {
-        return place.matches.map((match: Match): ExtendedMatch => ({
-          ...match,
-          venue: place.name,
-          sport: place.sport
-        }));
-      }
-      return [];
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  };
-
-  const getMatchesBySport = (places: Place[], sport: string) => {
-    return places.flatMap(place => {
-      if (place.sport === sport && 'matches' in place && Array.isArray(place.matches)) {
         return place.matches.map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,

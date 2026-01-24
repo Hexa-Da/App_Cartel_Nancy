@@ -13,7 +13,7 @@
  * - Assure la cohérence des types dans toute l'application
  */
 
-import { Match } from './types';
+import { Match } from '../types';
 
 export interface BaseItem {
   id: string;

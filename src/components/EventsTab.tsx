@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import ReactGA from 'react-ga4';
-import { Venue, Match } from '../types';
+import { Venue } from '../types';
 import './EventsTab.css';
 
 interface Party {
@@ -118,7 +118,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
   }, [venues, isVenuesLoading]);
 
   // Fonction pour vérifier si un match est passé
-  const isMatchPassed = (startDate: string, endTime?: string, type: 'match' | 'party' = 'match') => {
+  const isMatchPassed = (startDate: string, endTime?: string) => {
     const now = new Date();
     const start = new Date(startDate);
 
@@ -475,7 +475,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
             teams: match.teams,
             venue: venue.name,
             venueId: venue.id,
-            isPassed: isMatchPassed(match.date, match.endTime, 'match'),
+            isPassed: isMatchPassed(match.date, match.endTime),
             sport: venue.sport,
             result: match.result
           });
@@ -499,7 +499,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
           address: party.address || `${party.latitude}, ${party.longitude}`,
           location: [party.latitude, party.longitude],
           type: 'party',
-          isPassed: isMatchPassed(party.date, endDate.toISOString(), 'party'),
+          isPassed: isMatchPassed(party.date, endDate.toISOString()),
           sport: party.sport,
           result: party.result
         });

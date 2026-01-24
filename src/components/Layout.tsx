@@ -34,14 +34,6 @@ import VenueForm from './forms/VenueForm';
 import MatchForm from './forms/MatchForm';
 import { useNotifications } from '../hooks/useNotifications';
 
-interface Message {
-  id?: string;
-  content: string;
-  sender: string;
-  timestamp: number;
-  isAdmin: boolean;
-}
-
 const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   
@@ -55,7 +47,6 @@ const Layout: React.FC = () => {
     setShowEmergency,
     showChat,
     setShowChat,
-    chatOriginTab,
     showSettings,
     setShowSettings,
     showVSSForm,
@@ -74,31 +65,20 @@ const Layout: React.FC = () => {
     setShowEditHotelDescriptionModal,
     showEditRestaurantDescriptionModal,
     setShowEditRestaurantDescriptionModal,
-    showPlaceTypeModal,
-    setShowPlaceTypeModal,
     closeAllModals
   } = useModal();
   const {
-    selectedPlaceType,
-    setSelectedPlaceType,
     isAddingPlace,
     setIsAddingPlace,
-    isPlacingMarker,
     setIsPlacingMarker,
     selectedEvent,
     setSelectedEvent,
-    selectedPartyForMap,
     setSelectedPartyForMap,
-    editingVenue,
     setEditingVenue,
-    editingMatch,
     setEditingMatch,
-    newMatch,
     setNewMatch,
-    tempMarker,
-    setTempMarker
   } = useForm();
-  const { isAdmin, setIsAdmin, user, setUser, venues, messages, getAllDelegations, hasGenderMatches } = useApp();
+  const { isAdmin, setIsAdmin, user, setUser, messages } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -138,13 +118,12 @@ const Layout: React.FC = () => {
   useEffect(() => {
     let isHandlingPopState = false;
 
-    const handlePopState = (event: PopStateEvent) => {
+    const handlePopState = () => {
       if (isHandlingPopState) return;
       isHandlingPopState = true;
 
       // Utiliser window.location pour avoir la vraie URL actuelle du navigateur
       const currentPath = window.location.pathname;
-      const currentSearch = window.location.search;
 
       // Fermer EventDetails en premier si ouvert
       if (selectedEvent) {
@@ -329,7 +308,6 @@ const Layout: React.FC = () => {
       // Si on désactive le mode édition, on réinitialise tous les états liés à l'édition
       setIsAddingPlace(false);
       setEditingVenue({ id: null, venue: null });
-      setTempMarker(null);
       setIsPlacingMarker(false);
       setEditingMatch({ venueId: null, match: null });
       setNewMatch({

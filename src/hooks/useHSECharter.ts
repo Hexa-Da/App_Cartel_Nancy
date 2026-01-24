@@ -7,7 +7,7 @@
  * - L'activation du bracelet dans Firebase
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ref, get, update } from 'firebase/database';
 import { database } from '../firebase';
 import logger from '../services/Logger';

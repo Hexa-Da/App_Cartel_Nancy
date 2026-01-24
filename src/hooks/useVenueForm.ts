@@ -8,7 +8,7 @@
  * - Le géocodage des adresses
  */
 
-import { ref, push, set, get } from 'firebase/database';
+import { ref, push, set } from 'firebase/database';
 import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import logger from '../services/Logger';

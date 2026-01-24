@@ -5,7 +5,7 @@
  * Particulièrement utile pour les erreurs Firebase non initialisé.
  */
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 import { isFirebaseInitialized } from '../firebase';
 import logger from '../services/Logger';
 import './ErrorBoundary.css';

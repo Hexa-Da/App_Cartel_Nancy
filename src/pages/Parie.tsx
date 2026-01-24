@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ref, get, set, update, onValue } from 'firebase/database';
+import { ref, get, update, onValue } from 'firebase/database';
 import { database } from '../firebase';
 import { useApp } from '../AppContext';
 import { useEditing } from '../contexts/EditingContext';
@@ -75,7 +75,7 @@ const Parie: React.FC = () => {
   // Délégation du participant et votes agrégés
   const [userDelegation, setUserDelegation] = useState<string | null>(null);
   const userDelegationRef = useRef<string | null>(null);
-  const [delegationVotes, setDelegationVotes] = useState<DelegationVotes>({});
+  const [_, setDelegationVotes] = useState<DelegationVotes>({});
   
   // Synchroniser la ref avec le state
   useEffect(() => {

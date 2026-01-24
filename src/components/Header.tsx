@@ -16,7 +16,7 @@
  * - Assure la cohérence de la navigation entre les pages
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SettingsMenu from './SettingsMenu';
 import AdminLoginModal from './AdminLoginModal';

@@ -8,7 +8,7 @@
  * - Vérification si un match est passé
  */
 
-import { Venue, Match } from '../types';
+import { Venue } from '../types';
 
 class MapService {
   /**

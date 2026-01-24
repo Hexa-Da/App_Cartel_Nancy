@@ -266,14 +266,6 @@ class FirebaseLoggerService {
   }
 
   /**
-   * Enregistre un succès (optionnel, pour le debug)
-   */
-  logSuccess(operation: string, path: string, details?: any): void {
-    // Optionnel : on peut logger les succès aussi si besoin
-    // Pour l'instant, on se concentre sur les erreurs
-  }
-
-  /**
    * S'abonner aux nouveaux logs
    */
   subscribe(listener: (log: FirebaseLog) => void): () => void {
