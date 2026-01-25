@@ -572,7 +572,7 @@ const tramLineT5: TramLine = {
       coords: [48.658916, 6.177372] as [number, number],
       googleMapsUrls: [
         {
-          direction: 'Voir les horraires T5',
+          direction: 'Horaires Direction Maxéville',
           url: 'https://www.google.fr/maps/place/Jeanne+d\'Arc/@48.6589205,6.1763562,18.08z/data=!4m8!3m7!1s0x47949896c9929ecb:0x131d640e8b29a48c!6m1!1v5!8m2!3d48.6589441!4d6.1774877!16s%2Fg%2F11c2p80b3v?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
@@ -1665,7 +1665,7 @@ const tramLineT4: TramLine = {
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Houdemont',
-          url: 'https://www.google.fr/maps/place/Vair/@48.6960387,6.1237223,281a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e0f195a159:0x820ca36c670cbb1a!6m1!1v5!8m2!3d48.695711!4d6.124376!16s%2Fg%2F11c2p8hl0c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Vair/@48.6957143,6.1241211,92m/data=!3m1!1e3!4m8!3m7!1s0x4794a2e042eda2a7:0x22aa3f27b661115c!6m1!1v5!8m2!3d48.6957161!4d6.124316!16s%2Fg%2F11h_1k_jkg?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D'
         }
       ]
     },
@@ -1684,7 +1684,7 @@ const tramLineT4: TramLine = {
       coords: [48.697247, 6.125168] as [number, number],
       googleMapsUrls: [
         {
-          direction: 'Horaires Direction Laxou',
+          direction: 'Horaires Direction Houdemont',
           url: 'https://www.google.fr/maps/place/Moselotte/@48.6971043,6.1249539,281a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2de272335e5:0x1f6c90c5cfe4992!6m1!1v5!8m2!3d48.697285!4d6.125163!16s%2Fg%2F11c2p7mv91?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
         }
       ] 
@@ -1831,10 +1831,7 @@ const tramLineT2: TramLine = {
     [48.702992, 6.132102], // Point intermédiaire
     [48.702574, 6.130838], // Saint-Jacques II
     [48.702395, 6.130462], // Point intermédiaire
-    [48.700377, 6.129944], // Point intermédiaire
-    [48.700296, 6.130568], // Point intermédiaire
-    [48.699963, 6.130504], // Point intermédiaire
-    [48.699985, 6.130321], // Saint-Exupéry
+    [48.700377, 6.129944], // Saint-Exupéry
     [48.699964, 6.129830], // Point intermédiaire
     [48.699833, 6.129337], // Point intermédiaire
     [48.699103, 6.127778], // Madine
@@ -1846,12 +1843,12 @@ const tramLineT2: TramLine = {
     [48.698137, 6.122952], // Point intermédiaire
     [48.698119, 6.121751], // Point intermédiaire
     [48.698308, 6.121042], // Point intermédiaire
-    [48.697630, 6.120190], // Laxou Plateau de Haye Direction Nord
+    [48.697630, 6.120190], // Laxou Plateau de Haye Direction Sud
     [48.697303, 6.119962], // Point intermédiaire
     [48.697084, 6.119902], // Point intermédiaire
     [48.696754, 6.119993], // Point intermédiaire
     [48.696418, 6.120347], // Point intermédiaire
-    [48.696227, 6.121046], // Mouzon Direction Nord
+    [48.696227, 6.121046], // Mouzon Direction Sud
     [48.696100, 6.123089], // Point intermédiaire
     [48.696037, 6.123708], // Vair Direction Nord
     [48.695998, 6.124373], // Point intermédiaire
@@ -1920,10 +1917,7 @@ const tramLineT2: TramLine = {
     [48.702992, 6.132102], // Point intermédiaire
     [48.702574, 6.130838], // Saint-Jacques II
     [48.702395, 6.130462], // Point intermédiaire
-    [48.700377, 6.129944], // Point intermédiaire
-    [48.700296, 6.130568], // Point intermédiaire
-    [48.699963, 6.130504], // Point intermédiaire
-    [48.699985, 6.130321], // Saint-Exupéry
+    [48.700377, 6.129944], // Saint-Exupéry
     [48.699964, 6.129830], // Point intermédiaire
     [48.699833, 6.129337], // Point intermédiaire
     [48.699103, 6.127778], // Madine
@@ -1962,7 +1956,11 @@ const tramLineT2: TramLine = {
       coords: [48.661454, 6.222312] as [number, number],
       googleMapsUrls: [
         {
-          direction: 'Voir les Horaires Ligne T2',
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Sainte-Valdr%C3%A9e/@48.6612137,6.2219658,328a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949910041c82f9:0xce6019e985fa68a7!6m1!1v5!8m2!3d48.661476!4d6.222332!16s%2Fg%2F11c2p7whks?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
           url: 'https://www.google.fr/maps/place/Sainte-Valdr%C3%A9e/@48.6612137,6.2219658,328a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949910041c82f9:0xce6019e985fa68a7!6m1!1v5!8m2!3d48.661476!4d6.222332!16s%2Fg%2F11c2p7whks?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
@@ -1982,7 +1980,7 @@ const tramLineT2: TramLine = {
       ]
     },
     { 
-      name: 'é', 
+      name: 'Gabriel Fauré', 
       coords: [48.666427, 6.213544] as [number, number],
       googleMapsUrls: [
         {
@@ -2028,7 +2026,11 @@ const tramLineT2: TramLine = {
       coords: [48.673289, 6.202401] as [number, number],
       googleMapsUrls: [
         {
-          direction: 'Voir les Horaires Ligne T2',
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Jarville+Mairie/@48.6731645,6.2025117,124a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949857d98ea893:0xa582a361fcc2e43!6m1!1v5!8m2!3d48.673294!4d6.202479!16s%2Fg%2F11c5_s0jh4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
           url: 'https://www.google.fr/maps/place/Jarville+Mairie/@48.6731645,6.2025117,124a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x47949857d98ea893:0xa582a361fcc2e43!6m1!1v5!8m2!3d48.673294!4d6.202479!16s%2Fg%2F11c5_s0jh4?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
@@ -2066,7 +2068,11 @@ const tramLineT2: TramLine = {
       coords: [48.680501, 6.194755] as [number, number],
       googleMapsUrls: [
         {
-          direction: 'Voir les Horaires Ligne T2',
+          direction: 'Horaires Direction Laxou',
+          url: 'https://www.google.fr/maps/place/Vic/@48.6803366,6.1945504,185a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794985c66b0f249:0x785ff4b968e70aa3!6m1!1v5!8m2!3d48.6805616!4d6.1948898!16s%2Fg%2F11ddxfv33h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Laneuville',
           url: 'https://www.google.fr/maps/place/Vic/@48.6803366,6.1945504,185a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794985c66b0f249:0x785ff4b968e70aa3!6m1!1v5!8m2!3d48.6805616!4d6.1948898!16s%2Fg%2F11ddxfv33h?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
@@ -2175,7 +2181,7 @@ const tramLineT2: TramLine = {
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Laxou',
-          url: 'https://www.google.fr/maps/place/Tour+Thiers+Gare/@48.690785,6.1749661,483a,35y,0.97t/data=!3m1!1e3!4m6!3m5!1s0x479498738d12f2fd:0x315ce76bd5931941!8m2!3d48.6908987!4d6.1744956!16s%2Fg%2F11c5_lc19l?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Simone+Veil/@48.6908585,6.1749661,326m/data=!3m1!1e3!4m8!3m7!1s0x479498738d12f2fd:0x315ce76bd5931941!6m1!1v5!8m2!3d48.6908987!4d6.1744956!16s%2Fg%2F11c5_lc19l?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D'
         }
       ]
     },
@@ -2225,7 +2231,7 @@ const tramLineT2: TramLine = {
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Laneuville',
-          url: 'https://www.google.fr/maps/place/Domr%C3%A9my/@48.6881355,6.1702565,234a,35y,0.97t/data=!3m1!1e3!4m6!3m5!1s0x4794987659316d3f:0x5c4f16462835bf8f!8m2!3d48.6882764!4d6.170347!16s%2Fg%2F11h_1lhwm2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Domr%C3%A9my/@48.6881711,6.1702565,163m/data=!3m1!1e3!4m8!3m7!1s0x4794987659316d3f:0x5c4f16462835bf8f!6m1!1v5!8m2!3d48.6882764!4d6.170347!16s%2Fg%2F11h_1lhwm2?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D'
         }
       ]
     },
@@ -2262,7 +2268,7 @@ const tramLineT2: TramLine = {
           url: 'https://www.google.fr/maps/place/Place+Aim%C3%A9+Morot/@48.6994889,6.1651534,233a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a1373fad01:0xa6364eeb4ab12b67!6m1!1v5!8m2!3d48.6995403!4d6.1657152!16s%2Fg%2F11ddxntzmm?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
         },
         {
-          direction: 'Horaires Direction Laxou',
+          direction: 'Horaires Direction Laneuville',
           url: 'https://www.google.fr/maps/place/Place+Aim%C3%A9+Morot/@48.6994889,6.1651534,233a,35y,0.97t/data=!3m1!1e3!4m8!3m7!1s0x4794a2a13beac84f:0x5a73645c7cc58173!6m1!1v5!8m2!3d48.699257!4d6.165813!16s%2Fg%2F11c5_s3w3x?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
@@ -2423,15 +2429,15 @@ const tramLineT2: TramLine = {
     },
     { 
       name: 'Saint-Exupéry', 
-      coords: [48.699985, 6.130321] as [number, number],
+      coords: [48.700377, 6.129944] as [number, number],
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Laxou',
-          url: 'https://www.google.fr/maps/place/Saint-Exup%C3%A9ry/@48.6999858,6.1300399,140a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2dc572b2b1b:0x812347cb23d2266e!6m1!1v5!8m2!3d48.699978!4d6.130438!16s%2Fg%2F11fd4rn294?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Saint-Exup%C3%A9ry/@48.7002204,6.1294498,163m/data=!3m1!1e3!4m18!1m9!3m8!1s0x4794a2dc572b2b1b:0x812347cb23d2266e!2sSaint-Exup%C3%A9ry!6m1!1v5!8m2!3d48.699978!4d6.130438!16s%2Fg%2F11fd4rn294!3m7!1s0x4794a2dc687dec65:0xf0f715289db481e0!6m1!1v5!8m2!3d48.7006389!4d6.1300031!16s%2Fg%2F11zj926fvg?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D'
         },
         {
           direction: 'Horaires Direction Laneuville',
-          url: 'https://www.google.fr/maps/place/Saint-Exup%C3%A9ry/@48.699948,6.1301267,68a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2dc567749af:0xbe266675306b8158!6m1!1v5!8m2!3d48.699933!4d6.1302238!16s%2Fg%2F11gtz6_l4r?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Saint-Exup%C3%A9ry/@48.7005939,6.1296858,163m/data=!3m1!1e3!4m18!1m9!3m8!1s0x4794a2dc572b2b1b:0x812347cb23d2266e!2sSaint-Exup%C3%A9ry!6m1!1v5!8m2!3d48.699978!4d6.130438!16s%2Fg%2F11fd4rn294!3m7!1s0x4794a2dc67d37ae1:0x67f5bbbb6a791c04!6m1!1v5!8m2!3d48.700939!4d6.130112!16s%2Fg%2F11xzrmrq9q?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D'
         }
       ]
     },
@@ -2464,7 +2470,7 @@ const tramLineT2: TramLine = {
       ]
     },
     { 
-      name: 'Laxou Plateau de Haye Direction Nord', 
+      name: 'Laxou Plateau de Haye Direction Sud', 
       coords: [48.697630, 6.120190] as [number, number],
       googleMapsUrls: [
         {
@@ -2474,7 +2480,7 @@ const tramLineT2: TramLine = {
       ]
     },
     { 
-      name: 'Mouzon Direction Nord', 
+      name: 'Mouzon Direction Sud', 
       coords: [48.696227, 6.121046] as [number, number],
       googleMapsUrls: [
         {
@@ -2489,7 +2495,7 @@ const tramLineT2: TramLine = {
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Laxou',
-          url: 'https://www.google.fr/maps/place/Vair/@48.6957334,6.1235408,289a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e0f195a159:0x820ca36c670cbb1a!6m1!1v5!8m2!3d48.695711!4d6.124376!16s%2Fg%2F11c2p8hl0c?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
+          url: 'https://www.google.fr/maps/place/Vair/@48.6957143,6.1241211,92m/data=!3m1!1e3!4m8!3m7!1s0x4794a2e042eda2a7:0x22aa3f27b661115c!6m1!1v5!8m2!3d48.6957161!4d6.124316!16s%2Fg%2F11h_1k_jkg?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D'
         }
       ]
     },
@@ -2517,10 +2523,6 @@ const tramLineT2: TramLine = {
       name: 'Laxou Sapinière', 
       coords: [48.690981, 6.128387] as [number, number],
       googleMapsUrls: [
-        {
-          direction: 'Horaires Direction Laxou',
-          url: 'https://www.google.fr/maps/place/Laxou+Sapini%C3%A8re/@48.6911286,6.128164,168a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e431967513:0x20496e9b37d61370!6m1!1v5!8m2!3d48.691345!4d6.128298!16s%2Fg%2F11h_1l965z?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
-        },
         {
           direction: 'Horaires Direction Laneuville',
           url: 'https://www.google.fr/maps/place/Laxou+Sapini%C3%A8re/@48.6911286,6.128164,168a,35y,1.01t/data=!3m1!1e3!4m8!3m7!1s0x4794a2e436919661:0x86447570e5f905c0!6m1!1v5!8m2!3d48.691143!4d6.128542!16s%2Fg%2F11c2p7twf2?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D'
@@ -3658,6 +3660,63 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
     lineId: string,
     directionText: string
   ): [number, number] | null => {
+    // Cas particulier : Saint-Léon Direction Sud sur T3 direction Seichamps -> pointe vers Gare Joffre
+    if (lineId === 'T3' && 
+        (currentStopName === 'Saint-Léon Direction Sud' || currentStopName === 'Saint Léon Direction Sud') &&
+        directionText.includes('Seichamps')) {
+      return [48.688499, 6.177309] as [number, number]; // Coordonnées de Gare Joffre
+    }
+    
+    // Cas particulier : Gare Joffre sur T3 direction Villers -> pointe vers Gare Thiers Poirel Direction Sud
+    if (lineId === 'T3' && 
+        currentStopName === 'Gare Joffre' &&
+        (directionText.includes('Villers') || directionText.includes('Villers Campus Sciences'))) {
+      return [48.690365, 6.175653] as [number, number]; // Coordonnées de Gare Thiers Poirel Direction Sud
+    }
+    
+    // Cas particulier : Domaine Sainte-Anne Direction Nord sur T3 direction Seichamps -> pointe vers Victoire
+    if (lineId === 'T3' && 
+        currentStopName === 'Domaine Sainte-Anne Direction Nord' &&
+        (directionText.includes('Villers') || directionText.includes('Villers Campus Sciences'))) {
+      return [48.683950, 6.150875] as [number, number]; // Coordonnées Victoire
+    } 
+    
+    // Cas particuliers pour T4
+    // Normaliser le nom d'arrêt pour le matching
+    const normalizeStopName = (name: string): string => {
+      return name.toLowerCase().replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+    };
+    const currentStopNormalized = normalizeStopName(currentStopName);
+    const directionTextLower = directionText.toLowerCase();
+    
+    // Laxou Sapinière direction Laxou (vers Laxou Champ-le-Beouf) -> pointe vers Saône Direction Nord
+    if (lineId === 'T4' && 
+        (currentStopNormalized === 'laxou sapinière' || currentStopNormalized.includes('laxou sapinière')) &&
+        directionTextLower.includes('laxou') && !directionTextLower.includes('houdemont')) {
+      return [48.696039, 6.125463] as [number, number]; // Coordonnées de Saône Direction Nord
+    }
+    
+    // Saône Direction Nord direction Laxou (vers Laxou Champ-le-Beouf) -> pointe vers Vair Direction Nord
+    if (lineId === 'T4' && 
+        (currentStopNormalized.includes('saône direction nord') || currentStopNormalized.includes('saone direction nord')) &&
+        directionTextLower.includes('laxou') && !directionTextLower.includes('houdemont')) {
+      return [48.696037, 6.123708] as [number, number]; // Coordonnées de Vair Direction Nord
+    }
+    
+    // Vair Direction Nord direction Laxou (vers Laxou Champ-le-Beouf) -> pointe vers Laxou Champ-le-Beouf
+    if (lineId === 'T4' && 
+        currentStopNormalized.includes('vair direction nord') &&
+        directionTextLower.includes('laxou') && !directionTextLower.includes('houdemont')) {
+      return [48.698156, 6.123322] as [number, number]; // Coordonnées de Laxou Champ-le-Beouf
+    }
+    
+    // Moselotte Direction Sud direction Houdemont -> pointe vers Vair Direction Sud
+    if (lineId === 'T4' && 
+        (currentStopNormalized.includes('moselotte') && currentStopNormalized.includes('direction sud')) &&
+        (directionTextLower.includes('houdemont') || directionTextLower.includes('porte sud'))) {
+      return [48.695672, 6.124361] as [number, number]; // Coordonnées de Vair Direction Sud
+    }
+    
     // Extraire le nom de la ville de destination depuis la direction
     const directionMatch = directionText.match(/Direction\s+(.+)$/);
     if (!directionMatch) return null;
@@ -3677,19 +3736,24 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
       const parts = fullLine.description.split('↔').map(p => p.trim());
       if (parts.length === 2) {
         const [terminus1, terminus2] = parts;
-        const terminus1Lower = terminus1.toLowerCase();
-        const terminus2Lower = terminus2.toLowerCase();
-        const destinationCityLower = destinationCity.toLowerCase();
         
         // Vérifier si la destination correspond à un terminus (matching plus flexible)
-        const matchesTerminus1 = terminus1Lower.includes(destinationCityLower) || 
-                                destinationCityLower.includes(terminus1Lower.split(' ')[0]) ||
-                                terminus1Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
-                                destinationCityLower.split(' ').some(word => terminus1Lower.includes(word));
-        const matchesTerminus2 = terminus2Lower.includes(destinationCityLower) || 
-                                destinationCityLower.includes(terminus2Lower.split(' ')[0]) ||
-                                terminus2Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
-                                destinationCityLower.split(' ').some(word => terminus2Lower.includes(word));
+        // Normaliser les noms pour le matching (enlever les tirets, normaliser les espaces)
+        const normalizeForMatching = (str: string): string => {
+          return str.toLowerCase().replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+        };
+        const terminus1Normalized = normalizeForMatching(terminus1);
+        const terminus2Normalized = normalizeForMatching(terminus2);
+        const destinationNormalized = normalizeForMatching(destinationCity);
+        
+        const matchesTerminus1 = terminus1Normalized.includes(destinationNormalized) || 
+                                destinationNormalized.includes(terminus1Normalized.split(' ')[0]) ||
+                                terminus1Normalized.split(' ').some(word => word.length > 2 && destinationNormalized.includes(word)) ||
+                                destinationNormalized.split(' ').some(word => word.length > 2 && terminus1Normalized.includes(word));
+        const matchesTerminus2 = terminus2Normalized.includes(destinationNormalized) || 
+                                destinationNormalized.includes(terminus2Normalized.split(' ')[0]) ||
+                                terminus2Normalized.split(' ').some(word => word.length > 2 && destinationNormalized.includes(word)) ||
+                                destinationNormalized.split(' ').some(word => word.length > 2 && terminus2Normalized.includes(word));
         
         if (matchesTerminus1 && lineDirections[terminus1]) {
           stopsList = lineDirections[terminus1];
@@ -3724,12 +3788,20 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
     
     // Trouver l'index de l'arrêt actuel dans la liste de cette direction
     // Utiliser un matching plus flexible pour trouver l'arrêt (gérer les variations de nom)
+    // Normaliser les noms en enlevant les tirets et en normalisant les espaces
+    const normalizeName = (name: string): string => {
+      return name.toLowerCase()
+        .replace(/-/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    };
+    
     const currentStopIndex = stopsList.findIndex(stop => {
-      const stopNameLower = stop.name.toLowerCase();
-      const currentNameLower = currentStopName.toLowerCase();
-      return stopNameLower === currentNameLower || 
-             stopNameLower.includes(currentNameLower) || 
-             currentNameLower.includes(stopNameLower);
+      const stopNameNormalized = normalizeName(stop.name);
+      const currentNameNormalized = normalizeName(currentStopName);
+      return stopNameNormalized === currentNameNormalized || 
+             stopNameNormalized.includes(currentNameNormalized) || 
+             currentNameNormalized.includes(stopNameNormalized);
     });
     
     if (currentStopIndex === -1) return null;
@@ -3743,27 +3815,35 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
       const parts = fullLine.description.split('↔').map(p => p.trim());
       if (parts.length === 2) {
         const [terminus1, terminus2] = parts;
-        const terminus1Lower = terminus1.toLowerCase();
-        const terminus2Lower = terminus2.toLowerCase();
-        const destinationCityLower = destinationCity.toLowerCase();
+        
+        // Normaliser les noms pour le matching (enlever les tirets, normaliser les espaces)
+        const normalizeForMatching = (str: string): string => {
+          return str.toLowerCase().replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+        };
+        const terminus1Normalized = normalizeForMatching(terminus1);
+        const terminus2Normalized = normalizeForMatching(terminus2);
+        const destinationNormalized = normalizeForMatching(destinationCity);
         
         // Vérifier vers quel terminus on va
-        const matchesTerminus1 = terminus1Lower.includes(destinationCityLower) || 
-                                destinationCityLower.includes(terminus1Lower.split(' ')[0]) ||
-                                terminus1Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
-                                destinationCityLower.split(' ').some(word => terminus1Lower.includes(word));
-        const matchesTerminus2 = terminus2Lower.includes(destinationCityLower) || 
-                                destinationCityLower.includes(terminus2Lower.split(' ')[0]) ||
-                                terminus2Lower.split(' ').some(word => destinationCityLower.includes(word)) ||
-                                destinationCityLower.split(' ').some(word => terminus2Lower.includes(word));
+        const matchesTerminus1 = terminus1Normalized.includes(destinationNormalized) || 
+                                destinationNormalized.includes(terminus1Normalized.split(' ')[0]) ||
+                                terminus1Normalized.split(' ').some(word => word.length > 2 && destinationNormalized.includes(word)) ||
+                                destinationNormalized.split(' ').some(word => word.length > 2 && terminus1Normalized.includes(word));
+        const matchesTerminus2 = terminus2Normalized.includes(destinationNormalized) || 
+                                destinationNormalized.includes(terminus2Normalized.split(' ')[0]) ||
+                                terminus2Normalized.split(' ').some(word => word.length > 2 && destinationNormalized.includes(word)) ||
+                                destinationNormalized.split(' ').some(word => word.length > 2 && terminus2Normalized.includes(word));
         
         // Les listes sont dans l'ordre original : terminus2 (début) → terminus1 (fin)
-        // Si on va vers terminus1, on va vers l'avant dans la liste (vers la fin)
-        // Si on va vers terminus2, on va vers l'arrière dans la liste (vers le début)
+        // Pour T1 : Si on va vers terminus1, on va vers l'avant (vers la fin)
+        // Pour T1 : Si on va vers terminus2, on va vers l'arrière (vers le début)
+        // Pour T5, T4, T3, T2 : Inverser la logique
+        const shouldInvert = ['T5', 'T4', 'T3', 'T2'].includes(lineId);
+        
         if (matchesTerminus1) {
-          goingForward = true; // Vers l'avant (vers la fin de la liste)
+          goingForward = shouldInvert ? false : true; // Vers l'arrière pour T5/T4/T3/T2, vers l'avant pour T1
         } else if (matchesTerminus2) {
-          goingForward = false; // Vers l'arrière (vers le début de la liste)
+          goingForward = shouldInvert ? true : false; // Vers l'avant pour T5/T4/T3/T2, vers l'arrière pour T1
         }
       }
     }
