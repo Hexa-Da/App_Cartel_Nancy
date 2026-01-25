@@ -7,24 +7,24 @@ PODS:
     - AppAuth/Core
   - Capacitor (6.2.1):
     - CapacitorCordova
-  - CapacitorApp (6.0.2):
+  - CapacitorApp (6.0.3):
     - Capacitor
-  - CapacitorBrowser (6.0.5):
+  - CapacitorBrowser (6.0.6):
     - Capacitor
   - CapacitorCordova (6.2.1)
-  - CapacitorGeolocation (6.1.0):
+  - CapacitorGeolocation (6.1.1):
     - Capacitor
-  - CapacitorKeyboard (6.0.3):
+  - CapacitorKeyboard (6.0.4):
     - Capacitor
-  - CapacitorLocalNotifications (6.1.2):
+  - CapacitorLocalNotifications (6.1.3):
     - Capacitor
   - CapacitorPreferences (8.0.0):
     - Capacitor
-  - CapacitorPushNotifications (6.0.4):
+  - CapacitorPushNotifications (6.0.5):
     - Capacitor
-  - CapacitorScreenOrientation (6.0.3):
+  - CapacitorScreenOrientation (6.0.4):
     - Capacitor
-  - CapacitorSplashScreen (6.0.3):
+  - CapacitorSplashScreen (6.0.4):
     - Capacitor
   - CapacitorStatusBar (6.0.3):
     - Capacitor
@@ -93,16 +93,16 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   Capacitor: 1e0d0e7330dea9f983b50da737d8918abcf273f8
-  CapacitorApp: 2a8c3a0b0814322e5e6e15fe595f02c3808f0f8b
-  CapacitorBrowser: cba79e25007fbe9bdac8c0568060b21abbb8f453
+  CapacitorApp: 22c94146dfaae1159ab7059cbd51e76d9f2d45ec
+  CapacitorBrowser: 9e9a268445f9472b04b68320930c59bdc4d360fa
   CapacitorCordova: 8d93e14982f440181be7304aa9559ca631d77fff
-  CapacitorGeolocation: d994ee64ee41909e2089e575c9d3a976007c2812
-  CapacitorKeyboard: 460c6f9ec5e52c84f2742d5ce2e67bbc7ab0ebb0
-  CapacitorLocalNotifications: 99b06c7b2a7e03d43efc6fdb5c4f75ce92880108
+  CapacitorGeolocation: c518d020144978cd7eb7a25fa609a39f6c2fb93e
+  CapacitorKeyboard: 5ce1e52b8b86ade4995f926a8ac736212d5102fa
+  CapacitorLocalNotifications: b205182fab8947a0c412d56d72b709738a9d28e7
   CapacitorPreferences: 83f13cc19660ca9649a4769ec255be93f8c2ff68
-  CapacitorPushNotifications: 1fc22ae360214a0ac0625c348d3aea217085163d
-  CapacitorScreenOrientation: 3bb823f5d265190301cdc5d58a568a287d98972a
-  CapacitorSplashScreen: 68893659d77b5f82d753b3a70475082845e3039c
+  CapacitorPushNotifications: 83974a7be0f6829c26148f6ed65745b96a7d16bd
+  CapacitorScreenOrientation: 00a95b0e2c75610be324e5ac7c6b5754745646d1
+  CapacitorSplashScreen: f65292695df7d7b24a22954a6cfbaecadd1718a4
   CapacitorStatusBar: 38665f1a18c55677098367a29f6b42126b72dc65
   CodetrixStudioCapacitorGoogleAuth: fcce058390347c1ce5d8ac4764bdf1f5c1ee233b
   GoogleSignIn: 5651ce3a61e56ca864160e79b484cd9ed3f49b7a
