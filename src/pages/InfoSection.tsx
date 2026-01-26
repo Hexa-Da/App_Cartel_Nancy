@@ -409,7 +409,6 @@ const sectionsData: { [key: string]: { title: string; items: { icon: React.React
       { icon: <FaUtensils />, text: 'Fichiers pour les restaurants' },
       { icon: <FaHotel />, text: 'Fichiers pour les hôtels' },
       { icon: <FaMusic />, text: 'Fichiers pour les soirées/défilé' },
-      { icon: <FaBus />, text: 'Fichiers pour les bus fin de soirée' },
       { icon: <FaExclamationTriangle />, text: 'Fichiers HSE' },
     ]
   },
@@ -464,7 +463,6 @@ const InfoSection: React.FC = () => {
         'Fichiers pour les restaurants': '/planning-files?restaurants=true&from=info-section',
         'Fichiers pour les hôtels': '/planning-files?hotel=true&from=info-section',
         'Fichiers pour les soirées/défilé': '/planning-files?party=true&from=info-section',
-        'Fichiers pour les bus fin de soirée': '/planning-files?bus=true&from=info-section',
         'Fichiers HSE': '/planning-files?hse=true&from=info-section',
       };
       const targetUrl = routes[item.text];

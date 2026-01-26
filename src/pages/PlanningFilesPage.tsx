@@ -24,14 +24,23 @@ import './PlanningFilesPage.css';
 
 // Données hardcodées des hôtels (synchronisées avec App.tsx)
 const HOTELS = [
-  { id: '1', name: "Ibis Styles Nancy Sud" },
+  { id: '1', name: "Ibis Styles Nancy Sud Houdemont" },
   { id: '2', name: "Nemea Home Suite Nancy Centre" },
   { id: '3', name: "Nemea Grand Coeur Nancy Centre" },
   { id: '4', name: "Hotel Ibis Nancy Brabois" },
   { id: '5', name: "Hotel Residome Nancy" },
   { id: '6', name: "Ibis Budget Nancy Laxou" },
   { id: '7', name: "Hotel Revotel Nancy Centre" },
-  { id: '8', name: "Hotel Cerise Nancy" }
+  { id: '8', name: "Hotel Cerise Nancy" },
+  { id: '9', name: "F1 Nancy Sud Houdemont" },
+  { id: '10', name: "F1 Nancy Nord Bouxières aux Dames" },
+  { id: '11', name: "Greet Hôtel Nancy Sud" },
+  { id: '12', name: "Hôtel Ibis Styles Sud Houdemont" },
+  { id: '13', name: "Hôtel Ibis Budget Centre" },
+  { id: '14', name: "Kosy coeur de ville" },
+  { id: '15', name: "Hôtel In Hôtel" },
+  { id: '16', name: "Campanile Nancy Gare" },
+  { id: '17', name: "Kyriad Vandoeuvre" }
 ];
 
 // Données hardcodées des restaurants (synchronisées avec App.tsx)

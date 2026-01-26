@@ -52,14 +52,23 @@ const sportOptions = [
 const hotelOptions = [
   { value: '0000', label: 'Aucun' },
   { value: 'none', label: 'Tous les hôtels' },
-  { value: '1', label: 'Ibis Styles Nancy Sud' },
+  { value: '1', label: 'Ibis Styles Nancy Sud Houdemont' },
   { value: '2', label: 'Nemea Home Suite Nancy Centre' },
   { value: '3', label: 'Nemea Grand Coeur Nancy Centre' },
   { value: '4', label: 'Hotel Ibis Nancy Brabois' },
   { value: '5', label: 'Hotel Residome Nancy' },
   { value: '6', label: 'Ibis Budget Nancy Laxou' },
   { value: '7', label: 'Hotel Revotel Nancy Centre' },
-  { value: '8', label: 'Hotel Cerise Nancy' }
+  { value: '8', label: 'Hotel Cerise Nancy' },
+  { value: '9', label: 'F1 Nancy Sud Houdemont' },
+  { value: '10', label: 'F1 Nancy Nord Bouxières aux Dames' },
+  { value: '11', label: 'Greet Hôtel Nancy Sud' },
+  { value: '12', label: 'Hôtel Ibis Styles Sud Houdemont' },
+  { value: '13', label: 'Hôtel Ibis Budget Centre' },
+  { value: '14', label: 'Kosy coeur de ville' },
+  { value: '15', label: 'Hôtel In Hôtel' },
+  { value: '16', label: 'Campanile Nancy Gare' },
+  { value: '17', label: 'Kyriad Vandoeuvre' }
 ];
 
 
