@@ -45,7 +45,7 @@ public class SplashActivity extends AppCompatActivity {
         playerView.setPlayer(player);
 
         // Prépare la vidéo depuis res/raw
-        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.animation_portrait;
+        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.logo_cartel_anime;
         MediaItem mediaItem = MediaItem.fromUri(Uri.parse(videoPath));
         player.setMediaItem(mediaItem);
         player.prepare();

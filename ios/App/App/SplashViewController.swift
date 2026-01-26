@@ -29,24 +29,24 @@ class SplashViewController: UIViewController {
         
         // Méthode 1: Dans le dossier public
         let documentsPath = Bundle.main.bundlePath
-        let publicPath = documentsPath + "/public/animation_portrait.mov"
+        let publicPath = documentsPath + "/public/logo_cartel_anime.mp4"
         if FileManager.default.fileExists(atPath: publicPath) {
             videoURL = URL(fileURLWithPath: publicPath)
             print("Vidéo trouvée dans public: \(publicPath)")
         }
         // Méthode 2: Bundle.main.path
-        else if let videoPath = Bundle.main.path(forResource: "animation_portrait", ofType: "mov") {
+        else if let videoPath = Bundle.main.path(forResource: "logo_cartel_anime", ofType: "mp4") {
             videoURL = URL(fileURLWithPath: videoPath)
             print("Vidéo trouvée via Bundle.main.path: \(videoPath)")
         }
         // Méthode 3: Bundle.main.url
-        else if let bundleURL = Bundle.main.url(forResource: "animation_portrait", withExtension: "mov") {
+        else if let bundleURL = Bundle.main.url(forResource: "logo_cartel_anime", withExtension: "mp4") {
             videoURL = bundleURL
             print("Vidéo trouvée via Bundle.main.url: \(bundleURL)")
         }
         // Méthode 4: Chemin direct
         else {
-            let videoPath = documentsPath + "/animation_portrait.mov"
+            let videoPath = documentsPath + "/logo_cartel_anime.mp4"
             if FileManager.default.fileExists(atPath: videoPath) {
                 videoURL = URL(fileURLWithPath: videoPath)
                 print("Vidéo trouvée via chemin direct: \(videoPath)")

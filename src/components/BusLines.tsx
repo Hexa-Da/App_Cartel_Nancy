@@ -59,7 +59,7 @@ const tramLine: TramLine = {
     [48.678673, 6.179990],   // Point intermédiaire
     [48.679043, 6.179830],   // Jean Jaurès T1
     [48.681119, 6.178509],   // Garenne - Rose Wild
-    [48.684268, 6.176490],   // Mont Désert - Thermal (modifié)
+    [48.684268, 6.176490],   // Mon Désert - Thermal (modifié)
     [48.685171, 6.175799],   // Point intermédiaire
     [48.687458, 6.174090],   // Gare - Saint-Léon
     [48.688379, 6.173525],   // Point intermédiaire (modifié)
@@ -153,6 +153,10 @@ const tramLine: TramLine = {
         {
           direction: 'Horaires Direction Essey Mouzimpré',
           url: 'https://www.google.fr/maps/place/Le+Reclus/@48.6624196,6.1619815,94m/data=!3m1!1e3!4m8!3m7!1s0x4794989d7f63fcfb:0x6ad98359b1df5df3!6m1!1v5!8m2!3d48.6625867!4d6.1619546!16s%2Fg%2F11fn2615w4?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.com/maps/place/Le+Reclus/@48.6623659,6.1617681,16z/data=!4m8!3m7!1s0x4794989d8098618f:0x6647be73ba789f44!6m1!1v5!8m2!3d48.6623659!4d6.1617681!16s%2Fg%2F11yvmt6kcd!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
     },
@@ -241,13 +245,17 @@ const tramLine: TramLine = {
       ]
     },
     { 
-      name: 'Mont Désert - Thermal', 
+      name: 'Mon Désert - Thermal', 
       coords: [48.684268, 6.176490] as [number, number],
       googleMapsUrls: [
         {
           direction: 'Horaires Direction Vandeouvre CHU',
           url: 'https://www.google.fr/maps/place/Mon+D%C3%A9sert+-+Thermal/@48.6842583,6.1764847,46m/data=!3m1!1e3!4m8!3m7!1s0x4794987a9cc13507:0x95ddf0810e50bfc3!6m1!1v5!8m2!3d48.6844035!4d6.1764598!16s%2Fg%2F11x65lbd1b?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
-        }
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.com/maps/place/Mon+D%C3%A9sert+-+Thermal/@48.6844999,6.1764101,16z/data=!4m8!3m7!1s0x4794987077fa5f1d:0x8f3aec632570556a!6m1!1v5!8m2!3d48.6844999!4d6.1764101!16s%2Fg%2F11myzv13d9!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        } 
       ]
     },
     { 
@@ -257,6 +265,10 @@ const tramLine: TramLine = {
         {
           direction: 'Horaires Direction Vandeouvre CHU',
           url: 'https://www.google.fr/maps/place/Gare+-+Saint-L%C3%A9on/@48.6867377,6.1745052,86a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x47949871289b11d5:0xcffd5e9d8116276d!6m1!1v5!8m2!3d48.6874882!4d6.1741815!16s%2Fg%2F11x65jp8px?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.com/maps/place/Gare+-+Saint-L%C3%A9on/@48.6875489,6.1740111,17z/data=!4m8!3m7!1s0x479498712f7d3931:0x815b30003174899e!6m1!1v5!8m2!3d48.6875489!4d6.1740111!16s%2Fg%2F11yvmtprjh!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
     },
@@ -267,6 +279,10 @@ const tramLine: TramLine = {
         {
           direction: 'Horaires Direction Vandeouvre CHU',
           url: 'https://www.google.fr/maps/place/Gare+-+Pierre+Semard/@48.6890731,6.1771436,74a,35y,1.51t/data=!3m1!1e3!4m8!3m7!1s0x479498718411de2b:0x8f09a939b68ed6d7!6m1!1v5!8m2!3d48.6890909!4d6.1770521!16s%2Fg%2F11x8hzby70?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },
+        {
+          direction: 'Horaires Direction Essey Mouzimpré',
+          url: 'https://www.google.com/maps/place/Gare+-+Pierre+Semard/@48.6891399,6.1773771,17z/data=!4m8!3m7!1s0x4794987186005e29:0x40415d9943f3e5f2!6m1!1v5!8m2!3d48.6891399!4d6.1773771!16s%2Fg%2F11yvmtprk8!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
     },
@@ -361,6 +377,9 @@ const tramLine: TramLine = {
         {
           direction: 'Horaires Direction Essey Mouzimpré',
           url: 'https://www.google.fr/maps/place/Washington+Foch/@48.7021021,6.2133305,75a,35.4y,1.52t/data=!3m1!1e3!4m8!3m7!1s0x4794983205ad5595:0x34bfe6e590cfe223!6m1!1v5!8m2!3d48.7021911!4d6.2132437!16s%2Fg%2F1tdf08lj?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
+        },{
+          direction: 'Horaires Direction Vandeouvre CHU',
+          url: 'https://www.google.com/maps/place/Washington+Foch/@48.7021875,6.2132483,17z/data=!4m8!3m7!1s0x47949831ec39d7c7:0x186956ce0df633fe!6m1!1v5!8m2!3d48.7021875!4d6.2132483!16s%2Fg%2F11hdsg2_fv!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D'
         }
       ]
     },
