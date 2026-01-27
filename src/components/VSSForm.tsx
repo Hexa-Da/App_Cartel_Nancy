@@ -5,7 +5,7 @@
  * - Formulaire de signalement avec champs obligatoires
  * - Envoi de notifications via Bot Telegram
  * - Validation des données avec le profil participant Firebase
- * - Système anti-spam avec détection de trolls
+ * - Système anti-spam avec rate limiting
  * - Interface sécurisée et confidentielle
  * - Fallback vers mailto en cas d'échec Telegram
  * 
@@ -25,9 +25,10 @@ import './VSSForm.css';
 
 // Configuration anti-spam
 const SPAM_CONFIG = {
-  MAX_SUBMISSIONS_PER_HOUR: 5,      // Max 5 envois par heure
+  MAX_SUBMISSIONS_PER_HOUR: 3,      // Max 3 envois par heure
   MAX_VIOLATIONS_BEFORE_BLOCK: 3,   // Blocage après 3 violations
-  BLOCK_DURATION_HOURS: 24,         // Durée du blocage en heures
+  BLOCK_DURATION_HOURS: 12,         // Durée du blocage en heures
+  DUPLICATE_CHECK_HOURS: 24,        // Vérifier les doublons sur les dernières 24h
 };
 
 interface ParticipantData {
@@ -40,6 +41,7 @@ interface SpamData {
   submissions: number[];  // Timestamps des envois
   violations: number;     // Nombre de violations
   blockedUntil: number | null;  // Timestamp de fin de blocage
+  contentHashes: Array<{ hash: string; timestamp: number }>;  // Hashs des contenus soumis pour détection de doublons
 }
 
 interface VSSFormProps {
@@ -59,6 +61,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Fermer le chat quand le formulaire VSS s'ouvre
   useEffect(() => {
@@ -71,9 +74,14 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
   const getSpamData = (braceletNumber: string): SpamData => {
     const data = localStorage.getItem(`vss_spam_${braceletNumber}`);
     if (data) {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      // Migration: ajouter contentHashes si absent
+      if (!parsed.contentHashes) {
+        parsed.contentHashes = [];
+      }
+      return parsed;
     }
-    return { submissions: [], violations: 0, blockedUntil: null };
+    return { submissions: [], violations: 0, blockedUntil: null, contentHashes: [] };
   };
 
   // Sauvegarder les données de spam
@@ -107,34 +115,6 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     return recentSubmissions.length < SPAM_CONFIG.MAX_SUBMISSIONS_PER_HOUR;
   };
 
-  // Détecter si le contenu est suspect (troll)
-  const detectSuspiciousContent = (): { isSuspicious: boolean; reason: string } => {
-    const description = formData.description.toLowerCase();
-    const location = formData.location.toLowerCase();
-    
-    // Liste de patterns suspects
-    const suspiciousPatterns = [
-      /(.)\1{5,}/,  // Caractères répétés 5+ fois (aaaaaaa, !!!!!!)
-      /^[a-z]{1,3}$/,  // Texte trop court (abc, ab)
-      /test|troll|fake|lol|mdr|ptdr|xd|haha/i,  // Mots suspects
-    ];
-
-    // Vérifier la description
-    for (const pattern of suspiciousPatterns) {
-      if (pattern.test(description)) {
-        return { isSuspicious: true, reason: 'Contenu suspect détecté dans la description' };
-      }
-    }
-
-    // Vérifier le lieu
-    for (const pattern of suspiciousPatterns) {
-      if (pattern.test(location)) {
-        return { isSuspicious: true, reason: 'Contenu suspect détecté dans le lieu' };
-      }
-    }
-
-    return { isSuspicious: false, reason: '' };
-  };
 
   // Enregistrer une violation et potentiellement bloquer
   const recordViolation = (braceletNumber: string) => {
@@ -150,32 +130,75 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     return spamData.violations >= SPAM_CONFIG.MAX_VIOLATIONS_BEFORE_BLOCK;
   };
 
+  // Générer un hash du contenu pour détection de doublons
+  const generateContentHash = (): string => {
+    // Normaliser le contenu pour détecter les doublons même avec variations mineures
+    const normalizedDescription = normalizeString(formData.description)
+      .replace(/\s+/g, ' ')  // Normaliser les espaces multiples
+      .trim();
+    const normalizedLocation = normalizeString(formData.location)
+      .replace(/\s+/g, ' ')
+      .trim();
+    const normalizedDate = formData.date.trim();
+    
+    // Créer un hash simple basé sur le contenu
+    const contentString = `${normalizedDate}|${normalizedLocation}|${normalizedDescription}`;
+    
+    // Hash simple mais efficace (peut être amélioré avec crypto.subtle si nécessaire)
+    let hash = 0;
+    for (let i = 0; i < contentString.length; i++) {
+      const char = contentString.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString(36);
+  };
+
+  // Vérifier si le contenu est un doublon
+  const isDuplicate = (braceletNumber: string): boolean => {
+    const spamData = getSpamData(braceletNumber);
+    const contentHash = generateContentHash();
+    const checkWindow = Date.now() - (SPAM_CONFIG.DUPLICATE_CHECK_HOURS * 60 * 60 * 1000);
+    
+    // Vérifier si ce hash existe dans les dernières 24h
+    const recentHashes = spamData.contentHashes.filter(
+      entry => entry.timestamp > checkWindow && entry.hash === contentHash
+    );
+    
+    return recentHashes.length > 0;
+  };
+
   // Enregistrer une soumission réussie
   const recordSubmission = (braceletNumber: string) => {
     const spamData = getSpamData(braceletNumber);
-    spamData.submissions.push(Date.now());
-    // Garder seulement les soumissions des dernières 24h
-    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    const now = Date.now();
+    
+    spamData.submissions.push(now);
+    
+    // Enregistrer le hash du contenu pour détection de doublons
+    const contentHash = generateContentHash();
+    spamData.contentHashes.push({ hash: contentHash, timestamp: now });
+    
+    // Garder seulement les soumissions et hashs des dernières 24h
+    const oneDayAgo = now - (24 * 60 * 60 * 1000);
     spamData.submissions = spamData.submissions.filter(ts => ts > oneDayAgo);
+    spamData.contentHashes = spamData.contentHashes.filter(entry => entry.timestamp > oneDayAgo);
+    
     saveSpamData(braceletNumber, spamData);
   };
 
-  // Envoyer une alerte troll sur Telegram
-  const sendTrollAlert = async (braceletNumber: string, reason: string, wasBlocked: boolean) => {
-    const message = `⚠️ <b>ALERTE TROLL DÉTECTÉ</b> ⚠️
+  // Envoyer une alerte spam sur Telegram
+  const sendSpamAlert = async (braceletNumber: string, reason: string, wasBlocked: boolean) => {
+    const message = `⚠️ <b>ALERTE SPAM DÉTECTÉ</b> ⚠️
 
 🎫 <b>Bracelet n° :</b> ${braceletNumber}
 📝 <b>Raison :</b> ${reason}
-🚫 <b>Statut :</b> ${wasBlocked ? 'BLOQUÉ pour 24h' : 'Avertissement'}
-
-<b>Contenu soumis :</b>
-• Lieu : ${formData.location}
-• Description : ${formData.description.substring(0, 100)}${formData.description.length > 100 ? '...' : ''}`;
+🚫 <b>Statut :</b> ${wasBlocked ? 'BLOQUÉ pour 12h' : 'Avertissement'}`;
 
     try {
       await sendToTelegram(message);
     } catch (error) {
-      logger.error('Erreur lors de l\'envoi de l\'alerte troll:', error);
+      logger.error('Erreur lors de l\'envoi de l\'alerte spam:', error);
     }
   };
 
@@ -200,7 +223,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     const storedBracelet = localStorage.getItem('userBraceletNumber');
     
     if (!storedBracelet) {
-      setValidationError('Participant non valide');
+      setValidationError('Informations participant non valide');
       return false;
     }
 
@@ -209,7 +232,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
       const snapshot = await get(participantRef);
       
       if (!snapshot.exists()) {
-        setValidationError('Participant non valide');
+        setValidationError('Erreur lors de la vérification des informations participant');
         return false;
       }
 
@@ -221,7 +244,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
       const phoneMatch = normalizePhone(formData.phone) === normalizePhone(data.telephone || '');
 
       if (!nomMatch || !prenomMatch || !phoneMatch) {
-        setValidationError('Participant non valide');
+        setValidationError('Informations participant non valide');
         return false;
       }
 
@@ -229,7 +252,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
       return true;
     } catch (error) {
       logger.error('Erreur lors de la vérification:', error);
-      setValidationError('Participant non valide');
+      setValidationError('Informations participant non valide');
       return false;
     }
   };
@@ -264,12 +287,13 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     
     // Vérifier que la case de certification est cochée
     if (!formData.certified) {
-      alert('Veuillez certifier que les coordonnées fournies sont correctes.');
+      alert('Veuillez certifier que les coordonnées fournies sont les vôtres.');
       return;
     }
     
     setIsSubmitting(true);
     setValidationError(null);
+    setSuccessMessage(null);
 
     // Récupérer le numéro de bracelet
     const braceletNumber = localStorage.getItem('userBraceletNumber') || 'Inconnu';
@@ -286,25 +310,24 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     // 2. Vérifier le rate limit
     if (!checkRateLimit(braceletNumber)) {
       const wasBlocked = recordViolation(braceletNumber);
-      await sendTrollAlert(braceletNumber, 'Rate limit dépassé', wasBlocked);
+      await sendSpamAlert(braceletNumber, 'Rate limit dépassé', wasBlocked);
       setValidationError(wasBlocked ? 'Accès temporairement suspendu' : 'Trop de signalements. Veuillez patienter.');
       setIsSubmitting(false);
       return;
     }
 
-    // 3. Détecter le contenu suspect
-    const suspiciousCheck = detectSuspiciousContent();
-    if (suspiciousCheck.isSuspicious) {
+    // 3. Vérifier les doublons
+    if (isDuplicate(braceletNumber)) {
       const wasBlocked = recordViolation(braceletNumber);
-      await sendTrollAlert(braceletNumber, suspiciousCheck.reason, wasBlocked);
-      setValidationError(wasBlocked ? 'Accès temporairement suspendu' : 'Contenu non valide');
+      await sendSpamAlert(braceletNumber, 'Doublon détecté', wasBlocked);
+      setValidationError(wasBlocked ? 'Accès temporairement suspendu' : 'Ce signalement a déjà été envoyé récemment.');
       setIsSubmitting(false);
       return;
     }
 
     // ============ FIN VÉRIFICATIONS ANTI-SPAM ============
 
-    // Vérifier les données avec Firebase
+    // Vérifier les données personnelles avec Firebase (nom, prénom, téléphone uniquement)
     const isValid = await verifyParticipantData();
     if (!isValid) {
       setIsSubmitting(false);
@@ -340,8 +363,22 @@ ${formData.description}
       await sendToTelegram(message);
       // Enregistrer la soumission réussie pour le rate limiting
       recordSubmission(braceletNumber);
-      alert('Signalement envoyé!');
-      onClose();
+      setSuccessMessage('Signalement envoyé avec succès!');
+      setIsSubmitting(false);
+      
+      // Réinitialiser le formulaire après 3 secondes
+      setTimeout(() => {
+        setFormData({
+          description: '',
+          date: '',
+          location: '',
+          firstName: '',
+          lastName: '',
+          phone: '',
+          certified: false
+        });
+        setSuccessMessage(null);
+      }, 3000);
 
     } catch (error) {
       logger.error('Erreur lors de l\'envoi:', error);
@@ -424,7 +461,7 @@ ${emailContent}`);
           </div>
 
           <div className="form-group">
-            <label htmlFor="lastName">Nom *</label>
+            <label htmlFor="lastName">Votre nom *</label>
             <input
               type="text"
               id="lastName"
@@ -436,7 +473,7 @@ ${emailContent}`);
           </div>
 
           <div className="form-group">
-            <label htmlFor="firstName">Prénom *</label>
+            <label htmlFor="firstName">Votre prénom *</label>
             <input
               type="text"
               id="firstName"
@@ -448,7 +485,7 @@ ${emailContent}`);
           </div>
 
           <div className="form-group">
-            <label htmlFor="phone">Numéro de téléphone *</label>
+            <label htmlFor="phone">Votre numéro de téléphone *</label>
             <input
               type="tel"
               id="phone"
@@ -468,13 +505,19 @@ ${emailContent}`);
                 onChange={(e) => setFormData({ ...formData, certified: e.target.checked })}
                 required
               />
-              <label htmlFor="certified">Je certifie que les coordonnées fournies sont correctes *</label>
+              <label htmlFor="certified">Je certifie que les coordonnées fournies sont les miennes *</label>
             </div>
           </div>
 
           {validationError && (
             <div className="validation-error">
               {validationError}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="validation-success">
+              {successMessage}
             </div>
           )}
 

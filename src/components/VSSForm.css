@@ -27,11 +27,11 @@
   /* ✅ Position fixe pour occuper tout l'espace entre header et nav */
   position: fixed;
   top: var(--header-height);
-  /* ✅ Bottom avec hauteur de la nav (min-height 80px selon BottomNav.css) */
-  bottom: 80px;
+  /* ✅ Bottom avec hauteur de la nav (utilise la variable CSS) */
+  bottom: var(--nav-height);
   /* ✅ Hauteur calculée explicitement pour éviter les problèmes de flex */
-  height: calc(100vh - var(--header-height) - 80px);
-  height: calc(100svh - var(--header-height) - 80px);
+  height: calc(100vh - var(--header-height) - var(--nav-height));
+  height: calc(100svh - var(--header-height) - var(--nav-height));
   /* ✅ Padding pour ne pas être caché par Header et Nav */
   padding-top: 5px;
   padding-bottom: 0;
@@ -110,12 +110,15 @@
 .vss-form-content {
   /* ✅ Scroll activé sur ce conteneur précis */
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   padding: 1rem;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   /* ✅ Padding-bottom pour permettre le scroll jusqu'en bas sans être caché par la nav */
   padding-bottom: 1rem;
+  /* ✅ Assurer que le scroll fonctionne même avec peu de contenu */
+  overscroll-behavior: contain;
 }
 
 .form-group {
@@ -248,6 +251,17 @@
   text-align: center;
 }
 
+.validation-success {
+  background-color: rgba(46, 204, 113, 0.15);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 .form-note {
   margin-top: 1.5rem;
   margin-bottom: 2rem;
@@ -267,9 +281,9 @@
     right: 0;
     /* ✅ Position et hauteur conservées pour mobile */
     top: var(--header-height);
-    bottom: 80px;
-    height: calc(100vh - var(--header-height) - 80px);
-    height: calc(100svh - var(--header-height) - 80px);
+    bottom: var(--nav-height);
+    height: calc(100vh - var(--header-height) - var(--nav-height));
+    height: calc(100svh - var(--header-height) - var(--nav-height));
     box-shadow: none;
   }
 

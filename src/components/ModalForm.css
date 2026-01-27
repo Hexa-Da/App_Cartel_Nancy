@@ -29,10 +29,12 @@
   /* ✅ Utiliser les variables globales pour le nouveau système responsive */
   /* Padding pour ne pas être caché par Header et Nav (réduit à 5px d'air) */
   padding-top: calc(var(--header-height) + 5px);
-  padding-bottom: calc(var(--nav-height) + 20px);
-  /* ✅ max-height avec variables CSS */
-  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 40px);
-  max-height: calc(100svh - var(--header-height) - var(--nav-height) - 40px);
+  padding-bottom: var(--nav-height);
+  /* ✅ Hauteur fixe pour permettre le scroll */
+  height: calc(100vh - 5px);
+  height: calc(100svh - 5px);
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 5px);
+  max-height: calc(100svh - var(--header-height) - var(--nav-height) - 5px);
   position: relative;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   border: 1px solid var(--border-color);
@@ -103,11 +105,14 @@
 .modal-form-content {
   /* ✅ Scroll activé sur ce conteneur précis */
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   padding: 1rem;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   padding-bottom: 2rem;
+  /* ✅ Assurer que le scroll fonctionne même avec peu de contenu */
+  overscroll-behavior: contain;
 }
 
 /* Champs */
@@ -213,8 +218,10 @@
   .modal-form-container {
     width: 100%;
     max-width: 100%;
-    height: 100%;
-    max-height: 100%;
+    height: 100vh;
+    height: 100svh;
+    max-height: 100vh;
+    max-height: 100svh;
     border-radius: 0;
     border: none;
     margin: 0;

@@ -12,14 +12,9 @@ const config: CapacitorConfig = {
     contentInset: 'never', // La WebView ignore les safe areas natives et s'étend sous la barre d'état
     scrollEnabled: false, // Désactive le UIScrollView natif - Solution radicale contre le rebond
     backgroundColor: '#000000',
-    allowsLinkPreview: false,
-    handleApplicationURL: true,
-    keyboardResize: 'none', // Comportement overlay natif iOS : le clavier passe par-dessus l'app
-    scrollPadding: false // Le plugin Keyboard gère le scroll ponctuel vers l'input
+    allowsLinkPreview: false
   },
   android: {
-    keyboardResize: 'none',
-    scrollPadding: false,
     backgroundColor: '#000000',
     allowMixedContent: true,
     captureInput: true
