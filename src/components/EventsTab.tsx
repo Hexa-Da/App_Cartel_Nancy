@@ -536,6 +536,8 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
                 partyId = 'place-stanislas';
                 break;
               case 'Parc Expo':
+              case 'Parc Expo Hall A':
+              case 'Parc Expo Hall B':
                 partyId = 'parc-expo';
                 break;
               case 'Zénith':
@@ -902,12 +904,12 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
                       <span>🎀</span>
                       <span>Pompom</span>
                     </>
-                  ) : event.name === 'Parc Expo' && event.description.includes('Showcase') ? (
+                  ) : event.name?.startsWith('Parc Expo') && event.description.includes('Showcase') ? (
                     <>
                       <span>🎤</span>
                       <span>SHOWCASE</span>
                     </>
-                  ) : (event.name === 'Parc Expo' || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
+                  ) : (event.name?.startsWith('Parc Expo') || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
                     <>
                       <span>🎧</span>
                       <span>DJ CONTEST</span>

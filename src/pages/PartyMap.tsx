@@ -57,8 +57,8 @@ const PartyMap: React.FC = () => {
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   
-  // Si on vient du Parc Expo, afficher l'image du plan
-  const showParcExpoPlan = selectedPartyForMap === 'Parc Expo';
+  // Si on vient du Parc Expo (ou Hall A/B), afficher l'image du plan
+  const showParcExpoPlan = selectedPartyForMap?.startsWith('Parc Expo') ?? false;
   // Si on vient du Zénith, afficher l'image du plan
   const showZenithPlan = selectedPartyForMap === 'Zénith';
 
@@ -218,9 +218,9 @@ const PartyMap: React.FC = () => {
         <h3>${party.name}</h3>
         <p>${party.description}</p>
         <p class="venue-address">${party.address}</p>
-        ${party.name === 'Parc Expo' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.name?.startsWith('Parc Expo') && party.description.includes('DJ Contest') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
         ${party.name === 'Zénith' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
-        ${party.name === 'Parc Expo' && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.name?.startsWith('Parc Expo') && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
       `;
 
       const buttonsContainer = document.createElement('div');

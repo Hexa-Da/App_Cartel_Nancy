@@ -66,12 +66,12 @@ const EventItem = memo(({ index, style, data }: EventItemProps) => {
                 <span>🎀</span>
                 <span>Pompom</span>
               </>
-            ) : event.name === 'Parc Expo' && event.description.includes('Showcase') ? (
+            ) : event.name?.startsWith('Parc Expo') && event.description.includes('Showcase') ? (
               <>
                 <span>🎤</span>
                 <span>SHOWCASE</span>
               </>
-            ) : (event.name === 'Parc Expo' || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
+            ) : (event.name?.startsWith('Parc Expo') || event.name === 'Zénith') && event.description.includes('DJ Contest') ? (
               <>
                 <span>🎧</span>
                 <span>DJ CONTEST</span>

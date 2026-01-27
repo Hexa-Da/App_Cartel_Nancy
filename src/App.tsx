@@ -1965,6 +1965,8 @@ function App() {
             partyVenueId = 'place-stanislas';
             break;
           case 'Parc Expo':
+          case 'Parc Expo Hall A':
+          case 'Parc Expo Hall B':
             partyVenueId = 'parc-expo';
             break;
           case 'Zénith':
@@ -2022,7 +2024,7 @@ function App() {
         }
         
         // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ Contest, mais pas Showcase) seulement si le mode édition est activé
-        if (isAdmin && isEditing && ((party.name === 'Parc Expo' || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.toLowerCase().includes('pompom')) && !party.description.toLowerCase().includes('showcase'))) {
+        if (isAdmin && isEditing && ((party.name?.startsWith('Parc Expo') || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.toLowerCase().includes('pompom')) && !party.description.toLowerCase().includes('showcase'))) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
@@ -2084,7 +2086,7 @@ function App() {
           }
           
           // Réajouter les boutons admin si nécessaire
-          if (isAdmin && isEditing && ((currentParty.name === 'Parc Expo' || currentParty.name === 'Zénith') && (currentParty.description.includes('DJ Contest') || currentParty.description.toLowerCase().includes('pompom')) && !currentParty.description.toLowerCase().includes('showcase'))) {
+          if (isAdmin && isEditing && ((currentParty.name?.startsWith('Parc Expo') || currentParty.name === 'Zénith') && (currentParty.description.includes('DJ Contest') || currentParty.description.toLowerCase().includes('pompom')) && !currentParty.description.toLowerCase().includes('showcase'))) {
             const editResultButton = document.createElement('button');
             editResultButton.className = 'edit-result-button';
             editResultButton.textContent = 'Modifier le résultat';
@@ -2865,6 +2867,8 @@ function App() {
                 partyId = 'place-stanislas';
                 break;
               case 'Parc Expo':
+              case 'Parc Expo Hall A':
+              case 'Parc Expo Hall B':
                 partyId = 'parc-expo';
                 break;
               case 'Zénith':
