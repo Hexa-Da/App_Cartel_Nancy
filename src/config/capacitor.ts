@@ -55,9 +55,10 @@ export const setupCapacitor = async (): Promise<void> => {
   document.body.classList.add(platform);
   
   // 2. Gestion Safe Area (Viewport) - Assurez-vous que la meta tag viewport est correcte
+  // interactive-widget=overlays-content : Le clavier passe par-dessus sans redimensionner le viewport (iOS 15.4+)
   const viewport = document.querySelector('meta[name=viewport]');
   if (viewport) {
-    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content');
   }
 
   // --- CONFIGURATION STATUS BAR ---
@@ -77,10 +78,11 @@ export const setupCapacitor = async (): Promise<void> => {
   if (platform === 'ios' && Capacitor.isNativePlatform()) {
     try {
       await Keyboard.setResizeMode({ mode: KeyboardResize.None });
-      // Important : scroll à true pour permettre le scroll automatique vers l'input focalisé
-      // Le scroll global est bloqué par capacitor.config.ts (scrollEnabled: false) et CSS
-      await Keyboard.setScroll({ isDisabled: false });
-      logger.log('[Keyboard] Configuration overlay appliquée sur iOS');
+      // CRITIQUE : Désactiver le scroll natif pour éviter que la WebView ne scroll
+      // Le scroll doit être géré uniquement dans les conteneurs CSS (overflow-y: auto)
+      // Le scroll automatique vers l'input est géré par le plugin Keyboard via setScroll(false)
+      await Keyboard.setScroll({ isDisabled: true });
+      logger.log('[Keyboard] Configuration overlay appliquée sur iOS (scroll natif désactivé)');
     } catch (error) {
       logger.error('Erreur configuration Keyboard:', error);
     }

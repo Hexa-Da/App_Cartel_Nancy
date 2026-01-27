@@ -33,12 +33,17 @@ import HSECharterHandler from './forms/HSECharterHandler';
 import VenueForm from './forms/VenueForm';
 import MatchForm from './forms/MatchForm';
 import { useNotifications } from '../hooks/useNotifications';
+import { useKeyboardStatus } from '../hooks/useKeyboardStatus';
 
 const Layout: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   
   // Initialiser le service de notifications au démarrage (une seule fois au niveau racine)
   useNotifications();
+  
+  // Initialiser la détection du clavier pour injecter --keyboard-height dans le CSS
+  // Ce hook met automatiquement à jour document.documentElement.style.setProperty('--keyboard-height')
+  useKeyboardStatus();
   
   const { activeTab, setActiveTab } = useNavigation();
   const { isEditing, setIsEditing } = useEditing();

@@ -51,6 +51,8 @@
   padding: var(--spacing-md);
   overflow-y: auto;
   padding-bottom: var(--spacing-xxl);
+  /* ✅ Padding dynamique basé sur la hauteur du clavier (overlay mode) */
+  padding-bottom: calc(var(--spacing-xxl) + var(--keyboard-height, 0px));
   background-color: var(--bg-color);
   color: var(--text-color);
   flex: 1;

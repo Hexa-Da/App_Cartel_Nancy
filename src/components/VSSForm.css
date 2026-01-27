@@ -117,6 +117,8 @@
   min-height: 0;
   /* ✅ Padding-bottom pour permettre le scroll jusqu'en bas sans être caché par la nav */
   padding-bottom: 1rem;
+  /* ✅ Padding dynamique basé sur la hauteur du clavier (overlay mode) */
+  padding-bottom: calc(1rem + var(--keyboard-height, 0px));
   /* ✅ Assurer que le scroll fonctionne même avec peu de contenu */
   overscroll-behavior: contain;
 }

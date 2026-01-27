@@ -40,6 +40,9 @@ export const useKeyboardStatus = (): KeyboardStatus => {
   const isInitializedRef = useRef<boolean>(false);
 
   useEffect(() => {
+    // Initialiser la variable CSS à 0 au montage
+    document.documentElement.style.setProperty('--keyboard-height', '0px');
+    
     // Initialiser la hauteur de référence au montage
     if (!isInitializedRef.current) {
       initialHeightRef.current = window.innerHeight;
@@ -60,6 +63,9 @@ export const useKeyboardStatus = (): KeyboardStatus => {
         isOpen: keyboardOpen,
         keyboardHeight
       });
+      
+      // Injecter la variable CSS globale pour utilisation dans les styles
+      document.documentElement.style.setProperty('--keyboard-height', `${keyboardHeight}px`);
     };
 
     // Méthode 1 : Capacitor Keyboard Plugin (si disponible et natif)
@@ -72,10 +78,12 @@ export const useKeyboardStatus = (): KeyboardStatus => {
           
           // Écouter les événements du plugin Capacitor
           keyboardPlugin.addListener('keyboardWillShow', (info: any) => {
+            const height = info.keyboardHeight || 0;
             setStatus({
               isOpen: true,
-              keyboardHeight: info.keyboardHeight || 0
+              keyboardHeight: height
             });
+            document.documentElement.style.setProperty('--keyboard-height', `${height}px`);
           });
 
           keyboardPlugin.addListener('keyboardWillHide', () => {
@@ -83,13 +91,16 @@ export const useKeyboardStatus = (): KeyboardStatus => {
               isOpen: false,
               keyboardHeight: 0
             });
+            document.documentElement.style.setProperty('--keyboard-height', '0px');
           });
 
           keyboardPlugin.addListener('keyboardDidShow', (info: any) => {
+            const height = info.keyboardHeight || 0;
             setStatus({
               isOpen: true,
-              keyboardHeight: info.keyboardHeight || 0
+              keyboardHeight: height
             });
+            document.documentElement.style.setProperty('--keyboard-height', `${height}px`);
           });
 
           keyboardPlugin.addListener('keyboardDidHide', () => {
@@ -97,6 +108,7 @@ export const useKeyboardStatus = (): KeyboardStatus => {
               isOpen: false,
               keyboardHeight: 0
             });
+            document.documentElement.style.setProperty('--keyboard-height', '0px');
           });
         }).catch(() => {
           // Plugin non disponible, continuer avec les autres méthodes
@@ -119,11 +131,13 @@ export const useKeyboardStatus = (): KeyboardStatus => {
             isOpen: true,
             keyboardHeight: heightDifference
           });
+          document.documentElement.style.setProperty('--keyboard-height', `${heightDifference}px`);
         } else {
           setStatus({
             isOpen: false,
             keyboardHeight: 0
           });
+          document.documentElement.style.setProperty('--keyboard-height', '0px');
         }
       } else {
         // Fallback sur checkKeyboardState si visualViewport n'est pas disponible
