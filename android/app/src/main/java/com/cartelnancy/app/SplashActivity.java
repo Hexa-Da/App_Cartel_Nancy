@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -45,7 +43,7 @@ public class SplashActivity extends AppCompatActivity {
         playerView.setPlayer(player);
 
         // Prépare la vidéo depuis res/raw
-        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.logo_cartel_anime;
+        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.logo_cartel_anime_vertical_courte;
         MediaItem mediaItem = MediaItem.fromUri(Uri.parse(videoPath));
         player.setMediaItem(mediaItem);
         player.prepare();
@@ -62,8 +60,7 @@ public class SplashActivity extends AppCompatActivity {
                     Log.d("SplashActivity", "ExoPlayer prêt, vidéo va démarrer");
                 }
                 if (state == Player.STATE_ENDED) {
-                    Log.d("SplashActivity", "Vidéo terminée, transition smooth vers MainActivity");
-                    startSmoothTransition();
+                    goToMainActivity();
                 }
             }
         });
@@ -96,77 +93,11 @@ public class SplashActivity extends AppCompatActivity {
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    private void startSmoothTransition() {
-        // Option 1: Transition rapide (300ms) - ACTUELLE
-        startFastTransition();
-        
-        // Option 2: Pour une transition ultra-rapide (150ms), décommentez la ligne suivante :
-        // startUltraFastTransition();
-    }
-    
-    private void startFastTransition() {
-        // Fade-out animation rapide (300ms)
-        AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);
-        fadeOut.setDuration(300);
-        fadeOut.setFillAfter(true);
-        
-        fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                // Lance MainActivity immédiatement
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                
-                // Option 1: Transition système rapide
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                
-                // Option 2: Pour utiliser les animations personnalisées, décommentez :
-                // overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                
-                // Ferme SplashActivity
-                finish();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-        });
-        
-        // Applique l'animation au view principal
-        findViewById(android.R.id.content).startAnimation(fadeOut);
-    }
-    
-    private void startUltraFastTransition() {
-        // Fade-out ultra-rapide (150ms)
-        AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);
-        fadeOut.setDuration(150);
-        fadeOut.setFillAfter(true);
-        
-        fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                // Lance MainActivity immédiatement
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                
-                // Pas de transition animée pour plus de rapidité
-                overridePendingTransition(0, 0);
-                
-                // Ferme SplashActivity
-                finish();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-        });
-        
-        // Applique l'animation au view principal
-        findViewById(android.R.id.content).startAnimation(fadeOut);
+    private void goToMainActivity() {
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+        finish();
     }
 
     @Override
