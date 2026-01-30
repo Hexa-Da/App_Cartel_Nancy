@@ -77,7 +77,7 @@ const tramLine: TramLine = {
     [48.702124, 6.213303],   // Washington Foch
     [48.703162, 6.216946],   // Clinique Pasteur
     [48.703545, 6.219036],   // Point intermédiaire ajouté
-    [48.703771, 6.221443],   // Essey-Centre (modifié)
+    [48.703771, 6.221443],   // Essey Centre (modifié)
     [48.703369, 6.221947],   // Point intermédiaire
     [48.702279, 6.222792],   // Point intermédiaire ajouté
     [48.701557, 6.223492],   // Point intermédiaire
@@ -123,7 +123,7 @@ const tramLine: TramLine = {
       ]
     },
     { 
-      name: 'Doyen Roubault', 
+      name: 'Notre-Dame-des-Pauvres Direction Sud', 
       coords: [48.655905, 6.154130] as [number, number],
       googleMapsUrls: [
         {
@@ -398,7 +398,7 @@ const tramLine: TramLine = {
       ]
     },
     { 
-      name: 'Essey-Centre', 
+      name: 'Essey Centre', 
       coords: [48.703771, 6.221443] as [number, number],
       googleMapsUrls: [
         {

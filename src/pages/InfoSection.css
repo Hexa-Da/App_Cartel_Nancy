@@ -193,6 +193,7 @@
   line-height: 1.6;
   color: var(--text-color-light);
   background-color: var(--bg-color);
+  white-space: pre-line;
 }
 
 /* Responsive FAQ */
