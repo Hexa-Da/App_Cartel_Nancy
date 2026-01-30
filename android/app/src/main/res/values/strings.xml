@@ -4,4 +4,6 @@
     <string name="title_activity_main">Cartel Nancy</string>
     <string name="package_name">com.cartelnancy.app</string>
     <string name="custom_url_scheme">com.cartelnancy.app</string>
+    <!-- Google Auth Configuration -->
+    <string name="server_client_id">402641775282-flmj306kcpqct1hmrific149uhthiqcq.apps.googleusercontent.com</string>
 </resources>

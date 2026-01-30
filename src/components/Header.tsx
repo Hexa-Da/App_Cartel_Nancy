@@ -20,10 +20,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SettingsMenu from './SettingsMenu';
 import AdminLoginModal from './AdminLoginModal';
-import { verifyAdminCode } from '../firebase';
+import { signOut } from '../services/AuthService';
+import { IAuthUser } from '../services/AuthService';
 import { useApp } from '../AppContext';
 import { useEditing } from '../contexts/EditingContext';
 import { useModal } from '../contexts/ModalContext';
+import logger from '../services/Logger';
 import './Header.css';
 
 interface HeaderProps {
@@ -56,23 +58,50 @@ const Header: React.FC<HeaderProps> = ({
   const { setIsEditing } = useEditing();
   const { showSettings, setShowSettings, showAdminModal, setShowAdminModal } = useModal();
 
-  const handleAdminLogin = (code: string) => {
-    if (verifyAdminCode(code)) {
-      // Stocker l'état admin dans localStorage
-      localStorage.setItem('isAdmin', 'true');
-      // Mettre à jour l'état global directement
-      setUser({ isAdmin: true });
-      setIsAdmin(true);
+  const handleAdminLoginSuccess = async (authUser: IAuthUser) => {
+    try {
+      logger.log('[Header] Connexion admin réussie:', authUser.email);
+      
+      // Mettre à jour l'état global
+      setUser(authUser);
+      setIsAdmin(authUser.isAdmin);
+      
       // Appeler la fonction onAdmin pour indiquer la connexion
       if (onAdmin) {
         onAdmin();
       }
-      setShowAdminModal(false);
       
       // Déclencher un rafraîchissement global de l'application
       window.dispatchEvent(new CustomEvent('adminLoginSuccess'));
-    } else {
-      alert('Code d\'accès incorrect');
+    } catch (error) {
+      logger.error('[Header] Erreur lors de la gestion du succès de connexion:', error);
+    }
+  };
+
+  const handleAdminLogout = async () => {
+    try {
+      logger.log('[Header] Déconnexion admin...');
+      
+      // Déconnexion via AuthService
+      await signOut();
+      
+      // Mettre à jour l'état local
+      setUser(null);
+      setIsAdmin(false);
+      setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
+      
+      if (onAdmin) {
+        onAdmin();
+      }
+      
+      // Déclencher un événement de déconnexion admin
+      window.dispatchEvent(new CustomEvent('adminLogout'));
+    } catch (error) {
+      logger.error('[Header] Erreur lors de la déconnexion:', error);
+      // Même en cas d'erreur, nettoyer l'état local
+      setUser(null);
+      setIsAdmin(false);
+      setIsEditing(false);
     }
   };
 
@@ -204,17 +233,7 @@ const Header: React.FC<HeaderProps> = ({
           {onAdmin && (
             <button
               className="admin-button"
-              onClick={user ? () => {
-                // Déconnexion directe
-                localStorage.removeItem('isAdmin');
-                setUser(null);
-                setIsAdmin(false);
-                setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
-                if (onAdmin) onAdmin();
-                
-                // Déclencher un événement de déconnexion admin
-                window.dispatchEvent(new CustomEvent('adminLogout'));
-              } : () => setShowAdminModal(true)}
+              onClick={user ? handleAdminLogout : () => setShowAdminModal(true)}
               title={user ? "Se déconnecter" : "Se connecter"}
             >
               {user ? (
@@ -276,7 +295,7 @@ const Header: React.FC<HeaderProps> = ({
       <AdminLoginModal
         isOpen={showAdminModal}
         onClose={() => setShowAdminModal(false)}
-        onLogin={handleAdminLogin}
+        onLoginSuccess={handleAdminLoginSuccess}
       />
     </>
   );

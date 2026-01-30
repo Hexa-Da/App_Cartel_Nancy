@@ -39,6 +39,7 @@ import { initializeAnalytics } from './config/analytics';
 import { setupTheme } from './config/theme-setup';
 import { setupAnalytics } from './config/analytics-setup';
 import { initializeFirebase } from './firebase';
+import { initializeGoogleAuth } from './services/AuthService';
 import Loader from './components/Loader';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import logger from './services/Logger';
@@ -102,6 +103,17 @@ const AppRoot = (
     await setupCapacitor();
   } catch (error) {
     logger.error('Erreur lors de la configuration Capacitor:', error);
+  }
+  
+  // 4.5. Initialiser GoogleAuth Capacitor (requis pour Android/iOS)
+  // IMPORTANT: Cette initialisation doit être complète avant le rendu React
+  // pour éviter les NullPointerException sur Android
+  try {
+    await initializeGoogleAuth();
+    logger.log('[Main] GoogleAuth initialisé avec succès');
+  } catch (error) {
+    logger.error('[Main] Erreur lors de l\'initialisation de GoogleAuth:', error);
+    // Ne pas bloquer l'app si l'initialisation échoue, mais logger l'erreur
   }
   
   // 5. Initialiser ReactGA (complémentaire à gtag.js)

@@ -17,6 +17,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ref, onValue } from 'firebase/database';
 import { database, isFirebaseInitialized } from './firebase';
 import { firebaseLogger } from './services/FirebaseLogger';
+import { loadAdminEmails } from './services/AuthService';
 import logger from './services/Logger';
 
 interface Venue {
@@ -57,6 +58,34 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoadingVenues, setIsLoadingVenues] = useState(true);
+
+  // Charger la liste des emails admin depuis Firebase au démarrage
+  useEffect(() => {
+    const initAdminEmails = async () => {
+      if (isFirebaseInitialized()) {
+        try {
+          await loadAdminEmails();
+          logger.log('[AppContext] Emails admin initialisés');
+        } catch (error) {
+          logger.error('[AppContext] Erreur lors de l\'initialisation des emails admin:', error);
+        }
+      } else {
+        // Réessayer après un court délai si Firebase n'est pas encore prêt
+        const retryTimeout = setTimeout(async () => {
+          if (isFirebaseInitialized()) {
+            try {
+              await loadAdminEmails();
+              logger.log('[AppContext] Emails admin initialisés (retry)');
+            } catch (error) {
+              logger.error('[AppContext] Erreur lors de l\'initialisation des emails admin (retry):', error);
+            }
+          }
+        }, 1000);
+        return () => clearTimeout(retryTimeout);
+      }
+    };
+    initAdminEmails();
+  }, []);
 
   // Vérification de l'état admin au chargement
   useEffect(() => {

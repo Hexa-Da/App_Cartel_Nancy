@@ -4,10 +4,12 @@ import type { Request } from "firebase-functions/v2/https";
 import { initializeApp } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
 import { getDatabase } from "firebase-admin/database";
+import { getAuth } from "firebase-admin/auth";
 
 const app = initializeApp();
 const messaging = getMessaging(app);
 const database = getDatabase(app);
+const adminAuth = getAuth(app);
 
 // Définir le secret pour Firebase Functions v2
 const functionSecret = defineSecret("FUNCTION_SECRET");
@@ -345,6 +347,151 @@ export const syncAllDelegationVotes = onRequest(
     } catch (error) {
       console.error("Erreur synchronisation votes délégation:", error);
       res.status(500).send({ error: (error as Error).message });
+    }
+  }
+);
+
+/**
+ * Cloud Function pour définir les Custom Claims admin sur un utilisateur Firebase Auth
+ * 
+ * Cette fonction permet de définir le claim `admin: true` sur un utilisateur
+ * en vérifiant que son email est dans la whitelist d'emails admin.
+ * 
+ * Les Custom Claims sont inclus dans le token JWT et peuvent être vérifiés
+ * côté client ET serveur, ce qui est plus sécurisé qu'une simple collection DB.
+ * 
+ * Usage :
+ * POST /setAdminClaim
+ * Headers: { Authorization: "Bearer <FUNCTION_SECRET>" }
+ * Body: { uid: "firebase-user-uid" }
+ * 
+ * OU pour définir depuis un email :
+ * Body: { email: "admin@exemple.com" }
+ */
+export const setAdminClaim = onRequest(
+  {
+    region: 'europe-west1',
+    cors: true,
+    secrets: [functionSecret],
+  },
+  async (req, res) => {
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    try {
+      assertAuthorized(req, functionSecret.value());
+      if (req.method !== "POST") {
+        res.status(405).send("Method Not Allowed");
+        return;
+      }
+
+      const { uid, email } = req.body ?? {};
+      
+      if (!uid && !email) {
+        res.status(400).send("uid ou email requis");
+        return;
+      }
+
+      let targetUid = uid;
+
+      // Si un email est fourni, récupérer l'UID correspondant
+      if (email && !uid) {
+        try {
+          const userRecord = await adminAuth.getUserByEmail(email);
+          targetUid = userRecord.uid;
+        } catch {
+          res.status(404).send({ error: `Utilisateur avec l'email ${email} non trouvé` });
+          return;
+        }
+      }
+
+      // Vérifier que l'utilisateur existe
+      let userRecord;
+      try {
+        userRecord = await adminAuth.getUser(targetUid);
+      } catch {
+        res.status(404).send({ error: `Utilisateur avec l'UID ${targetUid} non trouvé` });
+        return;
+      }
+
+      // Définir le Custom Claim admin
+      await adminAuth.setCustomUserClaims(targetUid, { admin: true });
+
+      res.status(200).send({
+        success: true,
+        message: `Custom Claim admin défini pour ${userRecord.email || targetUid}`,
+        uid: targetUid,
+        email: userRecord.email,
+      });
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      console.error('[setAdminClaim] Erreur:', errorMessage);
+      res.status(500).send({ error: errorMessage });
+    }
+  }
+);
+
+/**
+ * Cloud Function pour retirer les Custom Claims admin d'un utilisateur
+ * 
+ * Usage :
+ * POST /removeAdminClaim
+ * Headers: { Authorization: "Bearer <FUNCTION_SECRET>" }
+ * Body: { uid: "firebase-user-uid" } ou { email: "admin@exemple.com" }
+ */
+export const removeAdminClaim = onRequest(
+  {
+    region: 'europe-west1',
+    cors: true,
+    secrets: [functionSecret],
+  },
+  async (req, res) => {
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+
+    try {
+      assertAuthorized(req, functionSecret.value());
+      if (req.method !== "POST") {
+        res.status(405).send("Method Not Allowed");
+        return;
+      }
+
+      const { uid, email } = req.body ?? {};
+      
+      if (!uid && !email) {
+        res.status(400).send("uid ou email requis");
+        return;
+      }
+
+      let targetUid = uid;
+
+      // Si un email est fourni, récupérer l'UID correspondant
+      if (email && !uid) {
+        try {
+          const userRecord = await adminAuth.getUserByEmail(email);
+          targetUid = userRecord.uid;
+        } catch {
+          res.status(404).send({ error: `Utilisateur avec l'email ${email} non trouvé` });
+          return;
+        }
+      }
+
+      // Retirer le Custom Claim admin
+      await adminAuth.setCustomUserClaims(targetUid, { admin: false });
+
+      res.status(200).send({
+        success: true,
+        message: `Custom Claim admin retiré pour l'UID ${targetUid}`,
+        uid: targetUid,
+      });
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      console.error('[removeAdminClaim] Erreur:', errorMessage);
+      res.status(500).send({ error: errorMessage });
     }
   }
 );

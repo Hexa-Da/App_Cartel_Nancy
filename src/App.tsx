@@ -39,6 +39,7 @@ import { useEditing } from './contexts/EditingContext';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
+import { initializeGoogleAuth } from './services/AuthService';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
 import PartyMap from './pages/PartyMap';
@@ -131,6 +132,21 @@ function App() {
   } = useForm();
   
   const location = useLocation();
+
+  // Initialiser GoogleAuth Capacitor au montage du composant (backup si main.tsx échoue)
+  useEffect(() => {
+    const initGoogleAuth = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await initializeGoogleAuth();
+          logger.log('[App] GoogleAuth initialisé depuis App.tsx (backup)');
+        } catch (error) {
+          logger.error('[App] Erreur lors de l\'initialisation de GoogleAuth:', error);
+        }
+      }
+    };
+    initGoogleAuth();
+  }, []);
 
   // Forcer l'orientation portrait au démarrage
   // Note: Le verrouillage principal est géré par OrientationLock dans main.tsx
