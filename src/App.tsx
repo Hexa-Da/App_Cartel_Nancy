@@ -1956,7 +1956,6 @@ function App() {
     // HOTELS et RESTAURANTS - Gérés par un effet séparé pour éviter les conflits
 
     // PARTIES (seulement pour les admins)
-    if (isAdmin) {
       parties.forEach(party => {
         // Calculer l'ID du lieu pour la correspondance avec le filtre
         let partyVenueId = '';
@@ -2115,8 +2114,7 @@ function App() {
           markersRef.current.push(marker);
         }
       });
-    }
-  }, [venues, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed, location.pathname, activeTab, appAction]);
+    }, [venues, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed, location.pathname, activeTab, appAction]);
 
   // Fonction pour créer un marqueur d'hôtel
   const createHotelMarker = (hotel: any) => {

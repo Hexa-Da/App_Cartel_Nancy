@@ -1,4 +1,6 @@
 import { onRequest } from "firebase-functions/v2/https";
+import { beforeUserCreated } from "firebase-functions/v2/identity"; // Ajouté
+import { HttpsError } from "firebase-functions/v2/https"; // Ajouté
 import { defineSecret } from "firebase-functions/params";
 import type { Request } from "firebase-functions/v2/https";
 import { initializeApp } from "firebase-admin/app";
@@ -9,7 +11,35 @@ const app = initializeApp();
 const messaging = getMessaging(app);
 const database = getDatabase(app);
 
-// Définir le secret pour Firebase Functions v2
+// --- FONCTION DE BLOCAGE (AUTHENTIFICATION) ---
+
+/**
+ * Cette fonction empêche la création d'un compte si l'email n'est pas autorisé.
+ * Elle s'exécute AVANT que l'utilisateur ne soit ajouté à Firebase Auth.
+ */
+export const beforecreate = beforeUserCreated((event) => {
+  const user = event.data;
+  const email = user?.email;
+
+  // Liste des emails autorisés
+  const ALLOWED_EMAILS = [
+    "pap71530@outlook.com",
+    // Ajoute d'autres emails ici
+  ];
+
+  if (!email || !ALLOWED_EMAILS.includes(email)) {
+    console.log(`[Auth Blocked] Tentative d'inscription refusée pour : ${email}`);
+    throw new HttpsError(
+      "permission-denied",
+      "Accès non autorisé : votre email n'est pas sur la liste blanche."
+    );
+  }
+
+  console.log(`[Auth Allowed] Nouvel utilisateur autorisé : ${email}`);
+});
+
+// --- CONFIGURATION ET UTILITAIRES ---
+
 const functionSecret = defineSecret("FUNCTION_SECRET");
 
 function assertAuthorized(req: Request, secret: string) {
@@ -32,14 +62,15 @@ function assertAuthorized(req: Request, secret: string) {
   }
 }
 
+// --- VOS FONCTIONS EXISTANTES ---
+
 export const subscribeToTopic = onRequest(
   {
-    region: 'europe-west1', // Région cohérente avec les autres fonctions
-    cors: true, // Activer CORS pour les appels depuis le web
-    secrets: [functionSecret], // Déclarer le secret utilisé
+    region: 'europe-west1',
+    cors: true,
+    secrets: [functionSecret],
   },
   async (req, res) => {
-    // Gérer la requête preflight OPTIONS pour CORS
     if (req.method === "OPTIONS") {
       res.status(204).send("");
       return;
@@ -58,13 +89,11 @@ export const subscribeToTopic = onRequest(
         return;
       }
 
-      // Validation du format du token FCM
       if (typeof token !== 'string' || token.length < 10) {
         res.status(400).send({ error: "Format de token invalide" });
         return;
       }
 
-      // Validation du topic
       if (typeof topic !== 'string' || topic.length === 0) {
         res.status(400).send({ error: "Format de topic invalide" });
         return;
@@ -76,8 +105,6 @@ export const subscribeToTopic = onRequest(
       } catch (fcmError) {
         const fcmErrorMessage = (fcmError as Error).message;
         console.error(`[subscribeToTopic] Erreur FCM lors de l'abonnement:`, fcmErrorMessage);
-        
-        // Gestion spécifique des erreurs FCM courantes
         if (fcmErrorMessage.includes('invalid-argument') || fcmErrorMessage.includes('Invalid')) {
           res.status(400).send({ error: "Token ou topic invalide", details: fcmErrorMessage });
         } else if (fcmErrorMessage.includes('unavailable') || fcmErrorMessage.includes('timeout')) {
@@ -96,12 +123,11 @@ export const subscribeToTopic = onRequest(
 
 export const unsubscribeFromTopic = onRequest(
   {
-    region: 'europe-west1', // Région cohérente avec les autres fonctions
-    cors: true, // Activer CORS pour les appels depuis le web
-    secrets: [functionSecret], // Déclarer le secret utilisé
+    region: 'europe-west1',
+    cors: true,
+    secrets: [functionSecret],
   },
   async (req, res) => {
-    // Gérer la requête preflight OPTIONS pour CORS
     if (req.method === "OPTIONS") {
       res.status(204).send("");
       return;
@@ -120,7 +146,6 @@ export const unsubscribeFromTopic = onRequest(
         return;
       }
 
-      // Validation du format du token FCM
       if (typeof token !== 'string' || token.length < 10) {
         res.status(400).send({ error: "Format de token invalide" });
         return;
@@ -132,8 +157,6 @@ export const unsubscribeFromTopic = onRequest(
       } catch (fcmError) {
         const fcmErrorMessage = (fcmError as Error).message;
         console.error(`[unsubscribeFromTopic] Erreur FCM lors du désabonnement:`, fcmErrorMessage);
-        
-        // Gestion spécifique des erreurs FCM courantes
         if (fcmErrorMessage.includes('invalid-argument') || fcmErrorMessage.includes('Invalid')) {
           res.status(400).send({ error: "Token ou topic invalide", details: fcmErrorMessage });
         } else {
@@ -150,12 +173,11 @@ export const unsubscribeFromTopic = onRequest(
 
 export const sendChatNotification = onRequest(
   {
-    region: 'europe-west1', // Région cohérente avec syncAllDelegationVotes
-    cors: true, // Activer CORS pour les appels depuis le web
-    secrets: [functionSecret], // Déclarer le secret utilisé
+    region: 'europe-west1',
+    cors: true,
+    secrets: [functionSecret],
   },
   async (req, res) => {
-    // Gérer la requête preflight OPTIONS pour CORS
     if (req.method === "OPTIONS") {
       res.status(204).send("");
       return;
@@ -182,11 +204,11 @@ export const sendChatNotification = onRequest(
         },
         android: {
           notification: {
-            icon: 'ic_notification', // Nom de l'icône dans les ressources Android (sans extension)
-            color: '#000000', // Couleur de l'icône
+            icon: 'ic_notification',
+            color: '#000000',
             priority: 'high' as const,
             sound: 'default',
-            channelId: 'default', // Canal de notification par défaut
+            channelId: 'default',
           },
         },
         apns: {
@@ -233,9 +255,9 @@ interface Participant {
 
 export const syncAllDelegationVotes = onRequest(
   {
-    region: 'europe-west1', // Région par défaut, peut être modifiée selon vos besoins
-    cors: true, // Activer CORS pour les appels depuis le web
-    secrets: [functionSecret], // Déclarer le secret utilisé
+    region: 'europe-west1',
+    cors: true,
+    secrets: [functionSecret],
   },
   async (req, res) => {
     try {
@@ -245,7 +267,6 @@ export const syncAllDelegationVotes = onRequest(
         return;
       }
 
-      // Récupérer tous les participants
       const participantsRef = database.ref("participants");
       const participantsSnapshot = await participantsRef.once("value");
 
@@ -258,7 +279,6 @@ export const syncAllDelegationVotes = onRequest(
       const allDelegations = new Set<string>();
       const delegationVotesMap: { [delegation: string]: DelegationVotes } = {};
 
-      // Première passe : identifier toutes les délégations et initialiser
       Object.values(allParticipants).forEach((participant) => {
         if (participant.delegation) {
           allDelegations.add(participant.delegation);
@@ -268,13 +288,11 @@ export const syncAllDelegationVotes = onRequest(
         }
       });
 
-      // Deuxième passe : compter les votes pour chaque délégation
       Object.values(allParticipants).forEach((participant) => {
         if (participant.delegation && participant.bets) {
           const delegation = participant.delegation;
           const newDelegationVotes = delegationVotesMap[delegation];
 
-          // Parcourir les paris de ce participant
           Object.entries(participant.bets).forEach(([sportKey, votedDelegation]) => {
             if (votedDelegation) {
               if (!newDelegationVotes[sportKey]) {
@@ -285,7 +303,6 @@ export const syncAllDelegationVotes = onRequest(
                 };
               }
 
-              // Incrémenter le vote pour cette délégation
               if (!newDelegationVotes[sportKey].votes[votedDelegation as string]) {
                 newDelegationVotes[sportKey].votes[votedDelegation as string] = 0;
               }
@@ -296,7 +313,6 @@ export const syncAllDelegationVotes = onRequest(
         }
       });
 
-      // Charger les winners existants depuis Firebase pour les préserver
       const existingWinnersMap: { [delegation: string]: { [sportKey: string]: string | null } } = {};
       const loadWinnersPromises = Array.from(allDelegations).map(async (delegation) => {
         const delegationBetsRef = database.ref(`delegationBets/${delegation}`);
@@ -311,23 +327,19 @@ export const syncAllDelegationVotes = onRequest(
       });
       await Promise.all(loadWinnersPromises);
 
-      // Mettre à jour les votes tout en préservant les winners existants
       const updatePromises: Promise<void>[] = [];
 
       allDelegations.forEach(delegation => {
         const votes = delegationVotesMap[delegation];
         Object.keys(votes).forEach(sportKey => {
           const sportVotes = votes[sportKey];
-          // Préserver le winner existant s'il existe, sinon ne pas définir de winner automatiquement
           if (existingWinnersMap[delegation] && existingWinnersMap[delegation][sportKey] !== undefined) {
             sportVotes.winner = existingWinnersMap[delegation][sportKey];
           } else {
-            // Si aucun winner n'existe, ne pas en définir automatiquement
             sportVotes.winner = null;
           }
         });
 
-        // Sauvegarder dans Firebase
         const delegationBetsRef = database.ref(`delegationBets/${delegation}`);
         const updatePromise = delegationBetsRef.set(votes).catch(err => {
           console.error(`Erreur sauvegarde votes délégation ${delegation}:`, err);
@@ -335,7 +347,6 @@ export const syncAllDelegationVotes = onRequest(
         updatePromises.push(updatePromise);
       });
 
-      // Attendre que toutes les sauvegardes soient terminées
       await Promise.all(updatePromises);
 
       res.status(200).send({ 
