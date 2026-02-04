@@ -15,7 +15,7 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		C806E1C366D25323D1EA24D7 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8696926C63AA730CC0D9DCCD /* Pods_App.framework */; };
-		C915ED222E0F59B10015EF6A /* logo_cartel_anime_vertical_courte.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = C915ED212E0F59B10015EF6A /* logo_cartel_anime_vertical_courte.mp4 */; };
+		C915ED222E0F59B10015EF6A /* logo_cartel_anime_vertical_v3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = C915ED212E0F59B10015EF6A /* logo_cartel_anime_vertical_v3.mp4 */; };
 		C915ED242E0F59BA0015EF6A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C915ED232E0F59BA0015EF6A /* SplashViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,7 +32,7 @@
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		83E44432FB07D31C9D5BE594 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		8696926C63AA730CC0D9DCCD /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C915ED212E0F59B10015EF6A /* logo_cartel_anime_vertical_courte.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = logo_cartel_anime_vertical_courte.mp4; sourceTree = "<group>"; };
+		C915ED212E0F59B10015EF6A /* logo_cartel_anime_vertical_v3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = logo_cartel_anime_vertical_v3.mp4; sourceTree = "<group>"; };
 		C915ED232E0F59BA0015EF6A /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		C93231032F22A831006BE875 /* AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppRelease.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,7 +96,7 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
-				C915ED212E0F59B10015EF6A /* logo_cartel_anime_vertical_courte.mp4 */,
+				C915ED212E0F59B10015EF6A /* logo_cartel_anime_vertical_v3.mp4 */,
 				C915ED232E0F59BA0015EF6A /* SplashViewController.swift */,
 			);
 			path = App;
@@ -167,7 +167,7 @@
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
-				C915ED222E0F59B10015EF6A /* logo_cartel_anime_vertical_courte.mp4 in Resources */,
+				C915ED222E0F59B10015EF6A /* logo_cartel_anime_vertical_v3.mp4 in Resources */,
 				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
