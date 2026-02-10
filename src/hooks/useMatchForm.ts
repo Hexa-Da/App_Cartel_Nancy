@@ -12,6 +12,7 @@ import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import { v4 as uuidv4 } from 'uuid';
 import { Match } from '../types';
+import { UserRole } from '../firebase';
 
 interface MatchFormData {
   date: string;
@@ -23,6 +24,7 @@ interface MatchFormData {
 
 interface UseMatchFormProps {
   isAdmin: boolean;
+  userRole: UserRole;
   venueId: string;
   matchData: MatchFormData;
   editingMatch: { venueId: string | null; match: Match | null };
@@ -32,13 +34,17 @@ interface UseMatchFormProps {
 
 export const useMatchForm = ({
   isAdmin,
+  userRole,
   venueId,
   matchData,
   onSuccess,
   onError
 }: UseMatchFormProps) => {
+  // Autoriser admin ou respoSport à éditer les matchs
+  const canEditMatches = isAdmin || userRole === 'respoSport';
+
   const handleAddMatch = async () => {
-    if (!isAdmin) return;
+    if (!canEditMatches) return;
 
     const venueRef = ref(database, `venues/${venueId}`);
     
@@ -80,7 +86,7 @@ export const useMatchForm = ({
   };
 
   const handleUpdateMatch = async (matchId: string, updatedData: Partial<Match>) => {
-    if (!isAdmin) return;
+    if (!canEditMatches) return;
     
     const venueRef = ref(database, `venues/${venueId}`);
     
@@ -113,7 +119,7 @@ export const useMatchForm = ({
   };
 
   const deleteMatch = async (matchId: string) => {
-    if (!isAdmin) return;
+    if (!canEditMatches) return;
 
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce match ? Cette action est irréversible.')) {
       return;

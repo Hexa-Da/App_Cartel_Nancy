@@ -212,8 +212,16 @@ export const app = new Proxy({} as FirebaseApp, {
 });
 
 // Fonction simple de vérification admin (à adapter selon vos besoins)
-import { ADMIN_CODE } from './config/admin';
+import { ADMIN_CODE, RESPOSPORT_CODE } from './config/admin';
 
-export function verifyAdminCode(code: string): boolean {
-  return code === ADMIN_CODE;
+export type UserRole = 'admin' | 'respoSport' | null;
+
+export function verifyAdminCode(code: string): UserRole {
+  if (code === ADMIN_CODE) {
+    return 'admin';
+  }
+  if (code === RESPOSPORT_CODE) {
+    return 'respoSport';
+  }
+  return null;
 }

@@ -52,17 +52,21 @@ const Header: React.FC<HeaderProps> = ({
   hideBackButton
 }) => {
   const navigate = useNavigate();
-  const { isAdmin, user, setIsAdmin, setUser } = useApp();
+  const { isAdmin, isRespoSport, user, setIsAdmin, setIsRespoSport, setUser } = useApp();
   const { setIsEditing } = useEditing();
   const { showSettings, setShowSettings, showAdminModal, setShowAdminModal } = useModal();
 
   const handleAdminLogin = (code: string) => {
-    if (verifyAdminCode(code)) {
-      // Stocker l'état admin dans localStorage
-      localStorage.setItem('isAdmin', 'true');
+    const role = verifyAdminCode(code);
+    if (role) {
+      // Stocker le rôle dans localStorage
+      localStorage.setItem('userRole', role);
+      localStorage.setItem('isAdmin', role === 'admin' ? 'true' : 'false');
+      localStorage.setItem('isRespoSport', role === 'respoSport' ? 'true' : 'false');
       // Mettre à jour l'état global directement
-      setUser({ isAdmin: true });
-      setIsAdmin(true);
+      setUser({ role, isAdmin: role === 'admin', isRespoSport: role === 'respoSport' });
+      setIsAdmin(role === 'admin');
+      setIsRespoSport(role === 'respoSport');
       // Appeler la fonction onAdmin pour indiquer la connexion
       if (onAdmin) {
         onAdmin();
@@ -100,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({
             </button>
           )}
           
-          {hideBackButton && !isAdmin && (
+          {hideBackButton && !isAdmin && !isRespoSport && (
             <div className="header-logo">
               <img 
                 src="/logo-Photoroom.png" 
@@ -110,7 +114,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           )}
           
-          {isAdmin && onEditModeToggle && (
+          {(isAdmin || isRespoSport) && onEditModeToggle && (
             <button
               className={`edit-button${isEditing ? ' active' : ''}`}
               style={{ 
@@ -207,8 +211,11 @@ const Header: React.FC<HeaderProps> = ({
               onClick={user ? () => {
                 // Déconnexion directe
                 localStorage.removeItem('isAdmin');
+                localStorage.removeItem('isRespoSport');
+                localStorage.removeItem('userRole');
                 setUser(null);
                 setIsAdmin(false);
+                setIsRespoSport(false);
                 setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
                 if (onAdmin) onAdmin();
                 
@@ -218,7 +225,7 @@ const Header: React.FC<HeaderProps> = ({
               title={user ? "Se déconnecter" : "Se connecter"}
             >
               {user ? (
-                isAdmin ? (
+                (isAdmin || isRespoSport) ? (
                   <svg 
                     width="24" 
                     height="24" 

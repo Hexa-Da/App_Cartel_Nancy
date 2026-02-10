@@ -36,6 +36,7 @@ import { useNavigation, TabType } from './contexts/NavigationContext';
 import { useModal } from './contexts/ModalContext';
 import { useForm } from './contexts/FormContext';
 import { useEditing } from './contexts/EditingContext';
+import { useApp } from './AppContext';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
@@ -187,10 +188,11 @@ function App() {
   const eventsButtonRef = useRef<HTMLButtonElement | null>(null);
   const calendarButtonRef = useRef<HTMLButtonElement | null>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin, isRespoSport, userRole, user, setUser, setIsAdmin, setIsRespoSport } = useApp();
   // Refs pour accéder aux valeurs actuelles dans les handlers de popup
   const isAdminRef = useRef(isAdmin);
   const isEditingRef = useRef(isEditing);
+  const userRoleRef = useRef(userRole);
   
   // Mettre à jour les refs quand les valeurs changent
   useEffect(() => {
@@ -200,6 +202,10 @@ function App() {
   useEffect(() => {
     isEditingRef.current = isEditing;
   }, [isEditing]);
+
+  useEffect(() => {
+    userRoleRef.current = userRole;
+  }, [userRole]);
 
   const [_, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
@@ -258,17 +264,7 @@ function App() {
     }
   }, [location.pathname]);
   
-  const [user, setUser] = useState<any>(null);
   const [_isLoading, setIsLoading] = useState(false);
-
-  // Vérification des droits admin depuis localStorage
-  useEffect(() => {
-    const adminStatus = localStorage.getItem('isAdmin') === 'true';
-    setIsAdmin(adminStatus);
-    if (adminStatus) {
-      setUser({ isAdmin: true });
-    }
-  }, []);
 
   // Écouter la connexion admin réussie pour rafraîchir l'application
   useEffect(() => {
@@ -282,9 +278,6 @@ function App() {
       }
       // Recharger les marqueurs d'hôtels et restaurants
       createHotelAndRestaurantMarkers();
-      // Mettre à jour l'état admin
-      setIsAdmin(true);
-      setUser({ isAdmin: true });
     };
 
     const handleAdminLogout = () => {
@@ -297,9 +290,6 @@ function App() {
       }
       // Recharger les marqueurs d'hôtels et restaurants
       createHotelAndRestaurantMarkers();
-      // Mettre à jour l'état admin
-      setIsAdmin(false);
-      setUser(null);
     };
 
     window.addEventListener('adminLoginSuccess', handleAdminLoginSuccess);
@@ -343,6 +333,11 @@ function App() {
       return false;
     }
     return true;
+  };
+
+  // Fonction pour vérifier si l'utilisateur peut éditer les matchs (admin ou respoSport)
+  const canEditMatches = () => {
+    return isAdmin || userRole === 'respoSport';
   };
 
   const [hotels, setHotels] = useState<Hotel[]>(() => {
@@ -1309,7 +1304,10 @@ function App() {
 
   // Fonction pour supprimer un match
   const deleteMatch = async (venueId: string, matchId: string) => {
-    if (!checkAdminRights()) return;
+    if (!canEditMatches()) {
+      alert('Cette action nécessite des droits d\'édition de match.');
+      return;
+    }
 
     // Demander confirmation avant la suppression
     if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce match ? Cette action est irréversible.')) {
@@ -1811,7 +1809,7 @@ function App() {
               <p class="match-description">${match.description}</p>
               ${match.result ? `<p class="match-result"><strong>Résultat :</strong> ${match.result}</p>` : ''}
             `;
-            if (isEditing && isAdmin) {
+            if (isEditing && canEditMatches()) {
               const matchActionsDiv = document.createElement('div');
               matchActionsDiv.className = 'match-actions';
               const editButton = document.createElement('button');
@@ -1840,7 +1838,7 @@ function App() {
           matchesListDiv.innerHTML = '<p>Aucun match prévu</p>';
           popupContent.appendChild(matchesListDiv);
         }
-        if (isEditing && isAdmin) {
+        if (isEditing && canEditMatches()) {
           const editButtonsContainer = document.createElement('div');
           editButtonsContainer.className = 'popup-buttons';
           // Ne pas afficher le bouton d'ajout de match pour les indications
@@ -2343,7 +2341,10 @@ function App() {
 
   // Fonction pour commencer l'édition d'un match
   const startEditingMatch = (venueId: string, match: Match | null) => {
-    if (!checkAdminRights()) return;
+    if (!canEditMatches()) {
+      alert('Cette action nécessite des droits d\'édition de match.');
+      return;
+    }
 
     // Fermer le formulaire d'édition de lieu s'il est ouvert
     if (editingVenue.id || isAddingPlace) {
@@ -2848,8 +2849,11 @@ function App() {
       // Si l'utilisateur est connecté, on le déconnecte
       try {
         localStorage.removeItem('isAdmin');
+        localStorage.removeItem('isRespoSport');
+        localStorage.removeItem('userRole');
         setUser(null);
         setIsAdmin(false);
+        setIsRespoSport(false);
         setIsEditing(false); // Désactiver le mode édition lors de la déconnexion
       } catch (error) {
         logger.error('Erreur lors de la déconnexion:', error);

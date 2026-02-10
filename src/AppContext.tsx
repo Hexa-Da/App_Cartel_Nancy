@@ -33,9 +33,15 @@ interface Venue {
   matches?: any[];
 }
 
+import { UserRole } from './firebase';
+
 interface AppContextType {
   isAdmin: boolean;
   setIsAdmin: React.Dispatch<React.SetStateAction<boolean>>;
+  isRespoSport: boolean;
+  setIsRespoSport: React.Dispatch<React.SetStateAction<boolean>>;
+  userRole: UserRole;
+  setUserRole: React.Dispatch<React.SetStateAction<UserRole>>;
   user: any;
   setUser: React.Dispatch<React.SetStateAction<any>>;
   venues: Venue[];
@@ -53,6 +59,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isRespoSport, setIsRespoSport] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole>(null);
   const [user, setUser] = useState<any>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
@@ -60,22 +68,57 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Vérification de l'état admin au chargement
   useEffect(() => {
+    const storedRole = localStorage.getItem('userRole') as UserRole;
     const adminStatus = localStorage.getItem('isAdmin') === 'true';
-    setIsAdmin(adminStatus);
-    if (adminStatus) {
-      setUser({ isAdmin: true });
+    const respoSportStatus = localStorage.getItem('isRespoSport') === 'true';
+    
+    if (storedRole && (storedRole === 'admin' || storedRole === 'respoSport')) {
+      setUserRole(storedRole);
+      setIsAdmin(storedRole === 'admin');
+      setIsRespoSport(storedRole === 'respoSport');
+      setUser({ role: storedRole, isAdmin: storedRole === 'admin', isRespoSport: storedRole === 'respoSport' });
+    } else if (adminStatus) {
+      // Compatibilité avec l'ancien système
+      setUserRole('admin');
+      setIsAdmin(true);
+      setIsRespoSport(false);
+      setUser({ role: 'admin', isAdmin: true, isRespoSport: false });
+    } else if (respoSportStatus) {
+      setUserRole('respoSport');
+      setIsAdmin(false);
+      setIsRespoSport(true);
+      setUser({ role: 'respoSport', isAdmin: false, isRespoSport: true });
     }
   }, []);
 
   // Écoute des changements d'état admin
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'isAdmin') {
-        const adminStatus = e.newValue === 'true';
-        setIsAdmin(adminStatus);
-        if (adminStatus) {
-          setUser({ isAdmin: true });
+      if (e.key === 'userRole' || e.key === 'isAdmin' || e.key === 'isRespoSport') {
+        const storedRole = localStorage.getItem('userRole') as UserRole;
+        const adminStatus = localStorage.getItem('isAdmin') === 'true';
+        const respoSportStatus = localStorage.getItem('isRespoSport') === 'true';
+        
+        if (storedRole && (storedRole === 'admin' || storedRole === 'respoSport')) {
+          setUserRole(storedRole);
+          setIsAdmin(storedRole === 'admin');
+          setIsRespoSport(storedRole === 'respoSport');
+          setUser({ role: storedRole, isAdmin: storedRole === 'admin', isRespoSport: storedRole === 'respoSport' });
+        } else if (adminStatus) {
+          // Compatibilité avec l'ancien système
+          setUserRole('admin');
+          setIsAdmin(true);
+          setIsRespoSport(false);
+          setUser({ role: 'admin', isAdmin: true, isRespoSport: false });
+        } else if (respoSportStatus) {
+          setUserRole('respoSport');
+          setIsAdmin(false);
+          setIsRespoSport(true);
+          setUser({ role: 'respoSport', isAdmin: false, isRespoSport: true });
         } else {
+          setUserRole(null);
+          setIsAdmin(false);
+          setIsRespoSport(false);
           setUser(null);
         }
       }
@@ -268,6 +311,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     <AppContext.Provider value={{
       isAdmin,
       setIsAdmin,
+      isRespoSport,
+      setIsRespoSport,
+      userRole,
+      setUserRole,
       user,
       setUser,
       venues,

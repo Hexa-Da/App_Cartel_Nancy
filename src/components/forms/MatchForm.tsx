@@ -19,7 +19,7 @@ const MatchForm: React.FC = () => {
     setNewMatch
   } = useForm();
 
-  const { isAdmin } = useApp();
+  const { isAdmin, userRole } = useApp();
 
   const handleSuccess = () => {
     setNewMatch({
@@ -39,6 +39,7 @@ const MatchForm: React.FC = () => {
   // Le hook doit toujours être appelé, même si venueId est null
   const { handleAddMatch, handleUpdateMatch: updateMatch } = useMatchForm({
     isAdmin,
+    userRole,
     venueId: editingMatch.venueId || '',
     matchData: newMatch,
     editingMatch,
