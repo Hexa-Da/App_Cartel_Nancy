@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({
   hideBackButton
 }) => {
   const navigate = useNavigate();
-  const { isAdmin, isRespoSport, user, setIsAdmin, setIsRespoSport, setUser } = useApp();
+  const { isAdmin, isRespoSport, user, setIsAdmin, setIsRespoSport, setUser, setUserRole } = useApp();
   const { setIsEditing } = useEditing();
   const { showSettings, setShowSettings, showAdminModal, setShowAdminModal } = useModal();
 
@@ -64,6 +64,7 @@ const Header: React.FC<HeaderProps> = ({
       localStorage.setItem('isAdmin', role === 'admin' ? 'true' : 'false');
       localStorage.setItem('isRespoSport', role === 'respoSport' ? 'true' : 'false');
       // Mettre à jour l'état global directement
+      setUserRole(role);
       setUser({ role, isAdmin: role === 'admin', isRespoSport: role === 'respoSport' });
       setIsAdmin(role === 'admin');
       setIsRespoSport(role === 'respoSport');
@@ -213,6 +214,7 @@ const Header: React.FC<HeaderProps> = ({
                 localStorage.removeItem('isAdmin');
                 localStorage.removeItem('isRespoSport');
                 localStorage.removeItem('userRole');
+                setUserRole(null);
                 setUser(null);
                 setIsAdmin(false);
                 setIsRespoSport(false);

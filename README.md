@@ -1,7 +1,8 @@
 # Cartel Nancy - Application Mobile
 
 ## Description
-Cartel Nancy est une application mobile et web développée pour l'événement sportif et culturel "Cartel 2026" à Nancy. L'application permet aux utilisateurs de consulter les événements, localiser les lieux d'hébergement et restaurants, et accéder aux informations pratiques de l'organisation.
+
+Cartel Nancy est une application mobile et web développée pour l'événement sportif et culturel « Cartel 2026 » à Nancy. L'application permet aux utilisateurs de consulter les événements, localiser les lieux d'hébergement et restaurants, et accéder aux informations pratiques de l'organisation.
 
 ## 📱 Vue d'ensemble
 
@@ -11,9 +12,9 @@ Application React/TypeScript avec Capacitor pour Android et iOS, utilisant Fireb
 
 - **🗺️ Carte interactive** avec géolocalisation et marqueurs d'événements (Leaflet)
 - **💬 Chat temps réel** avec notifications push (Firebase Cloud Messaging)
-- **📅 Gestion d'événements** avec filtres avancés
+- **📅 Gestion d'événements** avec liste, filtres avancés
 - **🔐 Mode administrateur** avec édition des contenus (venues, matchs, événements)
-- **📋 Informations pratiques** (restauration, transport, bus lines, etc.)
+- **📋 Informations pratiques** (restauration, transport, lignes de bus, etc.)
 - **⚠️ Signalements VSS** avec formulaire sécurisé et système anti-spam
 - **📱 Application native** pour Android et iOS
 - **🔒 Activation unique** par appareil (un bracelet = un seul téléphone)
@@ -25,7 +26,7 @@ Application React/TypeScript avec Capacitor pour Android et iOS, utilisant Fireb
 
 ### 📁 Structure des dossiers
 
-L'application suit une architecture **Feature-First** et **Colocated** (code + style au même endroit).
+L'application suit une architecture **Feature-First** et **Colocated** (code + style au même endroit). Voir **`CLAUDE.md`** pour les standards stricts (tokens CSS, contextes, pas de styles inline, etc.).
 
 ```
 App_Cartel_Nancy/
@@ -38,15 +39,17 @@ App_Cartel_Nancy/
 │   └── firebase-messaging-sw.js  # Service Worker pour notifications
 ├── 📦 src/                       # Code source
 │   ├── 🧩 components/            # Composants UI partagés
-│   ├── 📄 pages/                 # Pages principales (Home, Map, Info)
-│   ├── 🎨 theme/                 # Variables CSS & style spécifique
-│   ├── ⚙️ config/                # Configuration (Capacitor, Analytics, Firebase)
-│   ├── 🔧 services/              # Logique métier pure (Firebase, Logger)
-│   ├── 🎣 hooks/                 # Hooks personnalisés (useMapState, useSafeAreas)
-│   ├── 📦 contexts/              # Contextes séparés (Nav, Modal, Form, Editing)
-│   └── 📝 types.ts               # Types TypeScript globaux
-├── ⚙️ functions/                 # Firebase Cloud Functions
-└── ⚙️ Configuration Files        # Vite, TypeScript, ESLint, Capacitor
+│   ├── 📄 pages/                 # Pages principales (Home, Map, Info, Parie, PlanningFilesPage)
+│   ├── 🎨 theme/                 # tokens.css, reset.css, platform/ (ios, android)
+│   ├── ⚙️ config/                # capacitor, analytics, firebase-messaging, admin, theme-setup
+│   ├── 🔧 services/              # Firebase, Logger, VenueService, MatchService, EditableDataService
+│   ├── 🎣 hooks/                 # useMapState, useSafeAreas, useEventFilters, useHSECharter, etc.
+│   ├── 📦 contexts/              # Navigation, Modal, Form, Editing
+│   ├── 📝 types.ts + types/      # Types TypeScript globaux et venue
+│   ├── AppContext.tsx            # État global app (panels, chat, etc.)
+│   └── AppPanelsContext.tsx      # Contexte des panneaux
+├── ⚙️ functions/                 # Firebase Cloud Functions 
+└── ⚙️ Configuration              # Vite, TypeScript, ESLint, Capacitor
 ```
 
 ### 🧩 Composants principaux
@@ -63,15 +66,6 @@ App_Cartel_Nancy/
 | **VSSForm.tsx** | Formulaire de signalement VSS sécurisé avec anti-spam |
 | **BusLines.tsx** | Affichage des lignes de bus et horaires |
 | **ChatPanel.tsx** | Chat temps réel avec Firebase |
-| **Parie.tsx** | Page dédiée au système de paris sportifs par délégation. |
-
-### 📄 Pages principales
-
-| Page | Fonctionnalité | Accès |
-|------|----------------|-------|
-| **Home** | Événements récents avec filtres | `/home` |
-| **Map** | Carte interactive avec géolocalisation | `/map` |
-| **Info** | Menu informations pratiques | `/info` |
 
 ## 🛠️ Technologies utilisées
 
@@ -123,4 +117,4 @@ Projet développé pour le Cartel Nancy 2026. Tous droits réservés.
 
 ---
 
-*Dernière mise à jour : Janvier 2026*
+*Dernière mise à jour : Février 2026*

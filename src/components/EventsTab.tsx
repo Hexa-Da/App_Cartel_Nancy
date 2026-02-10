@@ -309,7 +309,6 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
         const containerRect = eventsList.getBoundingClientRect();
         const elementRect = firstNonPassedEvent.getBoundingClientRect();
         const offset = 15;
-        
         const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
         eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
       }
@@ -881,9 +880,9 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
             Aucun événement trouvé
           </div>
         ) : (
-          getFilteredEvents.map(event => (
-            <div 
-              key={event.id} 
+          getFilteredEvents.map((event) => (
+            <div
+              key={event.id}
               className={`event-item ${event.isPassed ? 'passed' : ''} ${event.type === 'match' ? 'match-event' : 'party-event'}`}
               onClick={() => handleEventSelect(event)}
             >
@@ -938,7 +937,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
                   <p className="event-description">{event.description}</p>
                   {event.sport !== 'Defile' && !event.description?.toLowerCase().includes('showcase') && (
                     <div className="party-results">
-                      <h4 style={{ color: 'var(--success-color)', marginTop: '10px' }}>
+                      <h4 className="party-result-text">
                         Résultat : {event.result || 'à venir'}
                       </h4>
                     </div>
@@ -946,7 +945,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
                 </>
               )}
               <div className="event-actions">
-                <button 
+                <button
                   className="maps-button"
                   onClick={(e) => {
                     e.stopPropagation();

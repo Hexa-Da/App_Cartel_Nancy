@@ -326,25 +326,33 @@ const Home: React.FC = () => {
       if (place.sport !== sport) return [];
       
       if ('matches' in place && Array.isArray(place.matches)) {
-        // Vérifier le championnat au niveau de la venue (pas du match)
-        const venueDescription = place.description?.toLowerCase() || '';
-        const isFemale = venueDescription.includes('féminin');
-        const isMale = venueDescription.includes('masculin');
-        const isMixed = venueDescription.includes('mixte');
-        
-        let championshipMatch = true;
-        if (userPreferences.championship !== 'none') {
-          championshipMatch = 
-            (userPreferences.championship === 'female' && isFemale) ||
-            (userPreferences.championship === 'male' && isMale) ||
-            (userPreferences.championship === 'mixed' && isMixed);
-        }
-        
-        // Si le championnat ne correspond pas, ne pas retourner de matchs de cette venue
-        if (!championshipMatch) return [];
-        
         return place.matches.filter((match: Match) => {
-          return delegationMatches(match.teams, delegation);
+          // Vérifier la délégation
+          const delegationMatch = delegationMatches(match.teams, delegation);
+          if (!delegationMatch) return false;
+          
+          // Vérifier le championnat au niveau du match (comme dans EventsTab.tsx)
+          if (userPreferences.championship !== 'none') {
+            const matchDescription = match.description?.toLowerCase() || '';
+            const isFemale = matchDescription.includes('féminin');
+            const isMale = matchDescription.includes('masculin');
+            const isMixed = matchDescription.includes('mixte');
+            
+            // Si le match n'a pas d'information de genre, l'inclure seulement si aucune préférence de championnat
+            if (!isFemale && !isMale && !isMixed) {
+              return true;
+            }
+            
+            // Vérifier si le genre du match correspond à la préférence
+            const championshipMatch = 
+              (userPreferences.championship === 'female' && isFemale) ||
+              (userPreferences.championship === 'male' && isMale) ||
+              (userPreferences.championship === 'mixed' && isMixed);
+            
+            return championshipMatch;
+          }
+          
+          return true;
         }).map((match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,

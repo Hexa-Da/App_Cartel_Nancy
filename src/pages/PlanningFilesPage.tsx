@@ -426,7 +426,7 @@ const PlanningFilesPage: React.FC = () => {
 
       {/* Composant PlanningFiles avec filtre */}
       <div 
-        className={`planning-container ${isEditing ? 'is-editing' : ''} ${eventType !== 'all' ? 'has-two-filters' : ''}`}
+        className={`planning-container ${isAdmin && isEditing ? 'is-editing' : ''} ${eventType !== 'all' ? 'has-two-filters' : ''}`}
         style={{ 
           opacity: isPageLoading ? 0 : 1,
           pointerEvents: isPageLoading ? 'none' : 'auto',

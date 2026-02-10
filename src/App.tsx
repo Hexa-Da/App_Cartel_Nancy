@@ -188,7 +188,7 @@ function App() {
   const eventsButtonRef = useRef<HTMLButtonElement | null>(null);
   const calendarButtonRef = useRef<HTMLButtonElement | null>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
-  const { isAdmin, isRespoSport, userRole, user, setUser, setIsAdmin, setIsRespoSport } = useApp();
+  const { isAdmin, userRole, user, setUser, setUserRole, setIsAdmin, setIsRespoSport } = useApp();
   // Refs pour accéder aux valeurs actuelles dans les handlers de popup
   const isAdminRef = useRef(isAdmin);
   const isEditingRef = useRef(isEditing);
@@ -2047,7 +2047,7 @@ function App() {
           markersRef.current.push(marker);
         }
       });
-    }, [venues, parties, isEditing, isAdmin, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed, location.pathname, activeTab, appAction]);
+    }, [venues, parties, isEditing, isAdmin, userRole, eventFilter, venueFilter, delegationFilter, showFemale, showMale, showMixed, location.pathname, activeTab, appAction]);
 
   // Fonction pour créer un marqueur d'hôtel
   const createHotelMarker = (hotel: any) => {
@@ -2851,6 +2851,7 @@ function App() {
         localStorage.removeItem('isAdmin');
         localStorage.removeItem('isRespoSport');
         localStorage.removeItem('userRole');
+        setUserRole(null);
         setUser(null);
         setIsAdmin(false);
         setIsRespoSport(false);
