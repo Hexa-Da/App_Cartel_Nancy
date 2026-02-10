@@ -12,6 +12,7 @@ interface HSECharterPopupProps {
 
 const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+  const [hasAcceptedEngagement, setHasAcceptedEngagement] = useState(false);
   const [braceletNumber, setBraceletNumber] = useState('');
   const [error, setError] = useState('');
   const [isBraceletModalOpen, setIsBraceletModalOpen] = useState(false);
@@ -49,16 +50,6 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
   };
 
   const handleSubmit = async () => {
-    if (!hasScrolledToBottom) {
-      setError('Veuillez lire la charte en entier');
-      return;
-    }
-    if (!braceletNumber.trim()) {
-      setError('Veuillez saisir votre numéro de bracelet');
-      setIsBraceletModalOpen(true);
-      return;
-    }
-    
     // Valider le bracelet dans Firebase avant de fermer
     setIsValidating(true);
     setError('');
@@ -70,7 +61,7 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
     }
   };
 
-  const canSubmit = hasScrolledToBottom && braceletNumber.trim().length > 0 && !isValidating;
+  const canSubmit = hasScrolledToBottom && hasAcceptedEngagement && braceletNumber.trim().length > 0 && !isValidating;
 
   return (
     <div className="hse-popup-overlay">
@@ -131,6 +122,19 @@ const HSECharterPopup: React.FC<HSECharterPopupProps> = ({ onAccept }) => {
           <section className="hse-section hse-final">
             <h3>Engagement</h3>
             <p>En validant, je m'engage à respecter ces règles et signaler tout incident.</p>
+            <div className="hse-checkbox-container">
+              <input
+                type="checkbox"
+                id="hse-engagement-checkbox"
+                className="hse-checkbox"
+                checked={hasAcceptedEngagement}
+                onChange={(e) => setHasAcceptedEngagement(e.target.checked)}
+                aria-describedby="engagement-desc"
+              />
+              <label htmlFor="hse-engagement-checkbox" className="hse-checkbox-label" id="engagement-desc">
+                J'accepte m'engage à respecter la charte HSE.
+              </label>
+            </div>
           </section>
 
           <section className="hse-section bracelet-section">

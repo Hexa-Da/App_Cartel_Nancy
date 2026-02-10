@@ -23,7 +23,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import './GlobalUtilities.css';
 import './MapStyles.css';
-import { ref, onValue, set, update, get } from 'firebase/database';
+import { ref, onValue, set } from 'firebase/database';
 import { database, isFirebaseInitialized } from './firebase';
 import logger from './services/Logger';
 import L from 'leaflet';
@@ -48,6 +48,7 @@ import EventDetails, { Event as EventDetailsEvent } from './components/EventDeta
 import { venueService } from './services/VenueService';
 import { matchService } from './services/MatchService';
 import { mapService } from './services/MapService';
+import { editableDataService } from './services/EditableDataService';
 import { LocationMarker } from './components/map/LocationMarker';
 import { MapEvents } from './components/map/MapEvents';
 import { ZoomListener } from './components/map/ZoomListener';
@@ -902,112 +903,40 @@ function App() {
 
   // Charger les descriptions et résultats depuis Firebase au démarrage
   useEffect(() => {
-    let unsubscribeFunctions: (() => void)[] = [];
-    let loadedCount = 0;
-    const totalSources = 4; // partyResults, hotelDescriptions, restaurantDescriptions, partyDescriptions
-    
-    // Fonction pour vérifier si toutes les données sont chargées et mettre à jour l'état
-    const checkAllDataLoaded = () => {
-      loadedCount++;
-      if (loadedCount === totalSources) {
+    const unsubscribeFunctions = editableDataService.loadEditableData({
+      onPartyResultsUpdate: (partyId: string, result: string) => {
+        setParties((prevParties: Party[]) => 
+          prevParties.map((party: Party) => 
+            party.id === partyId ? { ...party, result } : party
+          )
+        );
+      },
+      onPartyDescriptionUpdate: (partyId: string, description: string) => {
+        setParties((prevParties: Party[]) => 
+          prevParties.map((party: Party) => 
+            party.id === partyId ? { ...party, description } : party
+          )
+        );
+      },
+      onHotelDescriptionUpdate: (hotelId: string, description: string) => {
+        setHotels((prevHotels: Hotel[]) => 
+          prevHotels.map((hotel: Hotel) => 
+            hotel.id === hotelId ? { ...hotel, description } : hotel
+          )
+        );
+        createHotelAndRestaurantMarkers();
+      },
+      onRestaurantDescriptionUpdate: (restaurantId: string, description: string) => {
+        setRestaurants((prevRestaurants: Restaurant[]) => 
+          prevRestaurants.map((restaurant: Restaurant) => 
+            restaurant.id === restaurantId ? { ...restaurant, description } : restaurant
+          )
+        );
+      },
+      onAllDataLoaded: () => {
         updateLocalStateFromFirebase();
       }
-    };
-    
-    // Charger les résultats des soirées
-    const unsubscribePartyResults = loadFromFirebase('editableData/partyResults', (data) => {
-      if (data) {
-        // Mettre à jour directement l'état React depuis Firebase
-        if (data['parc-expo-pompoms'] && data['parc-expo-pompoms'].result) {
-          setParties((prevParties: Party[]) => 
-            prevParties.map((party: Party) => 
-              party.id === '2' ? { ...party, result: data['parc-expo-pompoms'].result } : party
-            )
-          );
-        }
-        if (data['parc-expo-showcase'] && data['parc-expo-showcase'].result) {
-          setParties((prevParties: Party[]) => 
-            prevParties.map((party: Party) => 
-              party.id === '3' ? { ...party, result: data['parc-expo-showcase'].result } : party
-            )
-          );
-        }
-        if (data['zenith-dj-contest'] && data['zenith-dj-contest'].result) {
-          setParties((prevParties: Party[]) => 
-            prevParties.map((party: Party) => 
-              party.id === '4' ? { ...party, result: data['zenith-dj-contest'].result } : party
-            )
-          );
-        }
-      }
-      checkAllDataLoaded();
     });
-
-    // Charger les descriptions des hôtels
-    const unsubscribeHotelDescriptions = loadFromFirebase('editableData/hotelDescriptions', (data) => {
-      if (data) {
-        Object.entries(data).forEach(([hotelId, hotelData]: [string, any]) => {
-          if (hotelData.description) {
-            // Mettre à jour directement l'état React depuis Firebase
-            setHotels((prevHotels: Hotel[]) => 
-              prevHotels.map((hotel: Hotel) => 
-                hotel.id === hotelId ? { ...hotel, description: hotelData.description } : hotel
-              )
-            );
-            // Mettre à jour les marqueurs après la modification
-            createHotelAndRestaurantMarkers();
-          }
-        });
-        checkAllDataLoaded();
-      } else {
-        // Appeler même si data est null pour compter comme chargé
-        checkAllDataLoaded();
-      }
-    });
-
-    // Charger les descriptions des restaurants
-    const unsubscribeRestaurantDescriptions = loadFromFirebase('editableData/restaurantDescriptions', (data) => {
-      if (data) {
-        Object.entries(data).forEach(([restaurantId, restaurantData]: [string, any]) => {
-          if (restaurantData.description) {
-            // Mettre à jour directement l'état React depuis Firebase
-            // Les marqueurs seront recréés automatiquement par le useEffect qui surveille les changements de descriptions
-            setRestaurants((prevRestaurants: Restaurant[]) => 
-              prevRestaurants.map((restaurant: Restaurant) => 
-                restaurant.id === restaurantId ? { ...restaurant, description: restaurantData.description } : restaurant
-              )
-            );
-          }
-        });
-        checkAllDataLoaded();
-      } else {
-        // Appeler même si data est null pour compter comme chargé
-        checkAllDataLoaded();
-      }
-    });
-
-    // Charger les descriptions des soirées
-    const unsubscribePartyDescriptions = loadFromFirebase('editableData/partyDescriptions', (data) => {
-      if (data) {
-        Object.entries(data).forEach(([partyId, partyData]: [string, any]) => {
-          if (partyData.description) {
-            // Mettre à jour directement l'état React depuis Firebase
-            setParties((prevParties: Party[]) => 
-              prevParties.map((party: Party) => 
-                party.id === partyId ? { ...party, description: partyData.description } : party
-              )
-            );
-          }
-        });
-      }
-      checkAllDataLoaded();
-    });
-
-    // Ajouter seulement les fonctions unsubscribe valides
-    if (unsubscribePartyResults) unsubscribeFunctions.push(unsubscribePartyResults);
-    if (unsubscribeHotelDescriptions) unsubscribeFunctions.push(unsubscribeHotelDescriptions);
-    if (unsubscribeRestaurantDescriptions) unsubscribeFunctions.push(unsubscribeRestaurantDescriptions);
-    if (unsubscribePartyDescriptions) unsubscribeFunctions.push(unsubscribePartyDescriptions);
 
     // Cleanup function
     return () => {
@@ -1020,9 +949,15 @@ function App() {
   // Initialiser la branche Firebase editableData au démarrage
   useEffect(() => {
     if (isAdmin) {
-      initializeEditableDataBranch();
+      editableDataService.initializeEditableDataBranch(parties, hotels, restaurants)
+        .then(() => {
+          updateLocalStateFromFirebase();
+        })
+        .catch((error) => {
+          logger.error('[App] Erreur initialisation editableData:', error);
+        });
     }
-  }, [isAdmin]);
+  }, [isAdmin, parties, hotels, restaurants]);
 
   // Mettre à jour l'état local au démarrage avec les données du localStorage
   useEffect(() => {
@@ -2439,85 +2374,71 @@ function App() {
   };
 
   // Fonction pour sauvegarder le résultat de la soirée
-  const savePartyResult = (partyId: string, result: string) => {
-    if (partyId === '2') { // Parc Expo Pompoms
-      // Sauvegarder dans Firebase uniquement
-      saveToFirebase('editableData/partyResults/parc-expo-pompoms', { result, updatedAt: new Date().toISOString() });
+  const savePartyResult = async (partyId: string, result: string) => {
+    try {
+      await editableDataService.savePartyResult(partyId, result);
       // Mettre à jour l'état local
       setParties((prevParties: Party[]) => 
         prevParties.map((party: Party) => 
-          party.id === '2' ? { ...party, result } : party
+          party.id === partyId ? { ...party, result } : party
         )
       );
       safeTriggerMarkerUpdate();
-    } else if (partyId === '3') { // Parc Expo Showcase
-      // Sauvegarder dans Firebase
-      saveToFirebase('editableData/partyResults/parc-expo-showcase', { result, updatedAt: new Date().toISOString() });
-      // Mettre à jour l'état local
-      setParties((prevParties: Party[]) => 
-        prevParties.map((party: Party) => 
-          party.id === '3' ? { ...party, result } : party
-        )
-      );
-      safeTriggerMarkerUpdate();
-    } else if (partyId === '4') { // Zénith DJ Contest
-      // Sauvegarder dans Firebase uniquement
-      saveToFirebase('editableData/partyResults/zenith-dj-contest', { result, updatedAt: new Date().toISOString() });
-      // Mettre à jour l'état local
-      setParties((prevParties: Party[]) => 
-        prevParties.map((party: Party) => 
-          party.id === '4' ? { ...party, result } : party
-        )
-      );
-      safeTriggerMarkerUpdate();
+    } catch (error) {
+      logger.error('[App] Erreur sauvegarde partyResult:', error);
     }
     setEditingPartyResult({ partyId: null, isEditing: false });
   };
 
   // Fonction pour sauvegarder la description de la soirée
-  const savePartyDescription = (partyId: string, description: string) => {
-    // Sauvegarder dans Firebase uniquement
-    saveToFirebase(`editableData/partyDescriptions/${partyId}`, { description, updatedAt: new Date().toISOString() });
-    
-    // Mettre à jour l'état local
-    setParties((prevParties: Party[]) => 
-      prevParties.map((party: Party) => 
-        party.id === partyId ? { ...party, description } : party
-      )
-    );
-    
-    safeTriggerMarkerUpdate();
+  const savePartyDescription = async (partyId: string, description: string) => {
+    try {
+      await editableDataService.savePartyDescription(partyId, description);
+      // Mettre à jour l'état local
+      setParties((prevParties: Party[]) => 
+        prevParties.map((party: Party) => 
+          party.id === partyId ? { ...party, description } : party
+        )
+      );
+      safeTriggerMarkerUpdate();
+    } catch (error) {
+      logger.error('[App] Erreur sauvegarde partyDescription:', error);
+    }
     setEditingPartyDescription({ partyId: null, isEditing: false });
   };
 
   // Fonction pour sauvegarder la description de l'hôtel
-  const saveHotelDescription = (hotelId: string, description: string) => {
-    // Sauvegarder dans Firebase uniquement
-    saveToFirebase(`editableData/hotelDescriptions/${hotelId}`, { description, updatedAt: new Date().toISOString() });
-    
-    // Mettre à jour l'état local
-    setHotels((prevHotels: Hotel[]) => 
-      prevHotels.map((hotel: Hotel) => 
-        hotel.id === hotelId ? { ...hotel, description } : hotel
-      )
-    );
-    createHotelAndRestaurantMarkers();
-    safeTriggerMarkerUpdate();
+  const saveHotelDescription = async (hotelId: string, description: string) => {
+    try {
+      await editableDataService.saveHotelDescription(hotelId, description);
+      // Mettre à jour l'état local
+      setHotels((prevHotels: Hotel[]) => 
+        prevHotels.map((hotel: Hotel) => 
+          hotel.id === hotelId ? { ...hotel, description } : hotel
+        )
+      );
+      createHotelAndRestaurantMarkers();
+      safeTriggerMarkerUpdate();
+    } catch (error) {
+      logger.error('[App] Erreur sauvegarde hotelDescription:', error);
+    }
     setEditingHotelDescription({ hotelId: null, isEditing: false });
   };
 
   // Fonction pour sauvegarder la description du restaurant
-  const saveRestaurantDescription = (restaurantId: string, description: string) => {
-    // Sauvegarder dans Firebase uniquement
-    saveToFirebase(`editableData/restaurantDescriptions/${restaurantId}`, { description, updatedAt: new Date().toISOString() });
-    
-    // Mettre à jour l'état local
-    setRestaurants((prevRestaurants: Restaurant[]) => 
-      prevRestaurants.map((restaurant: Restaurant) => 
-        restaurant.id === restaurantId ? { ...restaurant, description } : restaurant
-      )
-    );
-    createHotelAndRestaurantMarkers();
+  const saveRestaurantDescription = async (restaurantId: string, description: string) => {
+    try {
+      await editableDataService.saveRestaurantDescription(restaurantId, description);
+      // Mettre à jour l'état local
+      setRestaurants((prevRestaurants: Restaurant[]) => 
+        prevRestaurants.map((restaurant: Restaurant) => 
+          restaurant.id === restaurantId ? { ...restaurant, description } : restaurant
+        )
+      );
+      createHotelAndRestaurantMarkers();
+    } catch (error) {
+      logger.error('[App] Erreur sauvegarde restaurantDescription:', error);
+    }
     setEditingRestaurantDescription({ restaurantId: null, isEditing: false });
   };
 
@@ -2611,29 +2532,6 @@ function App() {
     }
   };
 
-  // Fonction pour sauvegarder les descriptions et résultats dans Firebase
-  const saveToFirebase = async (path: string, data: any) => {
-    try {
-      const dbRef = ref(database, path);
-      await set(dbRef, data);
-    } catch (error) {
-      // Les données sont déjà sauvegardées localement
-    }
-  };
-
-  // Fonction pour charger les descriptions et résultats depuis Firebase
-  const loadFromFirebase = (path: string, callback: (data: any) => void) => {
-    try {
-      const dbRef = ref(database, path);
-      const unsubscribe = onValue(dbRef, (snapshot) => {
-        const data = snapshot.val();
-        callback(data);
-      });
-      return unsubscribe;
-    } catch (error) {
-      callback(null);
-    }
-  };
 
   // Ref pour stocker updateMapMarkers (défini plus tard dans le code)
   const updateMapMarkersRef = useRef<(() => void) | null>(null);
@@ -2656,143 +2554,6 @@ function App() {
     safeTriggerMarkerUpdate();
   };
 
-  // Fonction pour initialiser la branche editableData sur Firebase
-  const initializeEditableDataBranch = async () => {
-    try {
-      const editableDataRef = ref(database, 'editableData');
-      
-      // Générer dynamiquement la structure pour inclure tous les hôtels et restaurants depuis les états React
-      const generateHotelDescriptions = () => {
-        const hotelDescriptions: any = {};
-        hotels.forEach((hotel) => {
-          hotelDescriptions[hotel.id] = {
-            description: hotel.description || '',
-            updatedAt: new Date().toISOString()
-          };
-        });
-        return hotelDescriptions;
-      };
-
-      const generateRestaurantDescriptions = () => {
-        const restaurantDescriptions: any = {};
-        restaurants.forEach((restaurant) => {
-          restaurantDescriptions[restaurant.id] = {
-            description: restaurant.description || '',
-            updatedAt: new Date().toISOString()
-          };  
-        });
-        return restaurantDescriptions;
-      };
-
-      // Trouver les résultats des soirées depuis l'état parties
-      const party2 = parties.find(p => p.id === '2');
-      const party3 = parties.find(p => p.id === '3');
-      const party1 = parties.find(p => p.id === '1');
-      const party4 = parties.find(p => p.id === '4');
-
-      // Structure complète avec toutes les données depuis les états React
-      const initialStructure = {
-        partyResults: {
-          'parc-expo-pompoms': {
-            result: party2?.result || 'à venir',
-            updatedAt: new Date().toISOString()
-          },
-          'zenith-dj-contest': {
-            result: party4?.result || 'à venir',
-            updatedAt: new Date().toISOString()
-          }
-        },
-        hotelDescriptions: generateHotelDescriptions(),
-        restaurantDescriptions: generateRestaurantDescriptions(),
-        partyDescriptions: {
-          '1': {
-            description: party1?.description || 'Rendez vous 12h puis départ du Défilé à 13h',
-            updatedAt: new Date().toISOString()
-          },
-          '2': {
-            description: party2?.description || 'Soirée Pompoms du 16 avril, 21h-3h',
-            updatedAt: new Date().toISOString()
-          },
-          '3': {
-            description: party3?.description || 'Soirée Showcase 17 avril, 20h-4h',
-            updatedAt: new Date().toISOString()
-          },
-          '4': {
-            description: party4?.description || 'Soirée DJ Contest 18 avril, 20h-4h',
-            updatedAt: new Date().toISOString()
-          }
-        }
-      };
-
-      // Vérifier si editableData existe déjà dans Firebase
-      const snapshot = await get(editableDataRef);
-      if (!snapshot.exists()) {
-        // Si la structure n'existe pas, l'initialiser avec les valeurs par défaut
-        await set(editableDataRef, initialStructure);
-      } else {
-        // Si la structure existe, ne mettre à jour que les champs manquants sans écraser les données existantes
-        const existingData = snapshot.val();
-        const updates: any = {};
-        
-        // Vérifier et mettre à jour seulement les parties manquantes
-        if (!existingData.partyResults) {
-          updates.partyResults = initialStructure.partyResults;
-        } else {
-          // Mettre à jour seulement les résultats manquants
-          if (!existingData.partyResults['parc-expo-pompoms']) {
-            updates['partyResults/parc-expo-pompoms'] = initialStructure.partyResults['parc-expo-pompoms'];
-          }
-          if (!existingData.partyResults['zenith-dj-contest']) {
-            updates['partyResults/zenith-dj-contest'] = initialStructure.partyResults['zenith-dj-contest'];
-          }
-        }
-        
-        if (!existingData.hotelDescriptions) {
-          updates.hotelDescriptions = initialStructure.hotelDescriptions;
-        } else {
-          // Mettre à jour seulement les descriptions d'hôtels manquantes
-          hotels.forEach((hotel) => {
-            if (!existingData.hotelDescriptions[hotel.id]) {
-              updates[`hotelDescriptions/${hotel.id}`] = initialStructure.hotelDescriptions[hotel.id];
-            }
-          });
-        }
-        
-        if (!existingData.restaurantDescriptions) {
-          updates.restaurantDescriptions = initialStructure.restaurantDescriptions;
-        } else {
-          // Mettre à jour seulement les descriptions de restaurants manquantes
-          restaurants.forEach((restaurant) => {
-            if (!existingData.restaurantDescriptions[restaurant.id]) {
-              updates[`restaurantDescriptions/${restaurant.id}`] = initialStructure.restaurantDescriptions[restaurant.id];
-            }
-          });
-        }
-        
-        if (!existingData.partyDescriptions) {
-          updates.partyDescriptions = initialStructure.partyDescriptions;
-        } else {
-          // Mettre à jour seulement les descriptions de soirées manquantes
-          ['1', '2', '3', '4'].forEach((partyId) => {
-            if (!existingData.partyDescriptions[partyId]) {
-              updates[`partyDescriptions/${partyId}`] = initialStructure.partyDescriptions[partyId as '1' | '2' | '3' | '4'];
-            }
-          });
-        }
-        
-        // Appliquer seulement les mises à jour nécessaires
-        if (Object.keys(updates).length > 0) {
-          await update(editableDataRef, updates);
-        }
-      }
-      
-      // Mettre à jour l'état local avec les données Firebase
-      updateLocalStateFromFirebase();
-      
-    } catch (error) {
-      // Les données restent sauvegardées localement
-    }
-  };
 
   // Enregistrer la visite de la page au chargement
   useEffect(() => {

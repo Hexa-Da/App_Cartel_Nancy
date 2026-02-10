@@ -27,7 +27,7 @@ import './VSSForm.css';
 const SPAM_CONFIG = {
   MAX_SUBMISSIONS_PER_HOUR: 3,      // Max 3 envois par heure
   MAX_VIOLATIONS_BEFORE_BLOCK: 3,   // Blocage après 3 violations
-  BLOCK_DURATION_HOURS: 12,         // Durée du blocage en heures
+  BLOCK_DURATION_HOURS: 6,         // Durée du blocage en heures
   DUPLICATE_CHECK_HOURS: 24,        // Vérifier les doublons sur les dernières 24h
 };
 
@@ -193,7 +193,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
 
 🎫 <b>Bracelet n° :</b> ${braceletNumber}
 📝 <b>Raison :</b> ${reason}
-🚫 <b>Statut :</b> ${wasBlocked ? 'BLOQUÉ pour 12h' : 'Avertissement'}`;
+🚫 <b>Statut :</b> ${wasBlocked ? `BLOQUÉ pour ${SPAM_CONFIG.BLOCK_DURATION_HOURS}h` : 'Avertissement'}`;
 
     try {
       await sendToTelegram(message);

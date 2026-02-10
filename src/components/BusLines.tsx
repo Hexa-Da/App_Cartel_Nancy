@@ -4528,6 +4528,9 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                                 ? calculateAngle(stop.coords, nextStopCoords)
                                 : null;
                               
+                              // Extraire le premier mot du nom de la direction depuis link.direction (format: "Horaires Direction [Nom]")
+                              const directionName = link.direction.replace('Horaires Direction ', '').split(' ')[0];
+                              
                               return (
                                 <button 
                                   key={linkIndex}
@@ -4546,7 +4549,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                                     }
                                   }}
                                 >
-                                  <span>Horaires Direction : </span>
+                                  <span>Horaires pour {directionName} : </span>
                                   {arrowAngle !== null ? (
                                     <span 
                                       className="direction-arrow"
