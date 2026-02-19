@@ -5,12 +5,11 @@
  * - Initialisation de l'application Firebase (explicite et validée)
  * - Configuration de la base de données temps réel
  * - Configuration du stockage de fichiers
- * - Fonction d'authentification administrateur
+ * - Fonction de vérification du code admin (verifyAdminCode)
  * 
  * Nécessaire car :
  * - Centralise la configuration Firebase
  * - Fournit les instances partagées (database, storage)
- * - Gère l'authentification admin sécurisée
  * - Évite la duplication de configuration
  * - Assure l'initialisation précoce sur iOS pour éviter les problèmes de chargement
  */
@@ -18,7 +17,6 @@
 import { initializeApp, FirebaseApp, getApp } from 'firebase/app';
 import { getDatabase, Database } from 'firebase/database';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
-import { getAuth, Auth } from 'firebase/auth';
 import logger from './services/Logger';
 
 /**
@@ -95,17 +93,15 @@ export function initializeFirebase(): void {
   // Initialiser les services Firebase
   _database = getDatabase(_app);
   _storage = getStorage(_app);
-  _auth = getAuth(_app);
   _isInitialized = true;
 
-  logger.log('[Firebase] Tous les services Firebase sont prêts (Database, Storage, Auth)');
+  logger.log('[Firebase] Tous les services Firebase sont prêts (Database, Storage)');
 }
 
 // Variables pour stocker les instances Firebase
 let _app: FirebaseApp | null = null;
 let _database: Database | null = null;
 let _storage: FirebaseStorage | null = null;
-let _auth: Auth | null = null;
 let _isInitialized = false;
 
 /**
@@ -133,7 +129,6 @@ try {
     _app = initializeApp(firebaseConfig);
     _database = getDatabase(_app);
     _storage = getStorage(_app);
-    _auth = getAuth(_app);
     _isInitialized = true;
     logger.log('[Firebase] Initialisation synchrone réussie');
   } catch (error: any) {
@@ -141,7 +136,6 @@ try {
       _app = getApp();
       _database = getDatabase(_app);
       _storage = getStorage(_app);
-      _auth = getAuth(_app);
       _isInitialized = true;
       logger.log('[Firebase] Réutilisation de l\'instance existante');
     } else {
@@ -171,13 +165,6 @@ function getStorageSafe(): FirebaseStorage {
   return _storage;
 }
 
-function getAuthSafe(): Auth {
-  if (!_auth || !_isInitialized) {
-    throw new Error('Firebase Auth n\'est pas initialisé. Appelez initializeFirebase() en premier.');
-  }
-  return _auth;
-}
-
 function getAppSafe(): FirebaseApp {
   if (!_app || !_isInitialized) {
     throw new Error('Firebase App n\'est pas initialisé. Appelez initializeFirebase() en premier.');
@@ -196,12 +183,6 @@ export const database = new Proxy({} as Database, {
 export const storage = new Proxy({} as FirebaseStorage, {
   get(_target, prop) {
     return (getStorageSafe() as any)[prop];
-  }
-});
-
-export const auth = new Proxy({} as Auth, {
-  get(_target, prop) {
-    return (getAuthSafe() as any)[prop];
   }
 });
 

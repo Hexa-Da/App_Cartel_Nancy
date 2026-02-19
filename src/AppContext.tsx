@@ -65,6 +65,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoadingVenues, setIsLoadingVenues] = useState(true);
+  const [firebaseReadyAttempt, setFirebaseReadyAttempt] = useState(0);
 
   // Vérification de l'état admin au chargement
   useEffect(() => {
@@ -128,24 +129,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Lecture des venues depuis Firebase
+  // Lecture des venues depuis Firebase (réessaie tant que Firebase n'est pas prêt)
   useEffect(() => {
-    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
     if (!isFirebaseInitialized()) {
       logger.warn('[AppContext] Firebase n\'est pas initialisé, attente...');
       setIsLoadingVenues(true);
-      
-      // Réessayer après un court délai
-      const retryTimeout = setTimeout(() => {
-        if (isFirebaseInitialized()) {
-          // Firebase est maintenant prêt, relancer l'effet
-          setIsLoadingVenues(false);
-        } else {
-          logger.error('[AppContext] Firebase n\'est toujours pas initialisé après attente');
-          setIsLoadingVenues(false);
-        }
-      }, 500);
-      
+      const retryTimeout = setTimeout(() => setFirebaseReadyAttempt((a) => a + 1), 500);
       return () => clearTimeout(retryTimeout);
     }
 
@@ -202,14 +191,14 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       logger.error('[AppContext] Erreur lors de l\'accès à Firebase:', error);
       setIsLoadingVenues(false);
     }
-  }, []);
+  }, [firebaseReadyAttempt]);
 
-  // Lecture des messages depuis Firebase
+  // Lecture des messages depuis Firebase (réessaie tant que Firebase n'est pas prêt)
   useEffect(() => {
-    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
     if (!isFirebaseInitialized()) {
       logger.warn('[AppContext] Firebase n\'est pas initialisé pour les messages, attente...');
-      return;
+      const retryTimeout = setTimeout(() => setFirebaseReadyAttempt((a) => a + 1), 500);
+      return () => clearTimeout(retryTimeout);
     }
 
     try {
@@ -240,7 +229,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       logger.error('[AppContext] Erreur lors de l\'accès à Firebase pour les messages:', error);
     }
-  }, []);
+  }, [firebaseReadyAttempt]);
 
   // Fonction pour obtenir les événements filtrés
   const getFilteredEvents = () => {

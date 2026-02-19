@@ -300,12 +300,12 @@ function App() {
     };
   }, []);
 
-  // Lecture en temps réel des messages depuis Firebase (uniquement pour le calcul du nombre de messages non lus)
+  // Lecture en temps réel des messages depuis Firebase (réessaie tant que Firebase n'est pas prêt)
   useEffect(() => {
-    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
     if (!isFirebaseInitialized()) {
       logger.warn('[App] Firebase n\'est pas initialisé pour les messages, attente...');
-      return;
+      const retryTimeout = setTimeout(() => setFirebaseReadyAttempt((a) => a + 1), 500);
+      return () => clearTimeout(retryTimeout);
     }
 
     try {
@@ -324,7 +324,7 @@ function App() {
     } catch (error) {
       logger.error('[App] Erreur lors de l\'accès à Firebase pour les messages:', error);
     }
-  }, []);
+  }, [firebaseReadyAttempt]);
 
   // Fonction pour vérifier les droits d'administration avant d'exécuter une action
   const checkAdminRights = () => {
@@ -700,6 +700,7 @@ function App() {
   const [isVenuesLoading, setIsVenuesLoading] = useState(true);
 
   const [showVenuesLoadingOverlay, setShowVenuesLoadingOverlay] = useState(false);
+  const [firebaseReadyAttempt, setFirebaseReadyAttempt] = useState(0);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -714,24 +715,12 @@ function App() {
     };
   }, [isVenuesLoading]);
 
-  // Charger les lieux depuis Firebase au démarrage avec optimisation
+  // Charger les lieux depuis Firebase au démarrage (réessaie tant que Firebase n'est pas prêt)
   useEffect(() => {
-    // Vérifier que Firebase est initialisé avant d'essayer de l'utiliser
     if (!isFirebaseInitialized()) {
       logger.warn('[App] Firebase n\'est pas initialisé pour les venues, attente...');
       setIsVenuesLoading(true);
-      
-      // Réessayer après un court délai
-      const retryTimeout = setTimeout(() => {
-        if (isFirebaseInitialized()) {
-          // Firebase est maintenant prêt, relancer l'effet
-          setIsVenuesLoading(false);
-        } else {
-          logger.error('[App] Firebase n\'est toujours pas initialisé après attente');
-          setIsVenuesLoading(false);
-        }
-      }, 500);
-      
+      const retryTimeout = setTimeout(() => setFirebaseReadyAttempt((a) => a + 1), 500);
       return () => clearTimeout(retryTimeout);
     }
 
@@ -776,7 +765,7 @@ function App() {
       logger.error('[App] Erreur lors de l\'accès à Firebase pour les venues:', error);
       setIsVenuesLoading(false);
     }
-  }, []);
+  }, [firebaseReadyAttempt]);
 
   const [_selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [editingPartyResult, setEditingPartyResult] = useState<{partyId: string | null, isEditing: boolean}>({ partyId: null, isEditing: false });
