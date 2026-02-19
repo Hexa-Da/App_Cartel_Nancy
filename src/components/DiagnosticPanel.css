@@ -98,7 +98,7 @@
 }
 
 .diagnostic-result-loading {
-  border-color: var(--primary-color, #2196f3);
+  border-color: var(--text-color-light);
   background: rgba(33, 150, 243, 0.1);
 }
 

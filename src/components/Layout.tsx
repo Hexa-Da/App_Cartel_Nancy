@@ -30,6 +30,7 @@ import VSSForm from './VSSForm';
 import EmergencyPopup from './EmergencyPopup';
 import ChatPanel from './ChatPanel';
 import HSECharterHandler from './forms/HSECharterHandler';
+import LaunchPopupHandler from './forms/LaunchPopupHandler';
 import VenueForm from './forms/VenueForm';
 import MatchForm from './forms/MatchForm';
 import { useNotifications } from '../hooks/useNotifications';
@@ -474,6 +475,9 @@ const Layout: React.FC = () => {
 
       {/* Popup Charte HSE - Affichée à la première ouverture */}
       <HSECharterHandler />
+
+      {/* Popup de pub - Affichée au démarrage (après charte HSE) */}
+      <LaunchPopupHandler />
 
       {/* Fenêtre modale pour l'administration */}
       {showAdmin && (

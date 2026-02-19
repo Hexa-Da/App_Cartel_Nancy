@@ -23,7 +23,7 @@
   width: 95%;
   /* Changé: Largeur adaptative */
   max-width: min(550px, 90vw);
-  max-height: 90vh;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);

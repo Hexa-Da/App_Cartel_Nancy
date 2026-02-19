@@ -57,3 +57,10 @@ export interface PlanningFile {
   uploadDate: number;
   uploadedBy: string;
 } 
+
+export interface LaunchPopup {
+  id: string;
+  title: string;
+  image: string;
+  startDate: string;
+}

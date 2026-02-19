@@ -23,6 +23,8 @@ import './Home.css';
 import '../components/EventDetails.css';
 import { useApp } from '../AppContext';
 import { useForm } from '../contexts/FormContext';
+import { useEditing } from '../contexts/EditingContext';
+import LaunchPopupForm from '../components/forms/LaunchPopupForm';
 
 type Place = Venue;
 
@@ -38,10 +40,12 @@ interface DebugLog {
 }
 
 const Home: React.FC = () => {
-  const { getFilteredEvents, delegationMatches, isLoadingVenues } = useApp();
+  const { getFilteredEvents, delegationMatches, isLoadingVenues, isAdmin } = useApp();
+  const { isEditing } = useEditing();
   const { selectedEvent, setSelectedEvent } = useForm();
   const [events, setEvents] = useState<Place[]>([]);
   const [_, setDebugLogs] = useState<DebugLog[]>([]);
+  const [showLaunchPopupForm, setShowLaunchPopupForm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -454,7 +458,6 @@ const Home: React.FC = () => {
 
   return (
     <div className="page-content scrollable home-page">
-      {/* <h1 className="welcome-title">Bienvenue Au Cartel de Nancy</h1> */}
       <div className="matches-section">
         <section className="matches-section">
           <h2>Vos Matchs</h2>
@@ -644,6 +647,21 @@ const Home: React.FC = () => {
           venues={events}
         />
       )}
+
+      {isAdmin && isEditing && (
+        <button
+          type="button"
+          className="add-pub-button"
+          onClick={() => setShowLaunchPopupForm(true)}
+          title="Ajouter une pub"
+        >
+          +
+        </button>
+      )}
+      <LaunchPopupForm
+        isOpen={showLaunchPopupForm}
+        onClose={() => setShowLaunchPopupForm(false)}
+      />
     </div>
   );
 };

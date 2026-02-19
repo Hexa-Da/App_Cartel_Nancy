@@ -211,6 +211,7 @@ function App() {
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [previousTab, setPreviousTab] = useState<TabType>('map');
+  const [firebaseReadyAttempt, setFirebaseReadyAttempt] = useState(0);
   
   // Effet pour gérer le lieu sélectionné depuis la page Home
   useEffect(() => {
@@ -700,7 +701,6 @@ function App() {
   const [isVenuesLoading, setIsVenuesLoading] = useState(true);
 
   const [showVenuesLoadingOverlay, setShowVenuesLoadingOverlay] = useState(false);
-  const [firebaseReadyAttempt, setFirebaseReadyAttempt] = useState(0);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;

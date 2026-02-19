@@ -9,28 +9,21 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* ✅ z-index: base pour rester sous le Header/Nav (z-index: header) */
   z-index: var(--z-base);
   backdrop-filter: blur(5px);
 }
-
-
 
 /* Container arrondi, max-width, padding */
 .modal-form-container {
   background-color: var(--bg-color);
   border-radius: 12px;
-  /* ✅ Plein écran : largeur 100% */
   width: 100%;
   max-width: 100%;
   margin: 0;
   left: 0;
   right: 0;
-  /* ✅ Utiliser les variables globales pour le nouveau système responsive */
-  /* Padding pour ne pas être caché par Header et Nav (réduit à 5px d'air) */
   padding-top: calc(var(--header-height) + 5px);
   padding-bottom: var(--nav-height);
-  /* ✅ Hauteur fixe pour permettre le scroll */
   height: calc(100vh - 5px);
   height: calc(100svh - 5px);
   max-height: calc(100vh - var(--header-height) - var(--nav-height) - 5px);
@@ -41,7 +34,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* ✅ Box-sizing pour inclure le padding */
   box-sizing: border-box;
 }
 
@@ -65,9 +57,7 @@
 }
 
 .modal-form-header .close-button {
-  /* Réinitialisation complète des styles globaux de button */
   all: unset;
-  /* Réapplication des styles nécessaires */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,7 +93,6 @@
 
 /* Contenu scrollable */
 .modal-form-content {
-  /* ✅ Scroll activé sur ce conteneur précis */
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -111,9 +100,7 @@
   flex: 1 1 auto;
   min-height: 0;
   padding-bottom: 2rem;
-  /* ✅ Padding dynamique basé sur la hauteur du clavier (overlay mode) */
   padding-bottom: calc(2rem + var(--keyboard-height, 0px));
-  /* ✅ Assurer que le scroll fonctionne même avec peu de contenu */
   overscroll-behavior: contain;
 }
 
@@ -129,6 +116,8 @@
 }
 .modal-form-input,
 .modal-form-group input[type="text"],
+.modal-form-group input[type="url"],
+.modal-form-group input[type="file"],
 .modal-form-group input[type="datetime-local"],
 .modal-form-group textarea,
 .modal-form-group select {
@@ -147,8 +136,6 @@
   min-height: clamp(80px, 15vh, 150px);
 }
 
-
-/* Style pour l'icône de calendrier dans datetime-local */
 .modal-form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: var(--calendar-filter);
   opacity: 0.7;
@@ -179,14 +166,44 @@
   color: var(--text-color);
 }
 
+/* Barre de progression d'upload */
+.modal-form-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
 
-/* Actions */
+.modal-form-progress .modal-form-progress-bar {
+  width: var(--progress, 0%);
+  height: 8px;
+  background-color: var(--primary-color);
+  border-radius: var(--radius-sm);
+  transition: width 0.2s ease;
+}
+
+.modal-form-progress span {
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+}
+
+/* Message d'erreur */
+.modal-form-error {
+  color: var(--danger-color);
+  font-size: 0.9rem;
+  margin: 0 0 var(--spacing-md);
+  padding: var(--spacing-sm);
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: var(--radius-sm);
+}
+
 .modal-form-actions {
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
+
 .modal-form-submit {
   width: 100%;
   padding: 1rem;
