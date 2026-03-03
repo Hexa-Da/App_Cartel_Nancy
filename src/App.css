@@ -102,8 +102,8 @@
    ============================================ */
 
 .venue-popup {
-  min-width: min(220px, 75vw);
-  max-width: min(280px, 80vw);
+  min-width: min(260px, 85vw);
+  max-width: min(360px, 95vw);
   padding: clamp(var(--spacing-sm), 1.5vw, var(--spacing-sm));
   background-color: var(--bg-color);
   border-radius: clamp(var(--radius-sm), 1.5vw, var(--radius-md));

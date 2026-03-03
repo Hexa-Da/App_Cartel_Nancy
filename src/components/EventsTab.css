@@ -340,9 +340,7 @@ body.ios .events-panel-header {
 .events-list {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
   padding: var(--spacing-md);
   padding-top: var(--spacing-lg);
   display: flex;

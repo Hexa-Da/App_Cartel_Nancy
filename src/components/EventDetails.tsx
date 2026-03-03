@@ -232,11 +232,6 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
               Fermer
             </button>
           </div>
-          
-          {/* Bouton de fermeture en bas à droite */}
-          <button className="close-button-bottom" onClick={onClose}>
-            <span>×</span>
-          </button>
         </div>
       </div>
     </div>

@@ -187,7 +187,7 @@ const PlanningFilesPage: React.FC = () => {
         // Sur iOS, ajouter moins d'espace pour redescendre les filtres
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const extraSpace = isIOS ? 20 : (isSingleLine ? 5 : 10);
+        const extraSpace = isIOS ? 8 : (isSingleLine ? 4 : 8);
         const newHeight = height + extraSpace;
         setFiltersHeight(newHeight);
         
@@ -232,7 +232,7 @@ const PlanningFilesPage: React.FC = () => {
         const filtersElement = document.getElementById('filters-container');
         if (filtersElement) {
           const height = filtersElement.offsetHeight;
-          const newHeight = height + 20;
+          const newHeight = height + 8;
           setFiltersHeight(newHeight);
           
           // Forcer le style directement avec !important
@@ -370,7 +370,7 @@ const PlanningFilesPage: React.FC = () => {
     <div 
       className={`page-content scrollable planning-files-page ${isPageLoading ? 'loading' : 'loaded'}`}
       style={{
-        paddingTop: isIOS ? `${filtersHeight + 10}px` : `${filtersHeight + 20}px`
+        paddingTop: isIOS ? `${filtersHeight + 4}px` : `${filtersHeight + 8}px`
       }}>
       {uploadBar}
 

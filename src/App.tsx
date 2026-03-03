@@ -3228,14 +3228,14 @@ function App() {
                     setShowPlaceTypeModal(false);
                     setIsAddingPlace(true);
                     setEditingVenue({ id: null, venue: null });
-                setNewVenueName('');
-                setNewVenueDescription('');
-                setNewVenueAddress('');
-                setSelectedSport('Football');
+                    setNewVenueName('');
+                    setNewVenueDescription('');
+                    setNewVenueAddress('');
+                    setSelectedSport('Football');
                     setSelectedEmoji(sportEmojis['Football'] || '⚽');
                     setSelectedEventType('DJ contest');
                     setSelectedIndicationType('Soins');
-                setTempMarker(null);
+                    setTempMarker(null);
                   }}
                 >
                   <span className="place-type-icon">⚽</span>
@@ -3260,87 +3260,6 @@ function App() {
                 >
                   <span className="place-type-icon">📍</span>
                   <span className="place-type-label">Indication</span>
-                </button>
-                <button 
-                  className="place-type-button"
-                  disabled
-                  onClick={() => {
-                    setSelectedPlaceType('hotel');
-                    setShowPlaceTypeModal(false);
-                    setIsAddingPlace(true);
-                    setEditingVenue({ id: null, venue: null });
-                    setNewVenueName('');
-                    setNewVenueDescription('');
-                    setNewVenueAddress('');
-                      setSelectedSport('Football');
-                    setSelectedEventType('DJ contest');
-                    setSelectedIndicationType('Soins');
-                    setTempMarker(null);
-                  }}
-                >
-                  <span className="place-type-icon">🏢</span>
-                  <span className="place-type-label">Hôtel</span>
-                </button>
-                <button 
-                  className="place-type-button"
-                  disabled
-                  onClick={() => {
-                    setSelectedPlaceType('soirée');
-                    setShowPlaceTypeModal(false);
-                    setIsAddingPlace(true);
-                    setEditingVenue({ id: null, venue: null });
-                    setNewVenueName('');
-                    setNewVenueDescription('');
-                    setNewVenueAddress('');
-                    setSelectedSport('Football');
-                    setSelectedEventType('DJ contest');
-                    setSelectedIndicationType('Soins');
-                    setSelectedEmoji(eventTypeEmojis['DJ contest'] || '🎉');
-                    setTempMarker(null);
-                  }}
-                >
-                  <span className="place-type-icon">🎉</span>
-                  <span className="place-type-label">Soirée</span>
-                </button>
-                <button 
-                  className="place-type-button"
-                  disabled
-                  onClick={() => {
-                    setSelectedPlaceType('défilé');
-                    setShowPlaceTypeModal(false);
-                    setIsAddingPlace(true);
-                    setEditingVenue({ id: null, venue: null });
-                    setNewVenueName('');
-                    setNewVenueDescription('');
-                    setNewVenueAddress('');
-                    setSelectedSport('Football');
-                    setSelectedEventType('DJ contest');
-                    setSelectedIndicationType('Soins');
-                    setTempMarker(null);
-                  }}
-                >
-                  <span className="place-type-icon">🎺</span>
-                  <span className="place-type-label">Défilé</span>
-                </button>
-                <button 
-                  className="place-type-button"
-                  disabled
-                  onClick={() => {
-                    setSelectedPlaceType('resto');
-                    setShowPlaceTypeModal(false);
-                    setIsAddingPlace(true);
-                    setEditingVenue({ id: null, venue: null });
-                    setNewVenueName('');
-                    setNewVenueDescription('');
-                    setNewVenueAddress('');
-                    setSelectedSport('Football');
-                    setSelectedEventType('DJ contest');
-                    setSelectedIndicationType('Soins');
-                    setTempMarker(null);
-                  }}
-                >
-                  <span className="place-type-icon">🍽️</span>
-                  <span className="place-type-label">Restaurant</span>
                 </button>
               </div>
               <div className="modal-form-actions">

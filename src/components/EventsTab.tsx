@@ -177,21 +177,42 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
   };
 
   // Fonction pour vérifier si une équipe correspond à une délégation
+  // Gère aussi les équipes composites du type "Nancy x Sainté", "Ponts x IMT A"
   const delegationMatches = (teamsString: string, delegation: string): boolean => {
     if (delegation === 'all') return true;
     const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-    const delegationLower = delegation.toLowerCase();
+    const normalizeDelegation = (name: string) => {
+      const lower = name.toLowerCase().trim();
+      if (lower === 'nancy') return 'mines nancy';
+      if (lower === 'sainté' || lower === 'sainte') return 'mines sainté';
+      if (lower === 'mines nancy') return 'mines nancy';
+      if (lower === 'mines sainté') return 'mines sainté';
+      return lower;
+    };
+    const normalizedDelegation = normalizeDelegation(delegation);
     
     return teams.some((team: string) => {
-      const teamLower = team.toLowerCase();
-      return teamLower === delegationLower;
+      const subTeams = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
+      return subTeams.some(subTeam => normalizeDelegation(subTeam) === normalizedDelegation);
     });
   };
 
   // Fonction pour obtenir toutes les délégations uniques
+  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur, Gagnant, etc.)
+  // et les codes courts du type L1, W2, X3 (deux caractères alphanumériques)
+  // Pour les équipes composites "Nancy x Sainté", "Ponts x IMT A", on n'ajoute PAS l'étiquette complète,
+  // mais on ajoute chaque sous-délégation séparément.
   const getAllDelegations = () => {
     const delegations = new Set<string>();
-    const excludedKeywords = ['poule', 'perdant', 'vainqueur'];
+    const excludedKeywords = ['poule', 'perdant', 'vainqueur', 'gagnant'];
+    const getDisplayName = (name: string) => {
+      const lower = name.toLowerCase().trim();
+      if (lower === 'nancy') return 'Mines Nancy';
+      if (lower === 'sainté' || lower === 'sainte') return 'Mines Sainté';
+      if (lower === 'mines nancy') return 'Mines Nancy';
+      if (lower === 'mines sainté') return 'Mines Sainté';
+      return name;
+    };
     
     venues.forEach(venue => {
       if (venue.matches) {
@@ -200,8 +221,25 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
           teams.forEach(team => {
             const teamLower = team.toLowerCase();
             const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
-            if (team && team !== "..." && team !== "…" && !isExcluded) {
-              delegations.add(team);
+            const normalized = team.replace(/\s+/g, '');
+            const isShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(normalized);
+            if (!team || team === '...' || team === '…' || isExcluded || isShortCode) {
+              return;
+            }
+
+            if (/\sx\s/i.test(team)) {
+              const parts = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
+              parts.forEach(part => {
+                const partLower = part.toLowerCase();
+                const partExcluded = excludedKeywords.some(keyword => partLower.includes(keyword));
+                const partNormalized = part.replace(/\s+/g, '');
+                const partShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(partNormalized);
+                if (part && !partExcluded && !partShortCode) {
+                  delegations.add(getDisplayName(part));
+                }
+              });
+            } else {
+              delegations.add(getDisplayName(team));
             }
           });
         });

@@ -242,21 +242,40 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     if (!teamsString || !delegation) return false;
     
     const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-    const delegationLower = delegation.toLowerCase();
+    const normalizeDelegation = (name: string) => {
+      const lower = name.toLowerCase().trim();
+      if (lower === 'nancy') return 'mines nancy';
+      if (lower === 'sainté' || lower === 'sainte') return 'mines sainté';
+      if (lower === 'mines nancy') return 'mines nancy';
+      if (lower === 'mines sainté') return 'mines sainté';
+      return lower;
+    };
+    const normalizedDelegation = normalizeDelegation(delegation);
     
-    // Vérifier chaque équipe pour une correspondance exacte
+    // Vérifier chaque équipe (y compris les équipes composites "X x Y") pour une correspondance exacte
     return teams.some((team: string) => {
-      const teamLower = team.toLowerCase();
-      // Correspondance exacte (insensible à la casse)
-      return teamLower === delegationLower;
+      // Gérer les équipes composites du type "Nancy x Sainté", "Ponts x IMT A", etc.
+      const subTeams = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
+      return subTeams.some(subTeam => normalizeDelegation(subTeam) === normalizedDelegation);
     });
   };
 
   // Fonction pour obtenir toutes les délégations
-  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur)
+  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur, Gagnant, etc.)
+  // et les codes courts du type L1, W2, X3 (deux caractères alphanumériques)
+  // Pour les équipes composites "Nancy x Sainté", "Ponts x IMT A", on n'ajoute PAS l'étiquette complète,
+  // mais on ajoute chaque sous-délégation séparément.
   const getAllDelegations = () => {
     const delegations = new Set<string>();
-    const excludedKeywords = ['poule', 'perdant', 'vainqueur'];
+    const excludedKeywords = ['poule', 'perdant', 'vainqueur', 'gagnant'];
+    const getDisplayName = (name: string) => {
+      const lower = name.toLowerCase().trim();
+      if (lower === 'nancy') return 'Mines Nancy';
+      if (lower === 'sainté' || lower === 'sainte') return 'Mines Sainté';
+      if (lower === 'mines nancy') return 'Mines Nancy';
+      if (lower === 'mines sainté') return 'Mines Sainté';
+      return name;
+    };
     
     venues.forEach(venue => {
       if (venue.matches) {
@@ -265,8 +284,26 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           teams.forEach((team: string) => {
             const teamLower = team.toLowerCase();
             const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
-            if (team && team !== "..." && team !== "…" && !isExcluded) {
-              delegations.add(team);
+            const normalized = team.replace(/\s+/g, '');
+            const isShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(normalized);
+            if (!team || team === '...' || team === '…' || isExcluded || isShortCode) {
+              return;
+            }
+
+            // Si l'équipe est composite ("Nancy x Sainté"), on éclate sur " x "
+            if (/\sx\s/i.test(team)) {
+              const parts = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
+              parts.forEach(part => {
+                const partLower = part.toLowerCase();
+                const partExcluded = excludedKeywords.some(keyword => partLower.includes(keyword));
+                const partNormalized = part.replace(/\s+/g, '');
+                const partShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(partNormalized);
+                if (part && !partExcluded && !partShortCode) {
+                  delegations.add(getDisplayName(part));
+                }
+              });
+            } else {
+              delegations.add(getDisplayName(team));
             }
           });
         });
