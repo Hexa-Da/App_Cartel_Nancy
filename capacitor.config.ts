@@ -28,10 +28,8 @@ const config: CapacitorConfig = {
       webClientId: '402641775282-flmj306kcpqct1hmrific149uhthiqcq.apps.googleusercontent.com',
       forceCodeForRefreshToken: true
     },
-    PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert'],
-      smallIcon: 'ic_notification', // Icône monochrome dans android/app/src/main/res/drawable-*/
-      iconColor: '#000000' // Couleur de l'icône (noir pour contraste)
+    FirebaseMessaging: {
+      presentationOptions: ['alert', 'badge', 'sound']
     },
     Auth: {
       // Configuration spécifique au plugin d'authentification si nécessaire

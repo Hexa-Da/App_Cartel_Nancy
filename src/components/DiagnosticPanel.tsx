@@ -85,12 +85,11 @@ const DiagnosticPanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
   const [results, setResults] = useState<DiagnosticResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
 
-  // Fonction pour vérifier les permissions de notifications (toujours à jour)
   const checkNotificationPermission = async (): Promise<string> => {
     try {
       if (Capacitor.isNativePlatform()) {
-        const { PushNotifications } = await import('@capacitor/push-notifications');
-        const status = await PushNotifications.checkPermissions();
+        const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
+        const status = await FirebaseMessaging.checkPermissions();
         return status.receive || 'unknown';
       } else {
         return Notification.permission;
