@@ -271,24 +271,6 @@
   scroll-snap-stop: always;
 }
 
-/* Séparateur visuel entre les matches */
-.match-item:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  bottom: clamp(calc(var(--spacing-xs) * -1.5), -1vh, calc(var(--spacing-sm) * -1));
-  left: 15%;
-  right: 15%;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(76, 175, 80, 0.3) 20%,
-    rgba(76, 175, 80, 0.5) 50%,
-    rgba(76, 175, 80, 0.3) 80%,
-    transparent 100%);
-  border-radius: 1px;
-  box-shadow: 0 0 4px rgba(76, 175, 80, 0.2);
-}
-
 /* Dark theme - fond sombre renforcé */
 [data-theme="dark"] .match-item {
   background: rgba(20, 20, 20, 0.9);
@@ -378,19 +360,6 @@
   border-radius: clamp(var(--radius-sm), 1.5vw, var(--radius-sm));
   box-shadow: 0 4px 12px var(--shadow-color);
   position: relative;
-}
-
-/* Séparateur visuel avant le bouton */
-.popup-buttons::before {
-  content: '';
-  position: absolute;
-  top: clamp(calc(var(--spacing-xs) * -1.5), -1vw, calc(var(--spacing-sm) * -1));
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  border-radius: var(--spacing-xs);
 }
 
 /* Styles spécifiques pour les boutons dans les popups Leaflet */

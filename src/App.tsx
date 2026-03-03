@@ -666,7 +666,7 @@ function App() {
         longitude: 6.191597,
         emoji: '🎀',
         sport: 'Pompom',
-        result: 'à venir'
+        result: ''
       },
       {
         id: '3',
@@ -680,7 +680,7 @@ function App() {
         longitude: 6.189737,
         emoji: '🎤',
         sport: 'Party',
-        result: 'à venir'
+        result: ''
       },
       {
         id: '4',
@@ -693,7 +693,8 @@ function App() {
         latitude: 48.710136,
         longitude: 6.139169,
         emoji: '🎧',
-        sport: 'Party'
+        sport: 'Party',
+        result: ''
       }
     ];
   });
@@ -1919,7 +1920,7 @@ function App() {
         popupContent.innerHTML = `
           <h3>${party.name}</h3>
           <p>${party.description}</p>
-          ${party.sport !== 'Defile' && !party.description?.toLowerCase().includes('showcase') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+          ${party.sport !== 'Defile' && !party.description?.toLowerCase().includes('showcase') && party.result ? `<p style="color: rgba(76, 175, 80, 0.95); margin: 2px 0;">Résultat : ${party.result}</p>` : ''}
         `;
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'popup-buttons';
@@ -1944,14 +1945,15 @@ function App() {
           buttonsContainer.appendChild(partyMapButton);
         }
         
-        // Ajouter le bouton d'édition du résultat pour les admins (soirées pompom et DJ Contest, mais pas Showcase) seulement si le mode édition est activé
-        if (isAdmin && isEditing && ((party.name?.startsWith('Parc Expo') || party.name === 'Zénith') && (party.description.includes('DJ Contest') || party.description.toLowerCase().includes('pompom')) && !party.description.toLowerCase().includes('showcase'))) {
+        // Ajouter le bouton d'édition du résultat pour les admins (soirées Pompoms et DJ Contest)
+        // Utiliser l'ID de la soirée pour ne pas dépendre du texte de description
+        if (isAdmin && isEditing && (party.id === '2' || party.id === '4')) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
           editResultButton.addEventListener('click', () => {
             // Ouvrir le formulaire modal pour éditer le résultat
-            openEditResultModal(party.id, party.result || 'à venir');
+            openEditResultModal(party.id, party.result || '');
           });
           buttonsContainer.appendChild(editResultButton);
         }
@@ -1979,7 +1981,7 @@ function App() {
           popupContent.innerHTML = `
             <h3>${currentParty.name}</h3>
             <p>${currentParty.description}</p>
-            ${currentParty.sport !== 'Defile' && !currentParty.description?.toLowerCase().includes('showcase') ? `<div class="party-result"><h4 style="color: var(--success-color); margin-top: 10px;">Résultat : ${currentParty.result || 'à venir'}</h4></div>` : ''}
+            ${currentParty.sport !== 'Defile' && !currentParty.description?.toLowerCase().includes('showcase') && currentParty.result ? `<p style="color: rgba(76, 175, 80, 0.95); margin: 2px 0;">Résultat : ${currentParty.result}</p>` : ''}
           `;
           
           // Réajouter les boutons
@@ -2006,13 +2008,13 @@ function App() {
             buttonsContainerNew.appendChild(partyMapButton);
           }
           
-          // Réajouter les boutons admin si nécessaire
-          if (isAdmin && isEditing && ((currentParty.name?.startsWith('Parc Expo') || currentParty.name === 'Zénith') && (currentParty.description.includes('DJ Contest') || currentParty.description.toLowerCase().includes('pompom')) && !currentParty.description.toLowerCase().includes('showcase'))) {
+          // Réajouter les boutons admin si nécessaire (soirées Pompoms et DJ Contest)
+          if (isAdmin && isEditing && (currentParty.id === '2' || currentParty.id === '4')) {
             const editResultButton = document.createElement('button');
             editResultButton.className = 'edit-result-button';
             editResultButton.textContent = 'Modifier le résultat';
             editResultButton.addEventListener('click', () => {
-              openEditResultModal(currentParty.id, currentParty.result || 'à venir');
+              openEditResultModal(currentParty.id, currentParty.result || '');
             });
             buttonsContainerNew.appendChild(editResultButton);
           }

@@ -40,7 +40,7 @@ interface DebugLog {
 }
 
 const Home: React.FC = () => {
-  const { getFilteredEvents, delegationMatches, isLoadingVenues, isAdmin } = useApp();
+  const { getFilteredEvents, delegationMatches, isLoadingVenues, isAdmin, hasGenderMatches } = useApp();
   const { isEditing } = useEditing();
   const { selectedEvent, setSelectedEvent } = useForm();
   const [events, setEvents] = useState<Place[]>([]);
@@ -464,9 +464,27 @@ const Home: React.FC = () => {
           {userPreferences.favoriteSports.length > 0 && !userPreferences.favoriteSports.includes('none') ? (
             userPreferences.favoriteSports.map((sport: string) => {
               const matches = getMatchesByDelegationAndSport(events, userPreferences.delegation, sport);
+              const { hasFemale, hasMale, hasMixed } = hasGenderMatches(sport);
+              const championshipsCount = [hasFemale, hasMale, hasMixed].filter(Boolean).length;
+              const needsChampionshipSelection =
+                userPreferences.delegation &&
+                userPreferences.delegation !== 'all' &&
+                userPreferences.championship === 'none' &&
+                championshipsCount > 1;
+
               return (
                 <div key={sport} className="horizontal-scroll">
-                  {matches.length > 0 ? (
+                  {needsChampionshipSelection ? (
+                    isLoadingVenues ? (
+                      <div className="no-matches loading-container">
+                        <div className="section-loading-spinner"></div>
+                      </div>
+                    ) : (
+                      <p className="no-matches">
+                        Veuillez sélectionner votre championnat dans les paramètres.
+                      </p>
+                    )
+                  ) : matches.length > 0 ? (
                     matches.map(match => (
                       <div 
                         key={match.id} 
@@ -501,7 +519,9 @@ const Home: React.FC = () => {
                                 : '';
                               return `Aucun match de ${sport}${championshipLabel} trouvé pour la délégation de ${userPreferences.delegation}`;
                             })()
-                          : `Aucun match de ${sport} trouvé. Veuillez sélectionner votre délégation dans les paramètres.`}
+                          : userPreferences.championship === 'none'
+                            ? 'Veuillez sélectionner votre délégation et votre championnat dans les paramètres.'
+                            : 'Veuillez sélectionner votre délégation dans les paramètres.'}
                       </p>
                     )
                   )}

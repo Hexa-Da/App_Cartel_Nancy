@@ -520,28 +520,26 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
       }
     });
 
-    // Ajouter les soirées (seulement pour les admins)
-    if (isAdmin) {
-      parties.forEach(party => {
-        const startDate = new Date(party.date);
-        const endDate = new Date(startDate);
-        endDate.setHours(startDate.getHours() + 6);
-        
-        events.push({
-          id: `party-${party.id || party.name}`,
-          name: party.name,
-          date: party.date,
-          endTime: endDate.toISOString(),
-          description: party.description,
-          address: party.address || `${party.latitude}, ${party.longitude}`,
-          location: [party.latitude, party.longitude],
-          type: 'party',
-          isPassed: isMatchPassed(party.date, endDate.toISOString()),
-          sport: party.sport,
-          result: party.result
-        });
+    // Ajouter les soirées (visibles pour tous)
+    parties.forEach(party => {
+      const startDate = new Date(party.date);
+      const endDate = new Date(startDate);
+      endDate.setHours(startDate.getHours() + 6);
+      
+      events.push({
+        id: `party-${party.id || party.name}`,
+        name: party.name,
+        date: party.date,
+        endTime: endDate.toISOString(),
+        description: party.description,
+        address: party.address || `${party.latitude}, ${party.longitude}`,
+        location: [party.latitude, party.longitude],
+        type: 'party',
+        isPassed: isMatchPassed(party.date, endDate.toISOString()),
+        sport: party.sport,
+        result: party.result
       });
-    }
+    });
 
     return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [venues, parties, isAdmin]);
@@ -553,7 +551,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
     return allEvents.filter(event => {
       const typeMatch = eventFilter === 'all' || 
         (eventFilter === 'none' ? false :
-          (eventFilter === 'party' && event.type === 'party' && isAdmin) ||
+          (eventFilter === 'party' && event.type === 'party') ||
           (eventFilter === 'match' && event.type === 'match') ||
           (event.type === 'match' && event.sport === eventFilter && eventFilter !== 'match'));
 
@@ -564,27 +562,23 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
       let venueMatch = true;
       if (venueFilter !== 'Tous') {
         if (event.type === 'party') {
-          if (!isAdmin) {
-            venueMatch = false;
-          } else {
-            let partyId = '';
-            switch (event.name) {
-              case 'Place Stanislas':
-                partyId = 'place-stanislas';
-                break;
-              case 'Parc Expo':
-              case 'Parc Expo Hall A':
-              case 'Parc Expo Hall B':
-                partyId = 'parc-expo';
-                break;
-              case 'Zénith':
-                partyId = 'zenith';
-                break;
-              default:
-                partyId = event.name.toLowerCase().replace(/\s+/g, '-');
-            }
-            venueMatch = partyId === venueFilter;
+          let partyId = '';
+          switch (event.name) {
+            case 'Place Stanislas':
+              partyId = 'place-stanislas';
+              break;
+            case 'Parc Expo':
+            case 'Parc Expo Hall A':
+            case 'Parc Expo Hall B':
+              partyId = 'parc-expo';
+              break;
+            case 'Zénith':
+              partyId = 'zenith';
+              break;
+            default:
+              partyId = event.name.toLowerCase().replace(/\s+/g, '-');
           }
+          venueMatch = partyId === venueFilter;
         } else {
           venueMatch = event.venueId === venueFilter;
         }
@@ -826,7 +820,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
               <option value="none">Aucun</option>
               <option value="all">Tous les événements</option>
               <option value="match">Tous les sports</option>
-              {isAdmin && <option value="party">Soirées et Défilé 🎉</option>}
+              <option value="party">Soirées et Défilé 🎉</option>
               <option value="Football">Football ⚽</option>
               <option value="Basketball">Basketball 🏀</option>
               <option value="Handball">Handball 🤾</option>
@@ -967,18 +961,16 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
                 <>
                   <p className="event-description">{event.description}</p>
                   <p className="event-venue">{event.venue}</p>
-                  {event.result && <p className="event-result">Résultat : {event.result}</p>}
+                  {event.result && (
+                    <p className="event-result">Résultat : {event.result}</p>
+                  )}
                 </>
               )}
               {event.type === 'party' && (
                 <>
                   <p className="event-description">{event.description}</p>
-                  {event.sport !== 'Defile' && !event.description?.toLowerCase().includes('showcase') && (
-                    <div className="party-results">
-                      <h4 className="party-result-text">
-                        Résultat : {event.result || 'à venir'}
-                      </h4>
-                    </div>
+                  {event.result && event.sport !== 'Defile' && (
+                    <p className="event-result">Résultat : {event.result}</p>
                   )}
                 </>
               )}

@@ -239,11 +239,15 @@ class EditableDataService {
       const initialStructure = {
         partyResults: {
           'parc-expo-pompoms': {
-            result: party2?.result || 'à venir',
+            result: party2?.result || '',
+            updatedAt: new Date().toISOString()
+          },
+          'parc-expo-showcase': {
+            result: party3?.result || '',
             updatedAt: new Date().toISOString()
           },
           'zenith-dj-contest': {
-            result: party4?.result || 'à venir',
+            result: party4?.result || '',
             updatedAt: new Date().toISOString()
           }
         },
@@ -286,6 +290,9 @@ class EditableDataService {
           // Mettre à jour seulement les résultats manquants
           if (!existingData.partyResults['parc-expo-pompoms']) {
             updates['partyResults/parc-expo-pompoms'] = initialStructure.partyResults['parc-expo-pompoms'];
+          }
+          if (!existingData.partyResults['parc-expo-showcase']) {
+            updates['partyResults/parc-expo-showcase'] = initialStructure.partyResults['parc-expo-showcase'];
           }
           if (!existingData.partyResults['zenith-dj-contest']) {
             updates['partyResults/zenith-dj-contest'] = initialStructure.partyResults['zenith-dj-contest'];

@@ -218,9 +218,7 @@ const PartyMap: React.FC = () => {
         <h3>${party.name}</h3>
         <p>${party.description}</p>
         <p class="venue-address">${party.address}</p>
-        ${party.name?.startsWith('Parc Expo') && party.description.includes('DJ Contest') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
-        ${party.name === 'Zénith' && party.description.includes('DJ Contest') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
-        ${party.name?.startsWith('Parc Expo') && party.description.includes('Soirée Pompoms') ? `<div class="party-result"><h4>Résultat : ${party.result || 'à venir'}</h4></div>` : ''}
+        ${party.result && party.sport !== 'Defile' ? `<p style="color: rgba(76, 175, 80, 0.95); margin: 2px 0;">Résultat : ${party.result}</p>` : ''}
       `;
 
       const buttonsContainer = document.createElement('div');
