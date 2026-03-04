@@ -264,56 +264,11 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   ];
 
   const getVenueOptions = () => {
-    if (eventFilter === 'none') {
-      return [{ value: 'Tous', label: 'Tous les lieux' }];
-    }
-
-    // Pour les soirées et défilés, retourner les lieux fixes
-    if (eventFilter === 'party') {
-      return [
-        { value: 'Tous', label: 'Tous les lieux' },
-        { value: 'place-stanislas', label: 'Place Stanislas' },
-        { value: 'centre-prouve', label: 'Centre Prouvé' },
-        { value: 'parc-expo', label: 'Parc des Expositions' },
-        { value: 'zenith', label: 'Zénith' }
-      ];
-    }
-
-    const filteredVenues = venues.filter(venue => {
-      if (venue.sport !== eventFilter) return false;
-      
-      const delegationMatch = delegationFilter === 'all' || 
-        (venue.matches && venue.matches.some(match =>
-          delegationMatches(match.teams, delegationFilter)
-        ));
-      
-      // Vérifier que le lieu a au moins un match correspondant aux filtres de genre
-      const genderMatch = venue.matches && venue.matches.some(match => {
-        const desc = match.description?.toLowerCase() || '';
-        const isFemale = desc.includes('féminin');
-        const isMale = desc.includes('masculin');
-        const isMixed = desc.includes('mixte');
-        
-        return (
-          (isFemale && showFemale) ||
-          (isMale && showMale) ||
-          (isMixed && showMixed) ||
-          (!isFemale && !isMale && !isMixed) // Si pas de genre précisé, toujours afficher
-        );
-      });
-      
-      return delegationMatch && genderMatch;
-    });
-
-    const venueOptions = [
+    const filteredVenues = venues.filter(venue => venue.sport === eventFilter);
+    return [
       { value: 'Tous', label: 'Tous les lieux' },
-      ...filteredVenues.map(venue => ({
-        value: venue.id,
-        label: venue.name
-      }))
+      ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
     ];
-
-    return venueOptions;
   };
 
   const getAllDelegations = () => getAllDelegationsFromVenues(venues);

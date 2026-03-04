@@ -179,71 +179,8 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
 
   const getAllDelegations = () => getAllDelegationsFromVenues(venues);
 
-  // Fonction pour obtenir les options de lieux
   const getVenueOptions = () => {
-    if (eventFilter === 'all' || eventFilter === 'match') {
-      const filteredVenues = venues.filter(venue => {
-        const delegationMatch =
-          delegationFilter === 'all' ||
-          (venue.matches && venue.matches.some(match =>
-            delegationMatches(match.teams, delegationFilter)
-          ));
-        let genderMatch = true;
-        if (venue.matches && venue.matches.length > 0) {
-          genderMatch = venue.matches.some(match => {
-            const desc = match.description?.toLowerCase() || '';
-            const isFemale = desc.includes('féminin');
-            const isMale = desc.includes('masculin');
-            const isMixed = desc.includes('mixte');
-            return (
-              (isFemale && showFemale) ||
-              (isMale && showMale) ||
-              (isMixed && showMixed) ||
-              (!isFemale && !isMale && !isMixed)
-            );
-          });
-        }
-        return delegationMatch && genderMatch;
-      });
-      return [
-        { value: 'Tous', label: 'Tous les lieux' },
-        ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
-      ];
-    }
-
-    if (eventFilter === 'party') {
-      return [
-        { value: 'Tous', label: 'Tous les lieux' },
-        { value: 'place-stanislas', label: 'Place Stanislas' },
-        { value: 'parc-expo', label: 'Parc Expo' },
-        { value: 'zenith', label: 'Zénith' }
-      ];
-    }
-
-    const filteredVenues = venues.filter(venue => {
-      if (venue.sport !== eventFilter) return false;
-      const delegationMatch =
-        delegationFilter === 'all' ||
-        (venue.matches && venue.matches.some(match =>
-          delegationMatches(match.teams, delegationFilter)
-        ));
-      let genderMatch = true;
-      if (venue.matches && venue.matches.length > 0) {
-        genderMatch = venue.matches.some(match => {
-          const desc = match.description?.toLowerCase() || '';
-          const isFemale = desc.includes('féminin');
-          const isMale = desc.includes('masculin');
-          const isMixed = desc.includes('mixte');
-          return (
-            (isFemale && showFemale) ||
-            (isMale && showMale) ||
-            (isMixed && showMixed) ||
-            (!isFemale && !isMale && !isMixed)
-          );
-        });
-      }
-      return delegationMatch && genderMatch;
-    });
+    const filteredVenues = venues.filter(venue => venue.sport === eventFilter);
     return [
       { value: 'Tous', label: 'Tous les lieux' },
       ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
