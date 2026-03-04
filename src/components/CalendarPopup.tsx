@@ -6,6 +6,7 @@ import Header from './Header';
 import BottomNav from './BottomNav';
 import EventDetails, { Event } from '../components/EventDetails';
 import { useForm } from '../contexts/FormContext';
+import { delegationMatches, getAllDelegationsFromVenues } from '../services/TeamService';
 
 interface CalendarPopupProps {
   isOpen: boolean;
@@ -198,14 +199,14 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
 
     // Vérifier si les filtres correspondent aux préférences
     const sportMatches = eventFilter === (preferredSport === 'none' ? 'match' : preferredSport);
-    const delegationMatches = delegationFilter === preferredDelegation;
+    const delegationMatch = delegationFilter === preferredDelegation;
     const genderMatches = preferredChampionship === 'none' ? 
       (showFemale && showMale && showMixed) :
       (preferredChampionship === 'female' ? showFemale && !showMale && !showMixed :
        preferredChampionship === 'male' ? !showFemale && showMale && !showMixed :
        preferredChampionship === 'mixed' ? !showFemale && !showMale && showMixed : false);
 
-    const shouldBeActive = sportMatches && delegationMatches && genderMatches;
+    const shouldBeActive = sportMatches && delegationMatch && genderMatches;
     
     if (shouldBeActive !== isStarFilterActive) {
       setIsStarFilterActive(shouldBeActive);
@@ -278,15 +279,12 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
       ];
     }
 
-    // Pour les sports, filtrer les lieux par sport, délégation et genre
     const filteredVenues = venues.filter(venue => {
-      // Vérifier que le lieu correspond au sport sélectionné
       if (venue.sport !== eventFilter) return false;
       
-      // Vérifier que le lieu a au moins un match correspondant à la délégation
       const delegationMatch = delegationFilter === 'all' || 
         (venue.matches && venue.matches.some(match =>
-          match.teams.toLowerCase().includes(delegationFilter.toLowerCase())
+          delegationMatches(match.teams, delegationFilter)
         ));
       
       // Vérifier que le lieu a au moins un match correspondant aux filtres de genre
@@ -318,81 +316,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     return venueOptions;
   };
 
-  // Fonction utilitaire pour vérifier si une délégation est présente dans une chaîne de teams
-  // Utilise une correspondance exacte pour éviter que "Nancy" matche "Télécom Nancy"
-  // Gère aussi les équipes composites du type "Nancy x Sainté", "Ponts x IMT A"
-  const delegationMatches = (teamsString: string, delegation: string): boolean => {
-    if (!teamsString || !delegation) return false;
-    
-    const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-    const normalizeDelegation = (name: string) => {
-      const lower = name.toLowerCase().trim();
-      if (lower === 'nancy') return 'mines nancy';
-      if (lower === 'sainté' || lower === 'sainte') return 'mines sainté';
-      if (lower === 'mines nancy') return 'mines nancy';
-      if (lower === 'mines sainté') return 'mines sainté';
-      return lower;
-    };
-    const normalizedDelegation = normalizeDelegation(delegation);
-    
-    // Vérifier chaque équipe (y compris les équipes composites "X x Y") pour une correspondance exacte
-    return teams.some((team: string) => {
-      const subTeams = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
-      return subTeams.some(subTeam => normalizeDelegation(subTeam) === normalizedDelegation);
-    });
-  };
-
-  // Fonction pour obtenir toutes les délégations uniques
-  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur, Gagnant, etc.)
-  // et les codes courts du type L1, W2, X3 (deux caractères alphanumériques)
-  // Pour les équipes composites "Nancy x Sainté", "Ponts x IMT A", on n'ajoute PAS l'étiquette complète,
-  // mais on ajoute chaque sous-délégation séparément.
-  const getAllDelegations = () => {
-    const delegations = new Set<string>();
-    const excludedKeywords = ['poule', 'perdant', 'vainqueur', 'gagnant'];
-    const getDisplayName = (name: string) => {
-      const lower = name.toLowerCase().trim();
-      if (lower === 'nancy') return 'Mines Nancy';
-      if (lower === 'sainté' || lower === 'sainte') return 'Mines Sainté';
-      if (lower === 'mines nancy') return 'Mines Nancy';
-      if (lower === 'mines sainté') return 'Mines Sainté';
-      return name;
-    };
-    
-    venues.forEach(venue => {
-      if (venue.matches) {
-        venue.matches.forEach(match => {
-          const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map(team => team.trim());
-          teams.forEach(team => {
-            const teamLower = team.toLowerCase();
-            const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
-            const normalized = team.replace(/\s+/g, '');
-            const isShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(normalized);
-            // Exclure les "...", les chaînes vides, les mots-clés de phases finales et les codes courts
-            if (!team || team === '...' || team === '…' || isExcluded || isShortCode) {
-              return;
-            }
-
-            if (/\sx\s/i.test(team)) {
-              const parts = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
-              parts.forEach(part => {
-                const partLower = part.toLowerCase();
-                const partExcluded = excludedKeywords.some(keyword => partLower.includes(keyword));
-                const partNormalized = part.replace(/\s+/g, '');
-                const partShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(partNormalized);
-                if (part && !partExcluded && !partShortCode) {
-                  delegations.add(getDisplayName(part));
-                }
-              });
-            } else {
-              delegations.add(getDisplayName(team));
-            }
-          });
-        });
-      }
-    });
-    return Array.from(delegations).sort();
-  };
+  const getAllDelegations = () => getAllDelegationsFromVenues(venues);
 
   const getEventsForDay = (date: string): Event[] => {
     const events: Event[] = [];

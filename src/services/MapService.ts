@@ -9,6 +9,7 @@
  */
 
 import { Venue } from '../types';
+import { delegationMatches as teamDelegationMatches } from './TeamService';
 
 class MapService {
   /**
@@ -84,22 +85,8 @@ class MapService {
     return end < now;
   }
 
-  /**
-   * Vérifie si une délégation est présente dans une chaîne de teams
-   * Utilise une correspondance exacte pour éviter que "Nancy" matche "Télécom Nancy"
-   */
   delegationMatches(teamsString: string, delegation: string): boolean {
-    if (!teamsString || !delegation) return false;
-    
-    const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-    const delegationLower = delegation.toLowerCase();
-    
-    // Vérifier chaque équipe pour une correspondance exacte
-    return teams.some((team: string) => {
-      const teamLower = team.toLowerCase();
-      // Correspondance exacte (insensible à la casse)
-      return teamLower === delegationLower;
-    });
+    return teamDelegationMatches(teamsString, delegation);
   }
 
   /**

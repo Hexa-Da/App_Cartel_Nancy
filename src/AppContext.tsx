@@ -18,6 +18,7 @@ import { ref, onValue } from 'firebase/database';
 import { database, isFirebaseInitialized } from './firebase';
 import { firebaseLogger } from './services/FirebaseLogger';
 import logger from './services/Logger';
+import { delegationMatches as teamDelegationMatches, getAllDelegationsFromVenues } from './services/TeamService';
 
 interface Venue {
   id?: string;
@@ -236,81 +237,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return venues;
   };
 
-  // Fonction utilitaire pour vérifier si une délégation est présente dans une chaîne de teams
-  // Utilise une correspondance exacte pour éviter que "Nancy" matche "Télécom Nancy"
-  const delegationMatches = (teamsString: string, delegation: string): boolean => {
-    if (!teamsString || !delegation) return false;
-    
-    const teams = teamsString.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-    const normalizeDelegation = (name: string) => {
-      const lower = name.toLowerCase().trim();
-      if (lower === 'nancy') return 'mines nancy';
-      if (lower === 'sainté' || lower === 'sainte') return 'mines sainté';
-      if (lower === 'mines nancy') return 'mines nancy';
-      if (lower === 'mines sainté') return 'mines sainté';
-      return lower;
-    };
-    const normalizedDelegation = normalizeDelegation(delegation);
-    
-    // Vérifier chaque équipe (y compris les équipes composites "X x Y") pour une correspondance exacte
-    return teams.some((team: string) => {
-      // Gérer les équipes composites du type "Nancy x Sainté", "Ponts x IMT A", etc.
-      const subTeams = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
-      return subTeams.some(subTeam => normalizeDelegation(subTeam) === normalizedDelegation);
-    });
-  };
-
-  // Fonction pour obtenir toutes les délégations
-  // Filtre les entrées contenant des mots-clés de phases finales (Poule, Perdant, Vainqueur, Gagnant, etc.)
-  // et les codes courts du type L1, W2, X3 (deux caractères alphanumériques)
-  // Pour les équipes composites "Nancy x Sainté", "Ponts x IMT A", on n'ajoute PAS l'étiquette complète,
-  // mais on ajoute chaque sous-délégation séparément.
-  const getAllDelegations = () => {
-    const delegations = new Set<string>();
-    const excludedKeywords = ['poule', 'perdant', 'vainqueur', 'gagnant'];
-    const getDisplayName = (name: string) => {
-      const lower = name.toLowerCase().trim();
-      if (lower === 'nancy') return 'Mines Nancy';
-      if (lower === 'sainté' || lower === 'sainte') return 'Mines Sainté';
-      if (lower === 'mines nancy') return 'Mines Nancy';
-      if (lower === 'mines sainté') return 'Mines Sainté';
-      return name;
-    };
-    
-    venues.forEach(venue => {
-      if (venue.matches) {
-        venue.matches.forEach((match: any) => {
-          const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-          teams.forEach((team: string) => {
-            const teamLower = team.toLowerCase();
-            const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
-            const normalized = team.replace(/\s+/g, '');
-            const isShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(normalized);
-            if (!team || team === '...' || team === '…' || isExcluded || isShortCode) {
-              return;
-            }
-
-            // Si l'équipe est composite ("Nancy x Sainté"), on éclate sur " x "
-            if (/\sx\s/i.test(team)) {
-              const parts = team.split(/\sx\s/i).map(part => part.trim()).filter(Boolean);
-              parts.forEach(part => {
-                const partLower = part.toLowerCase();
-                const partExcluded = excludedKeywords.some(keyword => partLower.includes(keyword));
-                const partNormalized = part.replace(/\s+/g, '');
-                const partShortCode = /^[A-Za-z][0-9A-Za-z]$/.test(partNormalized);
-                if (part && !partExcluded && !partShortCode) {
-                  delegations.add(getDisplayName(part));
-                }
-              });
-            } else {
-              delegations.add(getDisplayName(team));
-            }
-          });
-        });
-      }
-    });
-    return Array.from(delegations).sort();
-  };
+  const delegationMatches = teamDelegationMatches;
+  const getAllDelegations = () => getAllDelegationsFromVenues(venues);
 
   // Fonction pour vérifier les championnats disponibles pour un sport
   // Le championnat (féminin/masculin/mixte) est défini dans match.description

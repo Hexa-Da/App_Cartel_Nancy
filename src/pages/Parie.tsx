@@ -360,13 +360,12 @@ const Parie: React.FC = () => {
           sportsMap.set(sportKey, { sport, gender, delegations: new Set() });
         }
 
-        // Extraire les délégations de ce match
-        const teams = match.teams.split(/vs|VS|contre|CONTRE|,/).map((team: string) => team.trim());
-        teams.forEach((team: string) => {
-          const teamLower = team.toLowerCase();
-          const isExcluded = excludedKeywords.some(keyword => teamLower.includes(keyword));
-          if (team && team !== "..." && team !== "…" && team.length > 1 && !isExcluded) {
-            sportsMap.get(sportKey)?.delegations.add(team);
+        const sides = match.teams.split(/\svs\s/i).map((s: string) => s.trim());
+        sides.forEach((side: string) => {
+          const sideLower = side.toLowerCase();
+          const isExcluded = excludedKeywords.some(keyword => sideLower.includes(keyword));
+          if (side && side !== "..." && side !== "…" && side.length > 1 && !isExcluded) {
+            sportsMap.get(sportKey)?.delegations.add(side);
           }
         });
       });
