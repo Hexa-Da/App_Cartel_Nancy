@@ -67,7 +67,6 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   onChat,
   onEmergency,
   onAdmin,
-  isAdmin,
   showChat,
   unreadCount,
   onEditModeToggle,

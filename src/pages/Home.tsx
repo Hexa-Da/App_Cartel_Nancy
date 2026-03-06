@@ -15,7 +15,7 @@
  * - Interface responsive pour mobile et desktop
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import EventDetails, { Event } from '../components/EventDetails';
 import { Match, Venue } from '../types';
@@ -46,9 +46,18 @@ const Home: React.FC = () => {
   const [events, setEvents] = useState<Place[]>([]);
   const [_, setDebugLogs] = useState<DebugLog[]>([]);
   const [showLaunchPopupForm, setShowLaunchPopupForm] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const uploadBarRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
+  useEffect(() => {
+    if (uploadBarRef.current) {
+      uploadBarRef.current.style.setProperty('--progress', `${uploadProgress}%`);
+    }
+  }, [uploadProgress]);
+
   // Fonction pour ajouter un log de debug (mémorisée pour éviter les re-renders)
   const addLog = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
     const log: DebugLog = {
@@ -678,9 +687,31 @@ const Home: React.FC = () => {
           +
         </button>
       )}
+      {uploading && (
+        <div
+          ref={uploadBarRef}
+          className="upload-progress-bar"
+          role="status"
+          aria-live="polite"
+          aria-label="Upload en cours"
+        >
+          <div className="upload-progress-bar__title">Upload en cours...</div>
+          <div className="upload-progress-bar__track">
+            <div className="upload-progress-bar__fill" />
+          </div>
+          <div className="upload-progress-bar__percent">{Math.round(uploadProgress)}%</div>
+          <div className="upload-progress-bar__subtitle">
+            {uploadProgress < 100 ? 'Téléchargement du fichier...' : 'Finalisation de l\'upload...'}
+          </div>
+        </div>
+      )}
       <LaunchPopupForm
         isOpen={showLaunchPopupForm}
         onClose={() => setShowLaunchPopupForm(false)}
+        uploading={uploading}
+        setUploading={setUploading}
+        uploadProgress={uploadProgress}
+        setUploadProgress={setUploadProgress}
       />
     </div>
   );

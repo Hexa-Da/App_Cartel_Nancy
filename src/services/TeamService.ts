@@ -55,6 +55,12 @@ function isExcludedTeam(name: string): boolean {
   return EXCLUDED_KEYWORDS.some(kw => lower.includes(kw));
 }
 
+/** Exclut les équipes type "2ème ...", "... 2ème" (réserves / secondes). */
+function isSecondOrReserveTeam(name: string): boolean {
+  const t = (name || '').trim();
+  return /^\d+ème(\s|$)/i.test(t) || /\s+\d+ème$/i.test(t);
+}
+
 /**
  * Vérifie si une délégation est présente dans une chaîne de teams.
  * Gère les composites ("Nancy x Sainté") et la normalisation.
@@ -77,7 +83,7 @@ export function getAllDelegationsFromVenues(venues: VenueWithMatches[]): string[
     venue.matches.forEach((match: any) => {
       if (!match.teams) return;
       for (const team of parseTeams(match.teams)) {
-        if (isExcludedTeam(team) || isShortCode(team)) continue;
+        if (isExcludedTeam(team) || isShortCode(team) || isSecondOrReserveTeam(team)) continue;
         delegations.add(getDisplayName(team));
       }
     });

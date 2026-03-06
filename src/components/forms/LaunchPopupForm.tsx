@@ -16,6 +16,10 @@ interface LaunchPopupFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSaved?: () => void;
+  uploading: boolean;
+  setUploading: (value: boolean) => void;
+  uploadProgress: number;
+  setUploadProgress: (value: number) => void;
 }
 
 const toDateInput = (date: Date): string => {
@@ -25,7 +29,11 @@ const toDateInput = (date: Date): string => {
 const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
   isOpen,
   onClose,
-  onSaved
+  onSaved,
+  uploading,
+  setUploading,
+  uploadProgress: _uploadProgress,
+  setUploadProgress
 }) => {
   const now = new Date();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,8 +41,6 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
 
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(toDateInput(now));
-  const [isSaving, setIsSaving] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
 
   const resetForm = useCallback(() => {
@@ -45,7 +51,7 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, []);
+  }, [setUploadProgress]);
 
   const handleClose = useCallback(() => {
     resetForm();
@@ -71,7 +77,7 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
       return;
     }
 
-    setIsSaving(true);
+    setUploading(true);
     setError('');
 
     try {
@@ -141,10 +147,10 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
         setError(`Erreur : ${errMsg}`);
       }
     } finally {
-      setIsSaving(false);
+      setUploading(false);
       setUploadProgress(0);
     }
-  }, [title, startDate, resetForm, onSaved, handleClose]);
+  }, [title, startDate, resetForm, onSaved, handleClose, setUploading, setUploadProgress]);
 
   if (!isOpen) return null;
 
@@ -197,21 +203,15 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
               className="modal-form-input"
             />
           </div>
-          {isSaving && uploadProgress > 0 && (
-            <div className="modal-form-progress" style={{ ['--progress' as string]: `${uploadProgress}%` } as React.CSSProperties}>
-              <div className="modal-form-progress-bar" />
-              <span>{Math.round(uploadProgress)}%</span>
-            </div>
-          )}
           {error && <p className="modal-form-error">{error}</p>}
           <div className="modal-form-actions">
             <button
               type="button"
               className="modal-form-submit"
               onClick={handleSave}
-              disabled={isSaving}
+              disabled={uploading}
             >
-              {isSaving ? 'Sauvegarde...' : 'Ajouter'}
+              {uploading ? 'Sauvegarde...' : 'Ajouter'}
             </button>
             <button
               type="button"
