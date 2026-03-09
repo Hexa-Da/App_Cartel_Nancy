@@ -55,10 +55,10 @@ function isExcludedTeam(name: string): boolean {
   return EXCLUDED_KEYWORDS.some(kw => lower.includes(kw));
 }
 
-/** Exclut les équipes type "2ème ...", "... 2ème" (réserves / secondes). */
+/** Exclut les équipes type "1er/2ème ...", "... 1er/2ème" (réserves / secondes). */
 function isSecondOrReserveTeam(name: string): boolean {
   const t = (name || '').trim();
-  return /^\d+ème(\s|$)/i.test(t) || /\s+\d+ème$/i.test(t);
+  return /^\d+(?:er|ème)(\s|$)/i.test(t) || /\s+\d+(?:er|ème)$/i.test(t);
 }
 
 /**
