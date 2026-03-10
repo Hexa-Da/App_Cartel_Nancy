@@ -20,6 +20,7 @@ interface SportSection {
   sport: string;
   gender: string;
   delegations: string[];
+  championship?: string;
 }
 
 // Date de clôture des paris (à configurer)
@@ -325,10 +326,18 @@ const Parie: React.FC = () => {
   }, []);
 
 
+  const hasRankSuffix = (name: string): boolean => {
+    const trimmed = (name || '').trim();
+    return (
+      /^\d+(?:er|ème)(\s|$)/i.test(trimmed) || 
+      /\s+\d+(?:er|ème)$/i.test(trimmed)      
+    );
+  };
+
   // Fonction pour obtenir les sports avec leurs délégations
   // Le genre est détecté dans match.description (comme dans App.tsx)
   const getSportsWithDelegations = (): SportSection[] => {
-    const sportsMap = new Map<string, { sport: string; gender: string; delegations: Set<string> }>();
+    const sportsMap = new Map<string, { sport: string; gender: string; delegations: Set<string>; championship?: string }>();
     const excludedKeywords = ['poule', 'perdant', 'vainqueur', 'gagnant', 'match'];
     const excludedSports = ['Hotel', 'Restaurant', 'Party', 'Defile', 'Pompom'];
 
@@ -344,7 +353,8 @@ const Parie: React.FC = () => {
         if (!match.teams) return;
         
         // Détecter le genre depuis match.description (logique App.tsx)
-        const matchDesc = match.description?.toLowerCase() || '';
+        const rawDescription: string = match.description || '';
+        const matchDesc = rawDescription.toLowerCase();
         let gender = 'mixte';
         if (matchDesc.includes('féminin')) {
           gender = 'féminin';
@@ -354,17 +364,36 @@ const Parie: React.FC = () => {
           gender = 'mixte';
         }
 
-        const sportKey = `${sport}_${gender}`;
+        // Pour Natation et Athlétisme, distinguer les relais comme championnats distincts
+        // sans séparer les différentes séries (série 1, série 2, etc.)
+        let championship: string | undefined;
+        if ((sport === 'Natation' || sport === 'Athlétisme') && rawDescription.trim() && matchDesc.includes('relai')) {
+          let normalizedChampionship = rawDescription.trim();
+          // Supprimer les indications de série en fin de description
+          normalizedChampionship = normalizedChampionship.replace(/[-–—]?\s*séries?\s*\d+(?:\/\d+)?$/i, '');
+          normalizedChampionship = normalizedChampionship.replace(/[-–—]?\s*series?\s*\d+(?:\/\d+)?$/i, '');
+          normalizedChampionship = normalizedChampionship.replace(/[-–—]?\s*série\s*\d+(?:\/\d+)?$/i, '');
+          championship = normalizedChampionship.trim();
+        }
+
+        const sportKey = championship ? `${sport}_${gender}_${championship}` : `${sport}_${gender}`;
 
         if (!sportsMap.has(sportKey)) {
-          sportsMap.set(sportKey, { sport, gender, delegations: new Set() });
+          sportsMap.set(sportKey, { sport, gender, delegations: new Set(), championship });
         }
 
         const sides = match.teams.split(/\svs\s/i).map((s: string) => s.trim());
         sides.forEach((side: string) => {
           const sideLower = side.toLowerCase();
           const isExcluded = excludedKeywords.some(keyword => sideLower.includes(keyword));
-          if (side && side !== "..." && side !== "…" && side.length > 1 && !isExcluded) {
+          if (
+            side &&
+            side !== "..." &&
+            side !== "…" &&
+            side.length > 1 &&
+            !isExcluded &&
+            !hasRankSuffix(side)
+          ) {
             sportsMap.get(sportKey)?.delegations.add(side);
           }
         });
@@ -396,7 +425,8 @@ const Parie: React.FC = () => {
         sportKey,
         sport: data.sport,
         gender: data.gender,
-        delegations: Array.from(data.delegations).sort()
+        delegations: Array.from(data.delegations).sort(),
+        championship: data.championship
       }))
       .filter(s => s.delegations.length > 0)
       .sort((a, b) => {
@@ -417,11 +447,19 @@ const Parie: React.FC = () => {
     return 'Mixte';
   };
   
-  const getSportLabel = (sport: string, gender: string): string => {
-    // Ne pas afficher le suffixe "Mixte" pour Show Pompom et DJ Contest
-    if (sport === 'Show Pompom' || sport === 'DJ Contest') {
+  const getSportLabel = (sport: string, gender: string, championship?: string): string => {
+    // Pour Natation et Athlétisme, si un championnat est défini (ex: relai),
+    // on affiche "Natation Relai 6x50 nage libre" plutôt que "Natation Mixte"
+    if (championship) {
+      return `${sport} ${championship}`;
+    }
+
+    // Ne pas afficher le suffixe de genre pour certains sports sans championnat explicite
+    const noGenderSuffixSports = ['Show Pompom', 'DJ Contest', 'Pétanque', 'Ultimate', 'Echecs'];
+    if (noGenderSuffixSports.includes(sport)) {
       return sport;
     }
+
     return `${sport} ${getGenderLabel(gender)}`;
   };
 
@@ -582,7 +620,9 @@ const Parie: React.FC = () => {
                 >
                   <div className="sport-left">
                     <span className="sport-icon">{getSportEmoji(sportSection.sport)}</span>
-                    <span className="sport-name">{getSportLabel(sportSection.sport, sportSection.gender)}</span>
+                    <span className="sport-name">
+                      {getSportLabel(sportSection.sport, sportSection.gender, sportSection.championship)}
+                    </span>
                   </div>
                   <div className="sport-right">
                     {bets[sportSection.sportKey] && (

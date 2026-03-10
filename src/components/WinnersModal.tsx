@@ -15,6 +15,7 @@ interface SportSection {
   sport: string;
   gender: string;
   delegations: string[];
+  championship?: string;
 }
 
 interface WinnersModalProps {
@@ -173,11 +174,19 @@ const WinnersModal: React.FC<WinnersModalProps> = ({ isOpen, onClose, sports }) 
     return 'Mixte';
   };
   
-  const getSportLabel = (sport: string, gender: string): string => {
-    // Ne pas afficher le suffixe "Mixte" pour Show Pompom et DJ Contest
-    if (sport === 'Show Pompom' || sport === 'DJ Contest') {
+  const getSportLabel = (sport: string, gender: string, championship?: string): string => {
+    // Pour Natation et Athlétisme, si un championnat est défini (ex: relai),
+    // on affiche "Natation Relai 6x50 nage libre" plutôt que "Natation Mixte"
+    if (championship) {
+      return `${sport} ${championship}`;
+    }
+
+    // Ne pas afficher le suffixe de genre pour certains sports sans championnat explicite
+    const noGenderSuffixSports = ['Show Pompom', 'DJ Contest', 'Pétanque', 'Ultimate', 'Echecs'];
+    if (noGenderSuffixSports.includes(sport)) {
       return sport;
     }
+
     return `${sport} ${getGenderLabel(gender)}`;
   };
 
@@ -206,7 +215,8 @@ const WinnersModal: React.FC<WinnersModalProps> = ({ isOpen, onClose, sports }) 
               return (
                 <div key={sportSection.sportKey} className="winner-sport-item">
                   <label className="winner-sport-label">
-                    {getSportEmoji(sportSection.sport)} {getSportLabel(sportSection.sport, sportSection.gender)}
+                    {getSportEmoji(sportSection.sport)}{' '}
+                    {getSportLabel(sportSection.sport, sportSection.gender, sportSection.championship)}
                   </label>
                   <select
                     className="winner-select"
