@@ -208,12 +208,12 @@
 }
 
 .result-value {
-  color: rgba(76, 175, 80, 1);
+  color: var(--success-color);
   font-weight: 700;
   font-size: clamp(0.75rem, 2.2vw, 0.85rem);
   text-align: center;
-  background: rgba(76, 175, 80, 0.15);
-  border: 1px solid rgba(76, 175, 80, 0.4);
+ ;
+  border: 1px solid var(--border-color);
 }
 
 /* Boutons d'action - Style cohérent avec les popups */

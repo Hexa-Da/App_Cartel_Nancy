@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import './CalendarPopup.css';
 import { Venue } from '../types';
+import { Party } from '../types/venue';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import EventDetails, { Event } from '../components/EventDetails';
@@ -41,6 +42,8 @@ interface CalendarPopupProps {
   onBack?: () => void;
   isBackDisabled?: boolean;
   isVenuesLoading?: boolean;
+  /** Soirées chargées depuis Firebase (editableData/partyResults), pour afficher les résultats */
+  parties?: Party[];
 }
 
 const CalendarPopup: React.FC<CalendarPopupProps> = ({ 
@@ -73,7 +76,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   isEditing,
   onBack,
   isBackDisabled,
-  isVenuesLoading
+  isVenuesLoading,
+  parties: appParties = []
 }) => {
   const { selectedEvent, setSelectedEvent } = useForm();
   const location = useLocation();
@@ -317,7 +321,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                     description: match.description,
                     sport: venue.sport,
                     venue: venue.name,
-                    color: isPassed ? '#808080' : '#4CAF50',
+                    color: isPassed ? 'var(--match-passed-color)' : '#4CAF50',
                     result: match.result
                   });
                 }
@@ -327,9 +331,15 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
         });
       }
 
-      // Pour les soirées et défilés
+      // Pour les soirées et défilés (résultats depuis Firebase via prop parties)
       if (eventFilter === 'all' || eventFilter === 'party') {
-        const parties = [
+        const calendarToAppPartyId: Record<string, string> = {
+          'place-stanislas': '1',
+          'parc-expo-pompoms': '2',
+          'parc-expo-showcase': '3',
+          'zenith': '4'
+        };
+        const partiesList = [
           {
             id: 'place-stanislas',
             date: '2026-04-16',
@@ -380,12 +390,12 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
           }
         ];
 
-        parties.forEach(party => {
+        partiesList.forEach(party => {
           if (party.date === date) {
-            // Vérifier si le filtre de lieu correspond
             const venueMatch = venueFilter === 'Tous' || party.id === venueFilter;
-            
             if (venueMatch) {
+              const appId = calendarToAppPartyId[party.id];
+              const result = appId ? appParties.find(p => p.id === appId)?.result : undefined;
               events.push({
                 type: 'party',
                 time: party.time,
@@ -395,7 +405,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                 description: party.description,
                 venue: party.venue,
                 color: party.color,
-                sport: party.sport
+                sport: party.sport,
+                ...(result != null && result !== '' && { result })
               });
             }
           }
@@ -515,8 +526,9 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   };
 
   const getCurrentDate = () => {
-    // Simulation de la date du 25/04 à 16h
-    return new Date();
+    // TEST: date/heure simulée (Vendredi 17/04/2026 à 14h30)
+    //return new Date(2026, 3, 17, 14, 30, 0);
+    return new Date(); 
   };
 
   const getCurrentTimePosition = () => {
@@ -545,9 +557,9 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     return `${year}-${month}-${day}`;
   };
 
-  // Fonction pour vérifier si un événement est passé
+  // Fonction pour vérifier si un événement est passé (utilise getCurrentDate pour cohérence avec la barre rouge)
   const isEventPassed = (date: string, endTime?: string, type: 'match' | 'party' = 'match') => {
-    const now = new Date();
+    const now = getCurrentDate();
     const [eventDateStr, eventTimeStr] = date.split('T');
     const eventDate = new Date(eventDateStr);
     
@@ -892,12 +904,13 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                               {group.map((event, index) => {
                                 const position = getEventPosition(event.time, event.endTime, index, group.length, event.type, event.name);
                                 const isPassed = isEventPassed(`${day.date}T${event.time}`, event.endTime ? `${day.date}T${event.endTime}` : undefined, event.type);
+                                const passedBg = event.type === 'party' ? 'var(--party-passed-color)' : 'var(--match-passed-color)';
                                 return (
                                   <div 
                                     key={`${event.time}-${index}`}
                                     className={`calendar-event ${isPassed ? 'passed' : ''}`}
                                     style={{
-                                      backgroundColor: event.color,
+                                      backgroundColor: isPassed ? passedBg : event.color,
                                       top: position.top,
                                       height: position.height,
                                       width: position.width,

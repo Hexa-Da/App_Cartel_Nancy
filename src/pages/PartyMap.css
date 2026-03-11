@@ -101,65 +101,87 @@
 /* Conteneur d'édition (panneau flottant pour ajouter des marqueurs) */
 .plan-editor-container {
   position: fixed;
-  bottom: calc(80px + var(--spacing-lg));
+  bottom: calc(var(--above-bottom-nav) + var(--spacing-lg));
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--z-modal);
   display: flex;
-  gap: 8px;
+  gap: var(--spacing-sm);
   align-items: center;
   flex-direction: row;
   background-color: var(--bg-color);
-  padding: 12px 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px var(--shadow-color);
   border: 1px solid var(--border-color);
   max-width: 90%;
 }
 
 /* Select pour choisir le type d'indication */
 .plan-indication-select {
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-size: 0.9rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  min-height: 44px;
 }
 
-/* Bouton d'ajout de marqueur (bouton "+") */
+/* Bouton d'ajout de marqueur (FAB-like) */
 .plan-add-marker-button {
-  padding: 8px 12px;
-  background-color: black;
-  color: white;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 44px;
+  padding: 0;
   border: none;
   border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
   cursor: pointer;
-  font-size: 1.5rem;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.plan-add-marker-button:hover {
+  background-color: var(--primary-hover, #5a5fd6);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.plan-add-marker-button:active {
+  transform: scale(0.96);
+}
+
+.plan-add-marker-button-icon {
+  font-size: 1.75rem;
+  font-weight: 700;
   line-height: 1;
-  min-height: 44px;
+  display: block;
 }
 
 /* Bouton annuler */
 .plan-cancel-button {
-  padding: 8px 16px;
-  background-color: #e74c3c;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--danger-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem);
   font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px var(--shadow-color);
   min-height: 44px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.plan-cancel-button:active {
+  transform: scale(0.98);
 }
 
 /* Bouton supprimer dans la popup */

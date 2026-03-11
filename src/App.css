@@ -204,10 +204,29 @@
   border: 1px solid var(--border-color);
   border-radius: clamp(var(--radius-sm), 1.5vw, var(--radius-sm));
   box-shadow: 0 4px 16px var(--shadow-color);
-  max-height: clamp(150px, 35vh, 250px);
-  overflow-y: auto;
-  scrollbar-gutter: stable;
   position: relative;
+}
+
+/* Hauteur limitée = affordance "liste scrollable" (2 matchs + peek du 3e) */
+.matches-scroll-container {
+  max-height: clamp(160px, 32vh, 220px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  border-radius: inherit;
+}
+
+/* Fade en bas pour suggérer qu'il y a du contenu en dessous */
+.matches-list::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--spacing-lg);
+  background: linear-gradient(to top, var(--bg-color) 20%, transparent);
+  pointer-events: none;
+  border-radius: 0 0 clamp(var(--radius-sm), 1.5vw, var(--radius-sm)) clamp(var(--radius-sm), 1.5vw, var(--radius-sm));
 }
 
 .matches-list h4 {
@@ -282,7 +301,7 @@
   background: var(--bg-card, rgba(255, 255, 255, 0.78));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border-color);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 

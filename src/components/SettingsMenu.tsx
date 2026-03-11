@@ -72,7 +72,7 @@ const hotelOptions = [
 
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
-  const { getAllDelegations, hasGenderMatches, isAdmin } = useApp();
+  const { getAllDelegations, hasGenderMatches } = useApp();
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const stored = localStorage.getItem('theme');

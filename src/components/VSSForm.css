@@ -198,7 +198,6 @@
   width: 18px;
   height: 18px;
   accent-color: var(--primary-color);
-  filter: var(--checkbox-filter);
   flex-shrink: 0;
 }
 

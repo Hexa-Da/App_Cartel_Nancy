@@ -1756,7 +1756,6 @@ function App() {
           popupContent.innerHTML = `
             <h3>${venue.name}</h3>
             <p>${venue.description}</p>
-            <p><strong>Type:</strong> ${venueAny.indicationType || 'Indication'}</p>
           `;
         } else {
         popupContent.innerHTML = `
@@ -1787,9 +1786,6 @@ function App() {
           const sortedMatches = [...venue.matches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
           const matchesScrollContainer = document.createElement('div');
           matchesScrollContainer.className = 'matches-scroll-container';
-          matchesScrollContainer.style.maxHeight = '200px';
-          matchesScrollContainer.style.overflowY = 'auto';
-          // Les styles sont maintenant gérés par App.css avec le même style que les cartes de match
           sortedMatches.forEach(match => {
             const matchItemDiv = document.createElement('div');
             matchItemDiv.className = `match-item ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`;
@@ -3750,6 +3746,7 @@ function App() {
         isOpen={activeTab === 'calendar'} 
         onClose={handleCalendarClose}
         venues={venues}
+        parties={parties}
         eventFilter={eventFilter}
         onViewOnMap={handleViewOnMap}
         delegationFilter={delegationFilter}

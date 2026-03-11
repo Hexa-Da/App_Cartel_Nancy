@@ -391,11 +391,13 @@ const PartyMap: React.FC = () => {
                   <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                 </select>
                 <button
+                  type="button"
                   onClick={() => setIsAddingMarker(true)}
                   className="plan-add-marker-button"
-                  title="Ajouter un marqueur"
+                  title="Ajouter un marqueur sur le plan"
+                  aria-label="Ajouter un marqueur sur le plan"
                 >
-                  +
+                  <span className="plan-add-marker-button-icon" aria-hidden>+</span>
                 </button>
               </>
             ) : (

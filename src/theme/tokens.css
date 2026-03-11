@@ -40,6 +40,9 @@
   --danger-color: #e74c3c;
   --accent-color: #4CAF50;
   --party-color: #9C27B0;
+  /* Calendrier : couleurs passées (plus pâles) */
+  --match-passed-color: #A5D6A7;
+  --party-passed-color: #CE93D8;
   
   /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.1);
@@ -203,6 +206,9 @@
   --danger-color: #e74c3c;
   --accent-color: #4CAF50;
   --party-color: #9C27B0;
+  /* Calendrier : couleurs passées (plus pâles) */
+  --match-passed-color: #A5D6A7;
+  --party-passed-color: #CE93D8;
   
   /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.3);

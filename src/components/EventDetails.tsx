@@ -218,6 +218,12 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
                   </span>
                 </div>
               )}
+              {event.result && (
+                <div className="detail-item result-item">
+                  <span className="detail-label">Résultat</span>
+                  <span className="detail-value result-value">{event.result}</span>
+                </div>
+              )}
             </div>
           )}
 

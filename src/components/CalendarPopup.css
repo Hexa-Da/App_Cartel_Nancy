@@ -599,8 +599,7 @@
 }
 
 .calendar-event.passed {
-  opacity: 0.5;
-  filter: grayscale(100%);
+  opacity: 0.92;
 }
 
 .calendar-scrollable-content {
