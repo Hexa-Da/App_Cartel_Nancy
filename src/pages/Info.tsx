@@ -17,8 +17,15 @@
 
 import React from 'react';
 import './Info.css';
-import { FaUtensils, FaTrophy, FaHotel, FaFileAlt, FaMusic, FaFileContract, FaRing, FaDice } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import braceletImg from '../assets/info/IMG_bracelet.png';
+import hotelImg from '../assets/info/IMG_hotel.png';
+import legalImg from '../assets/info/IMG_legal.png';
+import parisImg from '../assets/info/IMG_paris.png';
+import partyImg from '../assets/info/IMG_party.png';
+import planningImg from '../assets/info/IMG_planning.png';
+import restoImg from '../assets/info/IMG_resto.png';
+import sportImg from '../assets/info/IMG_sport.png';
 
 interface InfoCardProps {
   icon: React.ReactNode;
@@ -75,56 +82,56 @@ const Info: React.FC = () => {
       
       <div className="info-grid">
         <InfoCard
-          icon={<FaUtensils />}
+          icon={<img src={restoImg} alt="Infos Restaurations" className="info-icon-image" />}
           title="Infos Restaurations"
           onClick={() => handleCardClick('restauration')}
           size="wide"
         />
         
         <InfoCard
-          icon={<FaTrophy />}
+          icon={<img src={sportImg} alt="Infos Sports" className="info-icon-image" />}
           title="Infos Sports"
           onClick={() => handleCardClick('sport')}
           size="medium"
         />
         
         <InfoCard
-          icon={<FaMusic />}
+          icon={<img src={partyImg} alt="Infos Soirées" className="info-icon-image" />}
           title="Infos Soirées"
           onClick={() => handleCardClick('party')}
           size="medium"
         />
         
         <InfoCard
-          icon={<FaHotel />}
+          icon={<img src={hotelImg} alt="Infos Hotels" className="info-icon-image" />}
           title="Infos Hotels"
           onClick={() => handleCardClick('hotel')}
           size="small"
         />
         
         <InfoCard
-          icon={<FaRing />}
+          icon={<img src={braceletImg} alt="Infos Bracelet" className="info-icon-image" />}
           title="Infos Bracelet"
           onClick={() => handleCardClick('bracelet')}
           size="small"
         />
         
         <InfoCard
-          icon={<FaDice />}
+          icon={<img src={parisImg} alt="Faites vos paris" className="info-icon-image" />}
           title="Faites vos paris"
           onClick={() => handleCardClick('parie')}
           size="wide"
         />
         
         <InfoCard
-          icon={<FaFileAlt />}
+          icon={<img src={planningImg} alt="Fichiers Utiles" className="info-icon-image" />}
           title="Fichiers Utiles"
           onClick={() => handleCardClick('planning')}
           size="small"
         />
         
         <InfoCard
-          icon={<FaFileContract />}
+          icon={<img src={legalImg} alt="Mentions Légales" className="info-icon-image" />}
           title="Mentions Légales"
           onClick={() => handleCardClick('legal')}
           size="small"

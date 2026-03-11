@@ -18,6 +18,7 @@
    TITRE INFO
    ============================================ */
 .info-title {
+  font-family: system-ui, sans-serif;
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   text-align: center;
@@ -136,8 +137,15 @@
   color: var(--text-color);
 }
 
+.info-icon-image {
+  width: clamp(54px, 14vw, 90px);
+  width: clamp(22px, 7vw, 44px);
+  display: block;
+  object-fit: cover;
+}
+
 .info-card-title {
-  font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+  font-size: clamp(0.85rem, 1.4vw, 1rem);
   margin: 0;
   color: var(--text-color);
   font-weight: 600;
@@ -173,10 +181,6 @@
 
   .info-icon {
     font-size: clamp(1.4rem, 4vw, 1.8rem);
-  }
-
-  .info-card-title {
-    font-size: clamp(0.6rem, 2vw, 0.75rem);
   }
 
   .info-title {
