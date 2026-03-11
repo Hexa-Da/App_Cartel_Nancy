@@ -349,11 +349,23 @@ const Layout: React.FC = () => {
     
     // Navigation spécifique selon les routes
     if (currentPath.startsWith('/info/')) {
-      // Retour depuis InfoSection vers Info
+      // Retour depuis une sous-page de InfoSection vers Info
       navigate('/info');
       return;
     }
-    
+
+    if (currentPath === '/privacy-policy' || currentPath === '/terms-of-service') {
+      // Retour vers Mentions légales si on venait de /info/legal, sinon vers Info
+      const urlParams = new URLSearchParams(currentSearch);
+      const fromParam = urlParams.get('from');
+      if (fromParam === 'legal') {
+        navigate('/info/legal');
+      } else {
+        navigate('/info');
+      }
+      return;
+    }
+
     if (currentPath === '/planning-files') {
       // Vérifier s'il y a un paramètre indiquant la provenance
       const urlParams = new URLSearchParams(currentSearch);

@@ -70,7 +70,7 @@
   left: 0;
   right: 0;
   z-index: var(--z-content-high);
-  background: var(--bg-color);
+  background: transparent;
   padding: var(--spacing-md) var(--spacing-md);
   display: flex;
   gap: var(--spacing-md);

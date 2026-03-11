@@ -23,6 +23,8 @@ import InfoSection from './pages/InfoSection';
 import PlanningFilesPage from './pages/PlanningFilesPage';
 import Layout from './components/Layout';
 import OrientationLock from './components/OrientationLock';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 /* Import des fichiers de thème dans l'ordre : tokens, reset, platform */
 import './theme/tokens.css';
 import './theme/reset.css';
@@ -62,6 +64,8 @@ const AppRoot = (
                     <Route path="/info" element={<Info />} />
                     <Route path="info/:sectionName" element={<InfoSection />} />
                     <Route path="/planning-files" element={<PlanningFilesPage />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                    <Route path="/terms-of-service" element={<TermsOfServicePage />} />
 
                     <Route path="classement" element={<div>Classement</div>} />
                     <Route path="profil" element={<div>Profil</div>} />

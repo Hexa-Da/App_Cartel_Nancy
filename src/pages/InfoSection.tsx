@@ -449,9 +449,9 @@ const InfoSection: React.FC = () => {
   const handleItemClick = (item: { text: string }) => {
     if (sectionName === 'legal') {
       if (item.text === 'Politique de Confidentialité') {
-        window.open('/privacy-policy.html', '_blank');
+        navigate('/privacy-policy?from=legal');
       } else if (item.text === 'Conditions Générales d\'Utilisation') {
-        window.open('/terms-of-service.html', '_blank');
+        navigate('/terms-of-service?from=legal');
       }
       return;
     }
