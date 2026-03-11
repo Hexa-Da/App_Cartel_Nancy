@@ -9,7 +9,7 @@
   align-items: center; /* Centre horizontalement pour cette page */
   justify-content: var(--page-justify-content);
   padding: var(--page-padding);
-  background-color: var(--bg-color);
+  background-color: transparent;
   color: var(--text-color);
   box-sizing: border-box;
 }

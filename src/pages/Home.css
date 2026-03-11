@@ -9,7 +9,7 @@
   align-items: var(--page-align-items);
   justify-content: var(--page-justify-content);
   padding: var(--page-padding);
-  background-color: var(--bg-color);
+  background-color: transparent;
   color: var(--text-color);
   box-sizing: border-box;
 }
@@ -107,10 +107,13 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Light theme - fond clair adapté */
+/* Light theme - glassmorphism clair, laisse transparaître le fond imagé */
 [data-theme="light"] .event-item {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: var(--bg-card, rgba(255, 255, 255, 0.78));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .home-event-item {

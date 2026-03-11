@@ -9,12 +9,11 @@
   /* ============================================
      TYPOGRAPHIE & FONDATIONS
      ============================================ */
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Baloo 2', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -221,35 +220,36 @@
    THÈME CLAIR (Explicite)
    ============================================ */
 [data-theme="light"] {
-  /* Backgrounds */
+  /* Backgrounds – opaque pour header/nav, transparent pour le contenu via --bg-card */
   --bg-color: #ffffff;
-  --bg-secondary: #f5f5f5;
+  --bg-secondary: #f0f0f0;
+  --bg-card: rgba(255, 255, 255, 0.78);
   
-  /* Text */
-  --text-color: #181818;
-  --text-color-light: #7f8c8d;
+  /* Text – renforcé pour lisibilité sur fond imagé */
+  --text-color: #111111;
+  --text-color-light: #555555;
   
   /* Borders */
-  --border-color: #e0e0e0;
+  --border-color: rgba(0, 0, 0, 0.12);
   
   /* Couleurs sémantiques (conservées) */
-  --primary-color: #646cff;
-  --success-color: #2ecc71;
-  --warning-color: #f39c12;
+  --primary-color: #4f52d4;
+  --success-color: #27ae60;
+  --warning-color: #e67e22;
   --danger-color: #e74c3c;
-  --accent-color: #4CAF50;
-  --party-color: #9C27B0;
+  --accent-color: #388E3C;
+  --party-color: #7B1FA2;
   
-  /* Shadows */
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  /* Shadows – plus marquées pour contraster sur fond clair imagé */
+  --shadow-color: rgba(0, 0, 0, 0.18);
   
   /* Filters */
   --calendar-filter: invert(1);
   --checkbox-filter: invert(1);
   
   /* États */
-  --bg-hover: #f0f0f0;
-  --bg-disabled: #e0e0e0;
+  --bg-hover: rgba(0, 0, 0, 0.06);
+  --bg-disabled: rgba(0, 0, 0, 0.10);
 }
 
 /* ============================================

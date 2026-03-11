@@ -32,8 +32,8 @@
   /* ✅ Pas de marge latérale */
   margin: 0;
   position: relative;
-  /* ✅ Fond explicite : Élimine les bandes noires latérales */
-  background-color: var(--bg-color);
+  /* ✅ Fond transparent : laisse apparaître le background global */
+  background-color: transparent;
   /* ✅ Overflow géré par les pages individuelles */
   overflow: hidden;
   /* NOTE: Chaque page gère son propre scroll et positionnement */

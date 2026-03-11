@@ -11,9 +11,8 @@
   box-sizing: border-box;
 }
 
-/* Styles de base utilisant les variables */
 body {
-  background-color: var(--bg-color);
+  background-color: transparent;
   color: var(--text-primary);
 }
 
