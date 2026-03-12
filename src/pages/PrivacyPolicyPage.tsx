@@ -94,30 +94,19 @@ const PrivacyPolicyPage: React.FC = () => {
           <br />
           <strong>Usage :</strong> Garantir l&apos;unicité de l&apos;activation du bracelet (un bracelet = un appareil)
           <br />
-          <strong>Stockage :</strong> Local sur votre appareil + Firebase (associé à votre numéro de bracelet)
+          <strong>Stockage :</strong> Local sur votre appareil + Firebase
           <br />
           <strong>Partage :</strong> Non (utilisé uniquement pour la validation interne)
         </div>
 
         <h4>Numéro de Bracelet Participant</h4>
         <div className="legal-doc-data-type">
-          <strong>Collecte :</strong> Oui (dans la section &quot;Faites vos paris&quot;)
+          <strong>Collecte :</strong> Oui (via la validation de la charte HSE)
           <br />
           <strong>Usage :</strong> Identification du participant, accès aux fonctionnalités de l&apos;événement, paris
           sur les matchs
           <br />
           <strong>Stockage :</strong> Local sur votre appareil + Firebase
-          <br />
-          <strong>Partage :</strong> Non
-        </div>
-
-        <h4>Données d&apos;Activation</h4>
-        <div className="legal-doc-data-type">
-          <strong>Collecte :</strong> Oui (horodatage de l&apos;activation)
-          <br />
-          <strong>Usage :</strong> Traçabilité de l&apos;activation du bracelet
-          <br />
-          <strong>Stockage :</strong> Firebase (champ activatedAt)
           <br />
           <strong>Partage :</strong> Non
         </div>
@@ -142,20 +131,11 @@ const PrivacyPolicyPage: React.FC = () => {
             <strong>Valider votre identité</strong> en tant que participant à l&apos;événement Cartel Nancy
           </li>
           <li>
-            <strong>Garantir l&apos;unicité</strong> de l&apos;utilisation de votre bracelet (un bracelet par appareil)
-          </li>
-          <li>
             <strong>Vous contacter</strong> concernant les signalements VSS ou les fonctionnalités d&apos;administration
-          </li>
-          <li>
-            <strong>Gérer vos demandes</strong> et signalements
           </li>
           <li>
             <strong>Améliorer notre Service</strong> grâce à l&apos;analyse des données d&apos;utilisation
             anonymisées
-          </li>
-          <li>
-            <strong>Prévenir les abus</strong> via le système anti-spam des signalements VSS
           </li>
         </ul>
 
@@ -304,13 +284,6 @@ const PrivacyPolicyPage: React.FC = () => {
           Notre Service peut contenir des liens vers d&apos;autres sites web. Nous n&apos;avons aucun contrôle sur et
           n&apos;assumons aucune responsabilité quant au contenu, aux politiques de confidentialité ou aux pratiques de
           tout site tiers.
-        </p>
-
-        <h2>Modifications de cette Politique de Confidentialité</h2>
-        <p>
-          Nous pouvons mettre à jour notre Politique de Confidentialité de temps à autre. Nous vous informerons de tout
-          changement en publiant la nouvelle Politique de Confidentialité sur cette page et en mettant à jour la date de
-          &quot;Dernière mise à jour&quot;.
         </p>
 
         <h2>Conformité Réglementaire</h2>

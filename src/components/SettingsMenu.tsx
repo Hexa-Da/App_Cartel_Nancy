@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import './SettingsMenu.css';
 import NotificationService from '../services/NotificationService';
 import { useApp } from '../AppContext';
+import DiagnosticPanel from './DiagnosticPanel';
 
 interface SettingsMenuProps {
   isOpen: boolean;
@@ -72,7 +73,7 @@ const hotelOptions = [
 
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
-  const { getAllDelegations, hasGenderMatches } = useApp();
+  const { getAllDelegations, hasGenderMatches, isAdmin } = useApp();
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const stored = localStorage.getItem('theme');
@@ -125,6 +126,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   const [preferredHotel, setPreferredHotel] = React.useState(() => getInitial('preferredHotel', 'none'));
   // Afficher les restaurants
   const [showRestaurants, setShowRestaurants] = React.useState(() => getInitial('showRestaurants', true));
+
+  const [isDiagnosticOpen, setIsDiagnosticOpen] = React.useState(false);
 
   const notificationService = NotificationService.getInstance();
 
@@ -503,8 +506,24 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
               <span className="slider round"></span>
             </label>
           </div>
+          {isAdmin && (
+            <div className="settings-item">
+              <button
+                className="settings-diagnostic-button"
+                onClick={() => setIsDiagnosticOpen(true)}
+              >
+                Lancer le diagnostic
+              </button>
+            </div>
+          )}
         </div>
       </div>
+      {isAdmin && (
+        <DiagnosticPanel
+          isOpen={isDiagnosticOpen}
+          onClose={() => setIsDiagnosticOpen(false)}
+        />
+      )}
     </div>
   );
 };

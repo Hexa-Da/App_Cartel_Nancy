@@ -1,41 +1,31 @@
-/**
- * @fileoverview Composant Loader pour l'écran de chargement initial
- * 
- * Ce composant remplace le div#loader dans index.html :
- * - Affiche un écran de chargement pendant l'initialisation
- * - Se masque automatiquement une fois l'app chargée
- * - Style cohérent avec le thème de l'application
- * 
- * Nécessaire car :
- * - Évite le flash de contenu non stylé
- * - Améliore l'expérience utilisateur
- * - Centralise la logique de chargement dans React
- */
-
 import React, { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
 import './Loader.css';
+
+const SPLASH_FADE_DURATION = 350;
+const LOADER_FADE_DURATION = 400;
 
 const Loader: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const [isHiding, setIsHiding] = useState(false);
 
   useEffect(() => {
-    // Masquer le loader une fois que React est monté
-    // Petit délai pour s'assurer que tout est bien rendu
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
+    const hide = async () => {
+      if (Capacitor.isNativePlatform()) {
+        await SplashScreen.hide({ fadeOutDuration: SPLASH_FADE_DURATION });
+        await new Promise(r => setTimeout(r, 50));
+      }
+      setIsHiding(true);
+      setTimeout(() => setIsVisible(false), LOADER_FADE_DURATION);
     };
+
+    hide();
   }, []);
 
-  if (!isVisible) {
-    return null;
-  }
+  if (!isVisible) return null;
 
-  return <div className="loader" />;
+  return <div className={`loader${isHiding ? ' loader--hiding' : ''}`} />;
 };
 
 export default Loader;
-

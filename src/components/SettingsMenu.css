@@ -253,3 +253,16 @@ input:checked + .slider:before {
   outline: 2px solid var(--primary-color, #2196f3);
   outline-offset: 2px;
 }
+
+.settings-diagnostic-button {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  width: 100%;
+}

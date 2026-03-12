@@ -61,44 +61,37 @@ const TermsOfServicePage: React.FC = () => {
           <li>Formulaire de signalement VSS</li>
           <li>Informations sur les transports en commun</li>
           <li>Système de paris sur les matchs (pour les participants)</li>
-          <li>Chat en temps réel</li>
+          <li>Chat en temps réel (pour les administrateurs)</li>
         </ul>
 
-        <h2>Article 4 - Charte HSE</h2>
-        <h3>4.1 - Obligation de lecture</h3>
-        <p>Au premier lancement de l&apos;application, tout utilisateur doit :</p>
+        <h2>Article 4 - Charte HSE et Activation du Bracelet</h2>
+        <h3>4.1 - Lecture et validation obligatoires</h3>
+        <p>
+          Lors du premier accès à l’application, l’utilisateur doit impérativement&nbsp;:
+        </p>
         <ul className="legal-doc-list">
           <li>Lire intégralement la Charte HSE (Hygiène, Sécurité, Environnement)</li>
-          <li>Cocher la case d&apos;acceptation des engagements</li>
+          <li>Accepter les engagements en cochant la case prévue à cet effet</li>
+          <li>Activer son numéro de bracelet</li>
         </ul>
 
-        <h3>4.2 - Engagement</h3>
+        <h3>4.2 - Rôle de l’activation du bracelet</h3>
         <p>
-          En acceptant la charte HSE, l&apos;utilisateur s&apos;engage à respecter les règles d&apos;hygiène, de
-          sécurité et d&apos;environnement définies pour l&apos;événement.
+          L’activation du numéro de bracelet par la validation de la Charte HSE est indispensable&nbsp;: elle conditionne l’accès à l’application elle-même et permet ensuite d’identifier l'auteur de chaque paris.
         </p>
 
-        <h2>Article 5 - Activation du Bracelet</h2>
-        <h3>5.1 - Section &quot;Faites vos paris&quot;</h3>
-        <p>
-          Pour accéder aux paris sur les matchs, l&apos;utilisateur doit activer son numéro de bracelet dans la section
-          dédiée &quot;Faites vos paris&quot;.
-        </p>
-
-        <h3>5.2 - Activation unique par appareil</h3>
+        <h3>4.3 - Caractère unique et irréversible</h3>
         <div className="legal-doc-important">
-          <strong>Important :</strong> Chaque numéro de bracelet ne peut être activé que sur un seul appareil. Une fois
-          activé, le bracelet ne peut pas être transféré sur un autre téléphone. Cette action est irréversible.
+          <strong>Important&nbsp;:</strong> Un numéro de bracelet ne peut être activé qu’une seule fois et sur un seul appareil. Après activation depuis la Charte HSE, il n’est plus possible de transférer le bracelet sur un autre téléphone ou de revenir en arrière.
         </div>
 
-        <h3>5.3 - Validation du bracelet</h3>
+        <h3>4.4 - Vérification du numéro</h3>
         <p>
-          Le numéro de bracelet est validé contre la base de données des participants. Un bracelet invalide ou déjà
-          utilisé sur un autre appareil sera refusé.
+          L’activation est vérifiée auprès de la base des participants. Un numéro de bracelet invalide ou déjà activé sur un autre appareil sera automatiquement refusé.
         </p>
 
-        <h2>Article 6 - Conditions d&apos;Accès</h2>
-        <h3>6.1 - Accès de base</h3>
+        <h2>Article 5 - Conditions d&apos;Accès</h2>
+        <h3>5.1 - Accès de base</h3>
         <p>L&apos;accès aux fonctionnalités de base (carte, calendrier, informations) nécessite :</p>
         <ul className="legal-doc-list">
           <li>L&apos;acceptation de la charte HSE</li>
@@ -106,14 +99,14 @@ const TermsOfServicePage: React.FC = () => {
           <li>L&apos;autorisation de géolocalisation (optionnelle)</li>
         </ul>
 
-        <h3>6.2 - Accès aux paris</h3>
+        <h3>5.2 - Accès aux paris</h3>
         <p>L&apos;accès au système de paris nécessite en plus :</p>
         <ul className="legal-doc-list">
           <li>Un numéro de bracelet participant valide</li>
           <li>L&apos;activation du bracelet sur l&apos;appareil</li>
         </ul>
 
-        <h3>6.3 - Accès Administrateur</h3>
+        <h3>5.3 - Accès Administrateur</h3>
         <p>
           Certaines fonctionnalités sont réservées aux administrateurs autorisés. L&apos;accès à ces fonctionnalités est
           soumis à :
@@ -124,8 +117,8 @@ const TermsOfServicePage: React.FC = () => {
           <li>Le respect des procédures de sécurité</li>
         </ul>
 
-        <h2>Article 7 - Utilisation de l&apos;Application</h2>
-        <h3>7.1 - Utilisation Conforme</h3>
+        <h2>Article 6 - Utilisation de l&apos;Application</h2>
+      
         <p>
           L&apos;utilisateur s&apos;engage à utiliser l&apos;application de manière conforme à sa destination et aux
           présentes conditions. Il est notamment interdit de :
@@ -140,19 +133,8 @@ const TermsOfServicePage: React.FC = () => {
           <li>Tenter de contourner le système d&apos;activation unique par appareil</li>
         </ul>
 
-        <h3>7.2 - Géolocalisation</h3>
-        <p>
-          L&apos;utilisation de la géolocalisation est optionnelle et nécessite le consentement explicite de
-          l&apos;utilisateur. Cette donnée est :
-        </p>
-        <ul className="legal-doc-list">
-          <li>Stockée localement sur l&apos;appareil</li>
-          <li>Non transmise à des tiers</li>
-          <li>Utilisée uniquement pour l&apos;affichage de la position sur la carte</li>
-        </ul>
-
-        <h2>Article 8 - Signalements VSS</h2>
-        <h3>8.1 - Utilisation du Formulaire</h3>
+        <h2>Article 7 - Signalements VSS</h2>
+        <h3>7.1 - Utilisation du Formulaire</h3>
         <p>
           Le formulaire de signalement VSS permet aux utilisateurs de transmettre des signalements aux autorités
           compétentes. L&apos;utilisation de ce service implique :
@@ -165,13 +147,12 @@ const TermsOfServicePage: React.FC = () => {
           <li>La certification de l&apos;exactitude des informations fournies</li>
         </ul>
 
-        <h3>8.2 - Système Anti-Abus</h3>
+        <h3>7.2 - Système Anti-Abus</h3>
         <p>
           Pour protéger l&apos;intégrité du système de signalement, des mesures anti-abus sont en place :
         </p>
         <ul className="legal-doc-list">
           <li>Limitation du nombre de signalements par heure</li>
-          <li>Détection automatique des contenus suspects</li>
           <li>Blocage temporaire en cas de violations répétées</li>
           <li>Alertes aux administrateurs en cas de tentative d&apos;abus</li>
         </ul>
@@ -181,33 +162,29 @@ const TermsOfServicePage: React.FC = () => {
           temporaire ou permanent de l&apos;accès au formulaire, et potentiellement des poursuites judiciaires.
         </div>
 
-        <h3>8.3 - Responsabilité</h3>
+        <h3>7.3 - Responsabilité</h3>
         <p>
           L&apos;éditeur ne peut être tenu responsable de l&apos;utilisation ou du traitement des signalements VSS
           transmis via l&apos;application. Ces signalements sont directement transmis aux autorités compétentes.
         </p>
 
-        <h2>Article 9 - Propriété Intellectuelle</h2>
-        <h3>9.1 - Contenu de l&apos;Application</h3>
+        <h2>Article 8 - Propriété Intellectuelle</h2>
+        <h3>8.1 - Contenu de l&apos;Application</h3>
         <p>
           L&apos;ensemble du contenu de l&apos;application (textes, images, logos, design, structure) est protégé par
           le droit d&apos;auteur et appartient à Cartel Nancy ou à ses partenaires.
         </p>
 
-        <h3>9.2 - Utilisation Autorisée</h3>
+        <h3>8.2 - Utilisation Autorisée</h3>
         <p>
           L&apos;utilisateur peut consulter et utiliser le contenu uniquement dans le cadre de l&apos;utilisation
           normale de l&apos;application. Toute reproduction, distribution ou modification est interdite sans
           autorisation préalable.
         </p>
 
-        <h2>Article 10 - Données Personnelles</h2>
+        <h2>Article 9 - Données Personnelles</h2>
         <p>
-          Le traitement des données personnelles est régi par notre{' '}
-          <a href="/privacy-policy.html" className="legal-doc-link">
-            Politique de Confidentialité
-          </a>
-          . L&apos;utilisateur dispose des droits suivants :
+          Le traitement des données personnelles est régi par notre Politique de Confidentialité. L&apos;utilisateur dispose des droits suivants :
         </p>
         <ul className="legal-doc-list">
           <li>Droit d&apos;accès à ses données</li>
@@ -217,8 +194,8 @@ const TermsOfServicePage: React.FC = () => {
           <li>Droit d&apos;opposition</li>
         </ul>
 
-        <h2>Article 11 - Responsabilité</h2>
-        <h3>11.1 - Limitation de Responsabilité</h3>
+        <h2>Article 10 - Responsabilité</h2>
+        <h3>10.1 - Limitation de Responsabilité</h3>
         <p>L&apos;éditeur s&apos;efforce de fournir des informations exactes et à jour, mais ne peut garantir :</p>
         <ul className="legal-doc-list">
           <li>L&apos;exactitude complète des informations affichées</li>
@@ -226,7 +203,7 @@ const TermsOfServicePage: React.FC = () => {
           <li>L&apos;absence d&apos;erreurs ou d&apos;interruptions</li>
         </ul>
 
-        <h3>11.2 - Exclusion de Garanties</h3>
+        <h3>10.2 - Exclusion de Garanties</h3>
         <p>
           L&apos;application est fournie &quot;en l&apos;état&quot; sans garantie d&apos;aucune sorte. L&apos;éditeur
           décline toute responsabilité concernant :
@@ -237,7 +214,7 @@ const TermsOfServicePage: React.FC = () => {
           <li>L&apos;interruption d&apos;activité</li>
         </ul>
 
-        <h2>Article 12 - Disponibilité du Service</h2>
+        <h2>Article 11 - Disponibilité du Service</h2>
         <p>
           L&apos;éditeur s&apos;efforce de maintenir l&apos;application accessible 24h/24, 7j/7, mais se réserve le
           droit de :
@@ -248,7 +225,7 @@ const TermsOfServicePage: React.FC = () => {
           <li>Suspendre l&apos;accès en cas de non-respect des conditions</li>
         </ul>
 
-        <h2>Article 13 - Sanctions</h2>
+        <h2>Article 12 - Sanctions</h2>
         <p>En cas de non-respect des présentes conditions, l&apos;éditeur se réserve le droit de :</p>
         <ul className="legal-doc-list">
           <li>Bloquer temporairement l&apos;accès à certaines fonctionnalités</li>
@@ -256,46 +233,46 @@ const TermsOfServicePage: React.FC = () => {
           <li>Signaler les comportements illégaux aux autorités compétentes</li>
         </ul>
 
-        <h2>Article 14 - Modifications des Conditions</h2>
+        <h2>Article 13 - Modifications des Conditions</h2>
         <p>
           L&apos;éditeur se réserve le droit de modifier les présentes conditions à tout moment. Les modifications
           entrent en vigueur dès leur publication dans l&apos;application. L&apos;utilisation continue de
           l&apos;application après modification vaut acceptation des nouvelles conditions.
         </p>
 
-        <h2>Article 15 - Durée et Résiliation</h2>
-        <h3>15.1 - Durée</h3>
+        <h2>Article 14 - Durée et Résiliation</h2>
+        <h3>14.1 - Durée</h3>
         <p>
           Les présentes conditions s&apos;appliquent pendant toute la durée d&apos;utilisation de l&apos;application et
           de l&apos;événement Cartel Nancy 2026.
         </p>
 
-        <h3>15.2 - Résiliation</h3>
+        <h3>14.2 - Résiliation</h3>
         <p>
           L&apos;utilisateur peut cesser d&apos;utiliser l&apos;application à tout moment. L&apos;éditeur peut suspendre
           ou résilier l&apos;accès en cas de violation des conditions.
         </p>
 
-        <h2>Article 16 - Droit Applicable et Juridiction</h2>
+        <h2>Article 15 - Droit Applicable et Juridiction</h2>
         <p>
           Les présentes conditions sont régies par le droit français. En cas de litige, les tribunaux français seront
           seuls compétents.
         </p>
 
-          <h2>Article 17 - Dispositions Générales</h2>
-        <h3>17.1 - Nullité Partielle</h3>
+          <h2>Article 16 - Dispositions Générales</h2>
+        <h3>16.1 - Nullité Partielle</h3>
         <p>
           Si une disposition des présentes conditions est déclarée nulle ou inapplicable, les autres dispositions restent
           en vigueur.
         </p>
 
-        <h3>17.2 - Non-Renonciation</h3>
+        <h3>16.2 - Non-Renonciation</h3>
         <p>
           Le fait pour l&apos;éditeur de ne pas se prévaloir d&apos;une violation des conditions ne constitue pas une
           renonciation à ses droits.
         </p>
 
-        <h3>17.3 - Force Majeure</h3>
+        <h3>16.3 - Force Majeure</h3>
         <p>
           L&apos;éditeur ne peut être tenu responsable en cas de force majeure ou d&apos;événements indépendants de sa
           volonté.
