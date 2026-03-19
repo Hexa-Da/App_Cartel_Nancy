@@ -1,5 +1,4 @@
 .planning-files {
-  /* Largeur héritée du conteneur parent (même largeur que les filtres) */
   width: 100%;
   margin: 0;
   text-align: center;
@@ -19,7 +18,7 @@
 }
 
 .filters {
-  margin-bottom: 20px;
+  margin-bottom: 200px;
   display: flex;
   justify-content: center;
 }
@@ -43,23 +42,15 @@
 }
 
 .admin-controls {
-  margin: 20px 0;
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.planning-container.is-editing .admin-controls {
-  margin-top: var(--spacing-xxs);
-  margin-bottom: var(--spacing-md);
 }
 
 .add-file-button {
+  margin-top: var(--spacing-md);
   background: var(--accent-color);
   padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--radius-md);
   color: white;
   border: none;
   border-radius: 4px;
@@ -123,14 +114,8 @@
   cursor: pointer;
   font-size: 16px;
   transition: all 0.2s;
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
   min-height: 44px;
   min-width: 44px;
-}
-
-.submit-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .files-list {
@@ -156,12 +141,6 @@
   font-size: 14px;
 }
 
-.file-preview {
-  position: relative;
-  padding-top: 56.25%;
-  background-color: var(--bg-color);
-}
-
 .planning-image {
   position: absolute;
   top: 0;
@@ -171,10 +150,6 @@
   object-fit: cover;
   cursor: pointer;
   transition: transform 0.2s;
-}
-
-.planning-image:hover {
-  transform: scale(1.02);
 }
 
 .file-actions {
@@ -194,10 +169,6 @@
   color: var(--text-primary);
 }
 
-.icon-button:hover {
-  background-color: var(--bg-hover);
-}
-
 .view-button {
   color: var(--accent-color);
 }
@@ -206,7 +177,6 @@
   color: var(--error-color);
 }
 
-/* Modal styles */
 .image-modal {
   position: fixed;
   top: 0;
@@ -221,7 +191,6 @@
   z-index: var(--z-header);
 }
 
-/* Modal overlay pour ajouter un fichier */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -236,8 +205,6 @@
   z-index: var(--z-modal);
 }
 
-
-
 .modal-content {
   position: relative;
   background: var(--bg-color);
@@ -251,7 +218,6 @@
   display: flex;
   flex-direction: column;
 }
-
 
 .modal-content img {
   max-width: 100%;
@@ -278,11 +244,6 @@
   transition: all 0.2s;
 }
 
-.close-button:hover {
-  background-color: rgba(0, 0, 0, 0.7);
-  transform: scale(1.1);
-}
-
 .file-input {
   display: block;
   width: 100%;
@@ -293,11 +254,6 @@
   cursor: pointer;
   transition: all 0.3s;
   color: var(--text-primary);
-}
-
-.file-input:hover {
-  border-color: var(--accent-color);
-  background-color: var(--bg-hover);
 }
 
 .file-input-help {
@@ -345,7 +301,6 @@
   border: none !important;
 }
 
-/* Modal header */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -484,7 +439,7 @@
   width: 100%;
   min-width: 0;
   align-items: stretch;
-  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 145px);
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 160px);
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -492,19 +447,19 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
-  padding-bottom: var(--spacing-md);
+  margin-top: var(--spacing-md);
 }
 
 .planning-container.has-two-filters .files-list {
-  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 225px);
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 240px);
 }
 
 .planning-container.is-editing .files-list {
-  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 231px);
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 234px);
 }
 
 .planning-container.is-editing.has-two-filters .files-list {
-  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 311px);
+  max-height: calc(100vh - var(--header-height) - var(--nav-height) - 314px);
 }
 
 /* File item - override existing styles */
