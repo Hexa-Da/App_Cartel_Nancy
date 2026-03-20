@@ -117,7 +117,7 @@ const PlanningFilesPage: React.FC = () => {
 
   // Options pour les types d'événements
   const eventTypeOptions = [
-    { value: 'all', label: 'Tous les événements' },
+    { value: 'all', label: 'Tous les fichiers' },
     { value: 'sports', label: 'Sports' },
     { value: 'party', label: 'Soirées/Défilé' },
     { value: 'restaurants', label: 'Restaurants' },
@@ -157,6 +157,7 @@ const PlanningFilesPage: React.FC = () => {
             label: `${hotel.name}`
           }))
         ];
+      // Le 2e filtre est masqué en HSE, mais on le garde pour cohérence.
       case 'hse':
         return [
           { value: 'all', label: 'Tous les fichiers HSE' },
@@ -183,11 +184,11 @@ const PlanningFilesPage: React.FC = () => {
       const filtersElement = document.getElementById('filters-container');
       if (filtersElement) {
         const height = filtersElement.offsetHeight;
-        const isSingleLine = eventType === 'all';
         // Sur iOS, ajouter moins d'espace pour redescendre les filtres
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const extraSpace = isIOS ? 8 : (isSingleLine ? 4 : 8);
+        // La page n'affiche qu'une seule ligne de filtre.
+        const extraSpace = isIOS ? 8 : 4;
         const newHeight = height + extraSpace;
         setFiltersHeight(newHeight);
         
@@ -220,7 +221,7 @@ const PlanningFilesPage: React.FC = () => {
         clearTimeout(timer5);
       };
     }
-  }, [eventType, specificEvent, isPageLoading]);
+  }, [eventType, isPageLoading]);
 
   // Effet spécifique pour forcer le recalcul sur iOS avec MutationObserver
   useEffect(() => {
@@ -287,7 +288,7 @@ const PlanningFilesPage: React.FC = () => {
         window.removeEventListener('scroll', forceRecalculate);
       };
     }
-  }, [eventType, specificEvent, isPageLoading]);
+  }, [eventType, isPageLoading]);
 
   // Barre de chargement d'upload globale
   const uploadBar = uploading ? (
@@ -377,11 +378,11 @@ const PlanningFilesPage: React.FC = () => {
       {/* Système de filtres en cascade - Utilise les classes CSS */}
       <div 
         id="filters-container" 
-        className={`filters-container ${eventType !== 'all' ? 'has-two-filters' : ''}`}
+        className="filters-container"
       >
           <div className="filter-group">
             <label className="filter-label">
-              Type d'événement :
+              Type de fichier :
             </label>
             <select
               className="filter-select"
@@ -396,15 +397,19 @@ const PlanningFilesPage: React.FC = () => {
             </select>
           </div>
 
-          {eventType !== 'all' && (
+          {/* 2e ligne masquée uniquement pour HSE et "tous" */}
+          {eventType !== 'all' && eventType !== 'hse' && (
             <div className="filter-group">
               <label className="filter-label">
-                {eventType === 'sports' ? 'Sport :' :
-                 eventType === 'party' ? 'Soirée :' :
-                 eventType === 'restaurants' ? 'Restaurant :' :
-                 eventType === 'bus' ? 'Transport :' :
-                 eventType === 'hotel' ? 'Hôtel :' :
-                 eventType === 'hse' ? 'HSE :' : 'Spécifique :'}
+                {eventType === 'sports'
+                  ? 'Sport :'
+                  : eventType === 'party'
+                    ? 'Soirée :'
+                    : eventType === 'restaurants'
+                      ? 'Restaurant :'
+                      : eventType === 'hotel'
+                        ? 'Hôtel :'
+                        : 'Spécifique :'}
               </label>
               <select
                 className="filter-select"
@@ -426,7 +431,7 @@ const PlanningFilesPage: React.FC = () => {
 
       {/* Composant PlanningFiles avec filtre */}
       <div 
-        className={`planning-container ${isAdmin && isEditing ? 'is-editing' : ''} ${eventType !== 'all' ? 'has-two-filters' : ''}`}
+        className={`planning-container ${isAdmin && isEditing ? 'is-editing' : ''}`}
         style={{ 
           opacity: isPageLoading ? 0 : 1,
           pointerEvents: isPageLoading ? 'none' : 'auto',
@@ -435,7 +440,15 @@ const PlanningFilesPage: React.FC = () => {
       >
         <PlanningFiles 
           isAdmin={isAdmin && isEditing} 
-          filter={eventType === 'all' ? 'all' : specificEvent === 'all' ? eventType : specificEvent}
+          filter={
+            eventType === 'all'
+              ? 'all'
+              : eventType === 'hse'
+                ? 'hse'
+                : specificEvent === 'all'
+                  ? eventType
+                  : specificEvent
+          }
           showFilterSelector={false}
           uploading={uploading}
           setUploading={handleSetUploading}

@@ -105,20 +105,6 @@
   font-weight: 600;
 }
 
-/* Emergency list */
-.emergency-list {
-  margin-top: 0.5rem !important;
-  padding-left: 0.5rem !important;
-}
-
-.emergency-list li {
-  margin-bottom: 0.25rem !important;
-}
-
-.emergency-list li strong {
-  color: var(--danger-color) !important;
-}
-
 /* Final section */
 .hse-final {
   background-color: var(--bg-secondary);
@@ -150,27 +136,17 @@
   font-size: 1rem;
   text-align: center;
   background-color: var(--primary-color);
-  color: var(--text-color);
+  color: white;
   box-sizing: border-box;
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s;
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
   min-height: 44px;
-}
-
-.bracelet-open-button:hover {
-  border-color: var(--primary-color);
-  background-color: var(--bg-color);
-}
-
-.bracelet-open-button:active {
-  transform: translateY(1px);
 }
 
 .bracelet-info {
   margin: 0 0 0.75rem;
   font-size: 0.85rem;
-  color: var(--text-color-light);
+  color: var(--text-color);
   font-style: italic;
 }
 
@@ -197,16 +173,11 @@
   transition: background-color 0.2s ease;
   background-color: #95a5a6;
   color: white;
-  /* ✅ Hit Area tactile: minimum 44px (Apple HIG) */
   min-height: 44px;
 }
 
 .hse-accept-button.active {
   background-color: var(--success-color);
-}
-
-.hse-accept-button.active:hover {
-  background-color: var(--success-hover);
 }
 
 .hse-accept-button:disabled {
@@ -253,4 +224,33 @@
   line-height: 1.5;
   cursor: pointer;
   font-weight: 500;
+}
+
+/* Sanctions table */
+.hse-sanctions-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-sm);
+}
+
+.hse-sanctions-table th,
+.hse-sanctions-table td {
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-sm);
+  vertical-align: top;
+  font-size: 0.85rem;
+}
+
+.hse-sanctions-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-color);
+  font-weight: 600;
+  text-align: left;
+}
+
+.hse-sanctions-note {
+  margin: var(--spacing-sm) 0 0;
+  color: var(--text-color-light);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }

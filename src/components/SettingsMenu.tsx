@@ -73,7 +73,7 @@ const hotelOptions = [
 
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
-  const { getAllDelegations, hasGenderMatches, isAdmin } = useApp();
+  const { getAllDelegations, hasGenderMatches, isAdmin, isLoadingVenues } = useApp();
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const stored = localStorage.getItem('theme');
@@ -344,6 +344,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
 
   // Valider que le championnat sélectionné est toujours valide pour le sport sélectionné
   useEffect(() => {
+    // Tant que les venues (et donc `hasGenderMatches`) ne sont pas prêtes,
+    // on évite de réinitialiser le championnat vers `none` par manque d'infos.
+    if (isLoadingVenues) return;
+
     const currentSport = favoriteSports[0];
     const currentChampionship = preferredChampionship[0] || 'none';
     
@@ -371,7 +375,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [favoriteSports, hasGenderMatches]);
+  }, [favoriteSports, hasGenderMatches, isLoadingVenues]);
 
   if (!isOpen) return null;
 

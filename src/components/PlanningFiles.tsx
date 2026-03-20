@@ -762,8 +762,14 @@ export default function PlanningFiles({
                     id="fileCategory"
                     value={fileCategory}
                     onChange={(e) => {
-                      setFileCategory(e.target.value);
+                      const nextCategory = e.target.value;
+                      setFileCategory(nextCategory);
                       setSpecificItem(''); // Réinitialiser l'élément spécifique quand la catégorie change
+                      setNewFile((prev) => ({
+                        ...prev,
+                        // HSE n'a pas de sous-catégorie : l'eventType suffit.
+                        eventType: nextCategory === 'hse' ? 'HSE' : ''
+                      }));
                     }}
                     required
                     className="modal-select"
@@ -777,14 +783,13 @@ export default function PlanningFiles({
                   </select>
                 </div>
 
-                {fileCategory && (
+                {fileCategory && fileCategory !== 'hse' && (
                   <div className="form-group">
                     <label htmlFor="specificItem">
                       {fileCategory === 'sports' ? 'Sport :' :
                        fileCategory === 'hotel' ? 'Hôtel :' :
                        fileCategory === 'restaurant' ? 'Restaurant :' :
-                       fileCategory === 'party' ? 'Soirée/Défilé :' :
-                       fileCategory === 'hse' ? 'Type HSE :' : 'Élément :'}
+                       fileCategory === 'party' ? 'Soirée/Défilé :' : 'Élément :'}
                     </label>
                     <select
                       id="specificItem"
@@ -793,15 +798,13 @@ export default function PlanningFiles({
                         setSpecificItem(e.target.value);
                         // Mettre à jour eventType selon la sélection
                         if (fileCategory === 'sports') {
-                          setNewFile({ ...newFile, eventType: e.target.value });
+                          setNewFile((prev) => ({ ...prev, eventType: e.target.value }));
                         } else if (fileCategory === 'hotel') {
-                          setNewFile({ ...newFile, eventType: 'Hotel' });
+                          setNewFile((prev) => ({ ...prev, eventType: 'Hotel' }));
                         } else if (fileCategory === 'restaurant') {
-                          setNewFile({ ...newFile, eventType: 'Restaurant' });
+                          setNewFile((prev) => ({ ...prev, eventType: 'Restaurant' }));
                         } else if (fileCategory === 'party') {
-                          setNewFile({ ...newFile, eventType: 'party' });
-                        } else if (fileCategory === 'hse') {
-                          setNewFile({ ...newFile, eventType: 'HSE' });
+                          setNewFile((prev) => ({ ...prev, eventType: 'party' }));
                         }
                       }}
                       required
@@ -834,9 +837,6 @@ export default function PlanningFiles({
                           {party.name} {party.sport === 'Defile' ? '🎺' : party.sport === 'Pompom' ? '🎀' : party.sport === 'Party' && party.description?.includes('DJ Contest') ? '🎧' : party.sport === 'Party' && party.description?.includes('Showcase') ? '🎤' : '🎉'}
                         </option>
                       ))}
-                      {fileCategory === 'hse' && (
-                        <option value="HSE">HSE</option>
-                      )}
                     </select>
                   </div>
                 )}
