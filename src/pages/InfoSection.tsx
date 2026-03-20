@@ -2,8 +2,10 @@
  * @fileoverview Sections détaillées d'informations pratiques avec FAQ
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { onValue, ref, set } from 'firebase/database';
+import { database } from '../firebase';
 import { useEditing } from '../contexts/EditingContext';
 import { useApp } from '../AppContext';
 import { 
@@ -27,6 +29,79 @@ interface SectionFAQ {
   title: string;
   faqs: FAQItem[];
 }
+
+type FaqIconKey =
+  | 'coffee'
+  | 'breadSlice'
+  | 'utensils'
+  | 'calendarAlt'
+  | 'pizzaSlice'
+  | 'bullhorn'
+  | 'mapMarkerAlt'
+  | 'book'
+  | 'trophy'
+  | 'music'
+  | 'glassCheers'
+  | 'users'
+  | 'bus'
+  | 'questionCircle'
+  | 'wrench'
+  | 'clock'
+  | 'shieldAlt'
+  | 'exclamationTriangle';
+
+interface FaqEditableItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+interface FaqEditableSection {
+  id: string;
+  iconKey: FaqIconKey;
+  title: string;
+  faqs: FaqEditableItem[];
+}
+
+interface FaqEditableDocument {
+  title: string;
+  sections: FaqEditableSection[];
+  updatedAt?: string;
+}
+
+const FAQ_ICON_OPTIONS = [
+  { key: 'coffee', label: 'Café', icon: FaCoffee },
+  { key: 'breadSlice', label: 'Pain', icon: FaBreadSlice },
+  { key: 'utensils', label: 'Ustensiles', icon: FaUtensils },
+  { key: 'calendarAlt', label: 'Calendrier', icon: FaCalendarAlt },
+  { key: 'pizzaSlice', label: 'Pizza', icon: FaPizzaSlice },
+  { key: 'bullhorn', label: 'Haut-parleur', icon: FaBullhorn },
+  { key: 'mapMarkerAlt', label: 'Carte', icon: FaMapMarkerAlt },
+  { key: 'book', label: 'Livre', icon: FaBook },
+  { key: 'trophy', label: 'Trophée', icon: FaTrophy },
+  { key: 'music', label: 'Musique', icon: FaMusic },
+  { key: 'glassCheers', label: 'Cheers', icon: FaGlassCheers },
+  { key: 'users', label: 'Utilisateurs', icon: FaUsers },
+  { key: 'bus', label: 'Bus', icon: FaBus },
+  { key: 'questionCircle', label: 'Question', icon: FaQuestionCircle },
+  { key: 'wrench', label: 'Clé', icon: FaWrench },
+  { key: 'clock', label: 'Horloge', icon: FaClock },
+  { key: 'shieldAlt', label: 'Sécurité', icon: FaShieldAlt },
+  { key: 'exclamationTriangle', label: 'Attention', icon: FaExclamationTriangle },
+] as const;
+
+const iconComponentToKey = new Map<React.ElementType, FaqIconKey>(
+  FAQ_ICON_OPTIONS.map((opt) => [opt.icon, opt.key] as const)
+);
+
+const getIconKeyFromReactNode = (icon: React.ReactNode): FaqIconKey => {
+  if (React.isValidElement(icon)) {
+    const iconType = icon.type as React.ElementType;
+    const mappedKey = iconComponentToKey.get(iconType);
+    if (mappedKey) return mappedKey;
+  }
+  return 'questionCircle';
+};
 
 // FAQ Data
 const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
@@ -252,71 +327,310 @@ const faqData: { [key: string]: { title: string; sections: SectionFAQ[] } } = {
 };
 
 // Composant Accordéon Section (cliquable pour afficher les questions)
-const SectionAccordion: React.FC<{ section: SectionFAQ; isOpen: boolean; onToggle: () => void }> = ({ section, isOpen, onToggle }) => {
-  const [openQuestionIndex, setOpenQuestionIndex] = useState<number | null>(null);
-
-  // Fermer la question ouverte quand la section se ferme
-  useEffect(() => {
-    if (!isOpen) {
-      setOpenQuestionIndex(null);
-    }
-  }, [isOpen]);
-
+const SectionAccordion: React.FC<{
+  section: FaqEditableSection;
+  isOpen: boolean;
+  onToggle: () => void;
+  openQuestionId: string | null;
+  onToggleQuestion: (questionId: string) => void;
+}> = ({ section, isOpen, onToggle, openQuestionId, onToggleQuestion }) => {
   return (
     <div className={`faq-section ${isOpen ? 'open' : ''}`}>
       <div className="faq-section-header" onClick={onToggle}>
         <div className="faq-section-left">
-          <span className="faq-section-icon">{section.icon}</span>
+          <span className="faq-section-icon">{renderFaqSectionIcon(section.iconKey)}</span>
           <h2>{section.title}</h2>
         </div>
         <span className="faq-section-chevron">
           {isOpen ? <FaChevronUp /> : <FaChevronDown />}
         </span>
       </div>
-      
+
       {isOpen && (
         <div className="faq-list">
-          {section.faqs.map((faq, index) => (
-            <div key={index} className="faq-item">
-              <div 
-                className="faq-question"
-                onClick={() => setOpenQuestionIndex(openQuestionIndex === index ? null : index)}
-              >
-                <span>{faq.question}</span>
-                {openQuestionIndex === index ? <FaChevronUp /> : <FaChevronDown />}
+          {section.faqs.map((faq) => {
+            const isQuestionOpen = openQuestionId === faq.id;
+            return (
+              <div key={faq.id} className="faq-item">
+                <div className="faq-question" onClick={() => onToggleQuestion(faq.id)}>
+                  <span>{faq.question}</span>
+                  {isQuestionOpen ? <FaChevronUp /> : <FaChevronDown />}
+                </div>
+                {isQuestionOpen && <div className="faq-answer">{faq.answer}</div>}
               </div>
-              {openQuestionIndex === index && (
-                <div className="faq-answer">{faq.answer}</div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
   );
 };
 
-// Composant Page FAQ
-const FAQPage: React.FC<{ sectionKey: string }> = ({ sectionKey }) => {
-  const data = faqData[sectionKey];
-  const [openSectionIndex, setOpenSectionIndex] = useState<number | null>(null);
-  
-  if (!data) return null;
+// Composant Page FAQ (lecture + états contrôlés)
+const FAQView: React.FC<{ doc: FaqEditableDocument }> = ({ doc }) => {
+  const [openSectionId, setOpenSectionId] = useState<string | null>(null);
+  const [openQuestionId, setOpenQuestionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOpenSectionId(null);
+    setOpenQuestionId(null);
+  }, [doc.title, doc.sections]);
+
+  const handleToggleSection = (sectionId: string) => {
+    setOpenSectionId((prev) => (prev === sectionId ? null : sectionId));
+    setOpenQuestionId(null);
+  };
+
+  const handleToggleQuestion = (questionId: string) => {
+    setOpenQuestionId((prev) => (prev === questionId ? null : questionId));
+  };
 
   return (
     <div className="page-content scrollable info-section-page">
       <div className="info-section-header">
-        <h1>{data.title}</h1>
+        <h1>{doc.title}</h1>
       </div>
       <div className="faq-container">
-        {data.sections.map((section, index) => (
-          <SectionAccordion 
-            key={index} 
+        {doc.sections.map((section) => (
+          <SectionAccordion
+            key={section.id}
             section={section}
-            isOpen={openSectionIndex === index}
-            onToggle={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
+            isOpen={openSectionId === section.id}
+            onToggle={() => handleToggleSection(section.id)}
+            openQuestionId={openQuestionId}
+            onToggleQuestion={handleToggleQuestion}
           />
         ))}
+      </div>
+    </div>
+  );
+};
+
+const FAQAdminEditor: React.FC<{ sectionKey: string; doc: FaqEditableDocument }> = ({ sectionKey, doc }) => {
+  const [draftDoc, setDraftDoc] = useState<FaqEditableDocument>(() => doc);
+  const [isSaving, setIsSaving] = useState(false);
+  const dirtyRef = useRef(false);
+  const saveTimerRef = useRef<number | null>(null);
+  const autoSaveDebounceMs = 700;
+
+  useEffect(() => {
+    setDraftDoc(doc);
+    dirtyRef.current = false;
+    setIsSaving(false);
+  }, [doc]);
+
+  const createId = (prefix: string) => `${sectionKey}-${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+  const updateSection = (sectionId: string, updater: (section: FaqEditableSection) => FaqEditableSection) => {
+    dirtyRef.current = true;
+    setDraftDoc((prev) => ({
+      ...prev,
+      sections: prev.sections.map((s) => (s.id === sectionId ? updater(s) : s)),
+    }));
+  };
+
+  const updateFaq = (
+    sectionId: string,
+    faqId: string,
+    updater: (faq: FaqEditableItem) => FaqEditableItem
+  ) => {
+    updateSection(sectionId, (section) => ({
+      ...section,
+      faqs: section.faqs.map((faq) => (faq.id === faqId ? updater(faq) : faq)),
+    }));
+  };
+
+  const handleAddSection = () => {
+    dirtyRef.current = true;
+    setDraftDoc((prev) => ({
+      ...prev,
+      sections: [
+        ...prev.sections,
+        {
+          id: createId('section'),
+          iconKey: 'questionCircle',
+          title: 'Nouvelle section',
+          faqs: [
+            {
+              id: createId('q'),
+              question: 'Nouvelle question',
+              answer: '',
+            },
+          ],
+        },
+      ],
+    }));
+  };
+
+  const handleRemoveSection = (sectionId: string) => {
+    dirtyRef.current = true;
+    setDraftDoc((prev) => ({
+      ...prev,
+      sections: prev.sections.filter((s) => s.id !== sectionId),
+    }));
+  };
+
+  const handleAddQuestion = (sectionId: string) => {
+    updateSection(sectionId, (section) => ({
+      ...section,
+      faqs: [
+        ...section.faqs,
+        {
+          id: createId('q'),
+          question: 'Nouvelle question',
+          answer: '',
+        },
+      ],
+    }));
+  };
+
+  const handleRemoveQuestion = (sectionId: string, faqId: string) => {
+    updateSection(sectionId, (section) => ({
+      ...section,
+      faqs: section.faqs.filter((f) => f.id !== faqId),
+    }));
+  };
+
+  useEffect(() => {
+    if (!dirtyRef.current) return;
+    if (!draftDoc) return;
+    if (saveTimerRef.current) {
+      window.clearTimeout(saveTimerRef.current);
+    }
+
+    saveTimerRef.current = window.setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        const payload: FaqEditableDocument = {
+          ...draftDoc,
+          updatedAt: new Date().toISOString(),
+        };
+
+        await set(ref(database, `faqOverrides/${sectionKey}`), payload);
+        dirtyRef.current = false;
+      } catch (error) {
+        logger.error('[InfoSection] Erreur sauvegarde FAQ:', error);
+      } finally {
+        setIsSaving(false);
+      }
+    }, autoSaveDebounceMs);
+
+    return () => {
+      if (saveTimerRef.current) {
+        window.clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, [draftDoc, sectionKey]);
+
+  return (
+    <div className="page-content scrollable info-section-page">
+      <div className="info-section-header">
+        <h1>{draftDoc.title}</h1>
+      </div>
+
+      <div className="faq-admin-editor">
+        {draftDoc.sections.map((section) => (
+          <div key={section.id} className="faq-admin-section">
+            <div className="faq-admin-section-header">
+              <label className="faq-admin-field">
+                <span className="faq-admin-label">Icône</span>
+                <select
+                  className="faq-admin-select"
+                  value={section.iconKey}
+                  onChange={(e) => {
+                    const nextKey = e.target.value;
+                    if (!FAQ_ICON_KEY_SET.has(nextKey as FaqIconKey)) return;
+                    updateSection(section.id, (s) => ({ ...s, iconKey: nextKey as FaqIconKey }));
+                  }}
+                  disabled={isSaving}
+                >
+                  {FAQ_ICON_OPTIONS.map((opt) => (
+                    <option key={opt.key} value={opt.key}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="faq-admin-field">
+                <span className="faq-admin-label">Titre</span>
+                <input
+                  className="faq-admin-input"
+                  value={section.title}
+                  onChange={(e) => updateSection(section.id, (s) => ({ ...s, title: e.target.value }))}
+                  disabled={isSaving}
+                />
+              </label>
+
+              <button
+                type="button"
+                className="faq-admin-btn faq-admin-btn-danger"
+                onClick={() => handleRemoveSection(section.id)}
+                disabled={isSaving || draftDoc.sections.length <= 1}
+              >
+                Supprimer section
+              </button>
+            </div>
+
+            <div className="faq-admin-faq-list">
+              {section.faqs.map((faq) => (
+                <div key={faq.id} className="faq-admin-faq-item">
+                  <label className="faq-admin-field">
+                    <span className="faq-admin-label">Question</span>
+                    <input
+                      className="faq-admin-input"
+                      value={faq.question}
+                      onChange={(e) =>
+                        updateFaq(section.id, faq.id, (f) => ({ ...f, question: e.target.value }))
+                      }
+                      disabled={isSaving}
+                    />
+                  </label>
+
+                  <label className="faq-admin-field">
+                    <span className="faq-admin-label">Réponse</span>
+                    <textarea
+                      className="faq-admin-textarea"
+                      value={faq.answer}
+                      rows={5}
+                      onChange={(e) =>
+                        updateFaq(section.id, faq.id, (f) => ({ ...f, answer: e.target.value }))
+                      }
+                      disabled={isSaving}
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    className="faq-admin-btn faq-admin-btn-danger"
+                    onClick={() => handleRemoveQuestion(section.id, faq.id)}
+                    disabled={isSaving || section.faqs.length <= 1}
+                  >
+                    Supprimer question
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className="faq-admin-btn faq-admin-btn-secondary"
+                onClick={() => handleAddQuestion(section.id)}
+                disabled={isSaving}
+              >
+                + Ajouter une question
+              </button>
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          className="faq-admin-btn faq-admin-btn-secondary faq-admin-add-section"
+          onClick={handleAddSection}
+          disabled={isSaving}
+        >
+          + Ajouter une section
+        </button>
       </div>
     </div>
   );
@@ -376,28 +690,117 @@ const braceletFaqData: SectionFAQ[] = [
   },
 ];
 
-// Section Bracelet avec accordéons
-const BraceletSection: React.FC = () => {
-  const [openSectionIndex, setOpenSectionIndex] = useState<number | null>(null);
+function buildDefaultFaqDoc(sectionKey: string): FaqEditableDocument | null {
+  if (sectionKey === 'bracelet') {
+    return {
+      title: 'INFOS BRACELET',
+      sections: braceletFaqData.map((section, sectionIndex) => ({
+        id: `${sectionKey}-section-${sectionIndex}`,
+        iconKey: getIconKeyFromReactNode(section.icon),
+        title: section.title,
+        faqs: section.faqs.map((faq, faqIndex) => ({
+          id: `${sectionKey}-section-${sectionIndex}-q-${faqIndex}`,
+          question: faq.question,
+          answer: faq.answer,
+        })),
+      })),
+    };
+  }
 
-  return (
-    <div className="page-content scrollable info-section-page">
-      <div className="info-section-header">
-        <h1>INFOS BRACELET</h1>
-      </div>
-      <div className="faq-container">
-        {braceletFaqData.map((section, index) => (
-          <SectionAccordion 
-            key={index} 
-            section={section}
-            isOpen={openSectionIndex === index}
-            onToggle={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
+  const data = faqData[sectionKey];
+  if (!data) return null;
+
+  return {
+    title: data.title,
+    sections: data.sections.map((section, sectionIndex) => ({
+      id: `${sectionKey}-section-${sectionIndex}`,
+      iconKey: getIconKeyFromReactNode(section.icon),
+      title: section.title,
+      faqs: section.faqs.map((faq, faqIndex) => ({
+        id: `${sectionKey}-section-${sectionIndex}-q-${faqIndex}`,
+        question: faq.question,
+        answer: faq.answer,
+      })),
+    })),
+  };
+}
+
+const FAQ_ICON_KEY_SET = new Set<FaqIconKey>(FAQ_ICON_OPTIONS.map((opt) => opt.key));
+
+const iconKeyToNode = FAQ_ICON_OPTIONS.reduce((acc, opt) => {
+  acc[opt.key] = React.createElement(opt.icon);
+  return acc;
+}, {} as Record<FaqIconKey, React.ReactNode>);
+
+function renderFaqSectionIcon(iconKey: FaqIconKey): React.ReactNode {
+  return iconKeyToNode[iconKey] ?? iconKeyToNode.questionCircle;
+}
+
+function coerceFaqEditableDocument(
+  raw: unknown,
+  fallbackDoc: FaqEditableDocument,
+  sectionKey: string
+): FaqEditableDocument | null {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const rawObj = raw as Record<string, unknown>;
+  const sectionsRaw = rawObj.sections;
+  if (!Array.isArray(sectionsRaw)) return null;
+
+  const title = typeof rawObj.title === 'string' ? rawObj.title : fallbackDoc.title;
+
+  const sections: FaqEditableSection[] = sectionsRaw.map((secRaw, secIndex) => {
+    if (!secRaw || typeof secRaw !== 'object') {
+      return fallbackDoc.sections[secIndex] ?? {
+        id: `${sectionKey}-section-${secIndex}`,
+        iconKey: 'questionCircle',
+        title: '',
+        faqs: [],
+      };
+    }
+
+    const secObj = secRaw as Record<string, unknown>;
+
+    const rawIconKey = secObj.iconKey;
+    const iconKey =
+      typeof rawIconKey === 'string' && FAQ_ICON_KEY_SET.has(rawIconKey as FaqIconKey)
+        ? (rawIconKey as FaqIconKey)
+        : fallbackDoc.sections[secIndex]?.iconKey ?? 'questionCircle';
+
+    const id = typeof secObj.id === 'string' ? secObj.id : `${sectionKey}-section-${secIndex}`;
+    const sectionTitle =
+      typeof secObj.title === 'string' ? secObj.title : fallbackDoc.sections[secIndex]?.title ?? '';
+
+    const faqsRaw = secObj.faqs;
+    const faqs: FaqEditableItem[] = Array.isArray(faqsRaw)
+      ? faqsRaw.map((faqRaw, faqIndex) => {
+          if (!faqRaw || typeof faqRaw !== 'object') {
+            return {
+              id: `${sectionKey}-section-${secIndex}-q-${faqIndex}`,
+              question: '',
+              answer: '',
+            };
+          }
+
+          const faqObj = faqRaw as Record<string, unknown>;
+          const qId =
+            typeof faqObj.id === 'string'
+              ? faqObj.id
+              : `${sectionKey}-section-${secIndex}-q-${faqIndex}`;
+
+          const question = typeof faqObj.question === 'string' ? faqObj.question : '';
+          const answer = typeof faqObj.answer === 'string' ? faqObj.answer : '';
+
+          return { id: qId, question, answer };
+        })
+      : [];
+
+    return { id, iconKey, title: sectionTitle, faqs };
+  });
+
+  const updatedAt = typeof rawObj.updatedAt === 'string' ? rawObj.updatedAt : undefined;
+  return { title, sections, updatedAt };
+}
 
 // Sections avec liste simple (planning, legal)
 const sectionsData: { [key: string]: { title: string; items: { icon: React.ReactNode; text: string }[] } } = {
@@ -436,11 +839,40 @@ const InfoSection: React.FC = () => {
 
   // Sections spéciales
   if (sectionName === 'parie') return <Parie />;
-  if (sectionName === 'bracelet') return <BraceletSection />;
 
-  // Sections FAQ
-  if (sectionName && faqData[sectionName]) {
-    return <FAQPage sectionKey={sectionName} />;
+  const sectionKey = sectionName || '';
+  const defaultDoc = useMemo(() => buildDefaultFaqDoc(sectionKey), [sectionKey]);
+  const [overrideDoc, setOverrideDoc] = useState<FaqEditableDocument | null>(null);
+
+  useEffect(() => {
+    if (!defaultDoc) {
+      setOverrideDoc(null);
+      return;
+    }
+
+    const overridesRef = ref(database, `faqOverrides/${sectionKey}`);
+    const unsubscribe = onValue(overridesRef, (snapshot) => {
+      const raw = snapshot.val();
+      if (!raw) {
+        setOverrideDoc(null);
+        return;
+      }
+
+      const coerced = coerceFaqEditableDocument(raw, defaultDoc, sectionKey);
+      setOverrideDoc(coerced);
+    });
+
+    return () => unsubscribe();
+  }, [defaultDoc, sectionKey]);
+
+  // Sections FAQ (lecture)
+  if (defaultDoc) {
+    const docToRender = overrideDoc ?? defaultDoc;
+    if (isAdmin && isEditing) {
+      return <FAQAdminEditor sectionKey={sectionKey} doc={docToRender} />;
+    }
+
+    return <FAQView doc={docToRender} />;
   }
 
   // Sections avec liste simple
