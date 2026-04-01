@@ -363,6 +363,9 @@ const PlanningFilesPage: React.FC = () => {
     </div>
   ) : null;
 
+  // Aligné sur la 2e ligne de filtres (voir commentaire « 2e ligne masquée ») — utilisé par PlanningFiles.css pour .files-list max-height
+  const hasTwoFilters = eventType !== 'all' && eventType !== 'hse';
+
   // Détection iOS pour ajuster le padding
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -431,7 +434,13 @@ const PlanningFilesPage: React.FC = () => {
 
       {/* Composant PlanningFiles avec filtre */}
       <div 
-        className={`planning-container ${isAdmin && isEditing ? 'is-editing' : ''}`}
+        className={[
+          'planning-container',
+          isAdmin && isEditing ? 'is-editing' : '',
+          hasTwoFilters ? 'has-two-filters' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
         style={{ 
           opacity: isPageLoading ? 0 : 1,
           pointerEvents: isPageLoading ? 'none' : 'auto',

@@ -334,6 +334,12 @@ const Parie: React.FC = () => {
     );
   };
 
+  /** Excludes pool/bracket placeholders like W1, X1 (single letter + digits only). */
+  const isLetterDigitPlaceholderTeam = (name: string): boolean => {
+    const trimmed = (name || '').trim();
+    return /^[A-Za-z]\d+$/.test(trimmed);
+  };
+
   // Fonction pour obtenir les sports avec leurs délégations
   // Le genre est détecté dans match.description (comme dans App.tsx)
   const getSportsWithDelegations = (): SportSection[] => {
@@ -392,7 +398,8 @@ const Parie: React.FC = () => {
             side !== "…" &&
             side.length > 1 &&
             !isExcluded &&
-            !hasRankSuffix(side)
+            !hasRankSuffix(side) &&
+            !isLetterDigitPlaceholderTeam(side)
           ) {
             sportsMap.get(sportKey)?.delegations.add(side);
           }
