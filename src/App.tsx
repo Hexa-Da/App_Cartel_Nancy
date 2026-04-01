@@ -50,6 +50,7 @@ import { venueService } from './services/VenueService';
 import { matchService } from './services/MatchService';
 import { mapService } from './services/MapService';
 import { editableDataService } from './services/EditableDataService';
+import { isIssueDeSecoursIndication, ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH } from './config/indicationMarkers';
 import { LocationMarker } from './components/map/LocationMarker';
 import { MapEvents } from './components/map/MapEvents';
 import { ZoomListener } from './components/map/ZoomListener';
@@ -879,6 +880,7 @@ function App() {
     'Vestiaire': '🧥',
     'Stand de prévention': '⚠️',
     'Stand entreprise': '👩‍💼',
+    'Issue de secours': '➜',
   };
 
   // Utiliser les services pour les fonctions utilitaires
@@ -1719,9 +1721,15 @@ function App() {
         
         if (isIndication) {
           // Marqueur d'indication : fond blanc, même taille que les venues
-          const indicationEmoji = venueAny.indicationType ? indicationTypeEmojis[venueAny.indicationType as keyof typeof indicationTypeEmojis] || venue.emoji : venue.emoji;
+          const typeStr = venueAny.indicationType ? String(venueAny.indicationType).trim() : '';
+          const indicationEmoji = typeStr
+            ? indicationTypeEmojis[typeStr as keyof typeof indicationTypeEmojis] || venue.emoji
+            : venue.emoji;
+          const innerMarkup = isIssueDeSecoursIndication(typeStr)
+            ? `<img src="${ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH}" alt="" class="indication-marker__icon" />`
+            : `<span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${indicationEmoji}</span>`;
           markerHtml = `<div class="marker-content indication-marker" style="background-color: white; color: #333; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-                         <span style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${indicationEmoji}</span>
+                         ${innerMarkup}
                        </div>`;
           markerSize = [30, 30];
           iconAnchor = [15, 15];
@@ -3681,6 +3689,7 @@ function App() {
                   <option value="Vestiaire">Vestiaire 🧥</option>
                   <option value="Stand de prévention">Stand de prévention ⚠️</option>
                   <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
+                  <option value="Issue de secours">Issue de secours ➜</option>
                 </select>
               </div>
               <div className="modal-form-actions">
@@ -3731,6 +3740,7 @@ function App() {
                   <option value="Vestiaire">Vestiaire 🧥</option>
                   <option value="Stand de prévention">Stand de prévention ⚠️</option>
                   <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
+                  <option value="Issue de secours">Issue de secours ➜</option>
                 </select>
               </div>
               <div className="modal-form-actions">

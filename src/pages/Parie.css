@@ -115,6 +115,27 @@
   text-align: center;
 }
 
+.parie-invalid-bracelet-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  text-align: left;
+  margin-bottom: var(--spacing-md);
+}
+
+.parie-invalid-bracelet-notice p {
+  margin: 0;
+  text-align: left;
+  color: var(--text-color);
+}
+
+.parie-invalid-bracelet-icon {
+  flex-shrink: 0;
+  margin-top: var(--spacing-xs);
+  color: var(--danger-color);
+  font-size: 1.2rem;
+}
+
 .parie-button {
   width: 100%;
   padding: var(--spacing-md);

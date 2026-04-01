@@ -43,6 +43,7 @@ const indicationTypeEmojis: { [key: string]: string } = {
   'Vestiaire': '🧥',
   'Stand de prévention': '⚠️',
   'Stand entreprise': '👩‍💼',
+  'Issue de secours': '➜',
 };
 
 interface VenueFormModalProps {
@@ -224,6 +225,7 @@ export const VenueFormModal: React.FC<VenueFormModalProps> = ({
                 <option value="Vestiaire">Vestiaire 🧥</option>
                 <option value="Stand de prévention">Stand de prévention ⚠️</option>
                 <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
+                <option value="Issue de secours">Issue de secours ➜</option>
               </select>
             </div>
           )}

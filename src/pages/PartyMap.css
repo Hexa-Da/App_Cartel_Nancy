@@ -92,6 +92,14 @@
   line-height: 1;
 }
 
+.plan-indication-marker > div > .plan-indication-marker__icon {
+  width: 75%;
+  height: 75%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
 /* Résultat de la partie dans la popup */
 .party-result h4 {
   color: var(--success-color);

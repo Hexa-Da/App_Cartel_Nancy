@@ -17,6 +17,7 @@ import { useForm } from '../contexts/FormContext';
 import { useEditing } from '../contexts/EditingContext';
 import { useApp } from '../AppContext';
 import logger from '../services/Logger';
+import { isIssueDeSecoursIndication, ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH } from '../config/indicationMarkers';
 import './PartyMap.css';
 
 interface Party {
@@ -297,6 +298,7 @@ const PartyMap: React.FC = () => {
       'Vestiaire': '🧥',
       'Stand de prévention': '⚠️',
       'Stand entreprise': '👩‍💼',
+      'Issue de secours': '➜',
     };
 
     // Bounds pour l'image avec CRS.Simple
@@ -389,6 +391,7 @@ const PartyMap: React.FC = () => {
                   <option value="Vestiaire">Vestiaire 🧥</option>
                   <option value="Stand de prévention">Stand de prévention ⚠️</option>
                   <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
+                  <option value="Issue de secours">Issue de secours ➜</option>
                 </select>
                 <button
                   type="button"
@@ -428,13 +431,18 @@ const PartyMap: React.FC = () => {
             onMapClick={handleMapClick}
             isAddingMarker={isAddingMarker}
           />
-          {planMarkers.filter(marker => marker.position && Array.isArray(marker.position)).map((marker) => (
+          {planMarkers.filter(marker => marker.position && Array.isArray(marker.position)).map((marker) => {
+            const planType = marker.indicationType ? String(marker.indicationType).trim() : '';
+            const planInner = isIssueDeSecoursIndication(planType)
+              ? `<img src="${ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH}" alt="" class="plan-indication-marker__icon" />`
+              : `<span>${marker.emoji || '📍'}</span>`;
+            return (
             <Marker
               key={marker.id}
               position={[marker.position[0], marker.position[1]]}
               icon={L.divIcon({
                 className: 'custom-marker plan-indication-marker',
-                html: `<div><span>${marker.emoji || '📍'}</span></div>`,
+                html: `<div>${planInner}</div>`,
                 iconSize: [30, 30],
                 iconAnchor: [15, 15],
                 popupAnchor: [0, -15]
@@ -454,7 +462,8 @@ const PartyMap: React.FC = () => {
                 </div>
               </Popup>
             </Marker>
-          ))}
+            );
+          })}
         </MapContainer>
       </div>
     );

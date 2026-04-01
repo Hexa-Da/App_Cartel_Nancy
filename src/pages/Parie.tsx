@@ -86,96 +86,21 @@ const Parie: React.FC = () => {
   // Timer
   const [timeRemaining, setTimeRemaining] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [bettingClosed, setBettingClosed] = useState(false);
+  const [invalidBraceletNotice, setInvalidBraceletNotice] = useState(false);
 
-  // Charger les données initiales
-  useEffect(() => {
-    const stored = localStorage.getItem('userBraceletNumber');
-    if (stored) {
-      setStoredBracelet(stored);
-      setIsActivated(true);
-      // Charger les paris depuis Firebase
-      loadBetsFromFirebase(stored);
-    }
-    
-    // Marquer l'initialisation comme terminée
-    setIsInitializing(false);
-    
-    // Activer le scroll sur cette page
-    document.body.classList.add('parie-page-active');
-    const appMain = document.querySelector('.app-main');
-    if (appMain) {
-      appMain.classList.add('scrollable');
-    }
-    
-    return () => {
-      document.body.classList.remove('parie-page-active');
-      const appMainCleanup = document.querySelector('.app-main');
-      if (appMainCleanup) {
-        appMainCleanup.classList.remove('scrollable');
-        // Réinitialiser le scroll position pour éviter d'affecter les autres pages
-        appMainCleanup.scrollTop = 0;
-      }
-      // Réinitialiser aussi le scroll du body et de la window si nécessaire
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-      window.scrollTo(0, 0);
-    };
+  const clearInvalidBraceletSession = useCallback(() => {
+    localStorage.removeItem('userBraceletNumber');
+    localStorage.removeItem('userBets');
+    localStorage.removeItem('hseCharterAccepted');
+    setStoredBracelet(null);
+    setIsActivated(false);
+    setBets({});
+    setUserDelegation(null);
   }, []);
-
-  // Charger les paris depuis Firebase
-  const loadBetsFromFirebase = async (braceletNum: string) => {
-    setIsLoadingBets(true);
-    try {
-      // Charger les données du participant (paris + délégation)
-      const participantRef = ref(database, `participants/${braceletNum}`);
-      const snapshot = await get(participantRef);
-      
-      if (snapshot.exists()) {
-        const participantData = snapshot.val();
-        
-        // Récupérer la délégation du participant
-        // Si elle n'existe pas, on essaie de la déduire ou on la laisse null
-        if (participantData.delegation) {
-          setUserDelegation(participantData.delegation);
-        }
-        
-        // Récupérer les paris
-        if (participantData.bets) {
-          setBets(participantData.bets);
-          localStorage.setItem('userBets', JSON.stringify(participantData.bets));
-        } else {
-          // Si pas de paris dans Firebase, vérifier localStorage
-          const savedBets = localStorage.getItem('userBets');
-          if (savedBets) {
-            const localBets = JSON.parse(savedBets);
-            setBets(localBets);
-            await saveBetsToFirebase(braceletNum, localBets);
-          }
-        }
-        
-        // Charger les votes de sa délégation
-        if (participantData.delegation) {
-          await loadDelegationVotes(participantData.delegation);
-        }
-        
-        // Ne pas synchroniser automatiquement - laisser le serveur gérer cela
-        // La synchronisation sera gérée par une Cloud Function pour éviter la surcharge
-      }
-    } catch (err) {
-      logger.error('Erreur chargement paris:', err);
-      const savedBets = localStorage.getItem('userBets');
-      if (savedBets) {
-        setBets(JSON.parse(savedBets));
-      }
-    } finally {
-      setIsLoadingBets(false);
-    }
-  };
 
   // Charger les votes agrégés de la délégation
   const loadDelegationVotes = useCallback(async (delegation: string) => {
     try {
-      // Charger depuis Firebase
       const delegationBetsRef = ref(database, `delegationBets/${delegation}`);
       const snapshot = await get(delegationBetsRef);
       
@@ -188,9 +113,7 @@ const Parie: React.FC = () => {
   }, []);
 
   // Sauvegarder les paris dans Firebase
-  // La synchronisation des votes est gérée par une Cloud Function côté serveur
-  // pour éviter de surcharger les clients avec des calculs coûteux
-  const saveBetsToFirebase = async (braceletNum: string, betsData: { [key: string]: string | null }) => {
+  const saveBetsToFirebase = useCallback(async (braceletNum: string, betsData: { [key: string]: string | null }) => {
     try {
       const participantRef = ref(database, `participants/${braceletNum}`);
       await update(participantRef, {
@@ -200,7 +123,112 @@ const Parie: React.FC = () => {
     } catch (err) {
       logger.error('Erreur sauvegarde paris:', err);
     }
-  };
+  }, []);
+
+  // Charger les paris depuis Firebase
+  const loadBetsFromFirebase = useCallback(async (braceletNum: string) => {
+    setIsLoadingBets(true);
+    try {
+      const participantRef = ref(database, `participants/${braceletNum}`);
+      const snapshot = await get(participantRef);
+
+      if (!snapshot.exists()) {
+        clearInvalidBraceletSession();
+        setInvalidBraceletNotice(true);
+        logger.warn('[Parie] Bracelet absent de la base, session réinitialisée');
+        return;
+      }
+
+      const participantData = snapshot.val();
+
+      if (participantData.delegation) {
+        setUserDelegation(participantData.delegation);
+      }
+
+      if (participantData.bets) {
+        setBets(participantData.bets);
+        localStorage.setItem('userBets', JSON.stringify(participantData.bets));
+      } else {
+        const savedBets = localStorage.getItem('userBets');
+        if (savedBets) {
+          const localBets = JSON.parse(savedBets) as { [key: string]: string | null };
+          setBets(localBets);
+          await saveBetsToFirebase(braceletNum, localBets);
+        }
+      }
+
+      if (participantData.delegation) {
+        await loadDelegationVotes(participantData.delegation);
+      }
+    } catch (err) {
+      logger.error('Erreur chargement paris:', err);
+      const savedBets = localStorage.getItem('userBets');
+      if (savedBets) {
+        setBets(JSON.parse(savedBets) as { [key: string]: string | null });
+      }
+    } finally {
+      setIsLoadingBets(false);
+    }
+  }, [clearInvalidBraceletSession, loadDelegationVotes, saveBetsToFirebase]);
+
+  // Vérification bracelet + scroll page
+  useEffect(() => {
+    let cancelled = false;
+
+    const initBraceletSession = async () => {
+      const stored = localStorage.getItem('userBraceletNumber');
+      if (!stored) {
+        if (!cancelled) setIsInitializing(false);
+        return;
+      }
+
+      try {
+        const participantRef = ref(database, `participants/${stored}`);
+        const snapshot = await get(participantRef);
+        if (cancelled) return;
+
+        if (!snapshot.exists()) {
+          clearInvalidBraceletSession();
+          setInvalidBraceletNotice(true);
+          logger.warn('[Parie] Bracelet local inconnu côté Firebase');
+          return;
+        }
+
+        setStoredBracelet(stored);
+        setIsActivated(true);
+        await loadBetsFromFirebase(stored);
+      } catch (err) {
+        if (cancelled) return;
+        logger.error('Erreur vérification bracelet (Paris):', err);
+        setStoredBracelet(stored);
+        setIsActivated(true);
+        await loadBetsFromFirebase(stored);
+      } finally {
+        if (!cancelled) setIsInitializing(false);
+      }
+    };
+
+    document.body.classList.add('parie-page-active');
+    const appMain = document.querySelector('.app-main');
+    if (appMain) {
+      appMain.classList.add('scrollable');
+    }
+
+    void initBraceletSession();
+
+    return () => {
+      cancelled = true;
+      document.body.classList.remove('parie-page-active');
+      const appMainCleanup = document.querySelector('.app-main');
+      if (appMainCleanup) {
+        appMainCleanup.classList.remove('scrollable');
+        appMainCleanup.scrollTop = 0;
+      }
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      window.scrollTo(0, 0);
+    };
+  }, [clearInvalidBraceletSession, loadBetsFromFirebase]);
 
   // Appeler la Cloud Function pour synchroniser les votes agrégés de toutes les délégations
   const syncAllDelegationVotes = useCallback(async () => {
@@ -686,8 +714,18 @@ const Parie: React.FC = () => {
         
         {!isActivated && (
           <div className="parie-setup">
+            {invalidBraceletNotice && (
+              <div className="parie-error parie-invalid-bracelet-notice" role="alert">
+                <FaExclamationTriangle className="parie-invalid-bracelet-icon" aria-hidden />
+                <p>
+                  Ce numéro de bracelet n&apos;existe pas dans notre base de participants. Votre session a été
+                  réinitialisée. Réinstalllez l'application pour accepter à nouveau la charte HSE avec un numéro valide.
+                </p>
+              </div>
+            )}
             <p className="parie-description">
-              Pour participer aux paris, vous devez d'abord accepter la charte HSE et saisir votre numéro de bracelet.
+              Pour participer aux paris, vous devez d&apos;abord accepter la charte HSE et saisir votre numéro de
+              bracelet.
             </p>
           </div>
         )}
