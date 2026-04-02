@@ -47,6 +47,7 @@ import {
   onModalTextareaEnterKeyDone,
 } from './utils/mobileFormKeyboard';
 import PartyMap from './pages/PartyMap';
+import { formatLocalTimeHM } from './utils/formatLocalTime';
 import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
 import EventDetails, { Event as EventDetailsEvent } from './components/EventDetails';
@@ -627,14 +628,14 @@ function App() {
       },
       {
         id: '2',
-        name: "Parc Expo Hall B",
-        position: [48.662595, 6.190721],
+        name: "Parc Expo Hall A1",
+        position: [48.663272, 6.190683],
         description: "Repas du Jeudi et Vendredi soir",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'restaurant',
         date: '',
-        latitude: 48.662595,
-        longitude: 6.190721,
+        latitude: 48.663272,
+        longitude: 6.190683,
         emoji: '🍽️',
         sport: 'Restaurant',
         mealType: 'soir',
@@ -650,10 +651,11 @@ function App() {
         id: '1',
         name: "Place Stanislas",
         position: [48.693524, 6.183270],
-        description: "Rendez vous 12h puis départ du Défilé à 13h",
+        description: 'Défilé 14h–16h30 (informations sur place dès midi)',
         address: "Pl. Stanislas, 54000 Nancy",
         type: 'party',
-        date: '2026-04-16T12:00:00',
+        date: '2026-04-16T14:00:00',
+        endDate: '2026-04-16T16:30:00',
         latitude: 48.693524,
         longitude: 6.183270,
         emoji: '🎺',
@@ -661,12 +663,13 @@ function App() {
       },
       {
         id: '2',
-        name: "Parc Expo Hall A",
+        name: "Parc Expo Hall A2",
         position: [48.663030, 6.191597],
         description: "Soirée Pompoms du 16 avril, 21h-3h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
-        date: '2026-04-16T21:00:00',
+        date: '2026-04-16T20:00:00',
+        endDate: '2026-04-17T03:00:00',
         latitude: 48.663030,
         longitude: 6.191597,
         emoji: '🎀',
@@ -681,6 +684,7 @@ function App() {
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
         date: '2026-04-17T20:00:00',
+        endDate: '2026-04-18T02:00:00',
         latitude: 48.663481,
         longitude: 6.189737,
         emoji: '🎤',
@@ -694,7 +698,8 @@ function App() {
         description: "Soirée DJ Contest 18 avril, 20h-4h",
         address: "Rue du Zénith, 54320 Maxéville",
         type: 'party',
-        date: '2026-04-18T20:00:00',
+        date: '2026-04-18T21:00:00',
+        endDate: '2026-04-19T03:00:00',
         latitude: 48.710136,
         longitude: 6.139169,
         emoji: '🎧',
@@ -2770,16 +2775,14 @@ function App() {
   // Fonction pour convertir un événement EventsTab au format EventDetails
   const convertEventToEventDetails = (event: any): EventDetailsEvent | null => {
     if (!event) return null;
-    
-    const [date, time] = event.date.split('T');
-    const timeOnly = time ? time.split('.')[0] : '';
-    const endTimeOnly = event.endTime ? event.endTime.split('T')[1]?.split('.')[0] : undefined;
-    
+
+    const dateOnly = typeof event.date === 'string' ? event.date.split('T')[0] : '';
+
     return {
       type: event.type,
-      time: timeOnly,
-      endTime: endTimeOnly,
-      date: date,
+      time: formatLocalTimeHM(event.date),
+      endTime: event.endTime ? formatLocalTimeHM(event.endTime) : undefined,
+      date: dateOnly,
       name: event.type === 'match' ? (event.teams || event.name) : event.name,
       teams: event.teams,
       description: event.description,

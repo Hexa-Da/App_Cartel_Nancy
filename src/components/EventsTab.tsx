@@ -22,6 +22,7 @@ interface Party {
   latitude: number;
   longitude: number;
   date: string;
+  endDate?: string;
   sport?: string;
   result?: string;
 }
@@ -391,9 +392,14 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
     // Ajouter les soirées (visibles pour tous)
     parties.forEach(party => {
       const startDate = new Date(party.date);
-      const endDate = new Date(startDate);
-      endDate.setHours(startDate.getHours() + 6);
-      
+      const endDate = party.endDate
+        ? new Date(party.endDate)
+        : (() => {
+            const end = new Date(startDate);
+            end.setHours(startDate.getHours() + 6);
+            return end;
+          })();
+
       events.push({
         id: `party-${party.id || party.name}`,
         name: party.name,

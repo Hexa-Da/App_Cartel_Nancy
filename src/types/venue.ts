@@ -42,6 +42,8 @@ export interface Restaurant extends BaseItem {
 
 export interface Party extends BaseItem {
   type: 'party';
+  /** ISO-like local datetime when the event ends (same convention as `date`). */
+  endDate?: string;
   result?: string;
 }
 

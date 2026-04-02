@@ -25,6 +25,7 @@ import { useApp } from '../AppContext';
 import { useForm } from '../contexts/FormContext';
 import { useEditing } from '../contexts/EditingContext';
 import LaunchPopupForm from '../components/forms/LaunchPopupForm';
+import { formatLocalTimeHM } from '../utils/formatLocalTime';
 
 type Place = Venue;
 
@@ -417,11 +418,11 @@ const Home: React.FC = () => {
   };
 
   const handleEventClick = (match: ExtendedMatch) => {
-    const [date, time] = match.date.split('T');
+    const date = match.date.split('T')[0];
     const newEvent: Event = {
       type: match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party' : 'match',
-      time: time.split('.')[0],
-      endTime: match.endTime ? match.endTime.split('T')[1].split('.')[0] : undefined,
+      time: formatLocalTimeHM(match.date),
+      endTime: match.endTime ? formatLocalTimeHM(match.endTime) : undefined,
       date: date,
       name: match.description || match.name,
       teams: match.teams,

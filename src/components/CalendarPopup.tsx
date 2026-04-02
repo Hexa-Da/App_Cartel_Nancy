@@ -343,10 +343,10 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
           {
             id: 'place-stanislas',
             date: '2026-04-16',
-            time: '13:00',
-            endTime: '17:00',
+            time: '14:00',
+            endTime: '16:30',
             name: 'Place Stanislas',
-            description: 'Rendez vous 12h puis départ du Défilé à 13h',
+            description: 'Défilé 14h–16h30 (informations sur place dès midi)',
             color: '#673AB7',
             type: 'party',
             sport: 'Défilé',

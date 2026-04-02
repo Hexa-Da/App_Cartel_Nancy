@@ -70,11 +70,11 @@ const PartyMap: React.FC = () => {
         id: '1',
         name: "Place Stanislas",
         position: [48.693524, 6.183270],
-        description: "Rendez vous 12h puis départ du Défilé à 13h",
+        description: 'Défilé 14h–16h30 (informations sur place dès midi)',
         address: "Pl. Stanislas, 54000 Nancy",
         latitude: 48.693524,
         longitude: 6.183270,
-        date: '2026-04-16T12:00:00',
+        date: '2026-04-16T14:00:00',
         emoji: '🎺',
         sport: 'Defile',
         result: undefined

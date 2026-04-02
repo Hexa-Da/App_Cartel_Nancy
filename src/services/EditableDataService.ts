@@ -255,7 +255,7 @@ class EditableDataService {
         restaurantDescriptions: generateRestaurantDescriptions(),
         partyDescriptions: {
           '1': {
-            description: party1?.description || 'Rendez vous 12h puis départ du Défilé à 13h',
+            description: party1?.description || 'Défilé 14h–16h30 (informations sur place dès midi)',
             updatedAt: new Date().toISOString()
           },
           '2': {
