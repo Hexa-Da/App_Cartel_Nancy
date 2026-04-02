@@ -129,9 +129,17 @@
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
   color: var(--text-color);
   font-weight: 500;
+}
+
+.form-field-hint {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-color-light);
 }
 
 .form-group input[type="text"],

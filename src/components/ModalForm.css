@@ -114,6 +114,14 @@
   color: var(--text-color);
   font-weight: 500;
 }
+
+.modal-form-field-hint {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-color-light);
+}
 .modal-form-input,
 .modal-form-group input[type="text"],
 .modal-form-group input[type="url"],

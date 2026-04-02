@@ -4,6 +4,8 @@
  * Ce composant gère tous les types de venues : sport, hotel, resto, soirée, défilé, indication
  */
 
+import React from 'react';
+import { onModalSingleLineInputEnterKey } from '../../utils/mobileFormKeyboard';
 import '../ModalForm.css';
 
 const sportEmojis: { [key: string]: string } = {
@@ -124,6 +126,8 @@ export const VenueFormModal: React.FC<VenueFormModalProps> = ({
               value={venueData.name}
               onChange={(e) => onFieldChange('name', e.target.value)}
               placeholder={placeType === 'hotel' ? 'Ex: Hôtel de Ville' : placeType === 'resto' ? 'Ex: Le Bistrot' : 'Ex: Gymnase Raymond Poincaré'}
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
@@ -135,6 +139,8 @@ export const VenueFormModal: React.FC<VenueFormModalProps> = ({
               value={venueData.description}
               onChange={(e) => onFieldChange('description', e.target.value)}
               placeholder="Ex: Informations..."
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
@@ -146,6 +152,8 @@ export const VenueFormModal: React.FC<VenueFormModalProps> = ({
               value={venueData.address}
               onChange={(e) => onFieldChange('address', e.target.value)}
               placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
             <button className="modal-form-cancel" onClick={onPlaceMarker}>Placer sur la carte</button>

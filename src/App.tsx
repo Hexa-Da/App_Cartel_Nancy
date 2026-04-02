@@ -42,6 +42,10 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
+import {
+  onModalSingleLineInputEnterKey,
+  onModalTextareaEnterKeyDone,
+} from './utils/mobileFormKeyboard';
 import PartyMap from './pages/PartyMap';
 import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
@@ -3190,23 +3194,23 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="match-date">Date et heure de début</label>
-                <input id="match-date" type="datetime-local" value={editingMatch.match ? editingMatch.match.date : newMatch.date} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, date: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, date: e.target.value }); } }} className="modal-form-input" />
+                <input id="match-date" type="datetime-local" value={editingMatch.match ? editingMatch.match.date : newMatch.date} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, date: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, date: e.target.value }); } }} enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="match-end-time">Heure de fin</label>
-                <input id="match-end-time" type="datetime-local" value={editingMatch.match ? editingMatch.match.endTime : (newMatch.endTime || '')} min={editingMatch.match ? editingMatch.match.date : newMatch.date} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, endTime: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, endTime: e.target.value }); } }} className="modal-form-input" />
+                <input id="match-end-time" type="datetime-local" value={editingMatch.match ? editingMatch.match.endTime : (newMatch.endTime || '')} min={editingMatch.match ? editingMatch.match.date : newMatch.date} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, endTime: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, endTime: e.target.value }); } }} enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="match-teams">Équipes</label>
-                <input id="match-teams" type="text" value={editingMatch.match ? editingMatch.match.teams : newMatch.teams} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, teams: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, teams: e.target.value }); } }} placeholder="Ex: Nancy vs Alès" className="modal-form-input" />
+                <input id="match-teams" type="text" value={editingMatch.match ? editingMatch.match.teams : newMatch.teams} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, teams: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, teams: e.target.value }); } }} placeholder="Ex: Nancy vs Alès" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="match-description">Description</label>
-                <input id="match-description" type="text" value={editingMatch.match ? editingMatch.match.description : newMatch.description} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, description: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, description: e.target.value }); } }} placeholder="Ex: Poule A Masculin - Match 1" className="modal-form-input" />
+                <input id="match-description" type="text" value={editingMatch.match ? editingMatch.match.description : newMatch.description} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, description: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, description: e.target.value }); } }} placeholder="Ex: Poule A Masculin - Match 1" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="match-result">Résultat</label>
-                <input id="match-result" type="text" value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, result: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, result: e.target.value }); } }} placeholder="Ex: 2 - 1 (à saisir si disponible)" className="modal-form-input" />
+                <input id="match-result" type="text" value={editingMatch.match ? editingMatch.match.result : (newMatch.result || '')} onChange={(e) => { if (editingMatch.match) { const updatedMatch = { ...editingMatch.match, result: e.target.value }; setEditingMatch({ ...editingMatch, match: updatedMatch }); } else { setNewMatch({ ...newMatch, result: e.target.value }); } }} placeholder="Ex: 2 - 1 (à saisir si disponible)" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-actions">
                 <button className="modal-form-submit" onClick={() => { if (editingMatch.match) { handleUpdateMatch(editingMatch.venueId!, editingMatch.match.id, { date: editingMatch.match.date, endTime: editingMatch.match.endTime || '', teams: editingMatch.match.teams, description: editingMatch.match.description, result: editingMatch.match.result }); finishEditingMatch(); } else { handleAddMatch(editingMatch.venueId!); } }}>{editingMatch.match ? 'Mettre à jour' : 'Ajouter'}</button>
@@ -3287,15 +3291,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du lieu</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Gymnase Raymond Poincaré" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Gymnase Raymond Poincaré" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Pour rentrer il faut..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Pour rentrer il faut..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-group">
@@ -3339,15 +3343,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du lieu</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Gymnase Raymond Poincaré" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Gymnase Raymond Poincaré" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Pour rentrer il faut..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Pour rentrer il faut..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
                 <div className="modal-form-group">
@@ -3391,15 +3395,15 @@ function App() {
             <div className="modal-form-content">
                 <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom de l'hôtel</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Hôtel de Ville" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Hôtel de Ville" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'hôtel..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'hôtel..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-actions">
@@ -3422,15 +3426,15 @@ function App() {
             <div className="modal-form-content">
                 <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom de l'hôtel</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Hôtel de Ville" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Hôtel de Ville" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'hôtel..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'hôtel..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-actions">
@@ -3453,15 +3457,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du restaurant</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Le Bistrot" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Le Bistrot" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le restaurant..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le restaurant..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-actions">
@@ -3484,15 +3488,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du restaurant</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Le Bistrot" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Le Bistrot" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le restaurant..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le restaurant..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-actions">
@@ -3515,15 +3519,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du lieu</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Place Stanislas" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Place Stanislas" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le défilé..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le défilé..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-actions">
@@ -3546,15 +3550,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du lieu</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Place Stanislas" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Place Stanislas" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le défilé..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur le défilé..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-actions">
@@ -3577,15 +3581,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du lieu</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Salle des fêtes" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Salle des fêtes" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur la soirée..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur la soirée..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-group">
@@ -3619,15 +3623,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom du lieu</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Salle des fêtes" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Salle des fêtes" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur la soirée..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur la soirée..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-group">
@@ -3661,15 +3665,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom de l'indication</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Point de soins" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Point de soins" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'indication..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'indication..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-group">
@@ -3712,15 +3716,15 @@ function App() {
             <div className="modal-form-content">
               <div className="modal-form-group">
                 <label htmlFor="venue-name">Nom de l'indication</label>
-                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Point de soins" className="modal-form-input" />
+                <input id="venue-name" type="text" value={newVenueName} onChange={(e) => setNewVenueName(e.target.value)} placeholder="Ex: Point de soins" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-description">Description</label>
-                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'indication..." className="modal-form-input" />
+                <input id="venue-description" type="text" value={newVenueDescription} onChange={(e) => setNewVenueDescription(e.target.value)} placeholder="Ex: Informations sur l'indication..." enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
               </div>
               <div className="modal-form-group">
                 <label htmlFor="venue-address">Adresse</label>
-                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" className="modal-form-input" />
+                <input id="venue-address" type="text" value={newVenueAddress} onChange={(e) => setNewVenueAddress(e.target.value)} placeholder="Ex: 56 Rue Raymond Poincaré, 54000 Nancy" enterKeyHint="done" onKeyDown={onModalSingleLineInputEnterKey} className="modal-form-input" />
                 <button className="modal-form-cancel" onClick={() => { setIsPlacingMarker(true); setIsAddingPlace(false); }}>Placer sur la carte</button>
               </div>
               <div className="modal-form-group">
@@ -3825,12 +3829,19 @@ function App() {
               </div>
               <div className="modal-form-content">
                 <div className="modal-form-group">
-                  <label htmlFor="party-result">Résultat de la soirée pompom</label>
+                  <label htmlFor="party-result">
+                    Résultat de la soirée pompom
+                    <span className="modal-form-field-hint">
+                      Terminer : Entrée · nouvelle ligne : Maj+Entrée
+                    </span>
+                  </label>
                   <textarea 
                     id="party-result" 
                     value={editingResult} 
                     onChange={(e) => setEditingResult(e.target.value)} 
                     placeholder="Entrez le résultat de la soirée pompom..." 
+                    enterKeyHint="done"
+                    onKeyDown={onModalTextareaEnterKeyDone}
                     className="modal-form-input"
                     rows={4}
                   />
@@ -3866,12 +3877,19 @@ function App() {
               </div>
               <div className="modal-form-content">
                 <div className="modal-form-group">
-                  <label htmlFor="party-description">Description de la soirée</label>
+                  <label htmlFor="party-description">
+                    Description de la soirée
+                    <span className="modal-form-field-hint">
+                      Terminer : Entrée · nouvelle ligne : Maj+Entrée
+                    </span>
+                  </label>
                   <textarea 
                     id="party-description" 
                     value={editingDescription} 
                     onChange={(e) => setEditingDescription(e.target.value)} 
                     placeholder="Entrez la description de la soirée..." 
+                    enterKeyHint="done"
+                    onKeyDown={onModalTextareaEnterKeyDone}
                     className="modal-form-input"
                     rows={4}
                   />
@@ -3902,12 +3920,19 @@ function App() {
               </div>
               <div className="modal-form-content">
                 <div className="modal-form-group">
-                  <label htmlFor="hotel-description">Description de l'hôtel</label>
+                  <label htmlFor="hotel-description">
+                    Description de l&apos;hôtel
+                    <span className="modal-form-field-hint">
+                      Terminer : Entrée · nouvelle ligne : Maj+Entrée
+                    </span>
+                  </label>
                   <textarea 
                     id="hotel-description" 
                     value={editingHotelDescriptionText} 
                     onChange={(e) => setEditingHotelDescriptionText(e.target.value)} 
                     placeholder="Entrez la description de l'hôtel..." 
+                    enterKeyHint="done"
+                    onKeyDown={onModalTextareaEnterKeyDone}
                     className="modal-form-input"
                     rows={4}
                   />
@@ -3938,12 +3963,19 @@ function App() {
               </div>
               <div className="modal-form-content">
                 <div className="modal-form-group">
-                  <label htmlFor="restaurant-description">Description du restaurant</label>
+                  <label htmlFor="restaurant-description">
+                    Description du restaurant
+                    <span className="modal-form-field-hint">
+                      Terminer : Entrée · nouvelle ligne : Maj+Entrée
+                    </span>
+                  </label>
                   <textarea 
                     id="restaurant-description" 
                     value={editingRestaurantDescriptionText} 
                     onChange={(e) => setEditingRestaurantDescriptionText(e.target.value)} 
                     placeholder="Entrez la description du restaurant..." 
+                    enterKeyHint="done"
+                    onKeyDown={onModalTextareaEnterKeyDone}
                     className="modal-form-input"
                     rows={4}
                   />

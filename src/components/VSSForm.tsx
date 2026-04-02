@@ -21,6 +21,10 @@ import { ref, get } from 'firebase/database';
 import { database } from '../firebase';
 import logger from '../services/Logger';
 import { useModal } from '../contexts/ModalContext';
+import {
+  onModalSingleLineInputEnterKey,
+  onModalTextareaEnterKeyDone,
+} from '../utils/mobileFormKeyboard';
 import './VSSForm.css';
 
 // Configuration anti-spam
@@ -34,7 +38,6 @@ const SPAM_CONFIG = {
 interface ParticipantData {
   nom: string;
   prenom: string;
-  telephone: string;
 }
 
 interface SpamData {
@@ -50,6 +53,7 @@ interface VSSFormProps {
 
 const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
   const { setShowChat } = useModal();
+
   const [formData, setFormData] = useState({
     description: '',
     date: '',
@@ -213,11 +217,6 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
       .replace(/[\u0300-\u036f]/g, '');
   };
 
-  // Fonction pour normaliser les numéros de téléphone
-  const normalizePhone = (phone: string): string => {
-    return phone.replace(/[\s.-]/g, '').replace(/^(\+33|0033)/, '0');
-  };
-
   // Vérifier les données du formulaire avec Firebase
   const verifyParticipantData = async (): Promise<boolean> => {
     const storedBracelet = localStorage.getItem('userBraceletNumber');
@@ -241,9 +240,8 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
       // Comparer les données saisies avec celles de Firebase
       const nomMatch = normalizeString(formData.lastName) === normalizeString(data.nom || '');
       const prenomMatch = normalizeString(formData.firstName) === normalizeString(data.prenom || '');
-      const phoneMatch = normalizePhone(formData.phone) === normalizePhone(data.telephone || '');
 
-      if (!nomMatch || !prenomMatch || !phoneMatch) {
+      if (!nomMatch || !prenomMatch) {
         setValidationError('Informations participant non valide');
         return false;
       }
@@ -327,7 +325,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
 
     // ============ FIN VÉRIFICATIONS ANTI-SPAM ============
 
-    // Vérifier les données personnelles avec Firebase (nom, prénom, téléphone uniquement)
+    // Vérifier les données personnelles avec Firebase (nom et prénom)
     const isValid = await verifyParticipantData();
     if (!isValid) {
       setIsSubmitting(false);
@@ -432,6 +430,8 @@ ${emailContent}`);
               id="date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               required
             />
           </div>
@@ -444,17 +444,26 @@ ${emailContent}`);
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               placeholder="Ex: Gymnase, Bar, etc."
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Description de l'incident</label>
+            <label htmlFor="description">
+              Description de l&apos;incident
+              <span className="form-field-hint">
+                Terminer la saisie : Entrée · nouvelle ligne : Maj+Entrée
+              </span>
+            </label>
             <textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Décrivez la situation..."
+              enterKeyHint="done"
+              onKeyDown={onModalTextareaEnterKeyDone}
               required
               rows={5}
             />
@@ -468,6 +477,8 @@ ${emailContent}`);
               value={formData.lastName}
               onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
               placeholder="Votre nom"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               required
             />
           </div>
@@ -480,6 +491,8 @@ ${emailContent}`);
               value={formData.firstName}
               onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
               placeholder="Votre prénom"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               required
             />
           </div>
@@ -492,6 +505,8 @@ ${emailContent}`);
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="Votre numéro de téléphone"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               required
             />
           </div>

@@ -10,6 +10,7 @@ import { database, app } from '../../firebase';
 import { LaunchPopup } from '../../types';
 import logger from '../../services/Logger';
 import { compressImage } from '../../services/imageCompression';
+import { onModalSingleLineInputEnterKey } from '../../utils/mobileFormKeyboard';
 import '../ModalForm.css';
 
 interface LaunchPopupFormProps {
@@ -180,6 +181,8 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Nouvelle offre"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
@@ -200,6 +203,8 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
               type="datetime-local"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>

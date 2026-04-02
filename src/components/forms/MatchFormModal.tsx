@@ -4,7 +4,9 @@
  * Ce composant gère le formulaire d'ajout et de modification de match
  */
 
+import React from 'react';
 import { Match } from '../../types';
+import { onModalSingleLineInputEnterKey } from '../../utils/mobileFormKeyboard';
 import '../ModalForm.css';
 
 interface MatchFormModalProps {
@@ -71,6 +73,8 @@ export const MatchFormModal: React.FC<MatchFormModalProps> = ({
               type="datetime-local"
               value={matchData.date}
               onChange={(e) => handleChange('date', e.target.value)}
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
@@ -82,6 +86,8 @@ export const MatchFormModal: React.FC<MatchFormModalProps> = ({
               value={matchData.endTime || ''}
               min={matchData.date}
               onChange={(e) => handleChange('endTime', e.target.value)}
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
@@ -93,6 +99,8 @@ export const MatchFormModal: React.FC<MatchFormModalProps> = ({
               value={matchData.teams}
               onChange={(e) => handleChange('teams', e.target.value)}
               placeholder="Ex: Nancy vs Alès"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
@@ -104,6 +112,8 @@ export const MatchFormModal: React.FC<MatchFormModalProps> = ({
               value={matchData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="Ex: Poule A Masculin - Match 1"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
@@ -115,6 +125,8 @@ export const MatchFormModal: React.FC<MatchFormModalProps> = ({
               value={matchData.result || ''}
               onChange={(e) => handleChange('result', e.target.value)}
               placeholder="Ex: 2 - 1 (à saisir si disponible)"
+              enterKeyHint="done"
+              onKeyDown={onModalSingleLineInputEnterKey}
               className="modal-form-input"
             />
           </div>
