@@ -355,8 +355,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
           {
             id: 'parc-expo-pompoms',
             date: '2026-04-16',
-            time: '21:00',
-            endTime: '03:00',
+            time: '20:00',
+            endTime: '02:00',
             name: 'Parc Expo',
             description: 'Soirée Pompoms du 16 avril, 21h-3h',
             color: '#673AB7',
@@ -368,7 +368,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             id: 'parc-expo-showcase',
             date: '2026-04-17',
             time: '20:00',
-            endTime: '04:00',
+            endTime: '02:00',
             name: 'Parc Expo',
             description: 'Soirée Showcase 17 novembre, 20h-4h',
             color: '#673AB7',
@@ -379,7 +379,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
           {
             id: 'zenith',
             date: '2026-04-18',
-            time: '20:00',
+            time: '20:30',
             endTime: '04:00',
             name: 'Zénith',
             description: 'Soirée DJ Contest 18 novembre, 20h-4h',

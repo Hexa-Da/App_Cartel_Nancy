@@ -40,6 +40,9 @@ const HSECharterPopupContent: React.FC<IHSECharterPopupContentProps> = ({
             <strong>Sobriété et sécurité :</strong> je reconnais que l'usage de drogues est répréhensible par la loi. Je m'engage
             à respecter les consignes de sécurité liées à l'alcool et aux comportements à risque.
           </li>
+          <li>
+            <strong>Respect du matériel :</strong> J'utilise le matériel de prévention (ou autre) de manière responsable
+          </li>
         </ul>
       </section>
 
@@ -74,23 +77,29 @@ const HSECharterPopupContent: React.FC<IHSECharterPopupContentProps> = ({
               <td>Perte de points au classement</td>
             </tr>
             <tr>
+              <td>Injure sexiste et/ou discriminatoire</td>
+              <td>Exclusion de l'activité (Récidive = Exclusion
+                définitive)</td>
+              <td>Perte de points au classement</td>
+            </tr>
+            <tr>
               <td>Discrimination</td>
-              <td>Exclusion définitive de l'activité</td>
+              <td>Exclusion pendant 24h sports/soirées</td>
               <td>Perte de points au classement</td>
             </tr>
             <tr>
               <td>Harcèlement sexuel / Exhibition sexuelle / Bizutage</td>
-              <td>Exclusion définitive de l'activité</td>
+              <td>Exclusion définitive du Cartel</td>
               <td>Disqualification de la délégation</td>
             </tr>
             <tr>
               <td>Agression sexuelle / Administration de substances</td>
-              <td>Exclusion définitive de l'activité</td>
+              <td>Exclusion définitive immédiate</td>
               <td>Disqualification de la délégation</td>
             </tr>
             <tr>
               <td>Viol</td>
-              <td>Exclusion définitive de l'activité</td>
+              <td>Exclusion définitive immédiate</td>
               <td>Disqualification de la délégation</td>
             </tr>
           </tbody>
@@ -98,6 +107,10 @@ const HSECharterPopupContent: React.FC<IHSECharterPopupContentProps> = ({
         <p className="hse-sanctions-note">
           La liste ci-dessus n'est pas exhaustive : l'association se réserve le droit de sanctionner tout manquement aux règles et
           consignes, pouvant aller jusqu'à l'exclusion de l'auteur·ice.
+        </p>
+        <p className="hse-sanctions-note">
+        Nous rappelons que l’ensemble de ces actes cités ci-dessus sont pénalement répréhensibles. Si la victime en formule la volonté, 
+        une plainte pourra être déposée avec le soutien et l’accompagnement de l’association.
         </p>
       </section>
 

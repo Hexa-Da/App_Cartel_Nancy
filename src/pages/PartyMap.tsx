@@ -6,7 +6,7 @@
 
 import { MapContainer, TileLayer, useMap, ImageOverlay, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import { ref, onValue, push, remove } from 'firebase/database';
 import { database } from '../firebase';
@@ -19,6 +19,9 @@ import { useApp } from '../AppContext';
 import logger from '../services/Logger';
 import { isIssueDeSecoursIndication, ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH } from '../config/indicationMarkers';
 import './PartyMap.css';
+
+/** Normalized storage range for plan marker coords in Firebase (legacy 1000×1000 map space). */
+const PLAN_MARKER_COORD_RANGE = 1000;
 
 interface Party {
   id: string;
@@ -285,7 +288,10 @@ const PartyMap: React.FC = () => {
     const [planMarkers, setPlanMarkers] = useState<any[]>([]);
     const [isAddingMarker, setIsAddingMarker] = useState(false);
     const [selectedIndicationType, setSelectedIndicationType] = useState('Soins');
-    
+    const [planImageSize, setPlanImageSize] = useState<{ w: number; h: number } | null>(null);
+    const [planImageLoadError, setPlanImageLoadError] = useState(false);
+    const [planImageRetryKey, setPlanImageRetryKey] = useState(0);
+
     const indicationTypeEmojis: { [key: string]: string } = {
       'Soins': '🚑',
       'Poubelle': '🗑️',
@@ -301,10 +307,42 @@ const PartyMap: React.FC = () => {
       'Issue de secours': '➜',
     };
 
-    // Bounds pour l'image avec CRS.Simple
-    // On utilise des coordonnées qui correspondent aux dimensions de l'image
-    // Pour simplifier, on utilise un carré de 1000x1000
-    const imageBounds: L.LatLngBoundsExpression = [[0, 0], [1000, 1000]];
+    useEffect(() => {
+      setPlanImageSize(null);
+      setPlanImageLoadError(false);
+      const img = new Image();
+      const onLoad = () => {
+        if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+          setPlanImageSize({ w: img.naturalWidth, h: img.naturalHeight });
+        } else {
+          setPlanImageLoadError(true);
+        }
+      };
+      const onError = () => {
+        setPlanImageLoadError(true);
+      };
+      img.addEventListener('load', onLoad);
+      img.addEventListener('error', onError);
+      img.src = imageSrc;
+      return () => {
+        img.removeEventListener('load', onLoad);
+        img.removeEventListener('error', onError);
+      };
+    }, [imageSrc, planImageRetryKey]);
+
+    const imageBounds: L.LatLngBoundsExpression = useMemo(() => {
+      if (!planImageSize) {
+        return [[0, 0], [PLAN_MARKER_COORD_RANGE, PLAN_MARKER_COORD_RANGE]];
+      }
+      return [[0, 0], [planImageSize.h, planImageSize.w]];
+    }, [planImageSize]);
+
+    const mapCenter: [number, number] = useMemo(() => {
+      if (!planImageSize) {
+        return [PLAN_MARKER_COORD_RANGE / 2, PLAN_MARKER_COORD_RANGE / 2];
+      }
+      return [planImageSize.h / 2, planImageSize.w / 2];
+    }, [planImageSize]);
 
     // Charger les marqueurs depuis Firebase
     useEffect(() => {
@@ -327,10 +365,13 @@ const PartyMap: React.FC = () => {
     // Gérer le clic sur la carte pour ajouter un marqueur
     const handleMapClick = async (lat: number, lng: number) => {
       if (!isAdmin || !isEditing || !isAddingMarker) return;
+      if (!planImageSize || planImageSize.h <= 0 || planImageSize.w <= 0) return;
 
       const emoji = indicationTypeEmojis[selectedIndicationType] || '📍';
+      const storedLat = (lat * PLAN_MARKER_COORD_RANGE) / planImageSize.h;
+      const storedLng = (lng * PLAN_MARKER_COORD_RANGE) / planImageSize.w;
       const newMarker = {
-        position: [lat, lng],
+        position: [storedLat, storedLng],
         indicationType: selectedIndicationType,
         emoji: emoji,
         timestamp: Date.now()
@@ -413,8 +454,27 @@ const PartyMap: React.FC = () => {
             )}
           </div>
         )}
+        {planImageLoadError && (
+          <div className="plan-map-error" role="alert">
+            <p className="plan-map-error-message">Impossible de charger le plan.</p>
+            <button
+              type="button"
+              className="plan-map-retry-button"
+              onClick={() => setPlanImageRetryKey((k) => k + 1)}
+            >
+              Réessayer
+            </button>
+          </div>
+        )}
+        {!planImageLoadError && !planImageSize && (
+          <div className="plan-map-loading" role="status" aria-live="polite">
+            Chargement du plan…
+          </div>
+        )}
+        {!planImageLoadError && planImageSize && (
         <MapContainer
-          center={[500, 500]}
+          key={`plan-map-${partyName}-${planImageSize.w}-${planImageSize.h}`}
+          center={mapCenter}
           zoom={0}
           minZoom={-2}
           maxZoom={3}
@@ -436,10 +496,12 @@ const PartyMap: React.FC = () => {
             const planInner = isIssueDeSecoursIndication(planType)
               ? `<img src="${ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH}" alt="" class="plan-indication-marker__icon" />`
               : `<span>${marker.emoji || '📍'}</span>`;
+            const displayLat = (Number(marker.position[0]) * planImageSize.h) / PLAN_MARKER_COORD_RANGE;
+            const displayLng = (Number(marker.position[1]) * planImageSize.w) / PLAN_MARKER_COORD_RANGE;
             return (
             <Marker
               key={marker.id}
-              position={[marker.position[0], marker.position[1]]}
+              position={[displayLat, displayLng]}
               icon={L.divIcon({
                 className: 'custom-marker plan-indication-marker',
                 html: `<div>${planInner}</div>`,
@@ -465,6 +527,7 @@ const PartyMap: React.FC = () => {
             );
           })}
         </MapContainer>
+        )}
       </div>
     );
   };
@@ -487,7 +550,7 @@ const PartyMap: React.FC = () => {
     return (
       <PlanMapView 
         title="Plan du Zénith"
-        imageSrc="/Zenith-plan.jpg"
+        imageSrc="/Zenith.jpeg"
         imageAlt="Plan du Zénith de Nancy"
         partyName="Zénith"
       />
