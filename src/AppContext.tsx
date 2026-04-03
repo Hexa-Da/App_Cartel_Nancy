@@ -14,27 +14,12 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ref, onValue } from 'firebase/database';
-import { database, isFirebaseInitialized } from './firebase';
+import { ref, onValue, query, limitToLast } from 'firebase/database';
+import { database, isFirebaseInitialized, UserRole } from './firebase';
 import { firebaseLogger } from './services/FirebaseLogger';
 import logger from './services/Logger';
 import { delegationMatches as teamDelegationMatches, getAllDelegationsFromVenues } from './services/TeamService';
-
-interface Venue {
-  id?: string;
-  name: string;
-  description: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  position: [number, number];
-  date: string;
-  emoji: string;
-  sport: string;
-  matches?: any[];
-}
-
-import { UserRole } from './firebase';
+import { Venue } from './types';
 
 interface AppContextType {
   isAdmin: boolean;
@@ -164,9 +149,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           isStillLoading = false;
           try {
             const data = snapshot.val() || {};
-            const venuesArray = Object.entries(data).map(([id, value]) => ({ 
-              id, 
-              ...(value as Omit<Venue, 'id'>) 
+            const venuesArray = Object.entries(data).map(([id, value]: [string, any]) => ({
+              ...value,
+              id,
+              type: 'venue' as const,
+              matches: value.matches || [],
+              sport: value.sport || '',
+              date: value.date || '',
+              latitude: value.position ? value.position[0] : 0,
+              longitude: value.position ? value.position[1] : 0,
+              emoji: value.emoji || '',
             }));
             setVenues(venuesArray);
             setIsLoadingVenues(false);
@@ -203,9 +195,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const messagesRef = ref(database, 'chatMessages');
+      const messagesQuery = query(ref(database, 'chatMessages'), limitToLast(50));
       const unsubscribe = onValue(
-        messagesRef, 
+        messagesQuery, 
         (snapshot) => {
           try {
             const data = snapshot.val() || {};
@@ -214,7 +206,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
               ...(value as any) 
             }));
             
-            // Trier les messages par timestamp décroissant (plus récents en premier)
             const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
             
             setMessages(sortedMessages);

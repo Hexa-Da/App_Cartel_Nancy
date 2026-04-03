@@ -32,102 +32,59 @@ class EditableDataService {
    * Charge les données éditables depuis Firebase avec des callbacks pour mettre à jour l'état React
    */
   loadEditableData(callbacks: EditableDataCallbacks): (() => void)[] {
-    const unsubscribeFunctions: (() => void)[] = [];
-    let loadedCount = 0;
-    const totalSources = 4; // partyResults, hotelDescriptions, restaurantDescriptions, partyDescriptions
-
-    const checkAllDataLoaded = () => {
-      loadedCount++;
-      if (loadedCount === totalSources && callbacks.onAllDataLoaded) {
-        callbacks.onAllDataLoaded();
-      }
-    };
-
-    // Charger les résultats des soirées
     try {
-      const partyResultsRef = ref(database, 'editableData/partyResults');
-      const unsubscribePartyResults = onValue(partyResultsRef, (snapshot) => {
+      const editableDataRef = ref(database, 'editableData');
+      const unsubscribe = onValue(editableDataRef, (snapshot) => {
         const data = snapshot.val();
-        if (data && callbacks.onPartyResultsUpdate) {
-          if (data['parc-expo-pompoms']?.result) {
-            callbacks.onPartyResultsUpdate('2', data['parc-expo-pompoms'].result);
+        if (!data) {
+          callbacks.onAllDataLoaded?.();
+          return;
+        }
+
+        if (data.partyResults && callbacks.onPartyResultsUpdate) {
+          if (data.partyResults['parc-expo-pompoms']?.result) {
+            callbacks.onPartyResultsUpdate('2', data.partyResults['parc-expo-pompoms'].result);
           }
-          if (data['parc-expo-showcase']?.result) {
-            callbacks.onPartyResultsUpdate('3', data['parc-expo-showcase'].result);
+          if (data.partyResults['parc-expo-showcase']?.result) {
+            callbacks.onPartyResultsUpdate('3', data.partyResults['parc-expo-showcase'].result);
           }
-          if (data['zenith-dj-contest']?.result) {
-            callbacks.onPartyResultsUpdate('4', data['zenith-dj-contest'].result);
+          if (data.partyResults['zenith-dj-contest']?.result) {
+            callbacks.onPartyResultsUpdate('4', data.partyResults['zenith-dj-contest'].result);
           }
         }
-        checkAllDataLoaded();
-      });
-      unsubscribeFunctions.push(unsubscribePartyResults);
-    } catch (error) {
-      logger.error('[EditableDataService] Erreur chargement partyResults:', error);
-      checkAllDataLoaded();
-    }
 
-    // Charger les descriptions des hôtels
-    try {
-      const hotelDescriptionsRef = ref(database, 'editableData/hotelDescriptions');
-      const unsubscribeHotelDescriptions = onValue(hotelDescriptionsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data && callbacks.onHotelDescriptionUpdate) {
-          Object.entries(data).forEach(([hotelId, hotelData]: [string, any]) => {
+        if (data.hotelDescriptions && callbacks.onHotelDescriptionUpdate) {
+          Object.entries(data.hotelDescriptions).forEach(([hotelId, hotelData]: [string, any]) => {
             if (hotelData.description) {
               callbacks.onHotelDescriptionUpdate!(hotelId, hotelData.description);
             }
           });
         }
-        checkAllDataLoaded();
-      });
-      unsubscribeFunctions.push(unsubscribeHotelDescriptions);
-    } catch (error) {
-      logger.error('[EditableDataService] Erreur chargement hotelDescriptions:', error);
-      checkAllDataLoaded();
-    }
 
-    // Charger les descriptions des restaurants
-    try {
-      const restaurantDescriptionsRef = ref(database, 'editableData/restaurantDescriptions');
-      const unsubscribeRestaurantDescriptions = onValue(restaurantDescriptionsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data && callbacks.onRestaurantDescriptionUpdate) {
-          Object.entries(data).forEach(([restaurantId, restaurantData]: [string, any]) => {
+        if (data.restaurantDescriptions && callbacks.onRestaurantDescriptionUpdate) {
+          Object.entries(data.restaurantDescriptions).forEach(([restaurantId, restaurantData]: [string, any]) => {
             if (restaurantData.description) {
               callbacks.onRestaurantDescriptionUpdate!(restaurantId, restaurantData.description);
             }
           });
         }
-        checkAllDataLoaded();
-      });
-      unsubscribeFunctions.push(unsubscribeRestaurantDescriptions);
-    } catch (error) {
-      logger.error('[EditableDataService] Erreur chargement restaurantDescriptions:', error);
-      checkAllDataLoaded();
-    }
 
-    // Charger les descriptions des soirées
-    try {
-      const partyDescriptionsRef = ref(database, 'editableData/partyDescriptions');
-      const unsubscribePartyDescriptions = onValue(partyDescriptionsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data && callbacks.onPartyDescriptionUpdate) {
-          Object.entries(data).forEach(([partyId, partyData]: [string, any]) => {
+        if (data.partyDescriptions && callbacks.onPartyDescriptionUpdate) {
+          Object.entries(data.partyDescriptions).forEach(([partyId, partyData]: [string, any]) => {
             if (partyData.description) {
               callbacks.onPartyDescriptionUpdate!(partyId, partyData.description);
             }
           });
         }
-        checkAllDataLoaded();
-      });
-      unsubscribeFunctions.push(unsubscribePartyDescriptions);
-    } catch (error) {
-      logger.error('[EditableDataService] Erreur chargement partyDescriptions:', error);
-      checkAllDataLoaded();
-    }
 
-    return unsubscribeFunctions;
+        callbacks.onAllDataLoaded?.();
+      });
+      return [unsubscribe];
+    } catch (error) {
+      logger.error('[EditableDataService] Erreur chargement editableData:', error);
+      callbacks.onAllDataLoaded?.();
+      return [];
+    }
   }
 
   /**

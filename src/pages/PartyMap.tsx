@@ -37,6 +37,10 @@ interface Party {
   result?: string;
 }
 
+interface PartyMapProps {
+  parties?: Party[];
+}
+
 // Composant interne pour obtenir la référence de la carte
 const MapController: React.FC<{ mapRef: React.MutableRefObject<L.Map | null> }> = ({ mapRef }) => {
   const map = useMap();
@@ -55,116 +59,25 @@ const PlanMapViewAdjuster: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ b
   return null;
 };
 
-const PartyMap: React.FC = () => {
+const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
   const { selectedPartyForMap } = useForm();
-  const [parties, setParties] = useState<Party[]>([]);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   
+  const parties: Party[] = useMemo(() => {
+    if (partiesFromProps && partiesFromProps.length > 0) return partiesFromProps;
+    return [
+      { id: '1', name: "Place Stanislas", position: [48.693524, 6.183270], description: 'Défilé 14h–16h30', address: "Pl. Stanislas, 54000 Nancy", latitude: 48.693524, longitude: 6.183270, date: '2026-04-16T14:00:00', emoji: '🎺', sport: 'Defile' },
+      { id: '2', name: "Parc Expo", position: [48.663030, 6.191597], description: "Soirée Pompoms", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663030, longitude: 6.191597, date: '2026-04-16T21:00:00', emoji: '🎀', sport: 'Pompom' },
+      { id: '3', name: "Parc Expo", position: [48.663481, 6.189737], description: "Soirée Showcase", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663481, longitude: 6.189737, date: '2026-04-17T20:00:00', emoji: '🎤', sport: 'Party' },
+      { id: '4', name: "Zénith", position: [48.711077, 6.139991], description: "Soirée DJ Contest", address: "Rue du Zénith, 54320 Maxéville", latitude: 48.711077, longitude: 6.139991, date: '2026-04-18T20:00:00', emoji: '🎧', sport: 'Party' },
+    ];
+  }, [partiesFromProps]);
+
   // Si on vient du Parc Expo (ou Hall A/B), afficher l'image du plan
   const showParcExpoPlan = selectedPartyForMap?.startsWith('Parc Expo') ?? false;
   // Si on vient du Zénith, afficher l'image du plan
   const showZenithPlan = selectedPartyForMap === 'Zénith';
-
-  // Initialiser les parties avec les mêmes valeurs que dans App.tsx
-  useEffect(() => {
-    const initialParties: Party[] = [
-      {
-        id: '1',
-        name: "Place Stanislas",
-        position: [48.693524, 6.183270],
-        description: 'Défilé 14h–16h30 (informations sur place dès midi)',
-        address: "Pl. Stanislas, 54000 Nancy",
-        latitude: 48.693524,
-        longitude: 6.183270,
-        date: '2026-04-16T14:00:00',
-        emoji: '🎺',
-        sport: 'Defile',
-        result: undefined
-      },
-      {
-        id: '2',
-        name: "Parc Expo",
-        position: [48.663030, 6.191597],
-        description: "Soirée Pompoms du 16 avril, 21h-3h",
-        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
-        latitude: 48.663030,
-        longitude: 6.191597,
-        date: '2026-04-16T21:00:00',
-        emoji: '🎀',
-        sport: 'Pompom',
-        result: 'à venir'
-      },
-      {
-        id: '3',
-        name: "Parc Expo",
-        position: [48.663481, 6.189737],
-        description: "Soirée Showcase 17 novembre, 20h-4h",
-        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
-        latitude: 48.663481,
-        longitude: 6.189737,
-        date: '2026-11-17T20:00:00',
-        emoji: '🎤',
-        sport: 'Party',
-        result: 'à venir'
-      },
-      {
-        id: '4',
-        name: "Zénith",
-        position: [48.711077, 6.139991],
-        description: "Soirée DJ Contest 18 novembre, 20h-4h",
-        address: "Rue du Zénith, 54320 Maxéville",
-        latitude: 48.711077,
-        longitude: 6.139991,
-        date: '2026-11-18T20:00:00',
-        emoji: '🎧',
-        sport: 'Party',
-        result: undefined
-      }
-    ];
-    setParties(initialParties);
-
-    // Charger les résultats et descriptions depuis Firebase
-    const unsubscribeResults = onValue(ref(database, 'editableData/partyResults'), (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        setParties((prevParties) => 
-          prevParties.map((party) => {
-            if (party.id === '2' && data['parc-expo-pompoms']?.result) {
-              return { ...party, result: data['parc-expo-pompoms'].result };
-            }
-            if (party.id === '3' && data['parc-expo-showcase']?.result) {
-              return { ...party, result: data['parc-expo-showcase'].result };
-            }
-            if (party.id === '4' && data['zenith-dj-contest']?.result) {
-              return { ...party, result: data['zenith-dj-contest'].result };
-            }
-            return party;
-          })
-        );
-      }
-    });
-
-    const unsubscribeDescriptions = onValue(ref(database, 'editableData/partyDescriptions'), (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        setParties((prevParties) => 
-          prevParties.map((party) => {
-            const partyData = data[party.id];
-            if (partyData?.description) {
-              return { ...party, description: partyData.description };
-            }
-            return party;
-          })
-        );
-      }
-    });
-
-    return () => {
-      unsubscribeResults();
-      unsubscribeDescriptions();
-    };
-  }, []);
 
   // Fonction pour ouvrir dans Google Maps
   const openInGoogleMaps = async (party: Party) => {

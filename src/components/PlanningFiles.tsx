@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ref, onValue, push, remove, set } from 'firebase/database';
+import { ref, get, push, remove, set } from 'firebase/database';
 import { database, app } from '../firebase';
 import { PlanningFile } from '../types';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject, getStorage } from 'firebase/storage';
@@ -255,10 +255,8 @@ export default function PlanningFiles({
   }, [filter]);
 
   useEffect(() => {
-    // Désactiver l'écoute si la page n'est pas visible
     if (!isVisible) return;
 
-    // Charger les fichiers avec optimisation des connexions
     const optimizer = FirebaseOptimizer.getInstance();
     
     if (!optimizer.canCreateConnection()) {
@@ -268,51 +266,42 @@ export default function PlanningFiles({
       return;
     }
 
+    let cancelled = false;
     setIsLoading(true);
     onLoadingChange?.(true);
-    optimizer.registerConnection();
-    
-    const filesRef = ref(database, 'planningFiles');
-    const filesUnsubscribe = onValue(
-      filesRef, 
-      (snapshot) => {
-        try {
-          const data = snapshot.val();
-          
-          if (data) {
-            // Calculer la taille des données transférées
-            const dataSize = JSON.stringify(data).length;
-            optimizer.trackTransfer(dataSize);
-            
-            const filesArray = Object.entries(data).map(([id, value]) => ({
-              id,
-              ...(value as Omit<PlanningFile, 'id'>)
-            }));
-            setFiles(filesArray);
-          } else {
-            setFiles([]);
-          }
-          
-          // Les données sont chargées (même si vide)
-          setIsLoading(false);
-          onLoadingChange?.(false);
-        } catch (error) {
-          firebaseLogger.logError('read:planningFiles', 'planningFiles', error, { snapshot: snapshot.val() });
+
+    const loadFiles = async () => {
+      try {
+        const filesRef = ref(database, 'planningFiles');
+        const snapshot = await get(filesRef);
+        if (cancelled) return;
+
+        const data = snapshot.val();
+        if (data) {
+          optimizer.trackTransfer(JSON.stringify(data).length);
+          const filesArray = Object.entries(data).map(([id, value]) => ({
+            id,
+            ...(value as Omit<PlanningFile, 'id'>)
+          }));
+          setFiles(filesArray);
+        } else {
+          setFiles([]);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          firebaseLogger.logError('read:planningFiles', 'planningFiles', error);
+        }
+      } finally {
+        if (!cancelled) {
           setIsLoading(false);
           onLoadingChange?.(false);
         }
-      },
-      (error) => {
-        firebaseLogger.logError('read:planningFiles', 'planningFiles', error);
-        setIsLoading(false);
-        onLoadingChange?.(false);
       }
-    );
-
-    return () => {
-      filesUnsubscribe();
-      optimizer.unregisterConnection();
     };
+
+    loadFiles();
+
+    return () => { cancelled = true; };
   }, [isVisible, onLoadingChange]);
 
   // Utiliser IntersectionObserver pour détecter la visibilité

@@ -14,12 +14,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { ref, onValue, set, push, remove, update } from 'firebase/database';
+import { ref, set, push, remove, update } from 'firebase/database';
 import { database } from '../firebase';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import NotificationService from '../services/NotificationService';
 import logger from '../services/Logger';
 import { useModal } from '../contexts/ModalContext';
+import { useApp } from '../AppContext';
 import './ChatPanel.css';
 
 interface Message {
@@ -37,13 +38,18 @@ interface ChatPanelProps {
 
 const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
   const { setShowVSSForm } = useModal();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages } = useApp();
   const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
   const [showAddMessage, setShowAddMessage] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [newMessageSender, setNewMessageSender] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!localStorage.getItem('lastSeenChatTimestamp')) {
+      localStorage.setItem('lastSeenChatTimestamp', String(Date.now()));
+    }
+  }, []);
 
   // Fermer le formulaire VSS quand le chat s'ouvre
   useEffect(() => {
@@ -59,30 +65,6 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
       setEditingMessageId(null);
     }
   }, [isEditing, showAddMessage]);
-
-  // Lecture en temps réel des messages depuis Firebase
-  useEffect(() => {
-    const messagesRef = ref(database, 'chatMessages');
-    setIsLoading(true);
-    const unsubscribe = onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      // Transforme l'objet en tableau [{id, ...}]
-      const messagesArray = Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }));
-      
-      // Trier les messages par timestamp décroissant (plus récents en premier)
-      const sortedMessages = messagesArray.sort((a, b) => b.timestamp - a.timestamp);
-      
-      // Initialiser le timestamp de dernière lecture seulement si c'est la première fois
-      if (!localStorage.getItem('lastSeenChatTimestamp')) {
-        const now = Date.now();
-        localStorage.setItem('lastSeenChatTimestamp', String(now));
-      }
-      
-      setMessages(sortedMessages);
-      setIsLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
 
   // Le timestamp de dernière lecture est géré par les composants parents (App.tsx, Layout.tsx)
   // lors de l'ouverture du chat, pour permettre l'incrémentation correcte du badge
@@ -266,12 +248,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isAdmin, isEditing }) => {
       )}
       
       <div className="chat-container">
-        {isLoading ? (
-          <div className="chat-loading-spinner-container">
-            <div className="chat-loading-spinner"></div>
-            <div className="chat-loading-text">Chargement des messages...</div>
-          </div>
-        ) : messages.length === 0 ? (
+        {messages.length === 0 ? (
           <div className="chat-empty-message">
             Aucun message pour le moment
           </div>

@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { ref, get, onValue } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
 import { database } from '../firebase';
 import { LaunchPopup } from '../types';
 import logger from '../services/Logger';
@@ -22,17 +22,13 @@ export const useLaunchPopup = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadPopups = useCallback(async () => {
+  const processSnapshot = useCallback((data: Record<string, any> | null) => {
     try {
-      const popupsRef = ref(database, LAUNCH_POPUPS_PATH);
-      const snapshot = await get(popupsRef);
-
-      if (!snapshot.exists()) {
+      if (!data) {
         setPopupsQueue([]);
         return;
       }
 
-      const data = snapshot.val();
       const allPopups: LaunchPopup[] = Object.entries(data).map(([id, val]) => ({
         id,
         ...(val as Omit<LaunchPopup, 'id'>)
@@ -58,15 +54,13 @@ export const useLaunchPopup = () => {
   }, []);
 
   useEffect(() => {
-    loadPopups();
-
     const popupsRef = ref(database, LAUNCH_POPUPS_PATH);
-    const unsubscribe = onValue(popupsRef, () => {
-      loadPopups();
+    const unsubscribe = onValue(popupsRef, (snapshot) => {
+      processSnapshot(snapshot.val());
     });
 
     return () => unsubscribe();
-  }, [loadPopups]);
+  }, [processSnapshot]);
 
   const currentPopup = popupsQueue[currentIndex] ?? null;
   const showPopup = currentPopup !== null;
