@@ -644,7 +644,7 @@ function App() {
       },
       {
         id: '3',
-        name: "Parc Expo Hall A",
+        name: "Parc Expo Hall A2",
         position: [48.663481, 6.189737],
         description: "Soirée Showcase 17 avril, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",

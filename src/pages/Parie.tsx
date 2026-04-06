@@ -24,7 +24,7 @@ interface SportSection {
 }
 
 // Date de clôture des paris (à configurer)
-const BETTING_DEADLINE = new Date('2026-04-16T16:00:00'); // 16 avril 2026 à 16h
+const BETTING_DEADLINE = new Date('2026-04-16T15:00:00'); // 16 avril 2026 à 15h
 
 // Emojis pour chaque sport (cohérent avec App.tsx)
 const sportEmojis: { [key: string]: string } = {
@@ -47,6 +47,16 @@ const sportEmojis: { [key: string]: string } = {
   'Show Pompom': '🎀',
   'DJ Contest': '🎧',
 };
+
+/** Delegations allowed to be picked for DJ Contest (must match display names from venues). */
+const DJ_CONTEST_DELEGATIONS: readonly string[] = [
+  'IMT NE',
+  'IMT A',
+  'Mines Alès',
+  'Mines Nancy',
+  'Télécom Paris',
+  'Ponts',
+];
 
 // Interface pour les votes agrégés d'une délégation
 interface DelegationVotes {
@@ -435,9 +445,15 @@ const Parie: React.FC = () => {
       });
     });
 
-    // Ajouter Show Pompom et DJ Contest avec toutes les délégations
+    // Ajouter Show Pompom (toutes les délégations) et DJ Contest (liste restreinte)
     const allDelegations = getAllDelegations();
-    
+    const djContestDelegationSet = new Set(
+      DJ_CONTEST_DELEGATIONS.map(d => d.toLowerCase())
+    );
+    const djContestDelegations = allDelegations.filter(d =>
+      djContestDelegationSet.has(d.toLowerCase())
+    );
+
     // Show Pompom - toutes les délégations participent
     const showPompomKey = 'Show Pompom_mixte';
     sportsMap.set(showPompomKey, {
@@ -446,12 +462,12 @@ const Parie: React.FC = () => {
       delegations: new Set(allDelegations)
     });
 
-    // DJ Contest - toutes les délégations participent
+    // DJ Contest - seulement certaines délégations
     const djContestKey = 'DJ Contest_mixte';
     sportsMap.set(djContestKey, {
       sport: 'DJ Contest',
       gender: 'mixte',
-      delegations: new Set(allDelegations)
+      delegations: new Set(djContestDelegations)
     });
 
     // Convertir en tableau et filtrer les sports sans délégations

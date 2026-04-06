@@ -23,6 +23,9 @@ import './PartyMap.css';
 /** Normalized storage range for plan marker coords in Firebase (legacy 1000×1000 map space). */
 const PLAN_MARKER_COORD_RANGE = 1000;
 
+/** Radians for 90° counter-clockwise (rotate left) when building a rotated plan bitmap. */
+const ROTATE_90_CCW_RAD = -Math.PI / 2;
+
 interface Party {
   id: string;
   name: string;
@@ -195,15 +198,19 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     imageSrc: string; 
     imageAlt: string;
     partyName: string;
-  }> = ({ imageSrc, partyName }) => {
+    /** When true, raster is drawn 90° counter-clockwise before display (Leaflet-safe vs CSS transform on overlay img). */
+    rotateImageLeft90?: boolean;
+  }> = ({ imageSrc, partyName, rotateImageLeft90 = false }) => {
     const { isEditing } = useEditing();
     const { isAdmin } = useApp();
     const [planMarkers, setPlanMarkers] = useState<any[]>([]);
     const [isAddingMarker, setIsAddingMarker] = useState(false);
     const [selectedIndicationType, setSelectedIndicationType] = useState('Soins');
     const [planImageSize, setPlanImageSize] = useState<{ w: number; h: number } | null>(null);
+    const [planDisplayUrl, setPlanDisplayUrl] = useState<string | null>(null);
     const [planImageLoadError, setPlanImageLoadError] = useState(false);
     const [planImageRetryKey, setPlanImageRetryKey] = useState(0);
+    const rotatedBlobUrlRef = useRef<string | null>(null);
 
     const indicationTypeEmojis: { [key: string]: string } = {
       'Soins': '🚑',
@@ -221,27 +228,84 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     };
 
     useEffect(() => {
+      let effectActive = true;
       setPlanImageSize(null);
+      setPlanDisplayUrl(null);
       setPlanImageLoadError(false);
+      if (rotatedBlobUrlRef.current) {
+        URL.revokeObjectURL(rotatedBlobUrlRef.current);
+        rotatedBlobUrlRef.current = null;
+      }
+
       const img = new Image();
-      const onLoad = () => {
+
+      const finalizeNonRotated = () => {
+        if (!effectActive) return;
         if (img.naturalWidth > 0 && img.naturalHeight > 0) {
           setPlanImageSize({ w: img.naturalWidth, h: img.naturalHeight });
+          setPlanDisplayUrl(imageSrc);
         } else {
           setPlanImageLoadError(true);
         }
       };
+
+      const finalizeRotated = () => {
+        if (!effectActive) return;
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        if (w <= 0 || h <= 0) {
+          setPlanImageLoadError(true);
+          return;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = h;
+        canvas.height = w;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          setPlanImageLoadError(true);
+          return;
+        }
+        ctx.translate(0, w);
+        ctx.rotate(ROTATE_90_CCW_RAD);
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob) => {
+          if (!effectActive) return;
+          if (!blob) {
+            setPlanImageLoadError(true);
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          rotatedBlobUrlRef.current = url;
+          setPlanDisplayUrl(url);
+          setPlanImageSize({ w: canvas.width, h: canvas.height });
+        }, 'image/png');
+      };
+
+      const onLoad = () => {
+        if (rotateImageLeft90) {
+          finalizeRotated();
+        } else {
+          finalizeNonRotated();
+        }
+      };
       const onError = () => {
-        setPlanImageLoadError(true);
+        if (effectActive) {
+          setPlanImageLoadError(true);
+        }
       };
       img.addEventListener('load', onLoad);
       img.addEventListener('error', onError);
       img.src = imageSrc;
       return () => {
+        effectActive = false;
         img.removeEventListener('load', onLoad);
         img.removeEventListener('error', onError);
+        if (rotatedBlobUrlRef.current) {
+          URL.revokeObjectURL(rotatedBlobUrlRef.current);
+          rotatedBlobUrlRef.current = null;
+        }
       };
-    }, [imageSrc, planImageRetryKey]);
+    }, [imageSrc, planImageRetryKey, rotateImageLeft90]);
 
     const imageBounds: L.LatLngBoundsExpression = useMemo(() => {
       if (!planImageSize) {
@@ -384,7 +448,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
             Chargement du plan…
           </div>
         )}
-        {!planImageLoadError && planImageSize && (
+        {!planImageLoadError && planImageSize && planDisplayUrl && (
         <MapContainer
           key={`plan-map-${partyName}-${planImageSize.w}-${planImageSize.h}`}
           center={mapCenter}
@@ -396,7 +460,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
         >
           <PlanMapViewAdjuster bounds={imageBounds} />
           <ImageOverlay
-            url={imageSrc}
+            url={planDisplayUrl}
             bounds={imageBounds}
             opacity={1}
           />
@@ -451,9 +515,10 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     return (
       <PlanMapView 
         title="Plan du Parc des Expositions"
-        imageSrc="/Parc-expo-plan.jpg"
+        imageSrc="/Parc-Expo.png"
         imageAlt="Plan du Parc des Expositions de Nancy"
         partyName="Parc Expo"
+        rotateImageLeft90
       />
     );
   }
