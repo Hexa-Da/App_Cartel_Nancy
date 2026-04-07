@@ -9,6 +9,16 @@ interface VenueWithMatches {
 
 const EXCLUDED_KEYWORDS = ['poule', 'perdant', 'vainqueur', 'gagnant'];
 
+/** Allowed chess board player slots: A1–A4 … D1–D4 */
+const ECHECS_ROWS = ['A', 'B', 'C', 'D'] as const;
+const ECHECS_COLS = [1, 2, 3, 4] as const;
+
+export const ECHECS_PLAYER_IDS: readonly string[] = ECHECS_ROWS.flatMap(row =>
+  ECHECS_COLS.map(col => `${row}${col}`)
+);
+
+const ECHECS_PLAYER_ID_SET = new Set(ECHECS_PLAYER_IDS);
+
 /**
  * Normalise un nom d'équipe vers son nom canonique (minuscule).
  * Ex: "nancy" → "mines nancy", "sainté" → "mines sainté"
@@ -72,6 +82,41 @@ export function delegationMatches(teamsString: string, delegation: string): bool
 }
 
 /**
+ * Extrait les IDs joueurs (ex: "A1", "B2") depuis une chaîne teams.
+ * Uniquement les cases autorisées A1–A4 … D1–D4.
+ */
+export function extractPlayerIds(teamsString: string): string[] {
+  if (!teamsString) return [];
+
+  const playerIds = new Set<string>();
+
+  parseTeams(teamsString).forEach(team => {
+    const cleaned = team.trim().toUpperCase();
+    const matches = cleaned.match(/\b[A-Z][0-9]+\b/g);
+    matches?.forEach(match => {
+      if (ECHECS_PLAYER_ID_SET.has(match)) playerIds.add(match);
+    });
+  });
+
+  return Array.from(playerIds).sort(compareEchecsPlayerIds);
+}
+
+function compareEchecsPlayerIds(a: string, b: string): number {
+  const letterCompare = a[0].localeCompare(b[0]);
+  if (letterCompare !== 0) return letterCompare;
+  return Number(a.slice(1)) - Number(b.slice(1));
+}
+
+/**
+ * Vérifie si un ID joueur est présent dans une chaîne teams.
+ */
+export function playerIdMatches(teamsString: string, playerId: string): boolean {
+  if (!teamsString || !playerId) return false;
+  const target = playerId.trim().toUpperCase();
+  return extractPlayerIds(teamsString).includes(target);
+}
+
+/**
  * Extrait toutes les délégations uniques depuis une liste de venues.
  * Éclate les composites, filtre les codes courts et mots-clés de phases.
  */
@@ -90,4 +135,12 @@ export function getAllDelegationsFromVenues(venues: VenueWithMatches[]): string[
   });
 
   return Array.from(delegations).sort();
+}
+
+/**
+ * Liste des IDs joueurs pour le filtre Échecs (grille fixe A1–D4).
+ * Le paramètre `venues` est conservé pour compatibilité d’API.
+ */
+export function getAllPlayerIdsFromVenues(_venues: VenueWithMatches[]): string[] {
+  return [...ECHECS_PLAYER_IDS];
 }

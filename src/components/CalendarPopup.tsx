@@ -7,7 +7,7 @@ import Header from './Header';
 import BottomNav from './BottomNav';
 import EventDetails, { Event } from '../components/EventDetails';
 import { useForm } from '../contexts/FormContext';
-import { delegationMatches, getAllDelegationsFromVenues } from '../services/TeamService';
+import { delegationMatches, getAllDelegationsFromVenues, getAllPlayerIdsFromVenues, playerIdMatches } from '../services/TeamService';
 
 interface CalendarPopupProps {
   isOpen: boolean;
@@ -275,6 +275,15 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
   };
 
   const getAllDelegations = () => getAllDelegationsFromVenues(venues);
+  const getAllPlayerIds = () => getAllPlayerIdsFromVenues(venues);
+  const isChessFilter = eventFilter === 'Echecs';
+  const delegationOptions = isChessFilter ? getAllPlayerIds() : getAllDelegations();
+
+  useEffect(() => {
+    if (delegationFilter === 'all') return;
+    if (delegationOptions.includes(delegationFilter)) return;
+    onDelegationFilterChange('all');
+  }, [eventFilter, delegationFilter, delegationOptions, onDelegationFilterChange]);
 
   const getEventsForDay = (date: string): Event[] => {
     const events: Event[] = [];
@@ -304,8 +313,10 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                                   (isMixed && showMixed);
 
                 // Filtre par délégation
-                const delegationMatch = delegationFilter === 'all' || 
-                  (match.teams && delegationMatches(match.teams, delegationFilter));
+                const delegationMatch = delegationFilter === 'all' ||
+                  (match.teams && (isChessFilter
+                    ? playerIdMatches(match.teams, delegationFilter)
+                    : delegationMatches(match.teams, delegationFilter)));
                 
                 if (sportMatch && venueMatch && genderMatch && delegationMatch) {
                   const eventEndTime = match.endTime ? match.endTime.split('T')[1].split('.')[0] : undefined;
@@ -811,8 +822,8 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                   value={delegationFilter}
                   onChange={(e) => onDelegationFilterChange(e.target.value)}
                 >
-                  <option value="all">Toutes les délégations</option>
-                  {getAllDelegations().map(delegation => (
+                  <option value="all">{isChessFilter ? 'Tous les joueurs' : 'Toutes les délégations'}</option>
+                  {delegationOptions.map(delegation => (
                     <option key={delegation} value={delegation}>
                       {delegation}
                     </option>

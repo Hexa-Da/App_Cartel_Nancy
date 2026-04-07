@@ -11,7 +11,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import ReactGA from 'react-ga4';
 import { Venue } from '../types';
-import { delegationMatches, getAllDelegationsFromVenues } from '../services/TeamService';
+import { delegationMatches, getAllDelegationsFromVenues, getAllPlayerIdsFromVenues, playerIdMatches } from '../services/TeamService';
 import './EventsTab.css';
 
 interface Party {
@@ -179,6 +179,9 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
   };
 
   const getAllDelegations = () => getAllDelegationsFromVenues(venues);
+  const getAllPlayerIds = () => getAllPlayerIdsFromVenues(venues);
+  const isChessFilter = eventFilter === 'Echecs';
+  const delegationOptions = isChessFilter ? getAllPlayerIds() : getAllDelegations();
 
   const getVenueOptions = () => {
     const filteredVenues = venues.filter(venue => venue.sport === eventFilter);
@@ -429,9 +432,13 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
           (eventFilter === 'match' && event.type === 'match') ||
           (event.type === 'match' && event.sport === eventFilter && eventFilter !== 'match'));
 
-      const delegationMatch = event.type === 'party' 
-        ? true 
-        : (delegationFilter === 'all' || (event.teams && delegationMatches(event.teams, delegationFilter)));
+      const delegationMatch = event.type === 'party'
+        ? true
+        : (delegationFilter === 'all' || (
+          event.teams && (isChessFilter
+            ? playerIdMatches(event.teams, delegationFilter)
+            : delegationMatches(event.teams, delegationFilter))
+        ));
 
       let venueMatch = true;
       if (venueFilter !== 'Tous') {
@@ -468,7 +475,13 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
 
       return typeMatch && delegationMatch && venueMatch && genderMatch;
     });
-  }, [getAllEvents, eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed, isAdmin]);
+  }, [getAllEvents, eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed, isAdmin, isChessFilter]);
+
+  useEffect(() => {
+    if (delegationFilter === 'all') return;
+    if (delegationOptions.includes(delegationFilter)) return;
+    setDelegationFilterWithSave('all');
+  }, [eventFilter, delegationOptions, delegationFilter]);
 
   // Effet pour détecter les changements de filtres et mettre à jour l'état de l'étoile
   useEffect(() => {
@@ -718,8 +731,8 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
               value={delegationFilter}
               onChange={handleDelegationFilterChange}
             >
-              <option value="all">Toutes les délégations</option>
-              {getAllDelegations().map(delegation => (
+              <option value="all">{isChessFilter ? 'Tous les joueurs' : 'Toutes les délégations'}</option>
+              {delegationOptions.map(delegation => (
                 <option key={delegation} value={delegation}>
                   {delegation}
                 </option>

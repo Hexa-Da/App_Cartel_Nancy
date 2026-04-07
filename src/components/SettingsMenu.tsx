@@ -3,6 +3,7 @@ import './SettingsMenu.css';
 import NotificationService from '../services/NotificationService';
 import { useApp } from '../AppContext';
 import DiagnosticPanel from './DiagnosticPanel';
+import { getAllPlayerIdsFromVenues } from '../services/TeamService';
 
 interface SettingsMenuProps {
   isOpen: boolean;
@@ -73,7 +74,7 @@ const hotelOptions = [
 
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocationChange }) => {
-  const { getAllDelegations, hasGenderMatches, isAdmin, isLoadingVenues } = useApp();
+  const { venues, getAllDelegations, hasGenderMatches, isAdmin, isLoadingVenues } = useApp();
   // Thème
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const stored = localStorage.getItem('theme');
@@ -128,6 +129,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   const [showRestaurants, setShowRestaurants] = React.useState(() => getInitial('showRestaurants', true));
 
   const [isDiagnosticOpen, setIsDiagnosticOpen] = React.useState(false);
+  const isChessSportSelected = favoriteSports[0] === 'Echecs';
+  const delegationOptions = isChessSportSelected ? getAllPlayerIdsFromVenues(venues) : getAllDelegations();
 
   const notificationService = NotificationService.getInstance();
 
@@ -377,6 +380,13 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteSports, hasGenderMatches, isLoadingVenues]);
 
+  useEffect(() => {
+    if (preferredDelegation === 'all') return;
+    if (delegationOptions.includes(preferredDelegation)) return;
+    setPreferredDelegation('all');
+    handlePreferenceChange('preferredDelegation', 'all');
+  }, [favoriteSports, preferredDelegation, delegationOptions]);
+
   if (!isOpen) return null;
 
   return (
@@ -468,15 +478,15 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
             );
           })()}
           <div className="settings-item">
-            <label htmlFor="preferred-delegation">Votre Délégation</label>
+            <label htmlFor="preferred-delegation">{isChessSportSelected ? 'Votre ID de Joueur' : 'Votre Délégation'}</label>
             <select 
               id="preferred-delegation" 
               className="settings-select" 
               value={preferredDelegation} 
               onChange={e => handleDelegationChange(e.target.value)}
             >
-              <option value="all">Toutes les délégations</option>
-              {getAllDelegations().map(delegation => (
+              <option value="all">{isChessSportSelected ? 'Tous les joueurs' : 'Toutes les délégations'}</option>
+              {delegationOptions.map(delegation => (
                 <option key={delegation} value={delegation}>
                   {delegation}
                 </option>
