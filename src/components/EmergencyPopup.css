@@ -100,15 +100,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
   font-size: 1rem;
   margin-left: 1rem;
   color: var(--text-color);
 }
 
-.emergency-popup-content ul li strong {
-  color: var(--text-primary);
-  margin-right: 0.5rem;
+.emergency-contact-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.emergency-contact-name {
+  color: var(--text-color);
+}
+
+.emergency-contact-number {
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
 }
 
 .emergency-popup-footer {

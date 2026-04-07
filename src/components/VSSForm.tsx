@@ -343,7 +343,7 @@ const VSSForm: React.FC<VSSFormProps> = ({ onClose }) => {
     };
 
     // Préparer le message Telegram
-    const message = `<b>NOUVEAU SIGNALEMENT VSS</b>
+    const message = `<b>NOUVEAU SIGNALEMENT</b>
 
 <b>Date :</b> ${formatDate(formData.date)}
 <b>Lieu :</b> ${formData.location}
@@ -382,7 +382,7 @@ ${formData.description}
       logger.error('Erreur lors de l\'envoi:', error);
       
       // Fallback: Méthode traditionnelle avec client mail
-      const emailContent = `Nouveau signalement VSS :
+      const emailContent = `Nouveau signalement :
 
 Date de l'incident : ${formData.date}
 Lieu : ${formData.location}
@@ -409,7 +409,7 @@ ${emailContent}`);
     <div className="vss-form-overlay" onClick={onClose}>
       <div className="vss-form-container" onClick={e => e.stopPropagation()}>
         <div className="vss-form-header">
-          <h2 style={{ margin: 0 }}>Signalement VSS</h2>
+          <h2 style={{ margin: 0 }}>Signalement d'un incident</h2>
           <button 
             className="close-button"
             onClick={onClose}
@@ -453,9 +453,6 @@ ${emailContent}`);
           <div className="form-group">
             <label htmlFor="description">
               Description de l&apos;incident
-              <span className="form-field-hint">
-                Terminer la saisie : Entrée · nouvelle ligne : Maj+Entrée
-              </span>
             </label>
             <textarea
               id="description"

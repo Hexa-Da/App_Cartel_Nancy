@@ -268,11 +268,6 @@ body {
   color: var(--text-color);
 }
 
-.emergency-popup li strong {
-  color: var(--accent-color);
-  margin-right: 0.5rem;
-}
-
 /* Forcer l'orientation portrait */
 @media screen and (orientation: landscape) {
   .layout {
