@@ -13,10 +13,10 @@ const EmergencyPopup: React.FC<EmergencyPopupProps> = ({ isOpen, onClose, onShow
   if (!isOpen) return null;
 
   const emergencyContacts = [
-    { name: 'Responsable VSS', number: '+33 7' },
-    { name: 'Responsable sécurité', number: '+33 7' },
-    { name: 'Responsable orga', number: '+33 7' },
-    { name: 'Urgence absolue', number: '+33 7' },
+    { name: 'Responsable VSS', number: '+33 7 51 16 67 00' },
+    { name: 'Responsable Sécurité', number: '+33 7 53 70 02 04' },
+    { name: 'Responsable Secret-G', number: '+33 7 58 26 56 33' },
+    { name: 'Urgence Absolue', number: '+33 7 58 76 00 52' },
   ];
 
   return (
@@ -58,7 +58,7 @@ const EmergencyPopup: React.FC<EmergencyPopupProps> = ({ isOpen, onClose, onShow
               onClose();
             }}
           >
-            Signaler un incident
+            Faire un signalement
           </button>
         </div>
       </div>

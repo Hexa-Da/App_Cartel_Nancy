@@ -225,6 +225,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
       'Stand de prévention': '⚠️',
       'Stand entreprise': '👩‍💼',
       'Issue de secours': '➜',
+      'Reception Alumni': '👨‍🎓',
     };
 
     useEffect(() => {
@@ -410,6 +411,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
                   <option value="Stand de prévention">Stand de prévention ⚠️</option>
                   <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                   <option value="Issue de secours">Issue de secours ➜</option>
+                  <option value="Reception Alumni">Reception Alumni 👨‍🎓</option>
                 </select>
                 <button
                   type="button"

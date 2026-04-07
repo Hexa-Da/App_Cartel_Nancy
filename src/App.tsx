@@ -595,16 +595,31 @@ function App() {
       {
         id: '2',
         name: "Parc Expo Hall A1",
-        position: [48.663272, 6.190683],
+        position: [48.663070, 6.191429],
         description: "Repas du Jeudi et Vendredi soir",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'restaurant',
         date: '',
-        latitude: 48.663272,
-        longitude: 6.190683,
+        latitude: 48.663070,
+        longitude: 6.191429,
         emoji: '🍽️',
         sport: 'Restaurant',
         mealType: 'soir',
+        matches: []
+      },
+      {
+        id: '3',
+        name: "Parc Saint-Marie",
+        position: [48.680392, 6.170733],
+        description: "Brunch du Dimanche matin",
+        address: "1 Av. Boffrand, 54000 Nancy",
+        type: 'restaurant',
+        date: '',
+        latitude: 48.680392,
+        longitude: 6.170733,
+        emoji: '🍽️',
+        sport: 'Restaurant',
+        mealType: 'midi',
         matches: []
       }
     ];
@@ -630,14 +645,14 @@ function App() {
       {
         id: '2',
         name: "Parc Expo Hall A2",
-        position: [48.663030, 6.191597],
+        position: [48.663257, 6.189841],
         description: "Soirée Pompoms du 16 avril, 21h-3h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
         date: '2026-04-16T20:00:00',
         endDate: '2026-04-17T02:00:00',
-        latitude: 48.663030,
-        longitude: 6.191597,
+        latitude: 48.663257,
+        longitude: 6.189841,
         emoji: '🎀',
         sport: 'Pompom',
         result: ''
@@ -645,14 +660,14 @@ function App() {
       {
         id: '3',
         name: "Parc Expo Hall A2",
-        position: [48.663481, 6.189737],
+        position: [48.663636, 6.190061],
         description: "Soirée Showcase 17 avril, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
         type: 'party',
         date: '2026-04-17T20:00:00',
         endDate: '2026-04-18T02:00:00',
-        latitude: 48.663481,
-        longitude: 6.189737,
+        latitude: 48.663636,
+        longitude: 6.190061,
         emoji: '🎤',
         sport: 'Party',
         result: ''
@@ -802,6 +817,7 @@ function App() {
     'Stand de prévention': '⚠️',
     'Stand entreprise': '👩‍💼',
     'Issue de secours': '➜',
+    'Reception Alumni': '👨‍🎓',
   };
 
   // Utiliser les services pour les fonctions utilitaires
@@ -3609,6 +3625,7 @@ function App() {
                   <option value="Stand de prévention">Stand de prévention ⚠️</option>
                   <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                   <option value="Issue de secours">Issue de secours ➜</option>
+                  <option value="Reception Alumni">Reception Alumni 👨‍🎓</option>
                 </select>
               </div>
               <div className="modal-form-actions">
@@ -3660,6 +3677,7 @@ function App() {
                   <option value="Stand de prévention">Stand de prévention ⚠️</option>
                   <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
                   <option value="Issue de secours">Issue de secours ➜</option>
+                  <option value="Reception Alumni">Reception Alumni 👨‍🎓</option>
                 </select>
               </div>
               <div className="modal-form-actions">
