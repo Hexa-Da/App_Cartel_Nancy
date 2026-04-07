@@ -14,6 +14,7 @@ import {
 import './Parie.css';
 import WinnersModal from '../components/WinnersModal';
 import logger from '../services/Logger';
+import { ECHECS_PLAYER_IDS } from '../services/TeamService';
 
 interface SportSection {
   sportKey: string;
@@ -57,6 +58,8 @@ const DJ_CONTEST_DELEGATIONS: readonly string[] = [
   'Télécom Paris',
   'Ponts',
 ];
+
+const ECHECS_PLAYER_ID_SET = new Set(ECHECS_PLAYER_IDS);
 
 // Interface pour les votes agrégés d'une délégation
 interface DelegationVotes {
@@ -428,6 +431,18 @@ const Parie: React.FC = () => {
 
         const sides = match.teams.split(/\svs\s/i).map((s: string) => s.trim());
         sides.forEach((side: string) => {
+          if (sport === 'Echecs') {
+            const chessPlayers = side
+              .split(/\sx\s/i)
+              .map((player: string) => player.trim().toUpperCase())
+              .filter((player: string) => ECHECS_PLAYER_ID_SET.has(player));
+
+            chessPlayers.forEach((playerId: string) => {
+              sportsMap.get(sportKey)?.delegations.add(playerId);
+            });
+            return;
+          }
+
           const sideLower = side.toLowerCase();
           const isExcluded = excludedKeywords.some(keyword => sideLower.includes(keyword));
           if (

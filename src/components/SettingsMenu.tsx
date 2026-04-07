@@ -123,6 +123,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   });
   // Délégation préférée
   const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
+  // Délégation suivie pour les joueurs d'échecs
+  const [preferredChessDelegation, setPreferredChessDelegation] = React.useState(() => getInitial('preferredChessDelegation', 'all'));
   // Hôtel préféré
   const [preferredHotel, setPreferredHotel] = React.useState(() => getInitial('preferredHotel', 'none'));
   // Afficher les restaurants
@@ -230,6 +232,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     handlePreferenceChange('preferredHotel', hotel);
   };
 
+  // Gérer la délégation suivie en échecs
+  const handleChessDelegationChange = (delegation: string) => {
+    setPreferredChessDelegation(delegation);
+    handlePreferenceChange('preferredChessDelegation', delegation);
+  };
+
   // Gérer l'affichage des restaurants
   const handleRestaurantToggle = (enabled: boolean) => {
     setShowRestaurants(enabled);
@@ -293,6 +301,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       if (e.key === 'preferredHotel' && e.newValue !== null) {
         setPreferredHotel(e.newValue);
       }
+      if (e.key === 'preferredChessDelegation' && e.newValue !== null) {
+        setPreferredChessDelegation(e.newValue);
+      }
       if (e.key === 'showRestaurants' && e.newValue !== null) {
         setShowRestaurants(e.newValue === 'true');
       }
@@ -335,6 +346,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       }
       if (e.detail.key === 'preferredHotel') {
         setPreferredHotel(e.detail.value);
+      }
+      if (e.detail.key === 'preferredChessDelegation') {
+        setPreferredChessDelegation(e.detail.value);
       }
       if (e.detail.key === 'showRestaurants') {
         setShowRestaurants(e.detail.value === 'true');
@@ -493,6 +507,24 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
               ))}
             </select>
           </div>
+          {isChessSportSelected && (
+            <div className="settings-item">
+              <label htmlFor="preferred-chess-delegation">Votre Délégation (suivi)</label>
+              <select
+                id="preferred-chess-delegation"
+                className="settings-select"
+                value={preferredChessDelegation}
+                onChange={e => handleChessDelegationChange(e.target.value)}
+              >
+                <option value="all">Toutes les délégations</option>
+                {getAllDelegations().map(delegation => (
+                  <option key={delegation} value={delegation}>
+                    {delegation}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="settings-item">
             <label htmlFor="preferred-hotel">Votre Hôtel</label>
             <select 

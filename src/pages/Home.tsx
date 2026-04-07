@@ -84,6 +84,7 @@ const Home: React.FC = () => {
       }
     })(),
     delegation: localStorage.getItem('preferredDelegation') || '',
+    chessDelegation: localStorage.getItem('preferredChessDelegation') || '',
     championship: (() => {
       const raw = localStorage.getItem('preferredChampionship');
       if (!raw) return 'none';
@@ -133,7 +134,7 @@ const Home: React.FC = () => {
     };
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'preferredSport' || e.key === 'preferredDelegation' || e.key === 'preferredChampionship') {
+      if (e.key === 'preferredSport' || e.key === 'preferredDelegation' || e.key === 'preferredChessDelegation' || e.key === 'preferredChampionship') {
         setUserPreferences(prev => ({
           favoriteSports: e.key === 'preferredSport'
             ? (() => {
@@ -149,6 +150,9 @@ const Home: React.FC = () => {
           delegation: e.key === 'preferredDelegation'
             ? (e.newValue || '')
             : prev.delegation,
+          chessDelegation: e.key === 'preferredChessDelegation'
+            ? (e.newValue || '')
+            : prev.chessDelegation,
           championship: e.key === 'preferredChampionship'
             ? (() => {
                 if (!e.newValue) return 'none';
@@ -166,7 +170,7 @@ const Home: React.FC = () => {
     };
 
     const handlePreferenceChange = (e: CustomEvent) => {
-      if (e.detail.key === 'favoriteSports' || e.detail.key === 'preferredDelegation' || e.detail.key === 'preferredChampionship') {
+      if (e.detail.key === 'favoriteSports' || e.detail.key === 'preferredDelegation' || e.detail.key === 'preferredChessDelegation' || e.detail.key === 'preferredChampionship') {
         setUserPreferences(prev => ({
           favoriteSports: e.detail.key === 'favoriteSports'
             ? JSON.parse(e.detail.value || '[]')
@@ -174,6 +178,9 @@ const Home: React.FC = () => {
           delegation: e.detail.key === 'preferredDelegation'
             ? (e.detail.value || '')
             : prev.delegation,
+          chessDelegation: e.detail.key === 'preferredChessDelegation'
+            ? (e.detail.value || '')
+            : prev.chessDelegation,
           championship: e.detail.key === 'preferredChampionship'
             ? (() => {
                 if (!e.detail.value) return 'none';
@@ -555,9 +562,35 @@ const Home: React.FC = () => {
         <section className="matches-section">
           <h2>Votre Délégation</h2>
           <div className="horizontal-scroll">
-            {userPreferences.delegation && userPreferences.delegation !== 'all' ? (
-              getMatchesByDelegation(events, userPreferences.delegation).length > 0 ? (
-                getMatchesByDelegation(events, userPreferences.delegation).map(match => (
+            {(() => {
+              const selectedSport = userPreferences.favoriteSports[0];
+              const delegationForSection = selectedSport === 'Echecs'
+                ? userPreferences.chessDelegation
+                : userPreferences.delegation;
+
+              if (!delegationForSection || delegationForSection === 'all') {
+                return isLoadingVenues ? (
+                  <div className="no-matches loading-container">
+                    <div className="section-loading-spinner"></div>
+                  </div>
+                ) : (
+                  <p className="no-matches">Veuillez sélectionner votre délégation dans les paramètres</p>
+                );
+              }
+
+              const delegationMatchesList = getMatchesByDelegation(events, delegationForSection);
+              if (delegationMatchesList.length === 0) {
+                return isLoadingVenues ? (
+                  <div className="no-matches loading-container">
+                    <div className="section-loading-spinner"></div>
+                  </div>
+                ) : (
+                  <p className="no-matches">Aucun match trouvé pour la délégation {delegationForSection} <br />
+                  Veuillez sélectionner votre délégation dans les paramètres</p>
+                );
+              }
+
+              return delegationMatchesList.map(match => (
                   <div 
                     key={match.id} 
                     className={`event-item home-event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
@@ -576,26 +609,8 @@ const Home: React.FC = () => {
                       <div className="event-result">{match.result}</div>
                     )}
                   </div>
-                ))
-              ) : (
-                isLoadingVenues ? (
-                  <div className="no-matches loading-container">
-                    <div className="section-loading-spinner"></div>
-                  </div>
-                ) : (
-                  <p className="no-matches">Aucun match trouvé pour la délégation {userPreferences.delegation} <br />
-                  Veuillez sélectionner votre délégation dans les paramètres</p>
-                )
-              )
-            ) : (
-              isLoadingVenues ? (
-                <div className="no-matches loading-container">
-                  <div className="section-loading-spinner"></div>
-                </div>
-              ) : (
-                <p className="no-matches">Veuillez sélectionner votre délégation dans les paramètres</p>
-              )
-            )}
+                ));
+            })()}
           </div>
         </section>
 
