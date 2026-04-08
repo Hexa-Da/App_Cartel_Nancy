@@ -61,6 +61,7 @@ export interface PlanningFile {
 export interface LaunchPopup {
   id: string;
   title: string;
-  image: string;
+  image?: string;
+  video?: string;
   startDate: string;
 }

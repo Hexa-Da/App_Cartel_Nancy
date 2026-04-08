@@ -103,3 +103,10 @@
   object-fit: cover;
   border-radius: var(--radius-sm);
 }
+
+.launch-popup-video {
+  width: 100%;
+  max-height: 300px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-secondary);
+}

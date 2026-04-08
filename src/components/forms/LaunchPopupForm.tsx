@@ -13,6 +13,12 @@ import { compressImage } from '../../services/imageCompression';
 import { onModalSingleLineInputEnterKey } from '../../utils/mobileFormKeyboard';
 import '../ModalForm.css';
 
+const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024;
+const IMAGE_MIME_PREFIX = 'image/';
+const VIDEO_MIME_PREFIX = 'video/';
+const VIDEO_EXTENSIONS = new Set(['mp4', 'm4v', 'webm']);
+const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif']);
+
 interface LaunchPopupFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -25,6 +31,43 @@ interface LaunchPopupFormProps {
 
 const toDateInput = (date: Date): string => {
   return date.toISOString().slice(0, 16);
+};
+
+const getFileExtension = (fileName: string): string => {
+  const ext = fileName.split('.').pop();
+  return ext ? ext.toLowerCase() : '';
+};
+
+const getSanitizedMediaName = (file: File, isVideo: boolean): string => {
+  const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9.-]/g, '_');
+  if (isVideo) {
+    const extension = getFileExtension(file.name) || 'mp4';
+    return `${baseName}.${extension}`;
+  }
+  return `${baseName}.jpg`;
+};
+
+const resolveMediaType = (file: File): 'image' | 'video' | null => {
+  if (file.type.startsWith(IMAGE_MIME_PREFIX)) return 'image';
+  if (file.type.startsWith(VIDEO_MIME_PREFIX)) return 'video';
+  const extension = getFileExtension(file.name);
+  if (IMAGE_EXTENSIONS.has(extension)) return 'image';
+  if (VIDEO_EXTENSIONS.has(extension)) return 'video';
+  return null;
+};
+
+const resolveContentType = (file: File, mediaType: 'image' | 'video'): string => {
+  if (file.type) return file.type;
+  const extension = getFileExtension(file.name);
+  if (mediaType === 'video') {
+    if (extension === 'webm') return 'video/webm';
+    if (extension === 'm4v') return 'video/x-m4v';
+    return 'video/mp4';
+  }
+  if (extension === 'png') return 'image/png';
+  if (extension === 'webp') return 'image/webp';
+  if (extension === 'gif') return 'image/gif';
+  return 'image/jpeg';
 };
 
 const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
@@ -66,14 +109,17 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
       return;
     }
     if (!file) {
-      setError('Veuillez choisir une image');
+      setError('Veuillez choisir une image ou une vidéo');
       return;
     }
-    if (!file.type.startsWith('image/')) {
-      setError('Le fichier doit être une image');
+    const mediaType = resolveMediaType(file);
+    const isImage = mediaType === 'image';
+    const isVideo = mediaType === 'video';
+    if (!isImage && !isVideo) {
+      setError('Le fichier doit être une image ou une vidéo');
       return;
     }
-    if (file.size > 100 * 1024 * 1024) {
+    if (file.size > MAX_FILE_SIZE_BYTES) {
       setError('Le fichier est trop volumineux (max 100 Mo)');
       return;
     }
@@ -84,19 +130,21 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
     try {
       setUploadProgress(5);
       let fileToUpload = file;
-      try {
-        fileToUpload = await compressImage(file, 500, 0.8);
-      } catch (compressionErr) {
-        logger.warn('Compression échouée, utilisation du fichier original:', compressionErr);
+      if (isImage) {
+        try {
+          fileToUpload = await compressImage(file, 500, 0.8);
+        } catch (compressionErr) {
+          logger.warn('Compression échouée, utilisation du fichier original:', compressionErr);
+        }
       }
 
       const timestamp = Date.now();
-      const baseName = fileToUpload.name.replace(/\.[^.]+$/, '');
-      const sanitizedFileName = `${baseName}.jpg`.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const sanitizedFileName = getSanitizedMediaName(fileToUpload, isVideo);
       const storagePath = `launchPopups/${timestamp}_${sanitizedFileName}`;
+      const contentType = resolveContentType(fileToUpload, mediaType);
 
       const storageReference = storageRef(storageInstance, storagePath);
-      const uploadTask = uploadBytesResumable(storageReference, fileToUpload);
+      const uploadTask = uploadBytesResumable(storageReference, fileToUpload, { contentType });
 
       const downloadURL = await new Promise<string>((resolve, reject) => {
         uploadTask.on(
@@ -123,15 +171,23 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
       const popup: LaunchPopup = {
         id,
         title: title.trim(),
-        image: downloadURL,
+        image: isImage ? downloadURL : undefined,
+        video: isVideo ? downloadURL : undefined,
         startDate: start.toISOString()
       };
 
-      await set(newRef, {
+      const popupData: Record<string, string> = {
         title: popup.title,
-        image: popup.image,
         startDate: popup.startDate
-      });
+      };
+      if (popup.image) {
+        popupData.image = popup.image;
+      }
+      if (popup.video) {
+        popupData.video = popup.video;
+      }
+
+      await set(newRef, popupData);
 
       resetForm();
       onSaved?.();
@@ -187,12 +243,12 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
             />
           </div>
           <div className="modal-form-group">
-            <label htmlFor="popup-image">Image</label>
+            <label htmlFor="popup-image">Image ou vidéo</label>
             <input
               id="popup-image"
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               className="modal-form-input"
             />
           </div>
