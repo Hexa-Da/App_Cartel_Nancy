@@ -1114,3 +1114,13 @@ body.ios .calendar-toggle-button {
   }
 }
 
+/* Leaflet root must fill parent; avoids inline styles on MapContainer */
+.leaflet-map-fill {
+  height: 100%;
+  width: 100%;
+}
+
+.map-container--flush {
+  margin-top: 0;
+  padding-top: 0;
+}

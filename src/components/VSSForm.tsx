@@ -42,16 +42,11 @@ interface ParticipantData {
 
 /** Incident categories for VSS reporting (value = stable id for backend, label = user-facing). */
 const INCIDENT_TYPE_OPTIONS = [
-  { value: 'insults_or_sexist_behavior', label: 'Insultes, propos ou comportements sexistes' },
-  { value: 'sexual_harassment', label: 'Harcèlement sexuel' },
-  { value: 'catcalling', label: 'Sifflements, remarques non consenties' },
-  { value: 'online', label: 'Cyberviolence (messages, images, réseaux)' },
-  { value: 'inappropriate_touching', label: 'Attouchements non consentis' },
-  { value: 'sexual_assault', label: 'Agression sexuelle' },
-  { value: 'rape_or_attempt', label: 'Viol ou tentative de viol' },
-  { value: 'drug_facilitated_assault', label: 'Soumission chimique / suspicion de drogue dans un verre' },
-  { value: 'exposure_or_voyeurism', label: 'Exhibitionnisme, voyeurisme ou captation d’images intimes' },
-  { value: 'stalking_or_threats', label: 'Suivi, pression ou menaces répétées' },
+  { value: 'physical', label: 'Violences physiques (coups, blessures...)' },
+  { value: 'psychological', label: 'Violences psychologiques (insultes, menaces...)' },
+  { value: 'sexist_or_sexual', label: 'Violences sexistes ou sexuelles' },
+  { value: 'cyberviolence', label: 'Cyberviolences' },
+  { value: 'discriminatory', label: 'Violences discriminatoires (racisme, homophobie...)' },
   { value: 'other', label: 'Autre (à préciser dans la description)' },
 ] as const;
 

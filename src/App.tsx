@@ -38,7 +38,6 @@ import { useForm } from './contexts/FormContext';
 import { useEditing } from './contexts/EditingContext';
 import { useApp } from './AppContext';
 import { Capacitor } from '@capacitor/core';
-import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { Browser } from '@capacitor/browser';
 import BusLines from './components/BusLines';
 import './components/ModalForm.css';
@@ -47,7 +46,6 @@ import {
   onModalTextareaEnterKeyDone,
 } from './utils/mobileFormKeyboard';
 import PartyMap from './pages/PartyMap';
-import { formatLocalTimeHM } from './utils/formatLocalTime';
 import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
 import EventDetails, { Event as EventDetailsEvent } from './components/EventDetails';
@@ -61,17 +59,14 @@ import { MapEvents } from './components/map/MapEvents';
 import { ZoomListener } from './components/map/ZoomListener';
 import { useMapState, mapStyles } from './hooks/useMapState';
 import { useEventFilters } from './hooks/useEventFilters';
+import { usePortraitOrientationLock } from './hooks/usePortraitOrientationLock';
+import type { MapHistoryAction } from './types/mapHistory';
+import { mapEventsTabRowToEventDetails } from './utils/convertEventToEventDetails';
+import type { IEventsTabRow } from './utils/convertEventToEventDetails';
 
 // Interfaces moved to src/types/venue.ts
 
 type Place = Venue | Hotel | Party | Restaurant;
-
-// Interface pour les actions d'historique
-interface HistoryAction {
-  type: 'ADD_VENUE' | 'UPDATE_VENUE' | 'DELETE_VENUE' | 'ADD_MATCH' | 'UPDATE_MATCH' | 'DELETE_MATCH';
-  data: any;
-  undo: () => Promise<void>;
-}
 
 // Google Analytics initialization moved to src/config/analytics.ts and called in main.tsx
 
@@ -132,23 +127,7 @@ function App() {
   } = useForm();
   
   const location = useLocation();
-
-  // Forcer l'orientation portrait au démarrage
-  // Note: Le verrouillage principal est géré par OrientationLock dans main.tsx
-  // Ce code est conservé pour compatibilité mais peut être supprimé si redondant
-  useEffect(() => {
-    const lockOrientation = async () => {
-      try {
-        await ScreenOrientation.lock({ orientation: 'portrait' });
-      } catch (error) {
-        // Le verrouillage d'orientation n'est pas supporté sur ce device ou navigateur
-        if (Capacitor.isNativePlatform()) {
-          logger.warn("Le verrouillage d'orientation n'est pas supporté sur ce device");
-        }
-      }
-    };
-    lockOrientation();
-  }, []);
+  usePortraitOrientationLock();
 
   // Effet pour gérer le changement de route et forcer la recréation des marqueurs
   useEffect(() => {
@@ -725,7 +704,7 @@ function App() {
   const [_fromEvents, setFromEvents] = useState(false);
 
   // État pour l'historique des actions et l'index actuel
-  const [history, setHistory] = useState<HistoryAction[]>([]);
+  const [history, setHistory] = useState<MapHistoryAction[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
 
@@ -890,7 +869,7 @@ function App() {
   }, []);
 
   // Fonction pour ajouter une action à l'historique
-  const addToHistory = (action: HistoryAction) => {
+  const addToHistory = (action: MapHistoryAction) => {
     // Supprimer les actions futures (si on est revenu en arrière)
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(action);
@@ -2700,27 +2679,6 @@ function App() {
     };
   }, []);
 
-  // Fonction pour convertir un événement EventsTab au format EventDetails
-  const convertEventToEventDetails = (event: any): EventDetailsEvent | null => {
-    if (!event) return null;
-
-    const dateOnly = typeof event.date === 'string' ? event.date.split('T')[0] : '';
-
-    return {
-      type: event.type,
-      time: formatLocalTimeHM(event.date),
-      endTime: event.endTime ? formatLocalTimeHM(event.endTime) : undefined,
-      date: dateOnly,
-      name: event.type === 'match' ? (event.teams || event.name) : event.name,
-      teams: event.teams,
-      description: event.description,
-      color: event.type === 'party' ? '#9C27B0' : '#4CAF50',
-      sport: event.sport,
-      venue: event.venue || event.address,
-      result: event.result
-    };
-  };
-
   // Fonction pour gérer l'affichage sur la carte depuis EventDetails
   const handleViewOnMapFromDetails = (venue: Venue) => {
     // Sauvegarder l'événement avant de le mettre à null
@@ -2769,9 +2727,8 @@ function App() {
     }
   };
 
-  const handleEventSelect = (event: any) => {
-    // Afficher EventDetails au lieu d'aller directement sur la carte
-    setSelectedEvent(event);
+  const handleEventSelect = (event: IEventsTabRow) => {
+    setSelectedEvent(mapEventsTabRowToEventDetails(event));
   };
 
   const handleAdminClick = async () => {
@@ -2976,7 +2933,7 @@ function App() {
             </div>
           </div>
         )}
-        <div className="page-content no-scroll map-container" style={{ marginTop: 0, paddingTop: 0 }}>
+        <div className="page-content no-scroll map-container map-container--flush">
         {(locationLoading || (showVenuesLoadingOverlay && (activeTab === 'map' || location.pathname === '/map'))) && (
           <div className="map-loading-indicator">
             <div className="location-loading-spinner"></div>
@@ -2985,7 +2942,7 @@ function App() {
         <MapContainer
           center={[48.687697, 6.174308]}
           zoom={12}
-              style={{ height: '100%', width: '100%' }}
+              className="leaflet-map-fill"
               ref={(map) => { mapRef.current = map || null; }}
               zoomControl={false}
         >
@@ -3932,9 +3889,9 @@ function App() {
       {activeTab === 'party-map' && <PartyMap parties={parties} />}
 
       {/* EventDetails Modal */}
-      {selectedEvent && convertEventToEventDetails(selectedEvent) && (
+      {selectedEvent && (
         <EventDetails
-          event={convertEventToEventDetails(selectedEvent)!}
+          event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
           onViewOnMap={handleViewOnMapFromDetails}
           venues={venues}

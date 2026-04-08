@@ -25,4 +25,11 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Progressive rollout: tighten `any` on small, well-scoped areas first (merges with block above)
+    files: ['src/utils/**/*.{ts,tsx}', 'src/contexts/**/*.ts', 'src/components/bus/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
 )

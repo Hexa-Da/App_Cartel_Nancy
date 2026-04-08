@@ -10,6 +10,7 @@
  * - EditingContext pour isEditing, setIsEditing
  * 
  * Ce fichier fournit une interface de compatibilité qui délègue aux nouveaux contextes.
+ * L’état formulaire (editingVenue, editingMatch, etc.) vit uniquement dans FormProvider — pas de duplication.
  * Utilisé uniquement pour la rétrocompatibilité pendant la période de transition.
  * 
  * @deprecated Utilisez directement les contextes spécialisés : NavigationContext, ModalContext, FormContext, EditingContext
@@ -23,6 +24,7 @@ import { useForm } from './contexts/FormContext';
 import { useEditing } from './contexts/EditingContext';
 import { TabType } from './contexts/NavigationContext';
 import { Event } from './components/EventDetails';
+import type { IEditingMatchState, IEditingVenueState } from './contexts/FormContext';
 
 export type { TabType };
 
@@ -85,11 +87,11 @@ interface AppPanelsContextType {
   setSelectedIndicationType: React.Dispatch<React.SetStateAction<string>>;
   tempMarker: [number, number] | null;
   setTempMarker: React.Dispatch<React.SetStateAction<[number, number] | null>>;
-  editingVenue: { id: string | null, venue: any | null };
-  setEditingVenue: React.Dispatch<React.SetStateAction<{ id: string | null, venue: any | null }>>;
+  editingVenue: IEditingVenueState;
+  setEditingVenue: React.Dispatch<React.SetStateAction<IEditingVenueState>>;
   // États du formulaire de match
-  editingMatch: { venueId: string | null, match: any | null };
-  setEditingMatch: React.Dispatch<React.SetStateAction<{ venueId: string | null, match: any | null }>>;
+  editingMatch: IEditingMatchState;
+  setEditingMatch: React.Dispatch<React.SetStateAction<IEditingMatchState>>;
   newMatch: { date: string, teams: string, description: string, endTime?: string, result?: string };
   setNewMatch: React.Dispatch<React.SetStateAction<{ date: string, teams: string, description: string, endTime?: string, result?: string }>>;
   selectedEvent: Event | null;

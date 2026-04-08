@@ -15,7 +15,7 @@ const EmergencyPopup: React.FC<EmergencyPopupProps> = ({ isOpen, onClose, onShow
   const emergencyContacts = [
     { name: 'Responsable VSS', number: '+33 7 51 16 67 00' },
     { name: 'Responsable Sécurité', number: '+33 7 53 70 02 04' },
-    { name: 'Responsable Secret-G', number: '+33 7 58 26 56 33' },
+    { name: 'Responsable Organisation', number: '+33 7 58 26 56 33' },
     { name: 'Urgence Absolue', number: '+33 7 58 76 00 52' },
   ];
 

@@ -14,6 +14,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { Event } from '../components/EventDetails';
+import type { IEditingMatchState, IEditingVenueState } from './formContextTypes';
 
 interface FormContextType {
   // États du formulaire de lieu
@@ -33,11 +34,11 @@ interface FormContextType {
   setSelectedIndicationType: React.Dispatch<React.SetStateAction<string>>;
   tempMarker: [number, number] | null;
   setTempMarker: React.Dispatch<React.SetStateAction<[number, number] | null>>;
-  editingVenue: { id: string | null, venue: any | null };
-  setEditingVenue: React.Dispatch<React.SetStateAction<{ id: string | null, venue: any | null }>>;
+  editingVenue: IEditingVenueState;
+  setEditingVenue: React.Dispatch<React.SetStateAction<IEditingVenueState>>;
   // États du formulaire de match
-  editingMatch: { venueId: string | null, match: any | null };
-  setEditingMatch: React.Dispatch<React.SetStateAction<{ venueId: string | null, match: any | null }>>;
+  editingMatch: IEditingMatchState;
+  setEditingMatch: React.Dispatch<React.SetStateAction<IEditingMatchState>>;
   newMatch: { date: string, teams: string, description: string, endTime?: string, result?: string };
   setNewMatch: React.Dispatch<React.SetStateAction<{ date: string, teams: string, description: string, endTime?: string, result?: string }>>;
   // États de sélection
@@ -65,9 +66,9 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedEventType, setSelectedEventType] = useState('DJ contest');
   const [selectedIndicationType, setSelectedIndicationType] = useState('Soins');
   const [tempMarker, setTempMarker] = useState<[number, number] | null>(null);
-  const [editingVenue, setEditingVenue] = useState<{ id: string | null, venue: any | null }>({ id: null, venue: null });
+  const [editingVenue, setEditingVenue] = useState<IEditingVenueState>({ id: null, venue: null });
   // États du formulaire de match
-  const [editingMatch, setEditingMatch] = useState<{ venueId: string | null, match: any | null }>({ venueId: null, match: null });
+  const [editingMatch, setEditingMatch] = useState<IEditingMatchState>({ venueId: null, match: null });
   const [newMatch, setNewMatch] = useState<{ date: string, teams: string, description: string, endTime?: string, result?: string }>({
     date: '',
     teams: '',
@@ -133,3 +134,4 @@ export const useForm = () => {
   return context;
 };
 
+export type { IEditingVenueState, IEditingMatchState } from './formContextTypes';

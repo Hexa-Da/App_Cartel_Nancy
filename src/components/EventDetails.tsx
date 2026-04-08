@@ -3,6 +3,7 @@ import { Venue } from '../types';
 import './EventDetails.css';
 
 export interface Event {
+  id?: string;
   type: 'match' | 'party';
   time: string;
   endTime?: string;

@@ -44,6 +44,7 @@ import { initializeFirebase } from './firebase';
 import Loader from './components/Loader';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import logger from './services/Logger';
+import { syncNativeDelegationPreferencesWithLocalStorage } from './services/UserPreferencesStorage';
 
 // Composant racine de l'application
 const AppRoot = (
@@ -106,6 +107,12 @@ const AppRoot = (
     await setupCapacitor();
   } catch (error) {
     logger.error('Erreur lors de la configuration Capacitor:', error);
+  }
+
+  try {
+    await syncNativeDelegationPreferencesWithLocalStorage();
+  } catch (error) {
+    logger.error('Erreur sync préférences natives:', error);
   }
   
   // 5. Initialiser ReactGA (complémentaire à gtag.js)

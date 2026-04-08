@@ -4,6 +4,7 @@ import NotificationService from '../services/NotificationService';
 import { useApp } from '../AppContext';
 import DiagnosticPanel from './DiagnosticPanel';
 import { getAllPlayerIdsFromVenues } from '../services/TeamService';
+import { persistPreference } from '../services/UserPreferencesStorage';
 
 interface SettingsMenuProps {
   isOpen: boolean;
@@ -121,10 +122,23 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       return [stored];
     }
   });
-  // Délégation préférée
-  const [preferredDelegation, setPreferredDelegation] = React.useState(() => getInitial('preferredDelegation', 'all'));
-  // Délégation suivie pour les joueurs d'échecs
-  const [preferredChessDelegation, setPreferredChessDelegation] = React.useState(() => getInitial('preferredChessDelegation', 'all'));
+  // Délégation préférée (persist native + localStorage via persistPreference when seeding default)
+  const [preferredDelegation, setPreferredDelegation] = React.useState(() => {
+    const stored = localStorage.getItem('preferredDelegation');
+    if (stored === null) {
+      persistPreference('preferredDelegation', 'all');
+      return 'all';
+    }
+    return stored;
+  });
+  const [preferredChessDelegation, setPreferredChessDelegation] = React.useState(() => {
+    const stored = localStorage.getItem('preferredChessDelegation');
+    if (stored === null) {
+      persistPreference('preferredChessDelegation', 'all');
+      return 'all';
+    }
+    return stored;
+  });
   // Hôtel préféré
   const [preferredHotel, setPreferredHotel] = React.useState(() => getInitial('preferredHotel', 'none'));
   // Afficher les restaurants
@@ -246,25 +260,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
 
   // Fonction générique pour gérer les changements de préférences
   const handlePreferenceChange = (key: string, value: string) => {
-    localStorage.setItem(key, value);
-    
-    // Déclencher un événement de stockage pour synchroniser les autres onglets
-    const storageEvent = new StorageEvent('storage', {
-      key,
-      newValue: value,
-      oldValue: localStorage.getItem(key),
-      storageArea: localStorage
-    });
-    window.dispatchEvent(storageEvent);
-
-    // Déclencher un événement personnalisé pour la synchronisation dans le même onglet
-    const customEvent = new CustomEvent('preferenceChange', {
-      detail: {
-        key,
-        value
-      }
-    });
-    window.dispatchEvent(customEvent);
+    persistPreference(key, value);
   };
 
   // Écouter les changements de préférences dans le localStorage
@@ -394,12 +390,15 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteSports, hasGenderMatches, isLoadingVenues]);
 
+  // Wait until venues are loaded: otherwise delegationOptions is [] and we would falsely
+  // reset the user's saved delegation (same pattern as championship validation above).
   useEffect(() => {
+    if (isLoadingVenues) return;
     if (preferredDelegation === 'all') return;
     if (delegationOptions.includes(preferredDelegation)) return;
     setPreferredDelegation('all');
     handlePreferenceChange('preferredDelegation', 'all');
-  }, [favoriteSports, preferredDelegation, delegationOptions]);
+  }, [favoriteSports, preferredDelegation, delegationOptions, isLoadingVenues]);
 
   if (!isOpen) return null;
 

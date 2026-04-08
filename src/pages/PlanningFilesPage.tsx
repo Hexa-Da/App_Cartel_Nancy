@@ -19,7 +19,6 @@ import { useSearchParams } from 'react-router-dom';
 import PlanningFiles from '../components/PlanningFiles';
 import { useApp } from '../AppContext';
 import { useEditing } from '../contexts/EditingContext';
-import { MODAL_SIZES } from '../config/responsive';
 import './PlanningFilesPage.css';
 
 // Données hardcodées des hôtels (synchronisées avec App.tsx)
@@ -292,65 +291,17 @@ const PlanningFilesPage: React.FC = () => {
 
   // Barre de chargement d'upload globale
   const uploadBar = uploading ? (
-    <div 
+    <div
       className="upload-progress-bar"
-      style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 10000,
-        background: 'rgba(20,20,20,0.95)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-        padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        transition: 'all 0.3s',
-        borderRadius: '12px',
-        border: '2px solid var(--accent-color)',
-        minWidth: '300px',
-        maxWidth: MODAL_SIZES.medium,
-      }}>
-      <div style={{
-        color: 'var(--accent-color)',
-        fontWeight: 'bold',
-        fontSize: '1.2rem',
-        marginBottom: '15px',
-        textAlign: 'center'
-      }}>
-        Upload en cours...
+      style={{ '--upload-progress': `${uploadProgress}%` } as React.CSSProperties}
+    >
+      <div className="upload-progress-bar__title">Upload en cours...</div>
+      <div className="upload-progress-bar__track">
+        <div className="upload-progress-bar__fill" />
       </div>
-      <div style={{
-        width: '100%',
-        height: '16px',
-        background: '#333',
-        borderRadius: '8px',
-        overflow: 'hidden',
-        marginBottom: '10px',
-      }}>
-        <div style={{
-          width: `${uploadProgress}%`,
-          height: '100%',
-          background: 'linear-gradient(90deg, var(--accent-color), #4CAF50)',
-          transition: 'width 0.3s ease',
-          borderRadius: '8px',
-        }}></div>
-      </div>
-      <div style={{
-        color: 'var(--accent-color)',
-        fontWeight: 'bold',
-        fontSize: '1.3rem',
-        marginBottom: '5px'
-      }}>
-        {Math.round(uploadProgress)}%
-      </div>
-      <div style={{
-        color: 'var(--text-secondary)',
-        fontSize: '0.9rem',
-        textAlign: 'center'
-      }}>
-        {uploadProgress < 100 ? 'Téléchargement du fichier...' : 'Finalisation de l\'upload...'}
+      <div className="upload-progress-bar__percent">{Math.round(uploadProgress)}%</div>
+      <div className="upload-progress-bar__hint">
+        {uploadProgress < 100 ? 'Téléchargement du fichier...' : "Finalisation de l'upload..."}
       </div>
     </div>
   ) : null;
@@ -438,14 +389,10 @@ const PlanningFilesPage: React.FC = () => {
           'planning-container',
           isAdmin && isEditing ? 'is-editing' : '',
           hasTwoFilters ? 'has-two-filters' : '',
+          isPageLoading ? 'is-page-loading' : '',
         ]
           .filter(Boolean)
           .join(' ')}
-        style={{ 
-          opacity: isPageLoading ? 0 : 1,
-          pointerEvents: isPageLoading ? 'none' : 'auto',
-          transition: 'opacity 0.3s ease'
-        }}
       >
         <PlanningFiles 
           isAdmin={isAdmin && isEditing} 

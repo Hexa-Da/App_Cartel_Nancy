@@ -13,6 +13,7 @@ import ReactGA from 'react-ga4';
 import { Venue } from '../types';
 import { delegationMatches, getAllDelegationsFromVenues, getAllPlayerIdsFromVenues, playerIdMatches } from '../services/TeamService';
 import './EventsTab.css';
+import type { IEventsTabRow } from '../utils/convertEventToEventDetails';
 
 interface Party {
   id: string;
@@ -27,28 +28,13 @@ interface Party {
   result?: string;
 }
 
-interface Event {
-  id: string;
-  name: string;
-  date: string;
-  endTime?: string;
-  description: string;
-  address: string;
-  location: [number, number];
-  type: 'match' | 'party';
-  teams?: string;
-  venue?: string;
-  venueId?: string;
-  isPassed: boolean;
-  sport?: string;
-  result?: string;
-}
+type Event = IEventsTabRow;
 
 interface EventsTabProps {
   venues: Venue[];
   parties: Party[];
   isAdmin: boolean;
-  onEventSelect: (event: Event) => void;
+  onEventSelect: (event: IEventsTabRow) => void;
   triggerMarkerUpdate: () => void;
   isVenuesLoading?: boolean;
 }

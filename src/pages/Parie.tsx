@@ -521,7 +521,7 @@ const Parie: React.FC = () => {
     }
 
     // Ne pas afficher le suffixe de genre pour certains sports sans championnat explicite
-    const noGenderSuffixSports = ['Show Pompom', 'DJ Contest', 'Pétanque', 'Ultimate', 'Echecs', 'Escalade'];
+    const noGenderSuffixSports = ['Show Pompom', 'DJ Contest', 'Pétanque', 'Ultimate', 'Echecs', 'Escalade', 'Athlétisme'];
     if (noGenderSuffixSports.includes(sport)) {
       return sport;
     }
