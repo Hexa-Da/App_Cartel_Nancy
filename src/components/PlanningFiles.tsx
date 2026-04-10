@@ -1,12 +1,28 @@
 import { useState, useEffect, useRef } from 'react';
 import { ref, get, push, remove, set } from 'firebase/database';
 import { database, app } from '../firebase';
-import { PlanningFile } from '../types';
+import { PlanningFile, type PlanningFileCategory } from '../types';
 import { ref as storageRef, getDownloadURL, uploadBytesResumable, deleteObject, getStorage } from 'firebase/storage';
 import { firebaseLogger } from '../services/FirebaseLogger';
 import { BREAKPOINTS } from '../config/responsive';
 import logger from '../services/Logger';
+import {
+  matchesHotelBroad,
+  matchesHotelSpecific,
+  matchesPartyBroad,
+  matchesPartySpecific,
+  matchesRestaurantBroad,
+  matchesRestaurantSpecific,
+  passesCategoryGate,
+} from '../services/planningFileFilters';
+import { normalizeFilterToPartySlug, normalizeFilterToRestaurantSlug } from '../config/planningVenueSlugs';
 import './PlanningFiles.css';
+
+const PLANNING_SPORTS_EVENT_TYPES: readonly string[] = [
+  'Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
+  'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Echecs',
+  'Athlétisme', 'Spikeball', 'Pétanque', 'Escalade'
+];
 
 // Classe pour optimiser les connexions Firebase et monitoring des coûts
 class FirebaseOptimizer {
@@ -248,11 +264,16 @@ export default function PlanningFiles({
       } else if (filter === 'all') {
         setEventTypeFilter('all');
       } else {
-        // Pour les IDs spécifiques (hôtels, restaurants, soirées)
-        setEventTypeFilter(filter);
+        const asParty = normalizeFilterToPartySlug(filter);
+        const asRest = normalizeFilterToRestaurantSlug(filter);
+        const partyHit = parties.find((p) => p.id === asParty);
+        const restHit = restaurants.find((r) => r.id === asRest);
+        if (partyHit) setEventTypeFilter(partyHit.id);
+        else if (restHit) setEventTypeFilter(restHit.id);
+        else setEventTypeFilter(filter);
       }
     }
-  }, [filter]);
+  }, [filter, parties, restaurants]);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -321,117 +342,46 @@ export default function PlanningFiles({
   useEffect(() => {
     let filtered = files;
 
+    const partyIds = parties.map((p) => p.id);
+    const restaurantIds = restaurants.map((r) => r.id);
+    const hotelIds = hotels.map((h) => h.id);
 
-    // Filtre par type d'événement
     if (eventTypeFilter === 'sports') {
-      // Afficher tous les sports
-      const sportsTypes = [
-        'Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
-        'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Echecs',
-        'Athlétisme', 'Spikeball', 'Pétanque', 'Escalade'
-      ];
-      filtered = filtered.filter(file => 
-        sportsTypes.includes(file.eventType)
+      filtered = filtered.filter(
+        (file) =>
+          passesCategoryGate(file, 'sports') && PLANNING_SPORTS_EVENT_TYPES.includes(file.eventType)
       );
     } else if (eventTypeFilter === 'party') {
-      // Afficher les soirées et événements liés
-      filtered = filtered.filter(file => 
-        file.eventType === 'party' || 
-        (file.eventType?.toLowerCase().includes('soirée')) ||
-        (file.eventType?.toLowerCase().includes('gala')) ||
-        (file.eventType?.toLowerCase().includes('navette'))
-      );
-    } else if (eventTypeFilter === 'restaurants') {
-      // Afficher les restaurants
-      filtered = filtered.filter(file => 
-        file.eventType === 'Restaurant' ||
-        (file.eventType?.toLowerCase().includes('restaurant')) ||
-        (file.eventType?.toLowerCase().includes('crous')) ||
-        (file.eventType?.toLowerCase().includes('artem'))
-      );
+      filtered = filtered.filter((file) => matchesPartyBroad(file, partyIds));
+    } else if (eventTypeFilter === 'Restaurant' || eventTypeFilter === 'restaurants') {
+      filtered = filtered.filter((file) => matchesRestaurantBroad(file, restaurantIds));
     } else if (eventTypeFilter === 'hotel' || eventTypeFilter === 'Hotel') {
-      // Afficher les hôtels
-      filtered = filtered.filter(file => 
-        file.eventType === 'Hotel' ||
-        (file.eventType?.toLowerCase().includes('hôtel')) ||
-        (file.eventType?.toLowerCase().includes('hotel'))
-      );
+      filtered = filtered.filter((file) => matchesHotelBroad(file, hotelIds));
     } else if (eventTypeFilter === 'hse' || eventTypeFilter === 'HSE') {
-      // Afficher les fichiers HSE
-      filtered = filtered.filter(file => 
-        file.eventType === 'HSE' ||
-        (file.eventType?.toLowerCase().includes('hse'))
+      filtered = filtered.filter(
+        (file) =>
+          passesCategoryGate(file, 'hse') &&
+          (file.eventType === 'HSE' || (file.eventType?.toLowerCase().includes('hse') ?? false))
       );
     } else if (eventTypeFilter !== 'all') {
-      // Vérifier si c'est un ID d'hôtel, restaurant ou soirée
-      const hotel = hotels.find(h => h.id === eventTypeFilter);
-      const restaurant = restaurants.find(r => r.id === eventTypeFilter);
-      const party = parties.find(p => p.id === eventTypeFilter);
-      
+      const hotel = hotels.find((h) => h.id === eventTypeFilter);
+      const restaurant = restaurants.find((r) => r.id === eventTypeFilter);
+      const party = parties.find((p) => p.id === eventTypeFilter);
+
       if (hotel) {
-        // Filtrer par ID ou nom d'hôtel
-        filtered = filtered.filter(file => {
-          const fileAny = file as any;
-          // Vérifier si le fichier a un specificItemId correspondant
-          if (fileAny.specificItemId === hotel.id) {
-            return true;
-          }
-          // Sinon, chercher dans le nom du fichier ou dans specificItemName
-          const fileNameLower = file.name?.toLowerCase() || '';
-          const hotelNameLower = hotel.name.toLowerCase();
-          return (file.eventType === 'Hotel' ||
-                  (file.eventType?.toLowerCase().includes('hôtel')) ||
-                  (file.eventType?.toLowerCase().includes('hotel'))) &&
-                 (fileAny.specificItemName?.toLowerCase() === hotelNameLower ||
-                  fileNameLower.includes(hotelNameLower) ||
-                  hotelNameLower.includes(fileNameLower) ||
-                  fileNameLower.includes(hotel.id));
-        });
+        filtered = filtered.filter((file) => matchesHotelSpecific(file, hotel));
       } else if (restaurant) {
-        // Filtrer par ID ou nom de restaurant
-        filtered = filtered.filter(file => {
-          const fileAny = file as any;
-          // Vérifier si le fichier a un specificItemId correspondant
-          if (fileAny.specificItemId === restaurant.id) {
-            return true;
-          }
-          // Sinon, chercher dans le nom du fichier ou dans specificItemName
-          const fileNameLower = file.name?.toLowerCase() || '';
-          const restaurantNameLower = restaurant.name.toLowerCase();
-          return (file.eventType === 'Restaurant' ||
-                  (file.eventType?.toLowerCase().includes('restaurant'))) &&
-                 (fileAny.specificItemName?.toLowerCase() === restaurantNameLower ||
-                  fileNameLower.includes(restaurantNameLower) ||
-                  restaurantNameLower.includes(fileNameLower) ||
-                  fileNameLower.includes(restaurant.id));
-        });
+        filtered = filtered.filter((file) => matchesRestaurantSpecific(file, restaurant));
       } else if (party) {
-        // Filtrer par ID ou nom de soirée
-        filtered = filtered.filter(file => {
-          const fileAny = file as any;
-          // Vérifier si le fichier a un specificItemId correspondant
-          if (fileAny.specificItemId === party.id) {
-            return true;
-          }
-          // Sinon, chercher dans le nom du fichier ou dans specificItemName
-          const fileNameLower = file.name?.toLowerCase() || '';
-          const partyNameLower = party.name.toLowerCase();
-          const isPartyType = file.eventType === 'party' ||
-                             (file.eventType?.toLowerCase().includes('soirée')) ||
-                             (file.eventType?.toLowerCase().includes('gala')) ||
-                             (file.eventType?.toLowerCase().includes('navette'));
-          return isPartyType &&
-                 (fileAny.specificItemName?.toLowerCase() === partyNameLower ||
-                  fileNameLower.includes(partyNameLower) ||
-                  partyNameLower.includes(fileNameLower) ||
-                  fileNameLower.includes(party.id) ||
-                  (party.sport && fileNameLower.includes(party.sport.toLowerCase())));
-        });
+        filtered = filtered.filter((file) => matchesPartySpecific(file, party.id, parties));
       } else {
-        // Filtre exact par type d'événement (pour les filtres spécifiques)
-        filtered = filtered.filter(file => 
-          file.eventType === eventTypeFilter
-        );
+        filtered = filtered.filter((file) => {
+          if (file.eventType !== eventTypeFilter) return false;
+          if (PLANNING_SPORTS_EVENT_TYPES.includes(eventTypeFilter)) {
+            return passesCategoryGate(file, 'sports');
+          }
+          return true;
+        });
       }
     }
 
@@ -564,7 +514,16 @@ export default function PlanningFiles({
           throw error;
         },
         async () => {
-          let fileData: any | undefined;
+          let fileData:
+            | (Omit<PlanningFile, 'id'> & {
+                originalSize: number;
+                compressedSize: number;
+                compressionRatio: number;
+                fileCategory?: PlanningFileCategory;
+                specificItemId?: string;
+                specificItemName?: string;
+              })
+            | undefined;
           try {
             // Upload réussi, obtenir l'URL
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
@@ -579,12 +538,16 @@ export default function PlanningFiles({
               compressedSize: fileToUpload.size,
               compressionRatio: file.type.startsWith('image/') ? Math.round((1 - fileToUpload.size / file.size) * 100) : 0
             };
-            
+
+            if (fileCategory) {
+              fileData.fileCategory =
+                fileCategory === 'restaurant' ? 'restaurants' : (fileCategory as PlanningFileCategory);
+            }
+
             // Ajouter l'ID de l'élément spécifique si disponible
             if (specificItem) {
               fileData.specificItemId = specificItem;
-              fileData.fileCategory = fileCategory;
-              
+
               // Pour les hôtels, restaurants et soirées, ajouter aussi le nom pour faciliter le filtrage
               if (fileCategory === 'hotel') {
                 const hotel = hotels.find(h => h.id === specificItem);
@@ -801,11 +764,7 @@ export default function PlanningFiles({
                     >
                       <option value="">Sélectionnez un élément</option>
                       {fileCategory === 'sports' && eventTypes
-                        .filter(type => 
-                          ['Football', 'Basketball', 'Handball', 'Rugby', 'Ultimate', 'Natation',
-                           'Badminton', 'Tennis', 'Cross', 'Volleyball', 'Ping-pong', 'Echecs',
-                           'Athlétisme', 'Spikeball', 'Pétanque', 'Escalade'].includes(type.value)
-                        )
+                        .filter((type) => PLANNING_SPORTS_EVENT_TYPES.includes(type.value))
                         .map(type => (
                           <option key={type.value} value={type.value}>
                             {type.label}

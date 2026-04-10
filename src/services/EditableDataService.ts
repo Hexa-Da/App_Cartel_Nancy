@@ -1,23 +1,26 @@
 /**
  * @fileoverview Service pour la gestion des données éditables (editData) dans Firebase
- * 
- * Ce service gère toutes les opérations pour les données éditables :
- * - Chargement en temps réel depuis Firebase
- * - Sauvegarde des modifications
- * - Initialisation de la structure Firebase
- * - Gestion des descriptions et résultats pour parties, hôtels et restaurants
- * 
- * Nécessaire car :
- * - Centralise la logique de gestion des editData
- * - Allège le composant App.tsx
- * - Facilite la maintenance et les tests
- * - Assure la cohérence des opérations Firebase
  */
 
 import { ref, onValue, set, update, get } from 'firebase/database';
 import { database } from '../firebase';
 import { Party, Hotel, Restaurant } from '../types/venue';
+import { LEGACY_PARTY_NUM_TO_SLUG, LEGACY_REST_NUM_TO_SLUG } from '../config/planningVenueSlugs';
 import logger from './Logger';
+
+/** Firebase keys for partyResults (historical names kept for existing data) */
+const PARTY_RESULT_FIREBASE_KEYS: Record<string, string> = {
+  'parc-expo-pompom': 'parc-expo-pompoms',
+  'parc-expo-showcase': 'parc-expo-showcase',
+  zenith: 'zenith-dj-contest'
+};
+
+const PARTY_SLUGS = [
+  'place-stanislas',
+  'parc-expo-pompom',
+  'parc-expo-showcase',
+  'zenith'
+] as const;
 
 export interface EditableDataCallbacks {
   onPartyResultsUpdate?: (partyId: string, result: string) => void;
@@ -28,9 +31,6 @@ export interface EditableDataCallbacks {
 }
 
 class EditableDataService {
-  /**
-   * Charge les données éditables depuis Firebase avec des callbacks pour mettre à jour l'état React
-   */
   loadEditableData(callbacks: EditableDataCallbacks): (() => void)[] {
     try {
       const editableDataRef = ref(database, 'editableData');
@@ -42,19 +42,21 @@ class EditableDataService {
         }
 
         if (data.partyResults && callbacks.onPartyResultsUpdate) {
-          if (data.partyResults['parc-expo-pompoms']?.result) {
-            callbacks.onPartyResultsUpdate('2', data.partyResults['parc-expo-pompoms'].result);
+          const pr = data.partyResults;
+          const pompomRes = pr['parc-expo-pompoms']?.result ?? pr['parc-expo-pompom']?.result;
+          if (pompomRes) {
+            callbacks.onPartyResultsUpdate('parc-expo-pompom', pompomRes);
           }
-          if (data.partyResults['parc-expo-showcase']?.result) {
-            callbacks.onPartyResultsUpdate('3', data.partyResults['parc-expo-showcase'].result);
+          if (pr['parc-expo-showcase']?.result) {
+            callbacks.onPartyResultsUpdate('parc-expo-showcase', pr['parc-expo-showcase'].result);
           }
-          if (data.partyResults['zenith-dj-contest']?.result) {
-            callbacks.onPartyResultsUpdate('4', data.partyResults['zenith-dj-contest'].result);
+          if (pr['zenith-dj-contest']?.result) {
+            callbacks.onPartyResultsUpdate('zenith', pr['zenith-dj-contest'].result);
           }
         }
 
         if (data.hotelDescriptions && callbacks.onHotelDescriptionUpdate) {
-          Object.entries(data.hotelDescriptions).forEach(([hotelId, hotelData]: [string, any]) => {
+          Object.entries(data.hotelDescriptions).forEach(([hotelId, hotelData]: [string, { description?: string }]) => {
             if (hotelData.description) {
               callbacks.onHotelDescriptionUpdate!(hotelId, hotelData.description);
             }
@@ -62,17 +64,21 @@ class EditableDataService {
         }
 
         if (data.restaurantDescriptions && callbacks.onRestaurantDescriptionUpdate) {
-          Object.entries(data.restaurantDescriptions).forEach(([restaurantId, restaurantData]: [string, any]) => {
-            if (restaurantData.description) {
-              callbacks.onRestaurantDescriptionUpdate!(restaurantId, restaurantData.description);
+          Object.entries(data.restaurantDescriptions).forEach(
+            ([restaurantId, restaurantData]: [string, { description?: string }]) => {
+              if (restaurantData.description) {
+                const slug = LEGACY_REST_NUM_TO_SLUG[restaurantId] ?? restaurantId;
+                callbacks.onRestaurantDescriptionUpdate!(slug, restaurantData.description);
+              }
             }
-          });
+          );
         }
 
         if (data.partyDescriptions && callbacks.onPartyDescriptionUpdate) {
-          Object.entries(data.partyDescriptions).forEach(([partyId, partyData]: [string, any]) => {
+          Object.entries(data.partyDescriptions).forEach(([partyId, partyData]: [string, { description?: string }]) => {
             if (partyData.description) {
-              callbacks.onPartyDescriptionUpdate!(partyId, partyData.description);
+              const slug = LEGACY_PARTY_NUM_TO_SLUG[partyId] ?? partyId;
+              callbacks.onPartyDescriptionUpdate!(slug, partyData.description);
             }
           });
         }
@@ -87,24 +93,16 @@ class EditableDataService {
     }
   }
 
-  /**
-   * Sauvegarde le résultat d'une soirée dans Firebase
-   */
   async savePartyResult(partyId: string, result: string): Promise<void> {
     try {
-      let firebaseKey: string;
-      
-      if (partyId === '2') {
-        firebaseKey = 'editableData/partyResults/parc-expo-pompoms';
-      } else if (partyId === '3') {
-        firebaseKey = 'editableData/partyResults/parc-expo-showcase';
-      } else if (partyId === '4') {
-        firebaseKey = 'editableData/partyResults/zenith-dj-contest';
-      } else {
-        logger.warn(`[EditableDataService] ID de soirée non reconnu: ${partyId}`);
+      const slug = LEGACY_PARTY_NUM_TO_SLUG[partyId] ?? partyId;
+      const fbSegment = PARTY_RESULT_FIREBASE_KEYS[slug];
+      if (!fbSegment) {
+        logger.warn(`[EditableDataService] ID de soirée non reconnu pour résultat: ${partyId}`);
         return;
       }
 
+      const firebaseKey = `editableData/partyResults/${fbSegment}`;
       const dbRef = ref(database, firebaseKey);
       await set(dbRef, { result, updatedAt: new Date().toISOString() });
     } catch (error) {
@@ -113,12 +111,10 @@ class EditableDataService {
     }
   }
 
-  /**
-   * Sauvegarde la description d'une soirée dans Firebase
-   */
   async savePartyDescription(partyId: string, description: string): Promise<void> {
     try {
-      const dbRef = ref(database, `editableData/partyDescriptions/${partyId}`);
+      const slug = LEGACY_PARTY_NUM_TO_SLUG[partyId] ?? partyId;
+      const dbRef = ref(database, `editableData/partyDescriptions/${slug}`);
       await set(dbRef, { description, updatedAt: new Date().toISOString() });
     } catch (error) {
       logger.error('[EditableDataService] Erreur sauvegarde partyDescription:', error);
@@ -126,9 +122,6 @@ class EditableDataService {
     }
   }
 
-  /**
-   * Sauvegarde la description d'un hôtel dans Firebase
-   */
   async saveHotelDescription(hotelId: string, description: string): Promise<void> {
     try {
       const dbRef = ref(database, `editableData/hotelDescriptions/${hotelId}`);
@@ -139,12 +132,10 @@ class EditableDataService {
     }
   }
 
-  /**
-   * Sauvegarde la description d'un restaurant dans Firebase
-   */
   async saveRestaurantDescription(restaurantId: string, description: string): Promise<void> {
     try {
-      const dbRef = ref(database, `editableData/restaurantDescriptions/${restaurantId}`);
+      const slug = LEGACY_REST_NUM_TO_SLUG[restaurantId] ?? restaurantId;
+      const dbRef = ref(database, `editableData/restaurantDescriptions/${slug}`);
       await set(dbRef, { description, updatedAt: new Date().toISOString() });
     } catch (error) {
       logger.error('[EditableDataService] Erreur sauvegarde restaurantDescription:', error);
@@ -152,9 +143,6 @@ class EditableDataService {
     }
   }
 
-  /**
-   * Initialise la branche editableData sur Firebase avec les valeurs par défaut
-   */
   async initializeEditableDataBranch(
     parties: Party[],
     hotels: Hotel[],
@@ -163,9 +151,8 @@ class EditableDataService {
     try {
       const editableDataRef = ref(database, 'editableData');
 
-      // Générer dynamiquement la structure pour inclure tous les hôtels et restaurants
       const generateHotelDescriptions = () => {
-        const hotelDescriptions: any = {};
+        const hotelDescriptions: Record<string, { description: string; updatedAt: string }> = {};
         hotels.forEach((hotel) => {
           hotelDescriptions[hotel.id] = {
             description: hotel.description || '',
@@ -176,7 +163,7 @@ class EditableDataService {
       };
 
       const generateRestaurantDescriptions = () => {
-        const restaurantDescriptions: any = {};
+        const restaurantDescriptions: Record<string, { description: string; updatedAt: string }> = {};
         restaurants.forEach((restaurant) => {
           restaurantDescriptions[restaurant.id] = {
             description: restaurant.description || '',
@@ -186,65 +173,59 @@ class EditableDataService {
         return restaurantDescriptions;
       };
 
-      // Trouver les résultats des soirées depuis l'état parties
-      const party2 = parties.find(p => p.id === '2');
-      const party3 = parties.find(p => p.id === '3');
-      const party1 = parties.find(p => p.id === '1');
-      const party4 = parties.find(p => p.id === '4');
+      const pStan = parties.find((p) => p.id === 'place-stanislas');
+      const pPompom = parties.find((p) => p.id === 'parc-expo-pompom');
+      const pShow = parties.find((p) => p.id === 'parc-expo-showcase');
+      const pZen = parties.find((p) => p.id === 'zenith');
 
-      // Structure complète avec toutes les données depuis les états React
       const initialStructure = {
         partyResults: {
           'parc-expo-pompoms': {
-            result: party2?.result || '',
+            result: pPompom?.result || '',
             updatedAt: new Date().toISOString()
           },
           'parc-expo-showcase': {
-            result: party3?.result || '',
+            result: pShow?.result || '',
             updatedAt: new Date().toISOString()
           },
           'zenith-dj-contest': {
-            result: party4?.result || '',
+            result: pZen?.result || '',
             updatedAt: new Date().toISOString()
           }
         },
         hotelDescriptions: generateHotelDescriptions(),
         restaurantDescriptions: generateRestaurantDescriptions(),
         partyDescriptions: {
-          '1': {
-            description: party1?.description || 'Défilé 14h–16h30 (informations sur place dès midi)',
+          'place-stanislas': {
+            description:
+              pStan?.description || 'Défilé 14h–16h30 (informations sur place dès midi)',
             updatedAt: new Date().toISOString()
           },
-          '2': {
-            description: party2?.description || 'Soirée Pompoms du 16 avril, 21h-3h',
+          'parc-expo-pompom': {
+            description: pPompom?.description || 'Soirée Pompoms du 16 avril, 21h-3h',
             updatedAt: new Date().toISOString()
           },
-          '3': {
-            description: party3?.description || 'Soirée Showcase 17 avril, 20h-4h',
+          'parc-expo-showcase': {
+            description: pShow?.description || 'Soirée Showcase 17 avril, 20h-4h',
             updatedAt: new Date().toISOString()
           },
-          '4': {
-            description: party4?.description || 'Soirée DJ Contest 18 avril, 20h-4h',
+          zenith: {
+            description: pZen?.description || 'Soirée DJ Contest 18 avril, 20h-4h',
             updatedAt: new Date().toISOString()
           }
         }
       };
 
-      // Vérifier si editableData existe déjà dans Firebase
       const snapshot = await get(editableDataRef);
       if (!snapshot.exists()) {
-        // Si la structure n'existe pas, l'initialiser avec les valeurs par défaut
         await set(editableDataRef, initialStructure);
       } else {
-        // Si la structure existe, ne mettre à jour que les champs manquants sans écraser les données existantes
         const existingData = snapshot.val();
-        const updates: any = {};
+        const updates: Record<string, unknown> = {};
 
-        // Vérifier et mettre à jour seulement les parties manquantes
         if (!existingData.partyResults) {
           updates.partyResults = initialStructure.partyResults;
         } else {
-          // Mettre à jour seulement les résultats manquants
           if (!existingData.partyResults['parc-expo-pompoms']) {
             updates['partyResults/parc-expo-pompoms'] = initialStructure.partyResults['parc-expo-pompoms'];
           }
@@ -259,7 +240,6 @@ class EditableDataService {
         if (!existingData.hotelDescriptions) {
           updates.hotelDescriptions = initialStructure.hotelDescriptions;
         } else {
-          // Mettre à jour seulement les descriptions d'hôtels manquantes
           hotels.forEach((hotel) => {
             if (!existingData.hotelDescriptions[hotel.id]) {
               updates[`hotelDescriptions/${hotel.id}`] = initialStructure.hotelDescriptions[hotel.id];
@@ -270,10 +250,10 @@ class EditableDataService {
         if (!existingData.restaurantDescriptions) {
           updates.restaurantDescriptions = initialStructure.restaurantDescriptions;
         } else {
-          // Mettre à jour seulement les descriptions de restaurants manquantes
           restaurants.forEach((restaurant) => {
             if (!existingData.restaurantDescriptions[restaurant.id]) {
-              updates[`restaurantDescriptions/${restaurant.id}`] = initialStructure.restaurantDescriptions[restaurant.id];
+              updates[`restaurantDescriptions/${restaurant.id}`] =
+                initialStructure.restaurantDescriptions[restaurant.id];
             }
           });
         }
@@ -281,15 +261,14 @@ class EditableDataService {
         if (!existingData.partyDescriptions) {
           updates.partyDescriptions = initialStructure.partyDescriptions;
         } else {
-          // Mettre à jour seulement les descriptions de soirées manquantes
-          ['1', '2', '3', '4'].forEach((partyId) => {
-            if (!existingData.partyDescriptions[partyId]) {
-              updates[`partyDescriptions/${partyId}`] = initialStructure.partyDescriptions[partyId as '1' | '2' | '3' | '4'];
+          PARTY_SLUGS.forEach((slug) => {
+            if (!existingData.partyDescriptions[slug]) {
+              updates[`partyDescriptions/${slug}`] =
+                initialStructure.partyDescriptions[slug as keyof typeof initialStructure.partyDescriptions];
             }
           });
         }
 
-        // Appliquer seulement les mises à jour nécessaires
         if (Object.keys(updates).length > 0) {
           await update(editableDataRef, updates);
         }

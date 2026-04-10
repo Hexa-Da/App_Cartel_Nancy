@@ -47,6 +47,9 @@ export interface Match {
   venueId: string;
 }
 
+/** Upload category — disambiguates shared numeric ids (party / restaurants / hotel all use '1', '2', …) */
+export type PlanningFileCategory = 'party' | 'restaurants' | 'hotel' | 'sports' | 'hse';
+
 export interface PlanningFile {
   id: string;
   name: string;
@@ -56,7 +59,11 @@ export interface PlanningFile {
   eventType: string;
   uploadDate: number;
   uploadedBy: string;
-} 
+  /** Set on new uploads; filters prefer this over ambiguous eventType/id-only matching */
+  fileCategory?: PlanningFileCategory;
+  specificItemId?: string;
+  specificItemName?: string;
+}
 
 export interface LaunchPopup {
   id: string;

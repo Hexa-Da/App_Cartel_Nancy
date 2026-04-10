@@ -70,17 +70,17 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
   const parties: Party[] = useMemo(() => {
     if (partiesFromProps && partiesFromProps.length > 0) return partiesFromProps;
     return [
-      { id: '1', name: "Place Stanislas", position: [48.693524, 6.183270], description: 'Défilé 14h–16h30', address: "Pl. Stanislas, 54000 Nancy", latitude: 48.693524, longitude: 6.183270, date: '2026-04-16T14:00:00', emoji: '🎺', sport: 'Defile' },
-      { id: '2', name: "Parc Expo", position: [48.663030, 6.191597], description: "Soirée Pompoms", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663030, longitude: 6.191597, date: '2026-04-16T21:00:00', emoji: '🎀', sport: 'Pompom' },
-      { id: '3', name: "Parc Expo", position: [48.663481, 6.189737], description: "Soirée Showcase", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663481, longitude: 6.189737, date: '2026-04-17T20:00:00', emoji: '🎤', sport: 'Party' },
-      { id: '4', name: "Zénith", position: [48.711077, 6.139991], description: "Soirée DJ Contest", address: "Rue du Zénith, 54320 Maxéville", latitude: 48.711077, longitude: 6.139991, date: '2026-04-18T20:00:00', emoji: '🎧', sport: 'Party' },
+      { id: 'place-stanislas', name: "Place Stanislas — Défilé", position: [48.693524, 6.183270], description: 'Défilé 14h–16h30', address: "Pl. Stanislas, 54000 Nancy", latitude: 48.693524, longitude: 6.183270, date: '2026-04-16T14:00:00', emoji: '🎺', sport: 'Defile' },
+      { id: 'parc-expo-pompom', name: "Parc Expo — Soirée Pompoms", position: [48.663030, 6.191597], description: "Soirée Pompoms", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663030, longitude: 6.191597, date: '2026-04-16T21:00:00', emoji: '🎀', sport: 'Pompom' },
+      { id: 'parc-expo-showcase', name: "Parc Expo — Showcase", position: [48.663481, 6.189737], description: "Soirée Showcase", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663481, longitude: 6.189737, date: '2026-04-17T20:00:00', emoji: '🎤', sport: 'Party' },
+      { id: 'zenith', name: "Zénith — DJ Contest", position: [48.711077, 6.139991], description: "Soirée DJ Contest", address: "Rue du Zénith, 54320 Maxéville", latitude: 48.711077, longitude: 6.139991, date: '2026-04-18T20:00:00', emoji: '🎧', sport: 'Party' },
     ];
   }, [partiesFromProps]);
 
   // Si on vient du Parc Expo (ou Hall A/B), afficher l'image du plan
   const showParcExpoPlan = selectedPartyForMap?.startsWith('Parc Expo') ?? false;
   // Si on vient du Zénith, afficher l'image du plan
-  const showZenithPlan = selectedPartyForMap === 'Zénith';
+  const showZenithPlan = selectedPartyForMap?.startsWith('Zénith') ?? false;
 
   // Fonction pour ouvrir dans Google Maps
   const openInGoogleMaps = async (party: Party) => {

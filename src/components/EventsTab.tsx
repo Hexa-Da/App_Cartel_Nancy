@@ -170,6 +170,12 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
   const delegationOptions = isChessFilter ? getAllPlayerIds() : getAllDelegations();
 
   const getVenueOptions = () => {
+    if (eventFilter === 'party') {
+      return [
+        { value: 'Tous', label: 'Tous les lieux' },
+        ...parties.map((party) => ({ value: party.id, label: party.name }))
+      ];
+    }
     const filteredVenues = venues.filter(venue => venue.sport === eventFilter);
     return [
       { value: 'Tous', label: 'Tous les lieux' },
@@ -398,6 +404,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
         address: party.address || `${party.latitude}, ${party.longitude}`,
         location: [party.latitude, party.longitude],
         type: 'party',
+        venueId: party.id,
         isPassed: isMatchPassed(party.date, endDate.toISOString()),
         sport: party.sport,
         result: party.result
@@ -428,27 +435,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
 
       let venueMatch = true;
       if (venueFilter !== 'Tous') {
-        if (event.type === 'party') {
-          let partyId = '';
-          switch (event.name) {
-            case 'Place Stanislas':
-              partyId = 'place-stanislas';
-              break;
-            case 'Parc Expo':
-            case 'Parc Expo Hall A':
-            case 'Parc Expo Hall B':
-              partyId = 'parc-expo';
-              break;
-            case 'Zénith':
-              partyId = 'zenith';
-              break;
-            default:
-              partyId = event.name.toLowerCase().replace(/\s+/g, '-');
-          }
-          venueMatch = partyId === venueFilter;
-        } else {
-          venueMatch = event.venueId === venueFilter;
-        }
+        venueMatch = event.venueId === venueFilter;
       }
 
       const isFemale = event.description?.toLowerCase().includes('féminin');
@@ -462,6 +449,13 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
       return typeMatch && delegationMatch && venueMatch && genderMatch;
     });
   }, [getAllEvents, eventFilter, delegationFilter, venueFilter, showFemale, showMale, showMixed, isAdmin, isChessFilter]);
+
+  useEffect(() => {
+    if (eventFilter !== 'party' || venueFilter === 'Tous') return;
+    if (!parties.some((p) => p.id === venueFilter)) {
+      setVenueFilterWithSave('Tous');
+    }
+  }, [eventFilter, venueFilter, parties]);
 
   useEffect(() => {
     if (delegationFilter === 'all') return;

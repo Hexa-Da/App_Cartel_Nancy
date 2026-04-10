@@ -34,6 +34,7 @@ export const mapEventsTabRowToEventDetails = (event: IEventsTabRow): EventDetail
     color: event.type === 'party' ? '#9C27B0' : '#4CAF50',
     sport: event.sport,
     venue: event.venue || event.address,
-    result: event.result
+    result: event.result,
+    partyVenueId: event.type === 'party' ? event.venueId : undefined
   };
 };

@@ -557,7 +557,7 @@ function App() {
     // Les descriptions seront chargées depuis Firebase via les listeners
     return [
       {
-        id: '1',
+        id: 'salle-fetes-gentilly',
         name: "Salle des Fêtes de Gentilly",
         position: [48.698430, 6.139541],
         description: "Repas du Vendredi soir",
@@ -572,7 +572,7 @@ function App() {
         matches: []
       },
       {
-        id: '2',
+        id: 'parc-expo-hall-a1',
         name: "Parc Expo Hall A1",
         position: [48.663070, 6.191429],
         description: "Repas du Jeudi et Vendredi soir",
@@ -587,7 +587,7 @@ function App() {
         matches: []
       },
       {
-        id: '3',
+        id: 'parc-saint-marie',
         name: "Parc Saint-Marie",
         position: [48.680392, 6.170733],
         description: "Brunch du Dimanche matin",
@@ -608,8 +608,8 @@ function App() {
     // Les descriptions et résultats seront chargés depuis Firebase via les listeners
     return [
       {
-        id: '1',
-        name: "Place Stanislas",
+        id: 'place-stanislas',
+        name: "Place Stanislas — Défilé",
         position: [48.693524, 6.183270],
         description: 'Défilé 14h–16h30 (informations sur place dès midi)',
         address: "Pl. Stanislas, 54000 Nancy",
@@ -622,8 +622,8 @@ function App() {
         sport: 'Defile'
       },
       {
-        id: '2',
-        name: "Parc Expo Hall A2",
+        id: 'parc-expo-pompom',
+        name: "Parc Expo — Soirée Pompoms",
         position: [48.663257, 6.189841],
         description: "Soirée Pompoms du 16 avril, 21h-3h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
@@ -637,8 +637,8 @@ function App() {
         result: ''
       },
       {
-        id: '3',
-        name: "Parc Expo Hall A2",
+        id: 'parc-expo-showcase',
+        name: "Parc Expo — Showcase",
         position: [48.663636, 6.190061],
         description: "Soirée Showcase 17 avril, 20h-4h",
         address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
@@ -652,8 +652,8 @@ function App() {
         result: ''
       },
       {
-        id: '4',
-        name: "Zénith",
+        id: 'zenith',
+        name: "Zénith — DJ Contest",
         position: [48.710136, 6.139169],
         description: "Soirée DJ Contest 18 avril, 20h-4h",
         address: "Rue du Zénith, 54320 Maxéville",
@@ -1800,23 +1800,7 @@ function App() {
 
     // PARTIES (seulement pour les admins)
       parties.forEach(party => {
-        // Calculer l'ID du lieu pour la correspondance avec le filtre
-        let partyVenueId = '';
-        switch (party.name) {
-          case 'Place Stanislas':
-            partyVenueId = 'place-stanislas';
-            break;
-          case 'Parc Expo':
-          case 'Parc Expo Hall A':
-          case 'Parc Expo Hall B':
-            partyVenueId = 'parc-expo';
-            break;
-          case 'Zénith':
-            partyVenueId = 'zenith';
-            break;
-          default:
-            partyVenueId = party.name.toLowerCase().replace(/\s+/g, '-');
-        }
+        const partyVenueId = party.id;
 
         const shouldShow = 
           (eventFilter === 'all' || eventFilter === 'party') &&
@@ -1854,7 +1838,7 @@ function App() {
         buttonsContainer.appendChild(mapsButton);
         
         // Bouton pour voir la map des lieux de soirée
-        if (party.name !== 'Place Stanislas') {
+        if (party.id !== 'place-stanislas') {
           const partyMapButton = document.createElement('button');
           partyMapButton.className = 'party-map-button';
           partyMapButton.textContent = 'Voir la carte des lieux';
@@ -1867,7 +1851,7 @@ function App() {
         
         // Ajouter le bouton d'édition du résultat pour les admins (soirées Pompoms et DJ Contest)
         // Utiliser l'ID de la soirée pour ne pas dépendre du texte de description
-        if (isAdmin && isEditing && (party.id === '2' || party.id === '4')) {
+        if (isAdmin && isEditing && (party.id === 'parc-expo-pompom' || party.id === 'zenith')) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
@@ -1917,7 +1901,7 @@ function App() {
               buttonsContainerNew.appendChild(mapsButton);
 
               // Bouton pour voir la map des lieux de soirée
-          if (currentParty.name !== 'Place Stanislas') {
+          if (currentParty.id !== 'place-stanislas') {
             const partyMapButton = document.createElement('button');
             partyMapButton.className = 'party-map-button';
             partyMapButton.textContent = 'Voir la carte des lieux';
@@ -2532,22 +2516,7 @@ function App() {
         } else {
           const party = partiesMap.get(key);
           if (party) {
-            let partyId = '';
-            switch (party.name) {
-              case 'Place Stanislas':
-                partyId = 'place-stanislas';
-                break;
-              case 'Parc Expo':
-              case 'Parc Expo Hall A':
-              case 'Parc Expo Hall B':
-                partyId = 'parc-expo';
-                break;
-              case 'Zénith':
-                partyId = 'zenith';
-                break;
-              default:
-                partyId = party.name.toLowerCase().replace(/\s+/g, '-');
-            }
+            const partyId = party.id;
 
             shouldShow = 
               (eventFilter === 'all' || eventFilter === 'party') &&

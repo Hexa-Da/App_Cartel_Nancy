@@ -44,16 +44,17 @@ const HOTELS = [
 
 // Données hardcodées des restaurants (synchronisées avec App.tsx)
 const RESTAURANTS = [
-  { id: '1', name: "Salle des Fêtes de Gentilly" },
-  { id: '2', name: "Parc Expo Hall B" }
+  { id: 'salle-fetes-gentilly', name: "Salle des Fêtes de Gentilly" },
+  { id: 'parc-expo-hall-a1', name: "Parc Expo Hall A1" },
+  { id: 'parc-saint-marie', name: "Parc Saint-Marie" }
 ];
 
 // Données hardcodées des soirées (synchronisées avec App.tsx)
 const PARTIES = [
-  { id: '1', name: "Place Stanislas", sport: 'Defile', description: "Défilé" },
-  { id: '2', name: "Parc Expo - Pompoms", sport: 'Pompom', description: "Soirée Pompoms" },
-  { id: '3', name: "Parc Expo - Showcase", sport: 'Party', description: "Soirée Showcase" },
-  { id: '4', name: "Zénith - DJ Contest", sport: 'Party', description: "Soirée DJ Contest" }
+  { id: 'place-stanislas', name: "Place Stanislas — Défilé", sport: 'Defile', description: "Défilé" },
+  { id: 'parc-expo-pompom', name: "Parc Expo — Soirée Pompoms", sport: 'Pompom', description: "Soirée Pompoms" },
+  { id: 'parc-expo-showcase', name: "Parc Expo — Showcase", sport: 'Party', description: "Soirée Showcase" },
+  { id: 'zenith', name: "Zénith — DJ Contest", sport: 'Party', description: "Soirée DJ Contest" }
 ];
 
 // Sports disponibles (synchronisés avec PlanningFiles.tsx)

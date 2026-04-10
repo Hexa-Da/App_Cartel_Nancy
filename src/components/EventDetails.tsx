@@ -15,6 +15,8 @@ export interface Event {
   sport?: string;
   venue?: string;
   result?: string;
+  /** Party id slug (place-stanislas, parc-expo-pompom, …) for map routing */
+  partyVenueId?: string;
 }
 
 interface EventDetailsProps {
@@ -25,8 +27,8 @@ interface EventDetailsProps {
 }
 
 const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap, venues }) => {
-  const partyVenues: { [key: string]: Venue } = {
-    'Place Stanislas': {
+  const partyVenuesById: Record<string, Venue> = {
+    'place-stanislas': {
       id: 'place-stanislas',
       name: 'Place Stanislas',
       description: 'Place Stanislas',
@@ -40,23 +42,23 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
       matches: [],
       type: 'venue'
     },
-    'Centre Prouvé': {
-      id: 'centre-prouve',
-      name: 'Centre Prouvé',
-      description: 'Centre Prouvé',
-      address: '1 Pl. de la République, 54000 Nancy',
-      latitude: 48.687858,
-      longitude: 6.176977,
-      position: [48.687858, 6.176977],
+    'parc-expo-pompom': {
+      id: 'parc-expo-pompom',
+      name: 'Parc Expo',
+      description: 'Parc des Expositions',
+      address: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy',
+      latitude: 48.663272,
+      longitude: 6.190715,
+      position: [48.663272, 6.190715],
       sport: 'Pompom',
       date: '',
       emoji: '🎀',
       matches: [],
       type: 'venue'
     },
-    'Parc des Expositions': {
-      id: 'parc-expo',
-      name: 'Parc des Expositions',
+    'parc-expo-showcase': {
+      id: 'parc-expo-showcase',
+      name: 'Parc Expo',
       description: 'Parc des Expositions',
       address: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy',
       latitude: 48.663272,
@@ -64,11 +66,11 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
       position: [48.663272, 6.190715],
       sport: 'Party',
       date: '',
-      emoji: '🎉',
+      emoji: '🎤',
       matches: [],
       type: 'venue'
     },
-    'Zénith': {
+    zenith: {
       id: 'zenith',
       name: 'Zénith',
       description: 'Zénith',
@@ -135,7 +137,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
         onClose();
       }
     } else if (event.type === 'party') {
-      const venue = partyVenues[event.name];
+      const venue =
+        (event.partyVenueId && partyVenuesById[event.partyVenueId]) || undefined;
       if (venue) {
         onViewOnMap(venue);
         onClose();

@@ -344,12 +344,6 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
 
       // Pour les soirées et défilés (résultats depuis Firebase via prop parties)
       if (eventFilter === 'all' || eventFilter === 'party') {
-        const calendarToAppPartyId: Record<string, string> = {
-          'place-stanislas': '1',
-          'parc-expo-pompoms': '2',
-          'parc-expo-showcase': '3',
-          'zenith': '4'
-        };
         const partiesList = [
           {
             id: 'place-stanislas',
@@ -364,7 +358,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             venue: 'Pl. Stanislas, 54000 Nancy'
           },
           {
-            id: 'parc-expo-pompoms',
+            id: 'parc-expo-pompom',
             date: '2026-04-16',
             time: '20:00',
             endTime: '02:00',
@@ -405,8 +399,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
           if (party.date === date) {
             const venueMatch = venueFilter === 'Tous' || party.id === venueFilter;
             if (venueMatch) {
-              const appId = calendarToAppPartyId[party.id];
-              const result = appId ? appParties.find(p => p.id === appId)?.result : undefined;
+              const result = appParties.find((p) => p.id === party.id)?.result;
               events.push({
                 type: 'party',
                 time: party.time,
