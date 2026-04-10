@@ -241,7 +241,7 @@ const PlanningFilesPage: React.FC = () => {
           if (planningPage) {
             planningPage.style.setProperty('padding-top', `${newHeight + 10}px`, 'important');
             // Forcer le reflow
-            planningPage.offsetHeight;
+            void planningPage.offsetHeight;
           }
         }
       };

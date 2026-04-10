@@ -17,12 +17,22 @@ import logger from '../services/Logger';
 const LAUNCH_POPUPS_PATH = 'launchPopups';
 const SEEN_POPUP_KEY = 'launchPopupSeen';
 
+const getSeenIds = (): string[] => {
+  try {
+    const raw = localStorage.getItem(SEEN_POPUP_KEY);
+    const parsed = JSON.parse(raw || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
 export const useLaunchPopup = () => {
   const [popupsQueue, setPopupsQueue] = useState<LaunchPopup[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const processSnapshot = useCallback((data: Record<string, any> | null) => {
+  const processSnapshot = useCallback((data: Record<string, unknown> | null) => {
     try {
       if (!data) {
         setPopupsQueue([]);
@@ -35,7 +45,7 @@ export const useLaunchPopup = () => {
       }));
 
       const now = new Date();
-      const seenIds = JSON.parse(localStorage.getItem(SEEN_POPUP_KEY) || '[]') as string[];
+      const seenIds = getSeenIds();
       const activePopups = allPopups
         .filter((p) => {
           const start = new Date(p.startDate);
@@ -67,7 +77,7 @@ export const useLaunchPopup = () => {
 
   const handleClose = useCallback(() => {
     if (currentPopup) {
-      const seenIds = JSON.parse(localStorage.getItem(SEEN_POPUP_KEY) || '[]') as string[];
+      const seenIds = getSeenIds();
       if (!seenIds.includes(currentPopup.id)) {
         localStorage.setItem(SEEN_POPUP_KEY, JSON.stringify([...seenIds, currentPopup.id]));
       }

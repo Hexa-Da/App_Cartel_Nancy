@@ -529,11 +529,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     setSelectedEvent(event);
   };
 
-  const getCurrentDate = () => {
-    // TEST: date/heure simulée (Vendredi 17/04/2026 à 14h30)
-    //return new Date(2026, 3, 17, 14, 30, 0);
-    return new Date(); 
-  };
+  const getCurrentDate = () => new Date();
 
   const getCurrentTimePosition = () => {
     const now = getCurrentDate();

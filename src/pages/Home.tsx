@@ -45,7 +45,7 @@ const Home: React.FC = () => {
   const { isEditing } = useEditing();
   const { selectedEvent, setSelectedEvent } = useForm();
   const [events, setEvents] = useState<Place[]>([]);
-  const [_, setDebugLogs] = useState<DebugLog[]>([]);
+  const [, setDebugLogs] = useState<DebugLog[]>([]);
   const [showLaunchPopupForm, setShowLaunchPopupForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);

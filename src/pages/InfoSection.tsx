@@ -829,7 +829,9 @@ const InfoSection: React.FC = () => {
   const { isEditing } = useEditing();
   const { isAdmin } = useApp();
   const navigate = useNavigate();
-  
+
+  const sectionKey = sectionName || '';
+
   useEffect(() => {
     const adminStatus = localStorage.getItem('isAdmin') === 'true';
     if (adminStatus !== isAdmin) {
@@ -837,10 +839,6 @@ const InfoSection: React.FC = () => {
     }
   }, [isAdmin, isEditing]);
 
-  // Sections spéciales
-  if (sectionName === 'parie') return <Parie />;
-
-  const sectionKey = sectionName || '';
   const defaultDoc = useMemo(() => buildDefaultFaqDoc(sectionKey), [sectionKey]);
   const [overrideDoc, setOverrideDoc] = useState<FaqEditableDocument | null>(null);
 
@@ -864,6 +862,8 @@ const InfoSection: React.FC = () => {
 
     return () => unsubscribe();
   }, [defaultDoc, sectionKey]);
+
+  if (sectionName === 'parie') return <Parie />;
 
   // Sections FAQ (lecture)
   if (defaultDoc) {

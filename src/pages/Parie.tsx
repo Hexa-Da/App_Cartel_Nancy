@@ -71,6 +71,47 @@ interface DelegationVotes {
 }
 
 
+interface TimerDisplayProps {
+  bettingClosed: boolean;
+  timeRemaining: { days: number; hours: number; minutes: number; seconds: number } | null;
+}
+
+const TimerDisplay: React.FC<TimerDisplayProps> = ({ bettingClosed, timeRemaining }) => {
+  if (bettingClosed) {
+    return (
+      <div className="timer-closed">
+        <FaClock /> Paris clos
+      </div>
+    );
+  }
+
+  if (!timeRemaining) return null;
+
+  return (
+    <div className="timer-container">
+      <div className="timer-label"><FaClock /> Temps restant</div>
+      <div className="timer-countdown">
+        <div className="timer-unit">
+          <span className="timer-value">{timeRemaining.days}</span>
+          <span className="timer-text">j</span>
+        </div>
+        <div className="timer-unit">
+          <span className="timer-value">{String(timeRemaining.hours).padStart(2, '0')}</span>
+          <span className="timer-text">h</span>
+        </div>
+        <div className="timer-unit">
+          <span className="timer-value">{String(timeRemaining.minutes).padStart(2, '0')}</span>
+          <span className="timer-text">m</span>
+        </div>
+        <div className="timer-unit">
+          <span className="timer-value">{String(timeRemaining.seconds).padStart(2, '0')}</span>
+          <span className="timer-text">s</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Parie: React.FC = () => {
   const { venues, getAllDelegations, isAdmin } = useApp();
   const { isEditing } = useEditing();
@@ -89,7 +130,7 @@ const Parie: React.FC = () => {
   // Délégation du participant et votes agrégés
   const [userDelegation, setUserDelegation] = useState<string | null>(null);
   const userDelegationRef = useRef<string | null>(null);
-  const [_, setDelegationVotes] = useState<DelegationVotes>({});
+  const [, setDelegationVotes] = useState<DelegationVotes>({});
   
   // Synchroniser la ref avec le state
   useEffect(() => {
@@ -554,43 +595,6 @@ const Parie: React.FC = () => {
   const sports = getSportsWithDelegations();
   const totalBets = Object.values(bets).filter(b => b !== null).length;
 
-  // Composant Timer
-  const TimerDisplay = () => {
-    if (bettingClosed) {
-      return (
-        <div className="timer-closed">
-          <FaClock /> Paris clos
-        </div>
-      );
-    }
-    
-    if (!timeRemaining) return null;
-    
-    return (
-      <div className="timer-container">
-        <div className="timer-label"><FaClock /> Temps restant</div>
-        <div className="timer-countdown">
-          <div className="timer-unit">
-            <span className="timer-value">{timeRemaining.days}</span>
-            <span className="timer-text">j</span>
-          </div>
-          <div className="timer-unit">
-            <span className="timer-value">{String(timeRemaining.hours).padStart(2, '0')}</span>
-            <span className="timer-text">h</span>
-          </div>
-          <div className="timer-unit">
-            <span className="timer-value">{String(timeRemaining.minutes).padStart(2, '0')}</span>
-            <span className="timer-text">m</span>
-          </div>
-          <div className="timer-unit">
-            <span className="timer-value">{String(timeRemaining.seconds).padStart(2, '0')}</span>
-            <span className="timer-text">s</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // Afficher un loader pendant l'initialisation
   if (isInitializing) {
     return (
@@ -626,7 +630,7 @@ const Parie: React.FC = () => {
             </div>
           </div>
 
-          <TimerDisplay />
+          <TimerDisplay bettingClosed={bettingClosed} timeRemaining={timeRemaining} />
 
           {isLoadingBets && (
             <div className="chat-loading-spinner-container">
@@ -741,7 +745,7 @@ const Parie: React.FC = () => {
       </div>
 
       <div className="parie-content">
-        <TimerDisplay />
+        <TimerDisplay bettingClosed={bettingClosed} timeRemaining={timeRemaining} />
         
         {!isActivated && (
           <div className="parie-setup">

@@ -11,16 +11,26 @@ const Loader: React.FC = () => {
   const [isHiding, setIsHiding] = useState(false);
 
   useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout>;
+    let mounted = true;
+
     const hide = async () => {
       if (Capacitor.isNativePlatform()) {
         await SplashScreen.hide({ fadeOutDuration: SPLASH_FADE_DURATION });
-        await new Promise(r => setTimeout(r, 50));
+        if (!mounted) return;
+        await new Promise<void>(r => { timerId = setTimeout(r, 50); });
+        if (!mounted) return;
       }
       setIsHiding(true);
-      setTimeout(() => setIsVisible(false), LOADER_FADE_DURATION);
+      timerId = setTimeout(() => setIsVisible(false), LOADER_FADE_DURATION);
     };
 
     hide();
+
+    return () => {
+      mounted = false;
+      clearTimeout(timerId);
+    };
   }, []);
 
   if (!isVisible) return null;

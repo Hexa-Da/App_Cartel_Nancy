@@ -131,22 +131,19 @@ function App() {
 
   // Effet pour gérer le changement de route et forcer la recréation des marqueurs
   useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout>;
     if (location.pathname === '/map' && activeTab === 'map') {
       setActiveTab('map');
-      // Forcer la mise à jour de la carte
       if (mapRef.current) {
         mapRef.current.invalidateSize();
       }
-      // Forcer la recréation des marqueurs en déclenchant un re-render
-      // On utilise un timeout pour s'assurer que la carte est bien prête
-      setTimeout(() => {
+      timerId = setTimeout(() => {
         if (mapRef.current) {
-          // Forcer la mise à jour en modifiant appAction
-          // Cela déclenchera le useEffect principal qui recrée les marqueurs
           setAppAction(prev => prev + 1);
         }
       }, 200);
     }
+    return () => clearTimeout(timerId);
   }, [location.pathname, activeTab]);
 
   // Effet pour gérer les changements de localisation
@@ -184,56 +181,52 @@ function App() {
     userRoleRef.current = userRole;
   }, [userRole]);
 
-  const [_, setIsCalendarOpen] = useState(false);
+  const [, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const { messages } = useApp();
   const [previousTab, setPreviousTab] = useState<TabType>('map');
   
   // Effet pour gérer le lieu sélectionné depuis la page Home
   useEffect(() => {
+    const timerIds: ReturnType<typeof setTimeout>[] = [];
     const selectedVenueData = localStorage.getItem('selectedVenue');
     if (selectedVenueData && location.pathname === '/map') {
       try {
         const selectedVenue = JSON.parse(selectedVenueData);
-        
-        // Attendre que la carte et les marqueurs soient chargés
+
         const checkAndFlyTo = () => {
           if (mapRef.current && markersRef.current.length > 0) {
-            // Centrer la carte sur le lieu sélectionné
             mapRef.current.flyTo([selectedVenue.latitude, selectedVenue.longitude], 18, {
               duration: 2.5
             });
-            
-            // Trouver et ouvrir le marqueur correspondant
+
             const marker = markersRef.current.find(m => {
               const latlng = m.getLatLng();
               return Math.abs(latlng.lat - selectedVenue.latitude) < 0.0001 && 
                      Math.abs(latlng.lng - selectedVenue.longitude) < 0.0001;
             });
-            
+
             if (marker) {
-              setTimeout(() => {
+              timerIds.push(setTimeout(() => {
                 marker.openPopup();
-              }, 2500);
+              }, 2500));
             }
-            
-            // Nettoyer le localStorage
+
             localStorage.removeItem('selectedVenue');
           } else {
-            // Réessayer après un court délai si les marqueurs ne sont pas encore chargés
-            setTimeout(checkAndFlyTo, 100);
+            timerIds.push(setTimeout(checkAndFlyTo, 100));
           }
         };
-        
-        // Démarrer la vérification
+
         checkAndFlyTo();
-        
+
       } catch (error) {
         logger.error('Erreur lors du parsing du lieu sélectionné:', error);
         localStorage.removeItem('selectedVenue');
       }
     }
-  }, [location.pathname, venues]); // Ajouter venues comme dépendance pour s'assurer que les marqueurs sont chargés
+    return () => timerIds.forEach(id => clearTimeout(id));
+  }, [location.pathname, venues]);
 
   useEffect(() => {
     if (location.pathname === '/map') {
@@ -241,7 +234,7 @@ function App() {
     }
   }, [location.pathname]);
   
-  const [_isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   // Écouter la connexion admin réussie pour rafraîchir l'application
   useEffect(() => {
@@ -851,15 +844,17 @@ function App() {
 
   // Initialiser la branche Firebase editableData au démarrage
   useEffect(() => {
+    let mounted = true;
     if (isAdmin) {
       editableDataService.initializeEditableDataBranch(parties, hotels, restaurants)
         .then(() => {
-          updateLocalStateFromFirebase();
+          if (mounted) updateLocalStateFromFirebase();
         })
         .catch((error) => {
           logger.error('[App] Erreur initialisation editableData:', error);
         });
     }
+    return () => { mounted = false; };
   }, [isAdmin, parties, hotels, restaurants]);
 
   // Mettre à jour l'état local au démarrage avec les données du localStorage
@@ -2453,22 +2448,19 @@ function App() {
 
   // Enregistrer la visite de la page au chargement
   useEffect(() => {
-    // Forcer l'envoi d'un pageview après un court délai pour assurer le chargement complet
-    setTimeout(() => {
+    const timerId = setTimeout(() => {
       ReactGA.send({ 
         hitType: "pageview", 
         page: window.location.pathname + window.location.search
       });
-      
-      // Forcer un événement pour tester la connexion
+
       ReactGA.event({
         category: 'page',
         action: 'view',
         label: window.location.pathname
       });
     }, 1000);
-    
-    // Fonction pour enregistrer les événements personnalisés
+
     const trackEvent = (category: string, action: string) => {
       ReactGA.event({
         category,
@@ -2476,11 +2468,10 @@ function App() {
       });
     };
 
-    // Tracker l'événement "app_loaded"
     trackEvent('app', 'app_loaded');
-    
+
     return () => {
-      // Tracker l'événement quand l'utilisateur quitte
+      clearTimeout(timerId);
       trackEvent('app', 'app_closed');
     };
   }, []);
@@ -2792,18 +2783,17 @@ function App() {
   const previousTabRef = useRef<TabType | null>(null);
 
   useEffect(() => {
-    // Détecte le retour de 'calendar' vers 'events' et déclenche le scroll
+    let timerId: ReturnType<typeof setTimeout>;
     if (previousTabRef.current === 'calendar' && activeTab === 'events') {
-      setTimeout(() => {
+      timerId = setTimeout(() => {
         const eventsList = document.querySelector('.events-list');
         if (eventsList) {
           const firstNonPassedEvent = eventsList.querySelector('.event-item:not(.passed)');
           if (firstNonPassedEvent) {
-            // Calculer la position avec un offset pour laisser de l'espace en haut
             const containerRect = eventsList.getBoundingClientRect();
             const elementRect = firstNonPassedEvent.getBoundingClientRect();
-            const offset = 15; // 40px d'espace en haut
-            
+            const offset = 15;
+
             const scrollTop = eventsList.scrollTop + (elementRect.top - containerRect.top) - offset;
             eventsList.scrollTo({ top: scrollTop, behavior: 'smooth' });
           }
@@ -2811,6 +2801,7 @@ function App() {
       }, 100);
     }
     previousTabRef.current = activeTab;
+    return () => clearTimeout(timerId);
   }, [activeTab]);
 
 

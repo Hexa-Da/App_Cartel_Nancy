@@ -363,8 +363,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
           `planMarkers/${partyName}`
         );
         setIsAddingMarker(false);
-      } catch (error) {
-        // L'erreur est déjà loggée par wrapOperation
+      } catch {
         alert('Une erreur est survenue lors de l\'ajout du marqueur.');
       }
     };
@@ -381,8 +380,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
             'delete:marker',
             `planMarkers/${partyName}/${markerId}`
           );
-        } catch (error) {
-          // L'erreur est déjà loggée par wrapOperation
+        } catch {
           alert('Une erreur est survenue lors de la suppression du marqueur.');
         }
       }
