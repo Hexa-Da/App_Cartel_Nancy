@@ -52,6 +52,9 @@ interface FormContextType {
   setSelectedEvent: React.Dispatch<React.SetStateAction<Event | null>>;
   selectedPartyForMap: string | null;
   setSelectedPartyForMap: React.Dispatch<React.SetStateAction<string | null>>;
+  /** Party map as overlay above events/calendar without switching activeTab */
+  isPartyMapOpen: boolean;
+  setIsPartyMapOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FormContext = createContext<FormContextType | undefined>(undefined);
@@ -82,6 +85,7 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPlacingMarker, setIsPlacingMarker] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedPartyForMap, setSelectedPartyForMap] = useState<string | null>(null);
+  const [isPartyMapOpen, setIsPartyMapOpen] = useState(false);
 
   return (
     <FormContext.Provider value={{
@@ -119,7 +123,9 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
       selectedEvent,
       setSelectedEvent,
       selectedPartyForMap,
-      setSelectedPartyForMap
+      setSelectedPartyForMap,
+      isPartyMapOpen,
+      setIsPartyMapOpen
     }}>
       {children}
     </FormContext.Provider>

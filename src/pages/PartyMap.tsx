@@ -53,6 +53,43 @@ const MapController: React.FC<{ mapRef: React.MutableRefObject<L.Map | null> }> 
   return null;
 };
 
+/**
+ * Leaflet mesure souvent le conteneur à 0×0 ou trop petit quand la carte apparaît
+ * après un changement d'onglet (mobile / WebView). Les tuiles restent grises jusqu'à
+ * un geste qui force un recalcul — invalidateSize() corrige ça sans attendre le toucher.
+ */
+const LeafletInvalidateSizeAfterLayout: React.FC = () => {
+  const map = useMap();
+  useEffect(() => {
+    const fix = () => {
+      try {
+        map.invalidateSize({ animate: false });
+      } catch {
+        /* noop */
+      }
+    };
+    fix();
+    const timeouts = [50, 150, 400, 800].map((ms) => window.setTimeout(fix, ms));
+    const rafId = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(fix);
+    });
+    window.addEventListener('resize', fix);
+    window.addEventListener('orientationchange', fix);
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') fix();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      timeouts.forEach(clearTimeout);
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', fix);
+      window.removeEventListener('orientationchange', fix);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [map]);
+  return null;
+};
+
 // Composant pour ajuster la vue de la carte du plan
 const PlanMapViewAdjuster: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) => {
   const map = useMap();
@@ -61,6 +98,339 @@ const PlanMapViewAdjuster: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ b
   }, [map, bounds]);
   return null;
 };
+
+// Composant pour gérer les clics sur la carte du plan
+const PlanMapClickHandler: React.FC<{
+  onMapClick: (lat: number, lng: number) => void;
+  isAddingMarker: boolean;
+}> = ({ onMapClick, isAddingMarker }) => {
+  useMapEvents({
+    click: (e) => {
+      if (isAddingMarker) {
+        onMapClick(e.latlng.lat, e.latlng.lng);
+      }
+    }
+  });
+  return null;
+};
+
+const INDICATION_TYPE_EMOJIS: Record<string, string> = {
+  'Soins': '🚑',
+  'Poubelle': '🗑️',
+  'Dejeuner': '🥐',
+  'Bar': '🍺',
+  'Accès handicapé': '👨‍🦽',
+  'Safe place': '🗣️',
+  'Toilette': '🚾',
+  'Zone fumeur': '🚬',
+  'Vestiaire': '🧥',
+  'Stand de prévention': '⚠️',
+  'Stand entreprise': '👩‍💼',
+  'Issue de secours': '➜',
+  'Reception Alumni': '👨‍🎓',
+};
+
+// Composant pour afficher un plan avec navigation et marqueurs
+const PlanMapView: React.FC<{
+  title: string;
+  imageSrc: string;
+  imageAlt: string;
+  partyName: string;
+  rotateImageLeft90?: boolean;
+}> = ({ imageSrc, partyName, rotateImageLeft90 = false }) => {
+  const { isEditing } = useEditing();
+  const { isAdmin } = useApp();
+  const [planMarkers, setPlanMarkers] = useState<any[]>([]);
+  const [isAddingMarker, setIsAddingMarker] = useState(false);
+  const [selectedIndicationType, setSelectedIndicationType] = useState('Soins');
+  const [planImageSize, setPlanImageSize] = useState<{ w: number; h: number } | null>(null);
+  const [planDisplayUrl, setPlanDisplayUrl] = useState<string | null>(null);
+  const [planImageLoadError, setPlanImageLoadError] = useState(false);
+  const [planImageRetryKey, setPlanImageRetryKey] = useState(0);
+  const rotatedBlobUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    let effectActive = true;
+    setPlanImageSize(null);
+    setPlanDisplayUrl(null);
+    setPlanImageLoadError(false);
+    if (rotatedBlobUrlRef.current) {
+      URL.revokeObjectURL(rotatedBlobUrlRef.current);
+      rotatedBlobUrlRef.current = null;
+    }
+
+    const img = new Image();
+
+    const finalizeNonRotated = () => {
+      if (!effectActive) return;
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setPlanImageSize({ w: img.naturalWidth, h: img.naturalHeight });
+        setPlanDisplayUrl(imageSrc);
+      } else {
+        setPlanImageLoadError(true);
+      }
+    };
+
+    const finalizeRotated = () => {
+      if (!effectActive) return;
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      if (w <= 0 || h <= 0) {
+        setPlanImageLoadError(true);
+        return;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = h;
+      canvas.height = w;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        setPlanImageLoadError(true);
+        return;
+      }
+      ctx.translate(0, w);
+      ctx.rotate(ROTATE_90_CCW_RAD);
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob((blob) => {
+        if (!effectActive) return;
+        if (!blob) {
+          setPlanImageLoadError(true);
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        rotatedBlobUrlRef.current = url;
+        setPlanDisplayUrl(url);
+        setPlanImageSize({ w: canvas.width, h: canvas.height });
+      }, 'image/png');
+    };
+
+    const onLoad = () => {
+      if (rotateImageLeft90) {
+        finalizeRotated();
+      } else {
+        finalizeNonRotated();
+      }
+    };
+    const onError = () => {
+      if (effectActive) {
+        setPlanImageLoadError(true);
+      }
+    };
+    img.addEventListener('load', onLoad);
+    img.addEventListener('error', onError);
+    img.src = imageSrc;
+    return () => {
+      effectActive = false;
+      img.removeEventListener('load', onLoad);
+      img.removeEventListener('error', onError);
+      if (rotatedBlobUrlRef.current) {
+        URL.revokeObjectURL(rotatedBlobUrlRef.current);
+        rotatedBlobUrlRef.current = null;
+      }
+    };
+  }, [imageSrc, planImageRetryKey, rotateImageLeft90]);
+
+  const imageBounds: L.LatLngBoundsExpression = useMemo(() => {
+    if (!planImageSize) {
+      return [[0, 0], [PLAN_MARKER_COORD_RANGE, PLAN_MARKER_COORD_RANGE]];
+    }
+    return [[0, 0], [planImageSize.h, planImageSize.w]];
+  }, [planImageSize]);
+
+  const mapCenter: [number, number] = useMemo(() => {
+    if (!planImageSize) {
+      return [PLAN_MARKER_COORD_RANGE / 2, PLAN_MARKER_COORD_RANGE / 2];
+    }
+    return [planImageSize.h / 2, planImageSize.w / 2];
+  }, [planImageSize]);
+
+  useEffect(() => {
+    const markersRef = ref(database, `planMarkers/${partyName}`);
+    const unsubscribe = onValue(markersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const markersArray = Object.entries(data).map(([key, value]: [string, any]) => ({
+          id: key,
+          ...value
+        }));
+        setPlanMarkers(markersArray);
+      } else {
+        setPlanMarkers([]);
+      }
+    });
+    return () => unsubscribe();
+  }, [partyName]);
+
+  const handleMapClick = async (lat: number, lng: number) => {
+    if (!isAdmin || !isEditing || !isAddingMarker) return;
+    if (!planImageSize || planImageSize.h <= 0 || planImageSize.w <= 0) return;
+
+    const emoji = INDICATION_TYPE_EMOJIS[selectedIndicationType] || '📍';
+    const storedLat = (lat * PLAN_MARKER_COORD_RANGE) / planImageSize.h;
+    const storedLng = (lng * PLAN_MARKER_COORD_RANGE) / planImageSize.w;
+    const newMarker = {
+      position: [storedLat, storedLng],
+      indicationType: selectedIndicationType,
+      emoji: emoji,
+      timestamp: Date.now()
+    };
+
+    try {
+      const markersRef = ref(database, `planMarkers/${partyName}`);
+      await firebaseLogger.wrapOperation(
+        () => Promise.resolve(push(markersRef, newMarker)),
+        'write:marker',
+        `planMarkers/${partyName}`
+      );
+      setIsAddingMarker(false);
+    } catch {
+      alert('Une erreur est survenue lors de l\'ajout du marqueur.');
+    }
+  };
+
+  const handleDeleteMarker = async (markerId: string) => {
+    if (!isAdmin || !isEditing) return;
+
+    if (window.confirm('Voulez-vous supprimer ce marqueur ?')) {
+      try {
+        const markerRef = ref(database, `planMarkers/${partyName}/${markerId}`);
+        await firebaseLogger.wrapOperation(
+          () => remove(markerRef),
+          'delete:marker',
+          `planMarkers/${partyName}/${markerId}`
+        );
+      } catch {
+        alert('Une erreur est survenue lors de la suppression du marqueur.');
+      }
+    }
+  };
+
+  return (
+    <div className="page-content no-scroll party-map-container">
+      {isAdmin && isEditing && (
+        <div className="plan-editor-container">
+          {!isAddingMarker ? (
+            <>
+              <select
+                value={selectedIndicationType}
+                onChange={(e) => setSelectedIndicationType(e.target.value)}
+                className="plan-indication-select"
+              >
+                <option value="Soins">Soins 🚑</option>
+                <option value="Poubelle">Poubelle 🗑️</option>
+                <option value="Dejeuner">Dejeuner 🥐</option>
+                <option value="Bar">Bar 🍺</option>
+                <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
+                <option value="Safe place">Safe place 🗣️</option>
+                <option value="Toilette">Toilette 🚾</option>
+                <option value="Zone fumeur">Zone fumeur 🚬</option>
+                <option value="Vestiaire">Vestiaire 🧥</option>
+                <option value="Stand de prévention">Stand de prévention ⚠️</option>
+                <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
+                <option value="Issue de secours">Issue de secours ➜</option>
+                <option value="Reception Alumni">Reception Alumni 👨‍🎓</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => setIsAddingMarker(true)}
+                className="plan-add-marker-button"
+                title="Ajouter un marqueur sur le plan"
+                aria-label="Ajouter un marqueur sur le plan"
+              >
+                <span className="plan-add-marker-button-icon" aria-hidden>+</span>
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setIsAddingMarker(false)}
+              className="plan-cancel-button"
+            >
+              Annuler
+            </button>
+          )}
+        </div>
+      )}
+      {planImageLoadError && (
+        <div className="plan-map-error" role="alert">
+          <p className="plan-map-error-message">Impossible de charger le plan.</p>
+          <button
+            type="button"
+            className="plan-map-retry-button"
+            onClick={() => setPlanImageRetryKey((k) => k + 1)}
+          >
+            Réessayer
+          </button>
+        </div>
+      )}
+      {!planImageLoadError && !planImageSize && (
+        <div className="plan-map-loading" role="status" aria-live="polite">
+          <div className="chat-loading-spinner-container">
+            <div className="chat-loading-spinner" />
+            <div className="chat-loading-text">Chargement du plan…</div>
+          </div>
+        </div>
+      )}
+      {!planImageLoadError && planImageSize && planDisplayUrl && (
+      <MapContainer
+        key={`plan-map-${partyName}-${planImageSize.w}-${planImageSize.h}`}
+        center={mapCenter}
+        zoom={0}
+        minZoom={-2}
+        maxZoom={3}
+        style={{ height: '100%', width: '100%' }}
+        crs={L.CRS.Simple}
+      >
+        <LeafletInvalidateSizeAfterLayout />
+        <PlanMapViewAdjuster bounds={imageBounds} />
+        <ImageOverlay
+          url={planDisplayUrl}
+          bounds={imageBounds}
+          opacity={1}
+        />
+        <PlanMapClickHandler
+          onMapClick={handleMapClick}
+          isAddingMarker={isAddingMarker}
+        />
+        {planMarkers.filter(marker => marker.position && Array.isArray(marker.position)).map((marker) => {
+          const planType = marker.indicationType ? String(marker.indicationType).trim() : '';
+          const planInner = isIssueDeSecoursIndication(planType)
+            ? `<img src="${ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH}" alt="" class="plan-indication-marker__icon" />`
+            : `<span>${marker.emoji || '📍'}</span>`;
+          const displayLat = (Number(marker.position[0]) * planImageSize.h) / PLAN_MARKER_COORD_RANGE;
+          const displayLng = (Number(marker.position[1]) * planImageSize.w) / PLAN_MARKER_COORD_RANGE;
+          return (
+          <Marker
+            key={marker.id}
+            position={[displayLat, displayLng]}
+            icon={L.divIcon({
+              className: 'custom-marker plan-indication-marker',
+              html: `<div>${planInner}</div>`,
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+              popupAnchor: [0, -15]
+            })}
+          >
+            <Popup closeButton={false}>
+              <div className="venue-popup">
+                <h3>{marker.indicationType || 'Indication'}</h3>
+                {isAdmin && isEditing && (
+                  <button
+                    onClick={() => handleDeleteMarker(marker.id)}
+                    className="plan-delete-button"
+                  >
+                    Supprimer
+                  </button>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+          );
+        })}
+      </MapContainer>
+      )}
+    </div>
+  );
+};
+
 
 const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
   const { selectedPartyForMap } = useForm();
@@ -77,12 +447,9 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     ];
   }, [partiesFromProps]);
 
-  // Si on vient du Parc Expo (ou Hall A/B), afficher l'image du plan
   const showParcExpoPlan = selectedPartyForMap?.startsWith('Parc Expo') ?? false;
-  // Si on vient du Zénith, afficher l'image du plan
   const showZenithPlan = selectedPartyForMap?.startsWith('Zénith') ?? false;
 
-  // Fonction pour ouvrir dans Google Maps
   const openInGoogleMaps = async (party: Party) => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(party.address || `${party.latitude},${party.longitude}`)}`;
     if (Capacitor.isNativePlatform()) {
@@ -97,7 +464,6 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     }
   };
 
-  // Fonction pour copier dans le presse-papier
   const copyToClipboard = (text: string) => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);
@@ -111,11 +477,9 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     }
   };
 
-  // Créer les marqueurs pour les parties
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Nettoyer les anciens marqueurs
     markersRef.current.forEach(marker => {
       marker.removeFrom(mapRef.current!);
     });
@@ -169,348 +533,12 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
       }
     });
 
-    // Ajuster la vue pour afficher tous les marqueurs
     if (parties.length > 0 && mapRef.current) {
       const bounds = L.latLngBounds(parties.map(p => [p.latitude, p.longitude]));
       mapRef.current.fitBounds(bounds, { padding: [50, 50] });
     }
   }, [parties, showParcExpoPlan, showZenithPlan]);
 
-
-  // Composant pour gérer les clics sur la carte du plan
-  const PlanMapClickHandler: React.FC<{ 
-    onMapClick: (lat: number, lng: number) => void;
-    isAddingMarker: boolean;
-  }> = ({ onMapClick, isAddingMarker }) => {
-    useMapEvents({
-      click: (e) => {
-        if (isAddingMarker) {
-          onMapClick(e.latlng.lat, e.latlng.lng);
-        }
-      }
-    });
-    return null;
-  };
-
-  // Composant pour afficher un plan avec navigation et marqueurs
-  const PlanMapView: React.FC<{ 
-    title: string; 
-    imageSrc: string; 
-    imageAlt: string;
-    partyName: string;
-    /** When true, raster is drawn 90° counter-clockwise before display (Leaflet-safe vs CSS transform on overlay img). */
-    rotateImageLeft90?: boolean;
-  }> = ({ imageSrc, partyName, rotateImageLeft90 = false }) => {
-    const { isEditing } = useEditing();
-    const { isAdmin } = useApp();
-    const [planMarkers, setPlanMarkers] = useState<any[]>([]);
-    const [isAddingMarker, setIsAddingMarker] = useState(false);
-    const [selectedIndicationType, setSelectedIndicationType] = useState('Soins');
-    const [planImageSize, setPlanImageSize] = useState<{ w: number; h: number } | null>(null);
-    const [planDisplayUrl, setPlanDisplayUrl] = useState<string | null>(null);
-    const [planImageLoadError, setPlanImageLoadError] = useState(false);
-    const [planImageRetryKey, setPlanImageRetryKey] = useState(0);
-    const rotatedBlobUrlRef = useRef<string | null>(null);
-
-    const indicationTypeEmojis: { [key: string]: string } = {
-      'Soins': '🚑',
-      'Poubelle': '🗑️',
-      'Dejeuner': '🥐',
-      'Bar': '🍺',
-      'Accès handicapé': '👨‍🦽',
-      'Safe place': '🗣️',
-      'Toilette': '🚾',
-      'Zone fumeur': '🚬',
-      'Vestiaire': '🧥',
-      'Stand de prévention': '⚠️',
-      'Stand entreprise': '👩‍💼',
-      'Issue de secours': '➜',
-      'Reception Alumni': '👨‍🎓',
-    };
-
-    useEffect(() => {
-      let effectActive = true;
-      setPlanImageSize(null);
-      setPlanDisplayUrl(null);
-      setPlanImageLoadError(false);
-      if (rotatedBlobUrlRef.current) {
-        URL.revokeObjectURL(rotatedBlobUrlRef.current);
-        rotatedBlobUrlRef.current = null;
-      }
-
-      const img = new Image();
-
-      const finalizeNonRotated = () => {
-        if (!effectActive) return;
-        if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-          setPlanImageSize({ w: img.naturalWidth, h: img.naturalHeight });
-          setPlanDisplayUrl(imageSrc);
-        } else {
-          setPlanImageLoadError(true);
-        }
-      };
-
-      const finalizeRotated = () => {
-        if (!effectActive) return;
-        const w = img.naturalWidth;
-        const h = img.naturalHeight;
-        if (w <= 0 || h <= 0) {
-          setPlanImageLoadError(true);
-          return;
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = h;
-        canvas.height = w;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          setPlanImageLoadError(true);
-          return;
-        }
-        ctx.translate(0, w);
-        ctx.rotate(ROTATE_90_CCW_RAD);
-        ctx.drawImage(img, 0, 0, w, h);
-        canvas.toBlob((blob) => {
-          if (!effectActive) return;
-          if (!blob) {
-            setPlanImageLoadError(true);
-            return;
-          }
-          const url = URL.createObjectURL(blob);
-          rotatedBlobUrlRef.current = url;
-          setPlanDisplayUrl(url);
-          setPlanImageSize({ w: canvas.width, h: canvas.height });
-        }, 'image/png');
-      };
-
-      const onLoad = () => {
-        if (rotateImageLeft90) {
-          finalizeRotated();
-        } else {
-          finalizeNonRotated();
-        }
-      };
-      const onError = () => {
-        if (effectActive) {
-          setPlanImageLoadError(true);
-        }
-      };
-      img.addEventListener('load', onLoad);
-      img.addEventListener('error', onError);
-      img.src = imageSrc;
-      return () => {
-        effectActive = false;
-        img.removeEventListener('load', onLoad);
-        img.removeEventListener('error', onError);
-        if (rotatedBlobUrlRef.current) {
-          URL.revokeObjectURL(rotatedBlobUrlRef.current);
-          rotatedBlobUrlRef.current = null;
-        }
-      };
-    }, [imageSrc, planImageRetryKey, rotateImageLeft90]);
-
-    const imageBounds: L.LatLngBoundsExpression = useMemo(() => {
-      if (!planImageSize) {
-        return [[0, 0], [PLAN_MARKER_COORD_RANGE, PLAN_MARKER_COORD_RANGE]];
-      }
-      return [[0, 0], [planImageSize.h, planImageSize.w]];
-    }, [planImageSize]);
-
-    const mapCenter: [number, number] = useMemo(() => {
-      if (!planImageSize) {
-        return [PLAN_MARKER_COORD_RANGE / 2, PLAN_MARKER_COORD_RANGE / 2];
-      }
-      return [planImageSize.h / 2, planImageSize.w / 2];
-    }, [planImageSize]);
-
-    // Charger les marqueurs depuis Firebase
-    useEffect(() => {
-      const markersRef = ref(database, `planMarkers/${partyName}`);
-      const unsubscribe = onValue(markersRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          const markersArray = Object.entries(data).map(([key, value]: [string, any]) => ({
-            id: key,
-            ...value
-          }));
-          setPlanMarkers(markersArray);
-        } else {
-          setPlanMarkers([]);
-        }
-      });
-      return () => unsubscribe();
-    }, [partyName]);
-
-    // Gérer le clic sur la carte pour ajouter un marqueur
-    const handleMapClick = async (lat: number, lng: number) => {
-      if (!isAdmin || !isEditing || !isAddingMarker) return;
-      if (!planImageSize || planImageSize.h <= 0 || planImageSize.w <= 0) return;
-
-      const emoji = indicationTypeEmojis[selectedIndicationType] || '📍';
-      const storedLat = (lat * PLAN_MARKER_COORD_RANGE) / planImageSize.h;
-      const storedLng = (lng * PLAN_MARKER_COORD_RANGE) / planImageSize.w;
-      const newMarker = {
-        position: [storedLat, storedLng],
-        indicationType: selectedIndicationType,
-        emoji: emoji,
-        timestamp: Date.now()
-      };
-
-      try {
-        const markersRef = ref(database, `planMarkers/${partyName}`);
-        await firebaseLogger.wrapOperation(
-          () => Promise.resolve(push(markersRef, newMarker)),
-          'write:marker',
-          `planMarkers/${partyName}`
-        );
-        setIsAddingMarker(false);
-      } catch {
-        alert('Une erreur est survenue lors de l\'ajout du marqueur.');
-      }
-    };
-
-    // Supprimer un marqueur
-    const handleDeleteMarker = async (markerId: string) => {
-      if (!isAdmin || !isEditing) return;
-      
-      if (window.confirm('Voulez-vous supprimer ce marqueur ?')) {
-        try {
-          const markerRef = ref(database, `planMarkers/${partyName}/${markerId}`);
-          await firebaseLogger.wrapOperation(
-            () => remove(markerRef),
-            'delete:marker',
-            `planMarkers/${partyName}/${markerId}`
-          );
-        } catch {
-          alert('Une erreur est survenue lors de la suppression du marqueur.');
-        }
-      }
-    };
-
-    return (
-      <div className="page-content no-scroll party-map-container">
-        {isAdmin && isEditing && (
-          <div className="plan-editor-container">
-            {!isAddingMarker ? (
-              <>
-                <select
-                  value={selectedIndicationType}
-                  onChange={(e) => setSelectedIndicationType(e.target.value)}
-                  className="plan-indication-select"
-                >
-                  <option value="Soins">Soins 🚑</option>
-                  <option value="Poubelle">Poubelle 🗑️</option>
-                  <option value="Dejeuner">Dejeuner 🥐</option>
-                  <option value="Bar">Bar 🍺</option>
-                  <option value="Accès handicapé">Accès handicapé 👨‍🦽</option>
-                  <option value="Safe place">Safe place 🗣️</option>
-                  <option value="Toilette">Toilette 🚾</option>
-                  <option value="Zone fumeur">Zone fumeur 🚬</option>
-                  <option value="Vestiaire">Vestiaire 🧥</option>
-                  <option value="Stand de prévention">Stand de prévention ⚠️</option>
-                  <option value="Stand entreprise">Stand entreprise 👩‍💼</option>
-                  <option value="Issue de secours">Issue de secours ➜</option>
-                  <option value="Reception Alumni">Reception Alumni 👨‍🎓</option>
-                </select>
-                <button
-                  type="button"
-                  onClick={() => setIsAddingMarker(true)}
-                  className="plan-add-marker-button"
-                  title="Ajouter un marqueur sur le plan"
-                  aria-label="Ajouter un marqueur sur le plan"
-                >
-                  <span className="plan-add-marker-button-icon" aria-hidden>+</span>
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => setIsAddingMarker(false)}
-                className="plan-cancel-button"
-              >
-                Annuler
-              </button>
-            )}
-          </div>
-        )}
-        {planImageLoadError && (
-          <div className="plan-map-error" role="alert">
-            <p className="plan-map-error-message">Impossible de charger le plan.</p>
-            <button
-              type="button"
-              className="plan-map-retry-button"
-              onClick={() => setPlanImageRetryKey((k) => k + 1)}
-            >
-              Réessayer
-            </button>
-          </div>
-        )}
-        {!planImageLoadError && !planImageSize && (
-          <div className="plan-map-loading" role="status" aria-live="polite">
-            Chargement du plan…
-          </div>
-        )}
-        {!planImageLoadError && planImageSize && planDisplayUrl && (
-        <MapContainer
-          key={`plan-map-${partyName}-${planImageSize.w}-${planImageSize.h}`}
-          center={mapCenter}
-          zoom={0}
-          minZoom={-2}
-          maxZoom={3}
-          style={{ height: '100%', width: '100%' }}
-          crs={L.CRS.Simple}
-        >
-          <PlanMapViewAdjuster bounds={imageBounds} />
-          <ImageOverlay
-            url={planDisplayUrl}
-            bounds={imageBounds}
-            opacity={1}
-          />
-          <PlanMapClickHandler 
-            onMapClick={handleMapClick}
-            isAddingMarker={isAddingMarker}
-          />
-          {planMarkers.filter(marker => marker.position && Array.isArray(marker.position)).map((marker) => {
-            const planType = marker.indicationType ? String(marker.indicationType).trim() : '';
-            const planInner = isIssueDeSecoursIndication(planType)
-              ? `<img src="${ISSUE_DE_SECOURS_MARKER_PUBLIC_PATH}" alt="" class="plan-indication-marker__icon" />`
-              : `<span>${marker.emoji || '📍'}</span>`;
-            const displayLat = (Number(marker.position[0]) * planImageSize.h) / PLAN_MARKER_COORD_RANGE;
-            const displayLng = (Number(marker.position[1]) * planImageSize.w) / PLAN_MARKER_COORD_RANGE;
-            return (
-            <Marker
-              key={marker.id}
-              position={[displayLat, displayLng]}
-              icon={L.divIcon({
-                className: 'custom-marker plan-indication-marker',
-                html: `<div>${planInner}</div>`,
-                iconSize: [30, 30],
-                iconAnchor: [15, 15],
-                popupAnchor: [0, -15]
-              })}
-            >
-              <Popup closeButton={false}>
-                <div className="venue-popup">
-                  <h3>{marker.indicationType || 'Indication'}</h3>
-                  {isAdmin && isEditing && (
-                    <button
-                      onClick={() => handleDeleteMarker(marker.id)}
-                      className="plan-delete-button"
-                    >
-                      Supprimer
-                    </button>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-            );
-          })}
-        </MapContainer>
-        )}
-      </div>
-    );
-  };
-
-
-  // Si on affiche le plan du Parc Expo
   if (showParcExpoPlan) {
     return (
       <PlanMapView 
@@ -523,7 +551,6 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     );
   }
 
-  // Si on affiche le plan du Zénith
   if (showZenithPlan) {
     return (
       <PlanMapView 
@@ -535,7 +562,6 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
     );
   }
 
-  // Sinon, afficher la carte normale avec tous les lieux
   return (
     <div className="party-map-container">
       <MapContainer
@@ -544,6 +570,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
         style={{ height: '100%', width: '100%' }}
       >
         <MapController mapRef={mapRef} />
+        <LeafletInvalidateSizeAfterLayout />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -554,4 +581,3 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
 };
 
 export default PartyMap;
-

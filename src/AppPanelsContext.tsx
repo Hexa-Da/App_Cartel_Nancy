@@ -98,6 +98,8 @@ interface AppPanelsContextType {
   setSelectedEvent: React.Dispatch<React.SetStateAction<Event | null>>;
   selectedPartyForMap: string | null;
   setSelectedPartyForMap: React.Dispatch<React.SetStateAction<string | null>>;
+  isPartyMapOpen: boolean;
+  setIsPartyMapOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppPanelsContext = createContext<AppPanelsContextType | undefined>(undefined);
@@ -168,7 +170,9 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
     selectedEvent,
     setSelectedEvent,
     selectedPartyForMap,
-    setSelectedPartyForMap
+    setSelectedPartyForMap,
+    isPartyMapOpen,
+    setIsPartyMapOpen
   } = useForm();
   const { isEditing, setIsEditing } = useEditing();
 
@@ -230,7 +234,8 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
       editingMatch, setEditingMatch,
       newMatch, setNewMatch,
       selectedEvent, setSelectedEvent,
-      selectedPartyForMap, setSelectedPartyForMap
+      selectedPartyForMap, setSelectedPartyForMap,
+      isPartyMapOpen, setIsPartyMapOpen
     }}>
       {children}
     </AppPanelsContext.Provider>

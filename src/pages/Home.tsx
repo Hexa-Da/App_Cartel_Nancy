@@ -15,10 +15,12 @@
  * - Interface responsive pour mobile et desktop
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import EventDetails, { Event } from '../components/EventDetails';
 import { Match, Venue } from '../types';
+import type { Party } from '../types/venue';
+import { getAppNow, getAppTimestamp } from '../config/homeMomentDebug';
 import './Home.css';
 import '../components/EventDetails.css';
 import { useApp } from '../AppContext';
@@ -31,6 +33,8 @@ type Place = Venue;
 
 interface ExtendedMatch extends Match {
   venue?: string;
+  /** Row built from global `parties` (carte) for "Événements du moment" */
+  fromPartySource?: boolean;
 }
 
 interface DebugLog {
@@ -41,7 +45,7 @@ interface DebugLog {
 }
 
 const Home: React.FC = () => {
-  const { getFilteredEvents, delegationMatches, isLoadingVenues, isAdmin, hasGenderMatches } = useApp();
+  const { getFilteredEvents, delegationMatches, isLoadingVenues, isAdmin, hasGenderMatches, parties } = useApp();
   const { isEditing } = useEditing();
   const { selectedEvent, setSelectedEvent } = useForm();
   const [events, setEvents] = useState<Place[]>([]);
@@ -62,10 +66,10 @@ const Home: React.FC = () => {
   // Fonction pour ajouter un log de debug (mémorisée pour éviter les re-renders)
   const addLog = useCallback((message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
     const log: DebugLog = {
-      id: `${Date.now()}-${Math.random()}`,
+      id: `${getAppTimestamp()}-${Math.random()}`,
       message,
       type,
-      timestamp: new Date()
+      timestamp: getAppNow()
     };
     setDebugLogs(prev => {
       const newLogs = [log, ...prev].slice(0, 20); // Garder seulement les 20 derniers logs
@@ -252,7 +256,7 @@ const Home: React.FC = () => {
 
   // Fonction pour vérifier si un match est passé (reprise de App.tsx)
   const isMatchPassed = (startDate: string, endTime?: string, type: 'match' | 'party' = 'match') => {
-    const now = new Date();
+    const now = getAppNow();
     const start = new Date(startDate);
     
     // Si l'événement est dans le futur, il n'est pas passé
@@ -313,18 +317,68 @@ const Home: React.FC = () => {
     }
   }, [userPreferences, events]);
 
-  const getUpcomingMatches = (places: Place[]) => {
-    return places.flatMap(place => {
-      if ('matches' in place && Array.isArray(place.matches)) {
-        return place.matches.map((match: Match): ExtendedMatch => ({
+  const HOME_PARTY_SPORTS = new Set(['Soirée', 'Défilé', 'Defile', 'Pompom', 'Party']);
+
+  const isHomePartySport = (sport: string) => HOME_PARTY_SPORTS.has(sport);
+
+  const computeMomentEnd = (match: ExtendedMatch): Date => {
+    if (match.endTime) return new Date(match.endTime);
+    const end = new Date(match.date);
+    if (match.sport === 'Soirée' || match.sport === 'Défilé' || isHomePartySport(match.sport)) {
+      end.setHours(23, 0, 0, 0);
+      return end;
+    }
+    end.setHours(end.getHours() + 1);
+    return end;
+  };
+
+  const isLiveInMomentWindow = (match: ExtendedMatch, now: Date): boolean => {
+    const start = new Date(match.date);
+    const end = computeMomentEnd(match);
+    return start <= now && end > now;
+  };
+
+  const partyToExtendedMatch = (party: Party): ExtendedMatch => ({
+    id: `party-moment-${party.id}`,
+    name: party.name,
+    description: party.description,
+    address: party.address,
+    latitude: party.latitude,
+    longitude: party.longitude,
+    position: party.position,
+    date: party.date,
+    emoji: party.emoji,
+    sport: party.sport,
+    type: 'match',
+    teams: party.name,
+    time: '',
+    endTime: party.endDate,
+    venue: party.name,
+    venueId: party.id,
+    result: party.result,
+    fromPartySource: true
+  });
+
+  /** Matchs en cours + soirées (carte) en cours — même fenêtre temporelle que l’ancienne section "live" */
+  const momentEventsLive = useMemo(() => {
+    const now = getAppNow();
+    const fromVenues = events.flatMap((place) => {
+      if (!('matches' in place) || !Array.isArray(place.matches)) return [];
+      return place.matches.map(
+        (match: Match): ExtendedMatch => ({
           ...match,
           venue: place.name,
           sport: place.sport
-        }));
-      }
-      return [];
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  };
+        })
+      );
+    }).filter((m) => isLiveInMomentWindow(m, now));
+    const fromParties = parties
+      .map(partyToExtendedMatch)
+      .filter((m) => isLiveInMomentWindow(m, now));
+    return [...fromVenues, ...fromParties].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  }, [events, parties]);
 
   const getMatchesByDelegation = (places: Place[], delegation: string) => {
     return places.flatMap(place => {
@@ -419,25 +473,33 @@ const Home: React.FC = () => {
       'Pétanque': '🍹',
       'Escalade': '🧗‍♂️',
       'Soirée': '🎵',
-      'Défilé': '🎭'
+      'Défilé': '🎭',
+      'Pompom': '🎀',
+      'Party': '🎉',
+      'Defile': '🎺'
     };
     return icons[sport] || '🏆';
   };
 
+  const isPartyEventRow = (match: ExtendedMatch) =>
+    match.fromPartySource === true || isHomePartySport(match.sport);
+
   const handleEventClick = (match: ExtendedMatch) => {
     const date = match.date.split('T')[0];
+    const partyRow = isPartyEventRow(match);
     const newEvent: Event = {
-      type: match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party' : 'match',
+      type: partyRow ? 'party' : 'match',
       time: formatLocalTimeHM(match.date),
       endTime: match.endTime ? formatLocalTimeHM(match.endTime) : undefined,
       date: date,
-      name: match.description || match.name,
+      name: partyRow ? match.teams : (match.description || match.name),
       teams: match.teams,
       description: match.description,
-      color: match.sport === 'Soirée' || match.sport === 'Défilé' ? '#9C27B0' : '#4CAF50',
+      color: partyRow ? '#9C27B0' : '#4CAF50',
       sport: match.sport,
       venue: match.venue || '',
-      result: match.result
+      result: match.result,
+      partyVenueId: partyRow ? match.venueId : undefined
     };
     
     setSelectedEvent(newEvent);
@@ -614,47 +676,15 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Liste des prochains matchs */}
+        {/* Matchs en cours + soirées (liste carte) — voir momentEventsLive */}
         <section className="matches-section">
-          <h2>Matchs en direct</h2>
+          <h2>Événements du moment</h2>
           <div className="horizontal-scroll">
-            {getUpcomingMatches(events).filter(match => {
-              // Un match est en direct si la date de début est passée mais la date de fin n'est pas encore atteinte
-              const now = new Date();
-              const start = new Date(match.date);
-              let end;
-              if (match.endTime) {
-                end = new Date(match.endTime);
-              } else {
-                // Par défaut, durée 1h pour un match, 23h pour une soirée
-                end = new Date(match.date);
-                if (match.sport === 'Soirée' || match.sport === 'Défilé') {
-                  end.setHours(23, 0, 0, 0);
-                } else {
-                  end.setHours(end.getHours() + 1);
-                }
-              }
-              return start <= now && end > now;
-            }).length > 0 ? (
-              getUpcomingMatches(events).filter(match => {
-                const now = new Date();
-                const start = new Date(match.date);
-                let end;
-                if (match.endTime) {
-                  end = new Date(match.endTime);
-                } else {
-                  end = new Date(match.date);
-                  if (match.sport === 'Soirée' || match.sport === 'Défilé') {
-                    end.setHours(23, 0, 0, 0);
-                  } else {
-                    end.setHours(end.getHours() + 1);
-                  }
-                }
-                return start <= now && end > now;
-              }).map(match => (
-                <div 
-                  key={match.id} 
-                  className={`event-item home-event-item ${match.sport === 'Soirée' || match.sport === 'Défilé' ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
+            {momentEventsLive.length > 0 ? (
+              momentEventsLive.map((match) => (
+                <div
+                  key={match.id}
+                  className={`event-item home-event-item ${isPartyEventRow(match) ? 'party-event' : 'match-event'} ${isMatchPassed(match.date, match.endTime) ? 'match-passed' : ''}`}
                   onClick={() => handleEventClick(match)}
                 >
                   <div className="event-header">
@@ -677,7 +707,7 @@ const Home: React.FC = () => {
                   <div className="section-loading-spinner"></div>
                 </div>
               ) : (
-                <p className="no-matches">Aucun match en direct</p>
+                <p className="no-matches">Aucun événement en ce moment</p>
               )
             )}
           </div>

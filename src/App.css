@@ -1124,3 +1124,23 @@ body.ios .calendar-toggle-button {
   margin-top: 0;
   padding-top: 0;
 }
+
+/* Party map: same content inset as .page-content.no-scroll (Layout.css) */
+.app {
+  position: relative;
+  min-height: 0;
+}
+
+.app > .party-map-full-host,
+.app > .party-map-overlay-host {
+  position: absolute;
+  top: var(--header-height);
+  bottom: var(--nav-height);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background-color: var(--bg-color);
+  z-index: var(--z-content-high);
+}

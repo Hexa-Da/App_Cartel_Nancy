@@ -31,6 +31,8 @@ import ReactGA from 'react-ga4';
 import CalendarPopup from './components/CalendarPopup';
 import { Venue, Match } from './types';
 import { Hotel, Restaurant, Party } from './types/venue';
+import { DEFAULT_HOTELS } from './data/defaultHotels';
+import { DEFAULT_RESTAURANTS } from './data/defaultRestaurants';
 import { Outlet, useLocation} from 'react-router-dom';
 import { useNavigation, TabType } from './contexts/NavigationContext';
 import { useModal } from './contexts/ModalContext';
@@ -123,7 +125,9 @@ function App() {
     setEditingMatch,
     newMatch,
     setNewMatch,
-    setSelectedPartyForMap
+    setSelectedPartyForMap,
+    isPartyMapOpen,
+    setIsPartyMapOpen
   } = useForm();
   
   const location = useLocation();
@@ -160,9 +164,29 @@ function App() {
     return () => window.removeEventListener('storage', handleLocationChange);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (!isPartyMapOpen) return;
+    if (activeTab === 'events' || activeTab === 'calendar') return;
+    setIsPartyMapOpen(false);
+    setSelectedPartyForMap(null);
+  }, [activeTab, isPartyMapOpen, setIsPartyMapOpen, setSelectedPartyForMap]);
+
   const eventsButtonRef = useRef<HTMLButtonElement | null>(null);
   const calendarButtonRef = useRef<HTMLButtonElement | null>(null);
-  const { isAdmin, userRole, user, setUser, setUserRole, setIsAdmin, setIsRespoSport, venues, isLoadingVenues: isVenuesLoading } = useApp();
+  const {
+    isAdmin,
+    userRole,
+    user,
+    setUser,
+    setUserRole,
+    setIsAdmin,
+    setIsRespoSport,
+    venues,
+    isLoadingVenues: isVenuesLoading,
+    parties,
+    setParties,
+    messages
+  } = useApp();
   // Refs pour accéder aux valeurs actuelles dans les handlers de popup
   const isAdminRef = useRef(isAdmin);
   const isEditingRef = useRef(isEditing);
@@ -183,7 +207,6 @@ function App() {
 
   const [, setIsCalendarOpen] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
-  const { messages } = useApp();
   const [previousTab, setPreviousTab] = useState<TabType>('map');
   
   // Effet pour gérer le lieu sélectionné depuis la page Home
@@ -230,7 +253,11 @@ function App() {
 
   useEffect(() => {
     if (location.pathname === '/map') {
-      setActiveTab('map');
+      setActiveTab((prev) => {
+        if (prev === 'party-map') return prev;
+        if (prev === 'events' || prev === 'calendar') return prev;
+        return 'map';
+      });
     }
   }, [location.pathname]);
   
@@ -285,382 +312,9 @@ function App() {
     return isAdmin || userRole === 'respoSport';
   };
 
-  const [hotels, setHotels] = useState<Hotel[]>(() => {
-    // Les descriptions seront chargées depuis Firebase via les listeners
-    return [
-      {
-        id: '1',
-        name: "Ibis Styles Nancy Sud Houdemont",
-        position: [48.638767, 6.183726],
-        description: '',
-        address: "8 Allée De La Genelière, Rn 57, 54180 Houdemont",
-        telephone: "03 83 56 10 25",
-        type: 'hotel',
-        date: '',
-        latitude: 48.638751,
-        longitude: 6.183532,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '2',
-        name: "Nemea Home Suite Nancy Centre",
-        position: [48.685828, 6.190530],
-        description: '',
-        address: "13 Rue Albert Lebrun, 54000 Nancy",
-        telephone: "03 83 33 88 40",
-        type: 'hotel',
-        date: '',
-        latitude: 48.685828,
-        longitude: 6.190530,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '3',
-        name: "Nemea Grand Coeur Nancy Centre",
-        position: [48.685564, 6.181711],
-        description: '',
-        address: "12 Rue Charles III, 54000 Nancy",
-        telephone: "03 83 27 02 66",
-        type: 'hotel',
-        date: '',
-        latitude: 48.685564,
-        longitude: 6.181711,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '4',
-        name: "Hotel Ibis Nancy Brabois",
-        position: [48.650700, 6.144908],
-        description: '',
-        address: "All. de Bourgogne, 54500 Vandœuvre-lès-Nancy",
-        telephone: "03 83 44 55 77",
-        type: 'hotel',
-        date: '',
-        latitude: 48.650700,
-        longitude: 6.144908,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '5',
-        name: "Hotel Residome Nancy",
-        position: [48.694090, 6.195636],
-        description: '',
-        address: "9 Bd de la Mothe, 54000 Nancy",
-        telephone: "03 83 19 55 60",
-        type: 'hotel',
-        date: '',
-        latitude: 48.694090,
-        longitude: 6.195636,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '6',
-        name: "Ibis Budget Nancy Laxou",
-        position: [48.695594, 6.124011],
-        description: '',
-        address: "1 Rue du Vair, 54520 Laxou",
-        telephone: "08 92 68 04 82",
-        type: 'hotel',
-        date: '',
-        latitude: 48.695594,
-        longitude: 6.124011,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '7',
-        name: "Hotel Revotel Nancy Centre",
-        position: [48.689027, 6.170853],
-        description: '',
-        address: "41 Rue Raymond Poincaré, 54000 Nancy",
-        telephone: "03 83 28 02 13",
-        type: 'hotel',
-        date: '',
-        latitude: 48.689027,
-        longitude: 6.170853,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '8',
-        name: "Hotel Cerise Nancy",
-        position: [48.699409, 6.144490],
-        description: '',
-        address: "1339 Av. Raymond Pinchard, 54100 Nancy",
-        telephone: "03 83 98 03 33",
-        type: 'hotel',
-        date: '',
-        latitude: 48.699409,
-        longitude: 6.144490,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '9',
-        name: "F1 Nancy Sud Houdemont",
-        position: [48.639247, 6.183667],
-        description: '',
-        address: "Zac Houdemont, 4 All. de la Genelière, 54180 Heillecourt",
-        telephone: "08 91 70 53 34",
-        type: 'hotel',
-        date: '',
-        latitude: 48.639247,
-        longitude: 6.183667,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '10',
-        name: "F1 Nancy Nord Bouxières aux Dames",
-        position: [48.758371, 6.152435],
-        description: '',
-        address: "4 Rue Charles Bourseul, 54136 Bouxières-aux-Dames",
-        telephone: "08 91 70 53 33",
-        type: 'hotel',
-        date: '',
-        latitude: 48.758371,
-        longitude: 6.152435,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '11',
-        name: "Greet Hôtel Nancy Sud",
-        position: [48.636457, 6.180432],
-        description: '',
-        address: "2 rue des Egrez, ZAC des Egrez, 54180 Houdemont",
-        telephone: "03 54 00 16 54",
-        type: 'hotel',
-        date: '',
-        latitude: 48.636457,
-        longitude: 6.180432,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '12',
-        name: "Hôtel Ibis Styles Sud Houdemont",
-        position: [48.637822, 6.183618],
-        description: '',
-        address: "8, allée de la Genellière, 54180 Houdemont",
-        telephone: "03 83 56 10 25",
-        type: 'hotel',
-        date: '',
-        latitude: 48.637822,
-        longitude: 6.183618,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '13',
-        name: "Hôtel Ibis Budget Centre",
-        position: [48.692579, 6.195264],
-        description: '',
-        address: "4, allée du Chanoine Drioton, 54000 Nancy",
-        telephone: "08 92 68 12 86",
-        type: 'hotel',
-        date: '',
-        latitude: 48.692579,
-        longitude: 6.195264,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '14',
-        name: "Kosy coeur de ville",
-        position: [48.690394, 6.174923],
-        description: '',
-        address: "Place Simone Veil nº2, 54000 Nancy",
-        telephone: "03 83 28 93 45",
-        type: 'hotel',
-        date: '',
-        latitude: 48.690394,
-        longitude: 6.174923,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '15',
-        name: "Hôtel In Hôtel",
-        position: [48.743194, 6.151185],
-        description: '',
-        address: "5 Rue de Nerbevaux, 54390 Frouard",
-        telephone: "03 83 23 49 02",
-        type: 'hotel',
-        date: '',
-        latitude: 48.743194,
-        longitude: 6.151185,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '16',
-        name: "Campanile Nancy Gare",
-        position: [48.691665, 6.175432],
-        description: '',
-        address: "12 rue de Serre, 54000 Nancy",
-        telephone: "03 57 29 10 07",
-        type: 'hotel',
-        date: '',
-        latitude: 48.691665,
-        longitude: 6.175432,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      },
-      {
-        id: '17',
-        name: "Kyriad Vandoeuvre",
-        position: [48.650664, 6.146260],
-        description: '',
-        address: "1 avenue de Forêt de Haye, 54500 Vandoeuvre",
-        telephone: "03 83 44 66 00",
-        type: 'hotel',
-        date: '',
-        latitude: 48.650664,
-        longitude: 6.146260,
-        emoji: '🏢',
-        sport: 'Hotel',
-        matches: []
-      }
-    ];
-  });
+  const [hotels, setHotels] = useState<Hotel[]>(() => DEFAULT_HOTELS);
 
-  const [restaurants, setRestaurants] = useState<Restaurant[]>(() => {
-    // Les descriptions seront chargées depuis Firebase via les listeners
-    return [
-      {
-        id: 'salle-fetes-gentilly',
-        name: "Salle des Fêtes de Gentilly",
-        position: [48.698430, 6.139541],
-        description: "Repas du Vendredi soir",
-        address: "5001F Av. du Rhin, 54100 Nancy",
-        type: 'restaurant',
-        date: '',
-        latitude: 48.698430, 
-        longitude: 6.139541,
-        emoji: '🍽️',
-        sport: 'Restaurant', 
-        mealType: 'soir',
-        matches: []
-      },
-      {
-        id: 'parc-expo-hall-a1',
-        name: "Parc Expo Hall A1",
-        position: [48.663070, 6.191429],
-        description: "Repas du Jeudi et Vendredi soir",
-        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
-        type: 'restaurant',
-        date: '',
-        latitude: 48.663070,
-        longitude: 6.191429,
-        emoji: '🍽️',
-        sport: 'Restaurant',
-        mealType: 'soir',
-        matches: []
-      },
-      {
-        id: 'parc-saint-marie',
-        name: "Parc Saint-Marie",
-        position: [48.680392, 6.170733],
-        description: "Brunch du Dimanche matin",
-        address: "1 Av. Boffrand, 54000 Nancy",
-        type: 'restaurant',
-        date: '',
-        latitude: 48.680392,
-        longitude: 6.170733,
-        emoji: '🍽️',
-        sport: 'Restaurant',
-        mealType: 'midi',
-        matches: []
-      }
-    ];
-  });
-
-  const [parties, setParties] = useState<Party[]>(() => {
-    // Les descriptions et résultats seront chargés depuis Firebase via les listeners
-    return [
-      {
-        id: 'place-stanislas',
-        name: "Place Stanislas — Défilé",
-        position: [48.693524, 6.183270],
-        description: 'Défilé 14h–16h30 (informations sur place dès midi)',
-        address: "Pl. Stanislas, 54000 Nancy",
-        type: 'party',
-        date: '2026-04-16T14:00:00',
-        endDate: '2026-04-16T16:30:00',
-        latitude: 48.693524,
-        longitude: 6.183270,
-        emoji: '🎺',
-        sport: 'Defile'
-      },
-      {
-        id: 'parc-expo-pompom',
-        name: "Parc Expo — Soirée Pompoms",
-        position: [48.663257, 6.189841],
-        description: "Soirée Pompoms du 16 avril, 21h-3h",
-        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
-        type: 'party',
-        date: '2026-04-16T20:00:00',
-        endDate: '2026-04-17T02:00:00',
-        latitude: 48.663257,
-        longitude: 6.189841,
-        emoji: '🎀',
-        sport: 'Pompom',
-        result: ''
-      },
-      {
-        id: 'parc-expo-showcase',
-        name: "Parc Expo — Showcase",
-        position: [48.663636, 6.190061],
-        description: "Soirée Showcase 17 avril, 20h-4h",
-        address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy",
-        type: 'party',
-        date: '2026-04-17T20:00:00',
-        endDate: '2026-04-18T02:00:00',
-        latitude: 48.663636,
-        longitude: 6.190061,
-        emoji: '🎤',
-        sport: 'Party',
-        result: ''
-      },
-      {
-        id: 'zenith',
-        name: "Zénith — DJ Contest",
-        position: [48.710136, 6.139169],
-        description: "Soirée DJ Contest 18 avril, 20h-4h",
-        address: "Rue du Zénith, 54320 Maxéville",
-        type: 'party',
-        date: '2026-04-18T20:30:00',
-        endDate: '2026-04-19T04:00:00',
-        latitude: 48.710136,
-        longitude: 6.139169,
-        emoji: '🎧',
-        sport: 'Party',
-        result: ''
-      }
-    ];
-  });
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(() => DEFAULT_RESTAURANTS);
 
   const [showVenuesLoadingOverlay, setShowVenuesLoadingOverlay] = useState(false);
 
@@ -797,23 +451,9 @@ function App() {
   const getMarkerColor = mapService.getMarkerColor.bind(mapService);
   const getSportIcon = mapService.getSportIcon.bind(mapService);
 
-  // Charger les descriptions et résultats depuis Firebase au démarrage
+  // Charger les descriptions hôtels / restaurants depuis Firebase (soirées : AppContext)
   useEffect(() => {
     const unsubscribeFunctions = editableDataService.loadEditableData({
-      onPartyResultsUpdate: (partyId: string, result: string) => {
-        setParties((prevParties: Party[]) => 
-          prevParties.map((party: Party) => 
-            party.id === partyId ? { ...party, result } : party
-          )
-        );
-      },
-      onPartyDescriptionUpdate: (partyId: string, description: string) => {
-        setParties((prevParties: Party[]) => 
-          prevParties.map((party: Party) => 
-            party.id === partyId ? { ...party, description } : party
-          )
-        );
-      },
       onHotelDescriptionUpdate: (hotelId: string, description: string) => {
         setHotels((prevHotels: Hotel[]) => 
           prevHotels.map((hotel: Hotel) => 
@@ -1839,6 +1479,7 @@ function App() {
           partyMapButton.textContent = 'Voir la carte des lieux';
           partyMapButton.addEventListener('click', () => {
             setSelectedPartyForMap(party.name);
+            setIsPartyMapOpen(false);
             setActiveTab('party-map');
           });
           buttonsContainer.appendChild(partyMapButton);
@@ -1902,6 +1543,7 @@ function App() {
             partyMapButton.textContent = 'Voir la carte des lieux';
             partyMapButton.addEventListener('click', () => {
               setSelectedPartyForMap(currentParty.name);
+              setIsPartyMapOpen(false);
               setActiveTab('party-map');
             });
             buttonsContainerNew.appendChild(partyMapButton);
@@ -2552,6 +2194,10 @@ function App() {
   // Pas besoin de les mettre à jour séparément
 
   const handleCalendarClose = () => {
+    if (isPartyMapOpen) {
+      setIsPartyMapOpen(false);
+      setSelectedPartyForMap(null);
+    }
     setActiveTab(previousTab);
   };
 
@@ -2710,6 +2356,11 @@ function App() {
   };
 
   const handleBack = () => {
+    if (isPartyMapOpen) {
+      setIsPartyMapOpen(false);
+      setSelectedPartyForMap(null);
+      return;
+    }
     switch (activeTab as TabType) {
       case 'events':
         setActiveTab('map');
@@ -2730,6 +2381,8 @@ function App() {
         setActiveTab(chatOriginTab);
         break;
       case 'party-map':
+        setIsPartyMapOpen(false);
+        setSelectedPartyForMap(null);
         setActiveTab('map');
         break;
       case 'home':
@@ -2742,6 +2395,10 @@ function App() {
   };
 
   const handleTabChange = (tab: TabType) => {
+    if (isPartyMapOpen) {
+      setIsPartyMapOpen(false);
+      setSelectedPartyForMap(null);
+    }
     // Ajouter une entrée dans l'historique pour toutes les pages secondaires
     if (tab !== 'map' && tab !== 'home' && tab !== 'info') {
       window.history.pushState({ tab }, '', window.location.pathname);
@@ -3846,7 +3503,17 @@ function App() {
           </div>
         )}
 
-      {activeTab === 'party-map' && <PartyMap parties={parties} />}
+      {(activeTab === 'party-map' || isPartyMapOpen) && (
+        <div
+          className={
+            isPartyMapOpen && activeTab !== 'party-map'
+              ? 'party-map-overlay-host'
+              : 'party-map-full-host'
+          }
+        >
+          <PartyMap parties={parties} />
+        </div>
+      )}
 
       {/* EventDetails Modal */}
       {selectedEvent && (

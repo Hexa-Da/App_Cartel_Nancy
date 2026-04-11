@@ -19,7 +19,10 @@ import { database, isFirebaseInitialized, UserRole } from './firebase';
 import { firebaseLogger } from './services/FirebaseLogger';
 import logger from './services/Logger';
 import { delegationMatches as teamDelegationMatches, getAllDelegationsFromVenues } from './services/TeamService';
+import { editableDataService } from './services/EditableDataService';
+import { DEFAULT_PARTIES } from './data/defaultParties';
 import { Venue } from './types';
+import type { Party } from './types/venue';
 
 interface AppContextType {
   isAdmin: boolean;
@@ -32,6 +35,8 @@ interface AppContextType {
   setUser: React.Dispatch<React.SetStateAction<any>>;
   venues: Venue[];
   setVenues: React.Dispatch<React.SetStateAction<Venue[]>>;
+  parties: Party[];
+  setParties: React.Dispatch<React.SetStateAction<Party[]>>;
   messages: any[];
   setMessages: React.Dispatch<React.SetStateAction<any[]>>;
   isLoadingVenues: boolean;
@@ -49,9 +54,35 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [user, setUser] = useState<any>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
+  const [parties, setParties] = useState<Party[]>(() => DEFAULT_PARTIES);
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoadingVenues, setIsLoadingVenues] = useState(true);
   const [firebaseReadyAttempt, setFirebaseReadyAttempt] = useState(0);
+
+  // Party results/descriptions from Firebase (same branch as App hotel/restaurant listeners)
+  useEffect(() => {
+    const unsubscribeFunctions = editableDataService.loadEditableData({
+      onPartyResultsUpdate: (partyId: string, result: string) => {
+        setParties((prevParties: Party[]) =>
+          prevParties.map((party: Party) =>
+            party.id === partyId ? { ...party, result } : party
+          )
+        );
+      },
+      onPartyDescriptionUpdate: (partyId: string, description: string) => {
+        setParties((prevParties: Party[]) =>
+          prevParties.map((party: Party) =>
+            party.id === partyId ? { ...party, description } : party
+          )
+        );
+      }
+    });
+    return () => {
+      unsubscribeFunctions.forEach((unsubscribe) => {
+        if (unsubscribe) unsubscribe();
+      });
+    };
+  }, []);
 
   // Vérification de l'état admin au chargement
   useEffect(() => {
@@ -264,6 +295,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       setUser,
       venues,
       setVenues,
+      parties,
+      setParties,
       messages,
       setMessages,
       isLoadingVenues,

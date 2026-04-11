@@ -9,9 +9,12 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga4';
 import { Venue } from '../types';
 import { delegationMatches, getAllDelegationsFromVenues, getAllPlayerIdsFromVenues, playerIdMatches } from '../services/TeamService';
+import { getAppNow } from '../config/homeMomentDebug';
+import { useForm } from '../contexts/FormContext';
 import './EventsTab.css';
 import type { IEventsTabRow } from '../utils/convertEventToEventDetails';
 
@@ -40,6 +43,8 @@ interface EventsTabProps {
 }
 
 const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdate, isVenuesLoading }: EventsTabProps) => {
+  const location = useLocation();
+  const { setSelectedPartyForMap, setIsPartyMapOpen } = useForm();
   const [isLoading, setIsLoading] = useState(true);
   const hasInitialized = useRef(false);
   const [eventFilter, setEventFilter] = useState<string>(() => {
@@ -107,7 +112,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
 
   // Fonction pour vérifier si un match est passé
   const isMatchPassed = (startDate: string, endTime?: string) => {
-    const now = new Date();
+    const now = getAppNow();
     const start = new Date(startDate);
 
     if (start > now) {
@@ -354,6 +359,15 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
 
   const handleEventSelect = (event: Event) => {
     onEventSelect(event);
+  };
+
+  const shouldShowPartyMapButton = (event: Event) =>
+    event.type === 'party' && event.venueId !== 'place-stanislas';
+
+  const handleOpenPartyMap = (event: Event, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedPartyForMap(event.name);
+    setIsPartyMapOpen(true);
   };
 
   // Fonction optimisée pour récupérer tous les événements
@@ -851,6 +865,15 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
                 >
                   Ouvrir dans Google Maps
                 </button>
+                {shouldShowPartyMapButton(event) && (
+                  <button
+                    type="button"
+                    className="events-tab-party-map-button"
+                    onClick={(e) => handleOpenPartyMap(event, e)}
+                  >
+                    Voir la carte des lieux
+                  </button>
+                )}
               </div>
             </div>
           ))

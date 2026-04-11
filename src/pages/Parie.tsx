@@ -15,6 +15,7 @@ import './Parie.css';
 import WinnersModal from '../components/WinnersModal';
 import logger from '../services/Logger';
 import { ECHECS_PLAYER_IDS } from '../services/TeamService';
+import { getAppNow } from '../config/homeMomentDebug';
 
 interface SportSection {
   sportKey: string;
@@ -385,7 +386,7 @@ const Parie: React.FC = () => {
   // Timer countdown
   useEffect(() => {
     const updateTimer = () => {
-      const now = new Date();
+      const now = getAppNow();
       const diff = BETTING_DEADLINE.getTime() - now.getTime();
       
       if (diff <= 0) {

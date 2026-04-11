@@ -11,6 +11,7 @@ import { LaunchPopup } from '../../types';
 import logger from '../../services/Logger';
 import { compressImage } from '../../services/imageCompression';
 import { onModalSingleLineInputEnterKey } from '../../utils/mobileFormKeyboard';
+import { getAppNow } from '../../config/homeMomentDebug';
 import '../ModalForm.css';
 
 const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024;
@@ -79,7 +80,7 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
   uploadProgress: _uploadProgress,
   setUploadProgress
 }) => {
-  const now = new Date();
+  const now = getAppNow();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const storageInstance = getStorage(app);
 
@@ -89,7 +90,7 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
 
   const resetForm = useCallback(() => {
     setTitle('');
-    setStartDate(toDateInput(new Date()));
+    setStartDate(toDateInput(getAppNow()));
     setError('');
     setUploadProgress(0);
     if (fileInputRef.current) {

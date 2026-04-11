@@ -1,5 +1,8 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Venue } from '../types';
+import { useForm } from '../contexts/FormContext';
+import { useNavigation } from '../contexts/NavigationContext';
 import './EventDetails.css';
 
 export interface Event {
@@ -26,7 +29,23 @@ interface EventDetailsProps {
   venues: Venue[];
 }
 
+const isExcludedFromPartyVenuesMap = (event: Event): boolean => {
+  if (event.type !== 'party') return true;
+  if (event.partyVenueId === 'place-stanislas') return true;
+  if (event.partyVenueId === undefined && (event.sport === 'Defile' || event.sport === 'Défilé')) {
+    return true;
+  }
+  return false;
+};
+
+const MAP_ROUTE = '/map';
+
 const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap, venues }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setSelectedPartyForMap, setIsPartyMapOpen } = useForm();
+  const { setActiveTab, activeTab } = useNavigation();
+
   const partyVenuesById: Record<string, Venue> = {
     'place-stanislas': {
       id: 'place-stanislas',
@@ -127,6 +146,27 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
     const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     const month = months[date.getMonth()];
     return `${dayName} ${day} ${month}`;
+  };
+
+  const handleOpenPartyVenuesMap = () => {
+    if (isExcludedFromPartyVenuesMap(event)) return;
+    setSelectedPartyForMap(event.name);
+    onClose();
+
+    if (location.pathname !== MAP_ROUTE) {
+      setIsPartyMapOpen(false);
+      setActiveTab('party-map');
+      navigate(MAP_ROUTE);
+      return;
+    }
+
+    if (activeTab === 'events' || activeTab === 'calendar') {
+      setIsPartyMapOpen(true);
+      return;
+    }
+
+    setIsPartyMapOpen(false);
+    setActiveTab('party-map');
   };
 
   const handleViewOnMap = () => {
@@ -237,6 +277,15 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
               <span className="button-icon"></span>
               Voir sur la carte
             </button>
+            {!isExcludedFromPartyVenuesMap(event) && (
+              <button
+                type="button"
+                className="event-details-party-map-button"
+                onClick={handleOpenPartyVenuesMap}
+              >
+                Voir la carte des lieux
+              </button>
+            )}
             <button className="action-button secondary" onClick={onClose}>
               <span className="button-icon"></span>
               Fermer

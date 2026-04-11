@@ -10,6 +10,7 @@
 
 import { Venue } from '../types';
 import { delegationMatches as teamDelegationMatches } from './TeamService';
+import { getAppNow } from '../config/homeMomentDebug';
 
 class MapService {
   /**
@@ -17,7 +18,7 @@ class MapService {
    */
   getMarkerColor(date: string): { color: string; rotation: string } {
     const matchDate = new Date(date);
-    const now = new Date();
+    const now = getAppNow();
     const diffTime = matchDate.getTime() - now.getTime();
     const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
     
@@ -58,7 +59,7 @@ class MapService {
    * Vérifie si un match est passé
    */
   isMatchPassed(startDate: string, endTime?: string, type: 'match' | 'party' = 'match'): boolean {
-    const now = new Date();
+    const now = getAppNow();
     const start = new Date(startDate);
     
     // Si l'événement est dans le futur, il n'est pas passé

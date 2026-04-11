@@ -8,6 +8,7 @@ import BottomNav from './BottomNav';
 import EventDetails, { Event } from '../components/EventDetails';
 import { useForm } from '../contexts/FormContext';
 import { delegationMatches, getAllDelegationsFromVenues, getAllPlayerIdsFromVenues, playerIdMatches } from '../services/TeamService';
+import { getAppNow } from '../config/homeMomentDebug';
 
 interface CalendarPopupProps {
   isOpen: boolean;
@@ -529,7 +530,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     setSelectedEvent(event);
   };
 
-  const getCurrentDate = () => new Date();
+  const getCurrentDate = () => getAppNow();
 
   const getCurrentTimePosition = () => {
     const now = getCurrentDate();

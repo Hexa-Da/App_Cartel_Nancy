@@ -770,6 +770,24 @@ body.ios .event-item .event-actions {
   box-sizing: border-box;
 }
 
+/* Same layout as .maps-button; teal brand for "Voir la carte des lieux" */
+.events-tab-party-map-button {
+  width: 100%;
+  padding: var(--spacing-xs);
+  background-color: #5dabae;
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+}
+
 /* Ajustement pour la vue mobile */
 @media (max-width: 768px) { /* BREAKPOINTS.tablet */
   .events-panel {

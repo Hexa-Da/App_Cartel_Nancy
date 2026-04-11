@@ -80,6 +80,8 @@ const Layout: React.FC = () => {
     selectedEvent,
     setSelectedEvent,
     setSelectedPartyForMap,
+    isPartyMapOpen,
+    setIsPartyMapOpen,
     setEditingVenue,
     setEditingMatch,
     setNewMatch,
@@ -234,6 +236,14 @@ const Layout: React.FC = () => {
         return;
       }
 
+      if (isPartyMapOpen) {
+        setIsPartyMapOpen(false);
+        setSelectedPartyForMap(null);
+        window.history.replaceState({ path: currentPath, partyMap: false }, '', currentPath);
+        isHandlingPopState = false;
+        return;
+      }
+
       // Si on est sur le calendrier, revenir à l'onglet d'origine
       if (activeTab === 'calendar') {
         const calendarOriginTab = localStorage.getItem('calendarOriginTab') as TabType | null;
@@ -250,6 +260,7 @@ const Layout: React.FC = () => {
 
       // Si on est sur la page party-map, revenir à la carte principale
       if (activeTab === 'party-map') {
+        setIsPartyMapOpen(false);
         setSelectedPartyForMap(null);
         setActiveTab('map');
         isHandlingPopState = false;
@@ -287,7 +298,7 @@ const Layout: React.FC = () => {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [showChat, showEmergency, showVSSForm, showSettings, showAdminModal, showEditMatchModal, showEditVenueModal, showEditResultModal, showEditDescriptionModal, showEditHotelDescriptionModal, showEditRestaurantDescriptionModal, isAddingPlace, location.pathname, activeTab, navigate, messages, selectedEvent]);    
+  }, [showChat, showEmergency, showVSSForm, showSettings, showAdminModal, showEditMatchModal, showEditVenueModal, showEditResultModal, showEditDescriptionModal, showEditHotelDescriptionModal, showEditRestaurantDescriptionModal, isAddingPlace, location.pathname, activeTab, navigate, messages, selectedEvent, isPartyMapOpen, setIsPartyMapOpen, setSelectedPartyForMap]);    
   useEffect(() => {
     if (location.pathname === '/home' || location.pathname === '/info') {
       // Vérifier si c'est la première visite pour éviter les replaceState répétés
@@ -338,6 +349,12 @@ const Layout: React.FC = () => {
     if (showChat) {
       setShowChat(false);
       // Ne pas changer activeTab - rester sur la page actuelle
+      return;
+    }
+
+    if (isPartyMapOpen) {
+      setIsPartyMapOpen(false);
+      setSelectedPartyForMap(null);
       return;
     }
 
@@ -399,6 +416,7 @@ const Layout: React.FC = () => {
         }
         break;
       case 'party-map':
+        setIsPartyMapOpen(false);
         setSelectedPartyForMap(null);
         setActiveTab('map');
         break;
@@ -453,7 +471,7 @@ const Layout: React.FC = () => {
         onEditModeToggle={handleEditClick}
         isEditing={isEditing}
         isBackDisabled={(location.pathname === '/home' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar' && activeTab !== 'party-map'}
-        hideBackButton={(location.pathname === '/home' || location.pathname === '/map' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && activeTab !== 'events' && activeTab !== 'calendar' && activeTab !== 'party-map'}
+        hideBackButton={(location.pathname === '/home' || location.pathname === '/map' || (location.pathname === '/info' && !location.pathname.startsWith('/info/'))) && !showChat && !isPartyMapOpen && activeTab !== 'events' && activeTab !== 'calendar' && activeTab !== 'party-map'}
       />
       <main className="app-main">
         <Outlet />

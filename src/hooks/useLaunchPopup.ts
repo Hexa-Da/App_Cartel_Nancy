@@ -13,6 +13,7 @@ import { ref, onValue } from 'firebase/database';
 import { database } from '../firebase';
 import { LaunchPopup } from '../types';
 import logger from '../services/Logger';
+import { getAppNow } from '../config/homeMomentDebug';
 
 const LAUNCH_POPUPS_PATH = 'launchPopups';
 const SEEN_POPUP_KEY = 'launchPopupSeen';
@@ -44,7 +45,7 @@ export const useLaunchPopup = () => {
         ...(val as Omit<LaunchPopup, 'id'>)
       }));
 
-      const now = new Date();
+      const now = getAppNow();
       const seenIds = getSeenIds();
       const activePopups = allPopups
         .filter((p) => {

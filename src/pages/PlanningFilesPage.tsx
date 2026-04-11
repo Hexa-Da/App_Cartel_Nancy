@@ -19,43 +19,19 @@ import { useSearchParams } from 'react-router-dom';
 import PlanningFiles from '../components/PlanningFiles';
 import { useApp } from '../AppContext';
 import { useEditing } from '../contexts/EditingContext';
+import { DEFAULT_HOTELS } from '../data/defaultHotels';
+import { DEFAULT_RESTAURANTS } from '../data/defaultRestaurants';
+import { DEFAULT_PARTIES } from '../data/defaultParties';
 import './PlanningFilesPage.css';
 
-// Données hardcodées des hôtels (synchronisées avec App.tsx)
-const HOTELS = [
-  { id: '1', name: "Ibis Styles Nancy Sud Houdemont" },
-  { id: '2', name: "Nemea Home Suite Nancy Centre" },
-  { id: '3', name: "Nemea Grand Coeur Nancy Centre" },
-  { id: '4', name: "Hotel Ibis Nancy Brabois" },
-  { id: '5', name: "Hotel Residome Nancy" },
-  { id: '6', name: "Ibis Budget Nancy Laxou" },
-  { id: '7', name: "Hotel Revotel Nancy Centre" },
-  { id: '8', name: "Hotel Cerise Nancy" },
-  { id: '9', name: "F1 Nancy Sud Houdemont" },
-  { id: '10', name: "F1 Nancy Nord Bouxières aux Dames" },
-  { id: '11', name: "Greet Hôtel Nancy Sud" },
-  { id: '12', name: "Hôtel Ibis Styles Sud Houdemont" },
-  { id: '13', name: "Hôtel Ibis Budget Centre" },
-  { id: '14', name: "Kosy coeur de ville" },
-  { id: '15', name: "Hôtel In Hôtel" },
-  { id: '16', name: "Campanile Nancy Gare" },
-  { id: '17', name: "Kyriad Vandoeuvre" }
-];
-
-// Données hardcodées des restaurants (synchronisées avec App.tsx)
-const RESTAURANTS = [
-  { id: 'salle-fetes-gentilly', name: "Salle des Fêtes de Gentilly" },
-  { id: 'parc-expo-hall-a1', name: "Parc Expo Hall A1" },
-  { id: 'parc-saint-marie', name: "Parc Saint-Marie" }
-];
-
-// Données hardcodées des soirées (synchronisées avec App.tsx)
-const PARTIES = [
-  { id: 'place-stanislas', name: "Place Stanislas — Défilé", sport: 'Defile', description: "Défilé" },
-  { id: 'parc-expo-pompom', name: "Parc Expo — Soirée Pompoms", sport: 'Pompom', description: "Soirée Pompoms" },
-  { id: 'parc-expo-showcase', name: "Parc Expo — Showcase", sport: 'Party', description: "Soirée Showcase" },
-  { id: 'zenith', name: "Zénith — DJ Contest", sport: 'Party', description: "Soirée DJ Contest" }
-];
+const HOTELS = DEFAULT_HOTELS.map((h) => ({ id: h.id, name: h.name }));
+const RESTAURANTS = DEFAULT_RESTAURANTS.map((r) => ({ id: r.id, name: r.name }));
+const PARTIES = DEFAULT_PARTIES.map((p) => ({
+  id: p.id,
+  name: p.name,
+  sport: p.sport,
+  description: p.description
+}));
 
 // Sports disponibles (synchronisés avec PlanningFiles.tsx)
 const SPORTS = [
