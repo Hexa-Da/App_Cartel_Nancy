@@ -508,7 +508,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
           </div>
           {isChessSportSelected && (
             <div className="settings-item">
-              <label htmlFor="preferred-chess-delegation">Votre Délégation (suivi)</label>
+              <label htmlFor="preferred-chess-delegation">Votre Délégation</label>
               <select
                 id="preferred-chess-delegation"
                 className="settings-select"

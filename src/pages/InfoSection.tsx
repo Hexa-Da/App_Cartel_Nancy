@@ -13,7 +13,7 @@ import {
   FaBullhorn, FaMapMarkerAlt, FaBook, FaTrophy, FaMusic, FaGlassCheers, FaUsers, 
   FaBus, FaQuestionCircle, FaWrench, FaClock,
   FaFileAlt, FaShieldAlt, FaHotel, FaExclamationTriangle, FaFolderOpen,
-  FaChevronDown, FaChevronUp
+  FaChevronDown, FaChevronUp, FaArrowDown, FaArrowUp
 } from 'react-icons/fa';
 import Parie from './Parie';
 import logger from '../services/Logger';
@@ -470,6 +470,21 @@ const FAQAdminEditor: React.FC<{ sectionKey: string; doc: FaqEditableDocument }>
     }));
   };
 
+  const handleMoveSection = (sectionId: string, direction: 'up' | 'down') => {
+    dirtyRef.current = true;
+    setDraftDoc((prev) => {
+      const idx = prev.sections.findIndex((s) => s.id === sectionId);
+      if (idx < 0) return prev;
+      const nextIdx = direction === 'up' ? idx - 1 : idx + 1;
+      if (nextIdx < 0 || nextIdx >= prev.sections.length) return prev;
+      const sections = [...prev.sections];
+      const tmp = sections[idx];
+      sections[idx] = sections[nextIdx];
+      sections[nextIdx] = tmp;
+      return { ...prev, sections };
+    });
+  };
+
   const handleAddQuestion = (sectionId: string) => {
     updateSection(sectionId, (section) => ({
       ...section,
@@ -489,6 +504,20 @@ const FAQAdminEditor: React.FC<{ sectionKey: string; doc: FaqEditableDocument }>
       ...section,
       faqs: section.faqs.filter((f) => f.id !== faqId),
     }));
+  };
+
+  const handleMoveQuestion = (sectionId: string, faqId: string, direction: 'up' | 'down') => {
+    updateSection(sectionId, (section) => {
+      const idx = section.faqs.findIndex((f) => f.id === faqId);
+      if (idx < 0) return section;
+      const nextIdx = direction === 'up' ? idx - 1 : idx + 1;
+      if (nextIdx < 0 || nextIdx >= section.faqs.length) return section;
+      const faqs = [...section.faqs];
+      const tmp = faqs[idx];
+      faqs[idx] = faqs[nextIdx];
+      faqs[nextIdx] = tmp;
+      return { ...section, faqs };
+    });
   };
 
   useEffect(() => {
@@ -529,8 +558,32 @@ const FAQAdminEditor: React.FC<{ sectionKey: string; doc: FaqEditableDocument }>
       </div>
 
       <div className="faq-admin-editor">
-        {draftDoc.sections.map((section) => (
+        {draftDoc.sections.map((section, sectionIndex) => (
           <div key={section.id} className="faq-admin-section">
+            <div className="faq-admin-faq-item-header faq-admin-section-order-row">
+              <span className="faq-admin-faq-item-order-label">Position</span>
+              <div className="faq-admin-faq-item-order">
+                <button
+                  type="button"
+                  className="faq-admin-btn faq-admin-btn-icon"
+                  onClick={() => handleMoveSection(section.id, 'up')}
+                  disabled={isSaving || sectionIndex === 0}
+                  aria-label="Monter la section"
+                >
+                  <FaArrowUp aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  className="faq-admin-btn faq-admin-btn-icon"
+                  onClick={() => handleMoveSection(section.id, 'down')}
+                  disabled={isSaving || sectionIndex === draftDoc.sections.length - 1}
+                  aria-label="Descendre la section"
+                >
+                  <FaArrowDown aria-hidden />
+                </button>
+              </div>
+            </div>
+
             <div className="faq-admin-section-header">
               <label className="faq-admin-field">
                 <span className="faq-admin-label">Icône</span>
@@ -573,8 +626,31 @@ const FAQAdminEditor: React.FC<{ sectionKey: string; doc: FaqEditableDocument }>
             </div>
 
             <div className="faq-admin-faq-list">
-              {section.faqs.map((faq) => (
+              {section.faqs.map((faq, faqIndex) => (
                 <div key={faq.id} className="faq-admin-faq-item">
+                  <div className="faq-admin-faq-item-header">
+                    <span className="faq-admin-faq-item-order-label">Position</span>
+                    <div className="faq-admin-faq-item-order">
+                      <button
+                        type="button"
+                        className="faq-admin-btn faq-admin-btn-icon"
+                        onClick={() => handleMoveQuestion(section.id, faq.id, 'up')}
+                        disabled={isSaving || faqIndex === 0}
+                        aria-label="Monter la question"
+                      >
+                        <FaArrowUp aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        className="faq-admin-btn faq-admin-btn-icon"
+                        onClick={() => handleMoveQuestion(section.id, faq.id, 'down')}
+                        disabled={isSaving || faqIndex === section.faqs.length - 1}
+                        aria-label="Descendre la question"
+                      >
+                        <FaArrowDown aria-hidden />
+                      </button>
+                    </div>
+                  </div>
                   <label className="faq-admin-field">
                     <span className="faq-admin-label">Question</span>
                     <input
