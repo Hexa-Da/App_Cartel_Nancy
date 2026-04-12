@@ -18,7 +18,7 @@ export interface Event {
   sport?: string;
   venue?: string;
   result?: string;
-  /** Party id slug (place-stanislas, parc-expo-pompom, …) for map routing */
+  /** Party id slug (defile, parc-expo-pompom, …) for map routing */
   partyVenueId?: string;
 }
 
@@ -31,7 +31,7 @@ interface EventDetailsProps {
 
 const isExcludedFromPartyVenuesMap = (event: Event): boolean => {
   if (event.type !== 'party') return true;
-  if (event.partyVenueId === 'place-stanislas') return true;
+  if (event.partyVenueId === 'defile' || event.partyVenueId === 'place-stanislas') return true;
   if (event.partyVenueId === undefined && (event.sport === 'Defile' || event.sport === 'Défilé')) {
     return true;
   }
@@ -47,8 +47,22 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onClose, onViewOnMap
   const { setActiveTab, activeTab } = useNavigation();
 
   const partyVenuesById: Record<string, Venue> = {
+    defile: {
+      id: 'defile',
+      name: 'Place Stanislas',
+      description: 'Place Stanislas',
+      address: 'Pl. Stanislas, 54000 Nancy',
+      latitude: 48.693524,
+      longitude: 6.183270,
+      position: [48.693524, 6.183270],
+      sport: 'Defile',
+      date: '',
+      emoji: '🎺',
+      matches: [],
+      type: 'venue'
+    },
     'place-stanislas': {
-      id: 'place-stanislas',
+      id: 'defile',
       name: 'Place Stanislas',
       description: 'Place Stanislas',
       address: 'Pl. Stanislas, 54000 Nancy',

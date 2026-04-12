@@ -1,24 +1,11 @@
 /**
  * @fileoverview Default party list (soirées) — single source shared by App and AppContext
+ * Order: Parc Expo Pompom, Showcase, Défilé, Zénith (planning filters & map).
  */
 
 import type { Party } from '../types/venue';
 
 export const DEFAULT_PARTIES: Party[] = [
-  {
-    id: 'place-stanislas',
-    name: 'Place Stanislas — Défilé',
-    position: [48.693524, 6.183270],
-    description: 'Défilé 14h–16h30 (informations sur place dès midi)',
-    address: 'Pl. Stanislas, 54000 Nancy',
-    type: 'party',
-    date: '2026-04-16T14:00:00',
-    endDate: '2026-04-16T16:30:00',
-    latitude: 48.693524,
-    longitude: 6.183270,
-    emoji: '🎺',
-    sport: 'Defile'
-  },
   {
     id: 'parc-expo-pompom',
     name: 'Parc Expo — Soirée Pompoms',
@@ -48,6 +35,20 @@ export const DEFAULT_PARTIES: Party[] = [
     emoji: '🎤',
     sport: 'Party',
     result: ''
+  },
+  {
+    id: 'defile',
+    name: 'Place Stanislas — Défilé',
+    position: [48.693524, 6.183270],
+    description: 'Défilé 14h–16h30 (informations sur place dès midi)',
+    address: 'Pl. Stanislas, 54000 Nancy',
+    type: 'party',
+    date: '2026-04-16T14:00:00',
+    endDate: '2026-04-16T16:30:00',
+    latitude: 48.693524,
+    longitude: 6.183270,
+    emoji: '🎺',
+    sport: 'Defile'
   },
   {
     id: 'zenith',

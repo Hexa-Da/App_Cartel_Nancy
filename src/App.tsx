@@ -1473,7 +1473,7 @@ function App() {
         buttonsContainer.appendChild(mapsButton);
         
         // Bouton pour voir la map des lieux de soirée
-        if (party.id !== 'place-stanislas') {
+        if (party.id !== 'defile') {
           const partyMapButton = document.createElement('button');
           partyMapButton.className = 'party-map-button';
           partyMapButton.textContent = 'Voir la carte des lieux';
@@ -1537,7 +1537,7 @@ function App() {
               buttonsContainerNew.appendChild(mapsButton);
 
               // Bouton pour voir la map des lieux de soirée
-          if (currentParty.id !== 'place-stanislas') {
+          if (currentParty.id !== 'defile') {
             const partyMapButton = document.createElement('button');
             partyMapButton.className = 'party-map-button';
             partyMapButton.textContent = 'Voir la carte des lieux';

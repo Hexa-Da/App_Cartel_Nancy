@@ -4,15 +4,18 @@
  */
 
 export const LEGACY_PARTY_NUM_TO_SLUG: Readonly<Record<string, string>> = {
-  '1': 'place-stanislas',
+  '1': 'defile',
   '2': 'parc-expo-pompom',
   '3': 'parc-expo-showcase',
   '4': 'zenith'
 };
 
+/** Legacy umbrella for planning rows using numeric id "2" before parc-expo-jeudi / parc-expo-vendredi split */
+export const LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG = 'parc-expo-hall-a1' as const;
+
 export const LEGACY_REST_NUM_TO_SLUG: Readonly<Record<string, string>> = {
-  '1': 'salle-fetes-gentilly',
-  '2': 'parc-expo-hall-a1',
+  '1': 'gentilly',
+  '2': LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG,
   '3': 'parc-saint-marie'
 };
 

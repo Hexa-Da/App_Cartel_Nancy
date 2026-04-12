@@ -1,9 +1,12 @@
 import type { PlanningFile, PlanningFileCategory } from '../types';
 import {
   LEGACY_PARTY_NUM_TO_SLUG,
+  LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG,
   LEGACY_REST_NUM_TO_SLUG,
   normalizeFilterToPartySlug,
 } from '../config/planningVenueSlugs';
+
+const PARC_EXPO_DAY_IDS = ['parc-expo-jeudi', 'parc-expo-vendredi'] as const;
 
 /** When fileCategory is set, only files of that category match; legacy rows without it keep old behaviour */
 export function passesCategoryGate(
@@ -32,6 +35,11 @@ function normKey(s: string): string {
 
 function getEt(file: PlanningFile): string {
   return file.eventType ?? '';
+}
+
+function planningTextBlob(file: PlanningFile): string {
+  const et = getEt(file);
+  return normKey(`${et} ${file.name ?? ''} ${file.description ?? ''} ${file.specificItemName ?? ''}`);
 }
 
 export function matchesPartyBroad(
@@ -68,6 +76,7 @@ export function matchesPartyBroad(
 
 function partySlugKeywordMatch(etKey: string, slug: string): boolean {
   switch (slug) {
+    case 'defile':
     case 'place-stanislas':
       return etKey.includes('defile') || etKey.includes('stanislas');
     case 'parc-expo-pompom':
@@ -94,6 +103,15 @@ export function matchesPartySpecific(
 
   if (file.specificItemId === slug || file.specificItemId === specificId) return true;
   if (et === slug || et === specificId) return true;
+  if (
+    (slug === 'defile' || slug === 'place-stanislas') &&
+    (file.specificItemId === 'place-stanislas' || file.specificItemId === 'defile')
+  ) {
+    return true;
+  }
+  if ((et === 'defile' || et === 'place-stanislas') && (slug === 'defile' || slug === 'place-stanislas')) {
+    return true;
+  }
 
   const legacyNum = Object.entries(LEGACY_PARTY_NUM_TO_SLUG).find(([, s]) => s === slug)?.[0];
   if (legacyNum && (et === legacyNum || file.specificItemId === legacyNum)) return true;
@@ -127,10 +145,22 @@ export function matchesRestaurantBroad(
   if (restaurantIds.includes(et)) return true;
   const etAsSlug = LEGACY_REST_NUM_TO_SLUG[et];
   if (etAsSlug && restaurantIds.includes(etAsSlug)) return true;
+  if (
+    etAsSlug === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG &&
+    PARC_EXPO_DAY_IDS.some((id) => restaurantIds.includes(id))
+  ) {
+    return true;
+  }
   if (file.specificItemId) {
     if (restaurantIds.includes(file.specificItemId)) return true;
     const sidAsSlug = LEGACY_REST_NUM_TO_SLUG[file.specificItemId];
     if (sidAsSlug && restaurantIds.includes(sidAsSlug)) return true;
+    if (
+      sidAsSlug === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG &&
+      PARC_EXPO_DAY_IDS.some((id) => restaurantIds.includes(id))
+    ) {
+      return true;
+    }
   }
   if (etKey.includes('restaurant')) return true;
   if (et === 'Restaurant' || et === 'restaurant') return true;
@@ -146,22 +176,41 @@ export function matchesRestaurantSpecific(
   const etKey = et.toLowerCase();
   const slug = restaurant.id;
 
-  if (file.specificItemId === slug) return true;
-  if (et === slug) return true;
+  if (file.specificItemId === slug || et === slug) return true;
 
-  const legacyNum = Object.entries(LEGACY_REST_NUM_TO_SLUG).find(([, s]) => s === slug)?.[0];
-  if (legacyNum && (et === legacyNum || file.specificItemId === legacyNum)) return true;
-
-  if (slug === 'salle-fetes-gentilly') {
+  if (slug === 'gentilly') {
+    if (file.specificItemId === 'salle-fetes-gentilly') return true;
     return (
       etKey.includes('gentilly') ||
       etKey.includes('salle des fetes') ||
       etKey.includes('salle des fêtes')
     );
   }
-  if (slug === 'parc-expo-hall-a1') {
-    return etKey.includes('parc expo') || etKey.includes('hall a1') || etKey.includes('hall b');
+
+  if (slug === 'parc-expo-jeudi' || slug === 'parc-expo-vendredi') {
+    const blob = planningTextBlob(file);
+    const wantsJeudi = slug === 'parc-expo-jeudi';
+    const legacyParc =
+      file.specificItemId === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG ||
+      et === '2' ||
+      file.specificItemId === '2';
+    const venueOk =
+      legacyParc ||
+      blob.includes('parc expo') ||
+      blob.includes('hall a1') ||
+      blob.includes('hall b');
+    if (!venueOk) return false;
+    if (legacyParc || file.specificItemId === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG) {
+      if (wantsJeudi) return blob.includes('jeudi') || blob.includes('thursday');
+      return blob.includes('vendredi') || blob.includes('friday');
+    }
+    if (wantsJeudi) return blob.includes('jeudi') || blob.includes('thursday');
+    return blob.includes('vendredi') || blob.includes('friday');
   }
+
+  const legacyNum = Object.entries(LEGACY_REST_NUM_TO_SLUG).find(([, s]) => s === slug)?.[0];
+  if (legacyNum && (et === legacyNum || file.specificItemId === legacyNum)) return true;
+
   if (slug === 'parc-saint-marie') {
     return (
       etKey.includes('saint-marie') ||

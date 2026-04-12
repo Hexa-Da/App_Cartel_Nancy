@@ -5,7 +5,11 @@
 import { ref, onValue, set, update, get } from 'firebase/database';
 import { database } from '../firebase';
 import { Party, Hotel, Restaurant } from '../types/venue';
-import { LEGACY_PARTY_NUM_TO_SLUG, LEGACY_REST_NUM_TO_SLUG } from '../config/planningVenueSlugs';
+import {
+  LEGACY_PARTY_NUM_TO_SLUG,
+  LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG,
+  LEGACY_REST_NUM_TO_SLUG,
+} from '../config/planningVenueSlugs';
 import logger from './Logger';
 
 /** Firebase keys for partyResults (historical names kept for existing data) */
@@ -15,12 +19,17 @@ const PARTY_RESULT_FIREBASE_KEYS: Record<string, string> = {
   zenith: 'zenith-dj-contest'
 };
 
-const PARTY_SLUGS = [
-  'place-stanislas',
-  'parc-expo-pompom',
-  'parc-expo-showcase',
-  'zenith'
-] as const;
+const PARTY_SLUGS = ['defile', 'parc-expo-pompom', 'parc-expo-showcase', 'zenith'] as const;
+
+function normalizePartyDescriptionSlug(partyId: string): string {
+  if (partyId === 'place-stanislas') return 'defile';
+  return LEGACY_PARTY_NUM_TO_SLUG[partyId] ?? partyId;
+}
+
+function normalizeRestaurantDescriptionSlug(restaurantId: string): string {
+  if (restaurantId === 'salle-fetes-gentilly') return 'gentilly';
+  return LEGACY_REST_NUM_TO_SLUG[restaurantId] ?? restaurantId;
+}
 
 export interface EditableDataCallbacks {
   onPartyResultsUpdate?: (partyId: string, result: string) => void;
@@ -66,10 +75,14 @@ class EditableDataService {
         if (data.restaurantDescriptions && callbacks.onRestaurantDescriptionUpdate) {
           Object.entries(data.restaurantDescriptions).forEach(
             ([restaurantId, restaurantData]: [string, { description?: string }]) => {
-              if (restaurantData.description) {
-                const slug = LEGACY_REST_NUM_TO_SLUG[restaurantId] ?? restaurantId;
-                callbacks.onRestaurantDescriptionUpdate!(slug, restaurantData.description);
+              if (!restaurantData.description) return;
+              if (restaurantId === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG) {
+                callbacks.onRestaurantDescriptionUpdate!('parc-expo-jeudi', restaurantData.description);
+                callbacks.onRestaurantDescriptionUpdate!('parc-expo-vendredi', restaurantData.description);
+                return;
               }
+              const slug = normalizeRestaurantDescriptionSlug(restaurantId);
+              callbacks.onRestaurantDescriptionUpdate!(slug, restaurantData.description);
             }
           );
         }
@@ -77,7 +90,7 @@ class EditableDataService {
         if (data.partyDescriptions && callbacks.onPartyDescriptionUpdate) {
           Object.entries(data.partyDescriptions).forEach(([partyId, partyData]: [string, { description?: string }]) => {
             if (partyData.description) {
-              const slug = LEGACY_PARTY_NUM_TO_SLUG[partyId] ?? partyId;
+              const slug = normalizePartyDescriptionSlug(partyId);
               callbacks.onPartyDescriptionUpdate!(slug, partyData.description);
             }
           });
@@ -113,7 +126,7 @@ class EditableDataService {
 
   async savePartyDescription(partyId: string, description: string): Promise<void> {
     try {
-      const slug = LEGACY_PARTY_NUM_TO_SLUG[partyId] ?? partyId;
+      const slug = normalizePartyDescriptionSlug(LEGACY_PARTY_NUM_TO_SLUG[partyId] ?? partyId);
       const dbRef = ref(database, `editableData/partyDescriptions/${slug}`);
       await set(dbRef, { description, updatedAt: new Date().toISOString() });
     } catch (error) {
@@ -134,7 +147,7 @@ class EditableDataService {
 
   async saveRestaurantDescription(restaurantId: string, description: string): Promise<void> {
     try {
-      const slug = LEGACY_REST_NUM_TO_SLUG[restaurantId] ?? restaurantId;
+      const slug = normalizeRestaurantDescriptionSlug(LEGACY_REST_NUM_TO_SLUG[restaurantId] ?? restaurantId);
       const dbRef = ref(database, `editableData/restaurantDescriptions/${slug}`);
       await set(dbRef, { description, updatedAt: new Date().toISOString() });
     } catch (error) {
@@ -173,7 +186,7 @@ class EditableDataService {
         return restaurantDescriptions;
       };
 
-      const pStan = parties.find((p) => p.id === 'place-stanislas');
+      const pStan = parties.find((p) => p.id === 'defile');
       const pPompom = parties.find((p) => p.id === 'parc-expo-pompom');
       const pShow = parties.find((p) => p.id === 'parc-expo-showcase');
       const pZen = parties.find((p) => p.id === 'zenith');
@@ -196,7 +209,7 @@ class EditableDataService {
         hotelDescriptions: generateHotelDescriptions(),
         restaurantDescriptions: generateRestaurantDescriptions(),
         partyDescriptions: {
-          'place-stanislas': {
+          defile: {
             description:
               pStan?.description || 'Défilé 14h–16h30 (informations sur place dès midi)',
             updatedAt: new Date().toISOString()

@@ -440,7 +440,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
   const parties: Party[] = useMemo(() => {
     if (partiesFromProps && partiesFromProps.length > 0) return partiesFromProps;
     return [
-      { id: 'place-stanislas', name: "Place Stanislas — Défilé", position: [48.693524, 6.183270], description: 'Défilé 14h–16h30', address: "Pl. Stanislas, 54000 Nancy", latitude: 48.693524, longitude: 6.183270, date: '2026-04-16T14:00:00', emoji: '🎺', sport: 'Defile' },
+      { id: 'defile', name: "Place Stanislas — Défilé", position: [48.693524, 6.183270], description: 'Défilé 14h–16h30', address: "Pl. Stanislas, 54000 Nancy", latitude: 48.693524, longitude: 6.183270, date: '2026-04-16T14:00:00', emoji: '🎺', sport: 'Defile' },
       { id: 'parc-expo-pompom', name: "Parc Expo — Soirée Pompoms", position: [48.663030, 6.191597], description: "Soirée Pompoms", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663030, longitude: 6.191597, date: '2026-04-16T21:00:00', emoji: '🎀', sport: 'Pompom' },
       { id: 'parc-expo-showcase', name: "Parc Expo — Showcase", position: [48.663481, 6.189737], description: "Soirée Showcase", address: "Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy", latitude: 48.663481, longitude: 6.189737, date: '2026-04-17T20:00:00', emoji: '🎤', sport: 'Party' },
       { id: 'zenith', name: "Zénith — DJ Contest", position: [48.711077, 6.139991], description: "Soirée DJ Contest", address: "Rue du Zénith, 54320 Maxéville", latitude: 48.711077, longitude: 6.139991, date: '2026-04-18T20:00:00', emoji: '🎧', sport: 'Party' },

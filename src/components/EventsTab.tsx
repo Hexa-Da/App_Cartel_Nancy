@@ -362,7 +362,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
   };
 
   const shouldShowPartyMapButton = (event: Event) =>
-    event.type === 'party' && event.venueId !== 'place-stanislas';
+    event.type === 'party' && event.venueId !== 'defile' && event.venueId !== 'place-stanislas';
 
   const handleOpenPartyMap = (event: Event, e: React.MouseEvent) => {
     e.stopPropagation();

@@ -15,7 +15,11 @@ import {
   matchesRestaurantSpecific,
   passesCategoryGate,
 } from '../services/planningFileFilters';
-import { normalizeFilterToPartySlug, normalizeFilterToRestaurantSlug } from '../config/planningVenueSlugs';
+import {
+  LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG,
+  normalizeFilterToPartySlug,
+  normalizeFilterToRestaurantSlug,
+} from '../config/planningVenueSlugs';
 import './PlanningFiles.css';
 
 const PLANNING_SPORTS_EVENT_TYPES: readonly string[] = [
@@ -270,6 +274,7 @@ export default function PlanningFiles({
         const restHit = restaurants.find((r) => r.id === asRest);
         if (partyHit) setEventTypeFilter(partyHit.id);
         else if (restHit) setEventTypeFilter(restHit.id);
+        else if (asRest === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG) setEventTypeFilter('Restaurant');
         else setEventTypeFilter(filter);
       }
     }

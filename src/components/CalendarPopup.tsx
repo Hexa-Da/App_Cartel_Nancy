@@ -347,7 +347,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
       if (eventFilter === 'all' || eventFilter === 'party') {
         const partiesList = [
           {
-            id: 'place-stanislas',
+            id: 'defile',
             date: '2026-04-16',
             time: '14:00',
             endTime: '16:30',
