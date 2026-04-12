@@ -268,17 +268,24 @@ export default function PlanningFiles({
       } else if (filter === 'all') {
         setEventTypeFilter('all');
       } else {
-        const asParty = normalizeFilterToPartySlug(filter);
-        const asRest = normalizeFilterToRestaurantSlug(filter);
-        const partyHit = parties.find((p) => p.id === asParty);
-        const restHit = restaurants.find((r) => r.id === asRest);
-        if (partyHit) setEventTypeFilter(partyHit.id);
-        else if (restHit) setEventTypeFilter(restHit.id);
-        else if (asRest === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG) setEventTypeFilter('Restaurant');
-        else setEventTypeFilter(filter);
+        // Hotels use numeric ids ('1'–'17') that collide with legacy party/restaurant slugs.
+        // Check hotels FIRST to avoid mis-routing (e.g. hotel '4' → party 'zenith').
+        const hotelHit = hotels.find((h) => h.id === filter);
+        if (hotelHit) {
+          setEventTypeFilter(hotelHit.id);
+        } else {
+          const asParty = normalizeFilterToPartySlug(filter);
+          const asRest = normalizeFilterToRestaurantSlug(filter);
+          const partyHit = parties.find((p) => p.id === asParty);
+          const restHit = restaurants.find((r) => r.id === asRest);
+          if (partyHit) setEventTypeFilter(partyHit.id);
+          else if (restHit) setEventTypeFilter(restHit.id);
+          else if (asRest === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG) setEventTypeFilter('Restaurant');
+          else setEventTypeFilter(filter);
+        }
       }
     }
-  }, [filter, parties, restaurants]);
+  }, [filter, parties, restaurants, hotels]);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -464,6 +471,9 @@ export default function PlanningFiles({
       return;
     }
 
+    const capturedNewFile = { ...newFile };
+    const capturedFileCategory = fileCategory;
+
     try {
       setUploading(true);
       setUploadProgress(0);
@@ -525,52 +535,31 @@ export default function PlanningFiles({
                 compressedSize: number;
                 compressionRatio: number;
                 fileCategory?: PlanningFileCategory;
-                specificItemId?: string;
-                specificItemName?: string;
               })
             | undefined;
           try {
-            // Upload réussi, obtenir l'URL
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-            // Calculer la taille des données de la base
+            const category: PlanningFileCategory | undefined =
+              capturedFileCategory === 'sports' ||
+              capturedFileCategory === 'party' ||
+              capturedFileCategory === 'restaurant' ||
+              capturedFileCategory === 'restaurants' ||
+              capturedFileCategory === 'hotel' ||
+              capturedFileCategory === 'hse'
+                ? (capturedFileCategory === 'restaurant' ? 'restaurants' : capturedFileCategory as PlanningFileCategory)
+                : undefined;
+
             fileData = {
-              ...newFile,
+              ...capturedNewFile,
               url: downloadURL,
               uploadDate: Date.now(),
               uploadedBy: 'admin',
               originalSize: file.size,
               compressedSize: fileToUpload.size,
-              compressionRatio: file.type.startsWith('image/') ? Math.round((1 - fileToUpload.size / file.size) * 100) : 0
+              compressionRatio: file.type.startsWith('image/') ? Math.round((1 - fileToUpload.size / file.size) * 100) : 0,
+              ...(category ? { fileCategory: category } : {})
             };
-
-            if (fileCategory) {
-              fileData.fileCategory =
-                fileCategory === 'restaurant' ? 'restaurants' : (fileCategory as PlanningFileCategory);
-            }
-
-            // Ajouter l'ID de l'élément spécifique si disponible
-            if (specificItem) {
-              fileData.specificItemId = specificItem;
-
-              // Pour les hôtels, restaurants et soirées, ajouter aussi le nom pour faciliter le filtrage
-              if (fileCategory === 'hotel') {
-                const hotel = hotels.find(h => h.id === specificItem);
-                if (hotel) {
-                  fileData.specificItemName = hotel.name;
-                }
-              } else if (fileCategory === 'restaurant') {
-                const restaurant = restaurants.find(r => r.id === specificItem);
-                if (restaurant) {
-                  fileData.specificItemName = restaurant.name;
-                }
-              } else if (fileCategory === 'party') {
-                const party = parties.find(p => p.id === specificItem);
-                if (party) {
-                  fileData.specificItemName = party.name;
-                }
-              }
-            }
             
             const dataSize = JSON.stringify(fileData).length;
             optimizer.trackTransfer(dataSize);
@@ -753,16 +742,7 @@ export default function PlanningFiles({
                       value={specificItem}
                       onChange={(e) => {
                         setSpecificItem(e.target.value);
-                        // Mettre à jour eventType selon la sélection
-                        if (fileCategory === 'sports') {
-                          setNewFile((prev) => ({ ...prev, eventType: e.target.value }));
-                        } else if (fileCategory === 'hotel') {
-                          setNewFile((prev) => ({ ...prev, eventType: 'Hotel' }));
-                        } else if (fileCategory === 'restaurant') {
-                          setNewFile((prev) => ({ ...prev, eventType: 'Restaurant' }));
-                        } else if (fileCategory === 'party') {
-                          setNewFile((prev) => ({ ...prev, eventType: 'party' }));
-                        }
+                        setNewFile((prev) => ({ ...prev, eventType: e.target.value }));
                       }}
                       required
                       className="modal-select"

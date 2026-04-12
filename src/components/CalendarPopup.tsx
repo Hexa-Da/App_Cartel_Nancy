@@ -9,6 +9,7 @@ import EventDetails, { Event } from '../components/EventDetails';
 import { useForm } from '../contexts/FormContext';
 import { delegationMatches, getAllDelegationsFromVenues, getAllPlayerIdsFromVenues, playerIdMatches } from '../services/TeamService';
 import { getAppNow } from '../config/homeMomentDebug';
+import { DEFAULT_PARTIES } from '../data/defaultParties';
 
 interface CalendarPopupProps {
   isOpen: boolean;
@@ -345,56 +346,22 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
 
       // Pour les soirées et défilés (résultats depuis Firebase via prop parties)
       if (eventFilter === 'all' || eventFilter === 'party') {
-        const partiesList = [
-          {
-            id: 'defile',
-            date: '2026-04-16',
-            time: '14:00',
-            endTime: '16:30',
-            name: 'Place Stanislas',
-            description: 'Défilé 14h–16h30 (informations sur place dès midi)',
+        const partiesList = DEFAULT_PARTIES.map(p => {
+          const [dateStr, timeStr] = p.date.split('T');
+          const endTimePart = p.endDate?.split('T')[1];
+          return {
+            id: p.id,
+            date: dateStr,
+            time: timeStr.substring(0, 5),
+            endTime: endTimePart?.substring(0, 5),
+            name: p.name.split(' — ')[0],
+            description: p.description,
             color: '#673AB7',
-            type: 'party',
-            sport: 'Défilé',
-            venue: 'Pl. Stanislas, 54000 Nancy'
-          },
-          {
-            id: 'parc-expo-pompom',
-            date: '2026-04-16',
-            time: '20:00',
-            endTime: '02:00',
-            name: 'Parc Expo',
-            description: 'Soirée Pompoms du 16 avril, 21h-3h',
-            color: '#673AB7',
-            type: 'party',
-            sport: 'Show Pompom',
-            venue: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy'
-          },
-          {
-            id: 'parc-expo-showcase',
-            date: '2026-04-17',
-            time: '20:00',
-            endTime: '02:00',
-            name: 'Parc Expo',
-            description: 'Soirée Showcase 17 novembre, 20h-4h',
-            color: '#673AB7',
-            type: 'party',
-            sport: 'Showcase',
-            venue: 'Rue Catherine Opalinska, 54500 Vandœuvre-lès-Nancy'
-          },
-          {
-            id: 'zenith',
-            date: '2026-04-18',
-            time: '20:30',
-            endTime: '04:00',
-            name: 'Zénith',
-            description: 'Soirée DJ Contest 18 novembre, 20h-4h',
-            color: '#673AB7',
-            type: 'party',
-            sport: 'DJ Contest',
-            venue: 'Rue du Zénith, 54320 Maxéville'
-          }
-        ];
+            type: 'party' as const,
+            sport: p.name.split(' — ')[1] || p.sport,
+            venue: p.address
+          };
+        });
 
         partiesList.forEach(party => {
           if (party.date === date) {

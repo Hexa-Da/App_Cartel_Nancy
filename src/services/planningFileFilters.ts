@@ -8,6 +8,9 @@ import {
 
 const PARC_EXPO_DAY_IDS = ['parc-expo-jeudi', 'parc-expo-vendredi'] as const;
 
+const LEGACY_PARTY_NUMS = new Set(Object.keys(LEGACY_PARTY_NUM_TO_SLUG));
+const LEGACY_REST_NUMS = new Set(Object.keys(LEGACY_REST_NUM_TO_SLUG));
+
 /** When fileCategory is set, only files of that category match; legacy rows without it keep old behaviour */
 export function passesCategoryGate(
   file: PlanningFile,
@@ -28,7 +31,6 @@ function stripDiacritics(s: string): string {
   return s.normalize('NFD').replace(/\p{M}/gu, '');
 }
 
-/** Lowercase + accent-insensitive for substring checks */
 function normKey(s: string): string {
   return stripDiacritics(s.toLowerCase());
 }
@@ -42,6 +44,44 @@ function planningTextBlob(file: PlanningFile): string {
   return normKey(`${et} ${file.name ?? ''} ${file.description ?? ''} ${file.specificItemName ?? ''}`);
 }
 
+/**
+ * For files WITHOUT fileCategory, a bare numeric eventType ('1'-'4') is ambiguous
+ * between parties, restaurants and hotels. These helpers decide ownership based
+ * on file content hints when no fileCategory disambiguates.
+ */
+function fileTextHintsAtParty(file: PlanningFile): boolean {
+  const blob = normKey(`${file.name ?? ''} ${file.description ?? ''}`);
+  return ['soiree', 'party', 'pompom', 'showcase', 'defile', 'dj contest', 'zenith', 'stanislas', 'gala'].some(
+    (k) => blob.includes(k)
+  );
+}
+
+function fileTextHintsAtRestaurant(file: PlanningFile): boolean {
+  const blob = normKey(`${file.name ?? ''} ${file.description ?? ''}`);
+  return ['restaurant', 'repas', 'gentilly', 'parc expo', 'hall a1', 'brunch', 'saint-marie', 'saint marie'].some(
+    (k) => blob.includes(k)
+  );
+}
+
+function fileTextHintsAtHotel(file: PlanningFile): boolean {
+  const blob = normKey(`${file.name ?? ''} ${file.description ?? ''}`);
+  return blob.includes('hotel') || blob.includes('hôtel') || blob.includes('ibis') ||
+    blob.includes('nemea') || blob.includes('kyriad') || blob.includes('campanile') ||
+    blob.includes('residome') || blob.includes('revotel') || blob.includes('cerise') ||
+    blob.includes('greet') || blob.includes('kosy') || blob.includes('f1 nancy');
+}
+
+/** True if the numeric id is shared across categories */
+function isAmbiguousNumericId(et: string): boolean {
+  return LEGACY_PARTY_NUMS.has(et) || LEGACY_REST_NUMS.has(et);
+}
+
+// ── Party ────────────────────────────────────────────────────────
+
+const ALL_KNOWN_PARTY_SLUGS = new Set([
+  'parc-expo-pompom', 'parc-expo-showcase', 'defile', 'place-stanislas', 'zenith',
+]);
+
 export function matchesPartyBroad(
   file: PlanningFile,
   partyIds: readonly string[]
@@ -49,9 +89,16 @@ export function matchesPartyBroad(
   if (!passesCategoryGate(file, 'party')) return false;
   const et = getEt(file);
   const etKey = normKey(et);
-  if (partyIds.includes(et)) return true;
+
+  if (partyIds.includes(et)) {
+    if (!file.fileCategory && isAmbiguousNumericId(et) && !fileTextHintsAtParty(file)) return false;
+    return true;
+  }
   const etAsSlug = LEGACY_PARTY_NUM_TO_SLUG[et];
-  if (etAsSlug && partyIds.includes(etAsSlug)) return true;
+  if (etAsSlug && partyIds.includes(etAsSlug)) {
+    if (!file.fileCategory && !fileTextHintsAtParty(file)) return false;
+    return true;
+  }
   if (file.specificItemId) {
     if (partyIds.includes(file.specificItemId)) return true;
     const sidAsSlug = LEGACY_PARTY_NUM_TO_SLUG[file.specificItemId];
@@ -59,16 +106,8 @@ export function matchesPartyBroad(
   }
 
   const broadKeywords = [
-    'soiree',
-    'gala',
-    'defile',
-    'party',
-    'pompom',
-    'navette',
-    'showcase',
-    'dj contest',
-    'zenith',
-    'stanislas'
+    'soiree', 'gala', 'defile', 'party', 'pompom', 'navette',
+    'showcase', 'dj contest', 'zenith', 'stanislas',
   ];
   if (broadKeywords.some((k) => etKey.includes(k))) return true;
   return false;
@@ -90,11 +129,10 @@ function partySlugKeywordMatch(etKey: string, slug: string): boolean {
   }
 }
 
-/** When user picks a precise party by slug (or legacy numeric id) */
 export function matchesPartySpecific(
   file: PlanningFile,
   specificId: string,
-  parties: readonly IFilterListItem[]
+  _parties: readonly IFilterListItem[]
 ): boolean {
   if (!passesCategoryGate(file, 'party')) return false;
   const slug = normalizeFilterToPartySlug(specificId);
@@ -105,35 +143,28 @@ export function matchesPartySpecific(
   if (et === slug || et === specificId) return true;
   if (
     (slug === 'defile' || slug === 'place-stanislas') &&
-    (file.specificItemId === 'place-stanislas' || file.specificItemId === 'defile')
+    (et === 'defile' || et === 'place-stanislas' ||
+     file.specificItemId === 'place-stanislas' || file.specificItemId === 'defile')
   ) {
-    return true;
-  }
-  if ((et === 'defile' || et === 'place-stanislas') && (slug === 'defile' || slug === 'place-stanislas')) {
     return true;
   }
 
   const legacyNum = Object.entries(LEGACY_PARTY_NUM_TO_SLUG).find(([, s]) => s === slug)?.[0];
-  if (legacyNum && (et === legacyNum || file.specificItemId === legacyNum)) return true;
-
-  if (partySlugKeywordMatch(etKey, slug)) return true;
-  if (['1', '2', '3', '4'].includes(specificId) && partySlugKeywordMatch(etKey, LEGACY_PARTY_NUM_TO_SLUG[specificId] ?? '')) {
+  if (legacyNum && (et === legacyNum || file.specificItemId === legacyNum)) {
+    if (!file.fileCategory && !fileTextHintsAtParty(file)) return false;
     return true;
   }
 
-  const party = parties.find((p) => p.id === slug);
-  if (!party) return false;
-  const fileNameLower = file.name?.toLowerCase() ?? '';
-  const partyNameLower = party.name.toLowerCase();
-  const nameMatch =
-    file.specificItemName?.toLowerCase() === partyNameLower ||
-    fileNameLower.includes(partyNameLower) ||
-    partyNameLower.includes(fileNameLower) ||
-    fileNameLower.includes(party.id) ||
-    (party.sport !== undefined && fileNameLower.includes(party.sport.toLowerCase()));
-  if (!nameMatch) return false;
-  return matchesPartyBroad(file, parties.map((p) => p.id));
+  if (ALL_KNOWN_PARTY_SLUGS.has(et) || ALL_KNOWN_PARTY_SLUGS.has(file.specificItemId ?? '')) {
+    return false;
+  }
+
+  if (partySlugKeywordMatch(etKey, slug)) return true;
+
+  return false;
 }
+
+// ── Restaurant ───────────────────────────────────────────────────
 
 export function matchesRestaurantBroad(
   file: PlanningFile,
@@ -142,13 +173,21 @@ export function matchesRestaurantBroad(
   if (!passesCategoryGate(file, 'restaurants')) return false;
   const et = getEt(file);
   const etKey = et.toLowerCase();
-  if (restaurantIds.includes(et)) return true;
+
+  if (restaurantIds.includes(et)) {
+    if (!file.fileCategory && isAmbiguousNumericId(et) && !fileTextHintsAtRestaurant(file)) return false;
+    return true;
+  }
   const etAsSlug = LEGACY_REST_NUM_TO_SLUG[et];
-  if (etAsSlug && restaurantIds.includes(etAsSlug)) return true;
+  if (etAsSlug && restaurantIds.includes(etAsSlug)) {
+    if (!file.fileCategory && !fileTextHintsAtRestaurant(file)) return false;
+    return true;
+  }
   if (
     etAsSlug === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG &&
     PARC_EXPO_DAY_IDS.some((id) => restaurantIds.includes(id))
   ) {
+    if (!file.fileCategory && !fileTextHintsAtRestaurant(file)) return false;
     return true;
   }
   if (file.specificItemId) {
@@ -167,6 +206,11 @@ export function matchesRestaurantBroad(
   return false;
 }
 
+const ALL_KNOWN_RESTAURANT_SLUGS = new Set([
+  'parc-expo-jeudi', 'parc-expo-vendredi', 'gentilly',
+  'salle-fetes-gentilly', 'parc-saint-marie', LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG,
+]);
+
 export function matchesRestaurantSpecific(
   file: PlanningFile,
   restaurant: IFilterListItem
@@ -179,91 +223,83 @@ export function matchesRestaurantSpecific(
   if (file.specificItemId === slug || et === slug) return true;
 
   if (slug === 'gentilly') {
-    if (file.specificItemId === 'salle-fetes-gentilly') return true;
-    return (
-      etKey.includes('gentilly') ||
-      etKey.includes('salle des fetes') ||
-      etKey.includes('salle des fêtes')
-    );
+    if (file.specificItemId === 'salle-fetes-gentilly' || et === 'salle-fetes-gentilly') return true;
+  }
+
+  if (slug === 'parc-expo-jeudi' || slug === 'parc-expo-vendredi') {
+    const legacyParc =
+      file.specificItemId === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG ||
+      et === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG ||
+      et === '2' ||
+      file.specificItemId === '2';
+    if (legacyParc) {
+      const blob = planningTextBlob(file);
+      const wantsJeudi = slug === 'parc-expo-jeudi';
+      if (wantsJeudi) return blob.includes('jeudi') || blob.includes('thursday');
+      return blob.includes('vendredi') || blob.includes('friday');
+    }
+  }
+
+  const legacyNum = Object.entries(LEGACY_REST_NUM_TO_SLUG).find(([, s]) => s === slug)?.[0];
+  if (legacyNum && (et === legacyNum || file.specificItemId === legacyNum)) {
+    if (!file.fileCategory && !fileTextHintsAtRestaurant(file)) return false;
+    return true;
+  }
+
+  if (ALL_KNOWN_RESTAURANT_SLUGS.has(et) || ALL_KNOWN_RESTAURANT_SLUGS.has(file.specificItemId ?? '')) {
+    return false;
+  }
+
+  if (slug === 'gentilly') {
+    return etKey.includes('gentilly') || etKey.includes('salle des fetes') || etKey.includes('salle des fêtes');
   }
 
   if (slug === 'parc-expo-jeudi' || slug === 'parc-expo-vendredi') {
     const blob = planningTextBlob(file);
-    const wantsJeudi = slug === 'parc-expo-jeudi';
-    const legacyParc =
-      file.specificItemId === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG ||
-      et === '2' ||
-      file.specificItemId === '2';
-    const venueOk =
-      legacyParc ||
-      blob.includes('parc expo') ||
-      blob.includes('hall a1') ||
-      blob.includes('hall b');
+    const venueOk = blob.includes('parc expo') || blob.includes('hall a1') || blob.includes('hall b');
     if (!venueOk) return false;
-    if (legacyParc || file.specificItemId === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG) {
-      if (wantsJeudi) return blob.includes('jeudi') || blob.includes('thursday');
-      return blob.includes('vendredi') || blob.includes('friday');
-    }
-    if (wantsJeudi) return blob.includes('jeudi') || blob.includes('thursday');
+    if (slug === 'parc-expo-jeudi') return blob.includes('jeudi') || blob.includes('thursday');
     return blob.includes('vendredi') || blob.includes('friday');
   }
 
-  const legacyNum = Object.entries(LEGACY_REST_NUM_TO_SLUG).find(([, s]) => s === slug)?.[0];
-  if (legacyNum && (et === legacyNum || file.specificItemId === legacyNum)) return true;
-
   if (slug === 'parc-saint-marie') {
-    return (
-      etKey.includes('saint-marie') ||
-      etKey.includes('saint marie') ||
-      etKey.includes('parc saint') ||
-      etKey.includes('boffrand') ||
-      etKey.includes('brunch')
-    );
+    return etKey.includes('saint-marie') || etKey.includes('saint marie') ||
+      etKey.includes('parc saint') || etKey.includes('boffrand') || etKey.includes('brunch');
   }
 
-  const fileNameLower = file.name?.toLowerCase() ?? '';
-  const restaurantNameLower = restaurant.name.toLowerCase();
-  return (
-    (et === 'Restaurant' ||
-      etKey.includes('restaurant') ||
-      et === 'restaurant') &&
-    (file.specificItemName?.toLowerCase() === restaurantNameLower ||
-      fileNameLower.includes(restaurantNameLower) ||
-      restaurantNameLower.includes(fileNameLower) ||
-      fileNameLower.includes(restaurant.id))
-  );
+  return false;
 }
+
+// ── Hotel ────────────────────────────────────────────────────────
 
 export function matchesHotelBroad(file: PlanningFile, hotelIds: readonly string[]): boolean {
   if (!passesCategoryGate(file, 'hotel')) return false;
   const et = getEt(file);
   const etKey = et.toLowerCase();
-  if (hotelIds.includes(et)) return true;
+
+  if (hotelIds.includes(et)) {
+    if (!file.fileCategory && isAmbiguousNumericId(et) && !fileTextHintsAtHotel(file)) return false;
+    return true;
+  }
   if (file.specificItemId && hotelIds.includes(file.specificItemId)) return true;
   if (etKey.includes('hôtel') || etKey.includes('hotel')) return true;
   if (et === 'Hotel' || et === 'hotel') return true;
   return false;
 }
 
-export function matchesHotelSpecific(file: PlanningFile, hotel: IFilterListItem): boolean {
+export function matchesHotelSpecific(
+  file: PlanningFile,
+  hotel: IFilterListItem
+): boolean {
   if (!passesCategoryGate(file, 'hotel')) return false;
   const et = getEt(file);
-  const etKey = et.toLowerCase();
-  const fileNameLower = file.name?.toLowerCase() ?? '';
-  const hotelNameLower = hotel.name.toLowerCase();
 
   if (file.specificItemId === hotel.id) return true;
-  if (et === hotel.id) return true;
-  if (etKey.includes(hotelNameLower)) return true;
 
-  const isHotelType =
-    et === 'Hotel' || etKey.includes('hôtel') || etKey.includes('hotel');
-  if (!isHotelType) return false;
+  if (et === hotel.id) {
+    if (!file.fileCategory && isAmbiguousNumericId(et) && !fileTextHintsAtHotel(file)) return false;
+    return true;
+  }
 
-  return (
-    file.specificItemName?.toLowerCase() === hotelNameLower ||
-    fileNameLower.includes(hotelNameLower) ||
-    hotelNameLower.includes(fileNameLower) ||
-    fileNameLower.includes(hotel.id)
-  );
+  return false;
 }
