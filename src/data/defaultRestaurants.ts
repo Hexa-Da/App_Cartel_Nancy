@@ -1,6 +1,6 @@
 /**
  * @fileoverview Liste par défaut des lieux de restauration — source unique (carte, Firebase editable, planning).
- * Order: Parc Expo jeudi / vendredi, Gentilly, Parc Saint-Marie (planning filters).
+ * Order: Parc Expo jeudi / vendredi, Gentilly, Buvette des Aiguillettes, Parc Saint-Marie (planning filters).
  */
 
 import type { Restaurant } from '../types/venue';
@@ -49,6 +49,21 @@ export const DEFAULT_RESTAURANTS: Restaurant[] = [
     emoji: '🍽️',
     sport: 'Restaurant',
     mealType: 'soir',
+    matches: []
+  },
+  {
+    id: 'buvette-aiguillettes',
+    name: 'Buvette des Aiguillettes',
+    position: [48.668983, 6.158041],
+    description: 'Buvette — Complexe sportif Les Aiguillettes',
+    address: 'Boulevard des Aiguillettes, 54600 Villers-lès-Nancy',
+    type: 'restaurant',
+    date: '',
+    latitude: 48.668983,
+    longitude: 6.158041,
+    emoji: '🍽️',
+    sport: 'Restaurant',
+    mealType: 'midi',
     matches: []
   },
   {

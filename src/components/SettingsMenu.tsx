@@ -126,8 +126,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
   });
   // Hôtel préféré
   const [preferredHotel, setPreferredHotel] = React.useState(() => getInitial('preferredHotel', 'none'));
-  // Afficher les restaurants
-  const [showRestaurants, setShowRestaurants] = React.useState(() => getInitial('showRestaurants', true));
 
   const [isDiagnosticOpen, setIsDiagnosticOpen] = React.useState(false);
   const isChessSportSelected = favoriteSports[0] === 'Echecs';
@@ -237,12 +235,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
     handlePreferenceChange('preferredChessDelegation', delegation);
   };
 
-  // Gérer l'affichage des restaurants
-  const handleRestaurantToggle = (enabled: boolean) => {
-    setShowRestaurants(enabled);
-    handlePreferenceChange('showRestaurants', enabled ? 'true' : 'false');
-  };
-
   // Fonction générique pour gérer les changements de préférences
   const handlePreferenceChange = (key: string, value: string) => {
     persistPreference(key, value);
@@ -284,9 +276,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       }
       if (e.key === 'preferredChessDelegation' && e.newValue !== null) {
         setPreferredChessDelegation(e.newValue);
-      }
-      if (e.key === 'showRestaurants' && e.newValue !== null) {
-        setShowRestaurants(e.newValue === 'true');
       }
     };
 
@@ -330,9 +319,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
       }
       if (e.detail.key === 'preferredChessDelegation') {
         setPreferredChessDelegation(e.detail.value);
-      }
-      if (e.detail.key === 'showRestaurants') {
-        setShowRestaurants(e.detail.value === 'true');
       }
     };
 
@@ -523,18 +509,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onLocation
                 </option>
               ))}
             </select>
-          </div>
-          <div className="settings-item">
-            <label htmlFor="show-restaurants">Afficher les restaurants</label>
-            <label className="switch">
-              <input
-                type="checkbox"
-                id="show-restaurants"
-                checked={showRestaurants}
-                onChange={(e) => handleRestaurantToggle(e.target.checked)}
-              />
-              <span className="slider round"></span>
-            </label>
           </div>
           {isAdmin && (
             <div className="settings-item">

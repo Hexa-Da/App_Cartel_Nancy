@@ -70,6 +70,25 @@ import type { IEventsTabRow } from './utils/convertEventToEventDetails';
 
 type Place = Venue | Hotel | Party | Restaurant;
 
+/**
+ * Leaflet stacks default markers in `markerPane` (z-index 600) using icon z-index = pos.y + offset,
+ * so tall pixel Y always wins — zIndexOffset cannot beat a venue further south on screen.
+ * A dedicated pane above `markerPane` keeps hotel/restaurant markers on top of all venue markers.
+ */
+const LEAFLET_PANE_HOTEL_RESTAURANT = 'cartelHotelRestaurant';
+/** Between Leaflet markerPane (600) and tooltipPane (650). */
+const LEAFLET_PANE_HOTEL_RESTAURANT_Z = '610';
+
+const ensureHotelRestaurantPane = (map: L.Map) => {
+  if (!map.getPane(LEAFLET_PANE_HOTEL_RESTAURANT)) {
+    map.createPane(LEAFLET_PANE_HOTEL_RESTAURANT);
+  }
+  const pane = map.getPane(LEAFLET_PANE_HOTEL_RESTAURANT);
+  if (pane) {
+    pane.style.zIndex = LEAFLET_PANE_HOTEL_RESTAURANT_Z;
+  }
+};
+
 // Google Analytics initialization moved to src/config/analytics.ts and called in main.tsx
 
 
@@ -1584,6 +1603,7 @@ function App() {
   // Fonction pour créer un marqueur d'hôtel
   const createHotelMarker = (hotel: any) => {
             const marker = L.marker([hotel.latitude, hotel.longitude], {
+              pane: LEAFLET_PANE_HOTEL_RESTAURANT,
               icon: L.divIcon({
                 className: 'custom-marker hotel-marker',
                 html: `<div style="background-color: #1976D2; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
@@ -1684,6 +1704,7 @@ function App() {
   // Fonction pour créer un marqueur de restaurant
   const createRestaurantMarker = (restaurant: any) => {
             const marker = L.marker([restaurant.latitude, restaurant.longitude], {
+              pane: LEAFLET_PANE_HOTEL_RESTAURANT,
               icon: L.divIcon({
                 className: 'custom-marker restaurant-marker',
                 html: `<div style="background-color:rgb(255, 31, 31); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
@@ -1762,6 +1783,8 @@ function App() {
     const map = mapRef.current;
     if (!map) return;
 
+    ensureHotelRestaurantPane(map);
+
     // Supprimer uniquement les marqueurs d'hôtels et restaurants existants
     markersRef.current = markersRef.current.filter(marker => {
       const isHotelOrRestaurant = marker.getElement()?.classList.contains('hotel-marker') || 
@@ -1783,15 +1806,11 @@ function App() {
           }
         });
 
-    // Recréer les marqueurs de restaurants selon la préférence actuelle
-    const showRestaurants = localStorage.getItem('showRestaurants') !== 'false'; // true par défaut
-    if (showRestaurants) {
-      restaurants.forEach(restaurant => {
-        const marker = createRestaurantMarker(restaurant);
-        marker.addTo(map);
-        markersRef.current.push(marker);
-      });
-    }
+    restaurants.forEach(restaurant => {
+      const marker = createRestaurantMarker(restaurant);
+      marker.addTo(map);
+      markersRef.current.push(marker);
+    });
   };
 
   // Effet pour créer les marqueurs d'hôtels et restaurants au premier chargement
@@ -1816,16 +1835,13 @@ function App() {
           }
         });
 
-        const showRestaurants = localStorage.getItem('showRestaurants') !== 'false'; // true par défaut
-        if (showRestaurants) {
-          restaurants.forEach(restaurant => {
-            const marker = createRestaurantMarker(restaurant);
-            if (mapRef.current) {
-              marker.addTo(mapRef.current);
-              markersRef.current.push(marker);
-            }
-          });
-        }
+        restaurants.forEach(restaurant => {
+          const marker = createRestaurantMarker(restaurant);
+          if (mapRef.current) {
+            marker.addTo(mapRef.current);
+            markersRef.current.push(marker);
+          }
+        });
       }
     }
   }, [mapRef.current, locationError, hotels, restaurants, isAdmin, isEditing]);
@@ -1833,14 +1849,14 @@ function App() {
   // Effet pour gérer les changements de préférences d'hôtels et restaurants
   useEffect(() => {
     const handlePreferenceChange = (e: StorageEvent) => {
-      if (e.key === 'preferredHotel' || e.key === 'showRestaurants') {
+      if (e.key === 'preferredHotel') {
         createHotelAndRestaurantMarkers();
       }
     };
 
     // Écouter aussi les événements personnalisés pour les changements dans le même onglet
     const handleCustomPreferenceChange = (e: CustomEvent) => {
-      if (e.detail.key === 'preferredHotel' || e.detail.key === 'showRestaurants') {
+      if (e.detail.key === 'preferredHotel') {
         createHotelAndRestaurantMarkers();
       }
     };
@@ -2162,8 +2178,7 @@ function App() {
             } else {
               const restaurant = restaurantsMap.get(key);
               if (restaurant) {
-                const showRestaurants = localStorage.getItem('showRestaurants') !== 'false'; // true par défaut
-                shouldShow = showRestaurants;
+                shouldShow = true;
               }
             }
           }
@@ -2560,7 +2575,12 @@ function App() {
           center={[48.687697, 6.174308]}
           zoom={12}
               className="leaflet-map-fill"
-              ref={(map) => { mapRef.current = map || null; }}
+              ref={(map) => {
+                mapRef.current = map || null;
+                if (map) {
+                  ensureHotelRestaurantPane(map);
+                }
+              }}
               zoomControl={false}
         >
           <TileLayer
