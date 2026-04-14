@@ -83,41 +83,24 @@ const AppRoot = (
   </React.StrictMode>
 );
 
-// Configuration avant le rendu React
+// Configuration avant le rendu React — chaque étape est protégée pour
+// garantir que ReactDOM.render() est TOUJOURS atteint (sinon = écran noir).
 (async () => {
-  // 1. Configurer le thème en premier (évite le FOUC)
-  setupTheme();
-  
-  // 2. Initialiser Firebase TRÈS TÔT (avant tout le reste)
-  // Sur iOS, cela garantit que les clés sont disponibles avant que les composants
-  // ne tentent d'accéder aux données Firebase
-  try {
-    initializeFirebase();
-    logger.log('[Main] Firebase initialisé avec succès');
-  } catch (error) {
-    logger.error('[Main] ERREUR CRITIQUE: Firebase n\'a pas pu être initialisé:', error);
-    // On continue quand même pour éviter un écran blanc, mais l'app ne fonctionnera pas
-  }
-  
-  // 3. Configurer Google Analytics (gtag.js)
-  setupAnalytics();
-  
-  // 4. Configurer Capacitor (plugins natifs)
-  try {
-    await setupCapacitor();
-  } catch (error) {
-    logger.error('Erreur lors de la configuration Capacitor:', error);
-  }
+  try { setupTheme(); } catch (e) { logger.error('[Main] setupTheme:', e); }
 
   try {
-    await syncNativeDelegationPreferencesWithLocalStorage();
+    initializeFirebase();
   } catch (error) {
-    logger.error('Erreur sync préférences natives:', error);
+    logger.error('[Main] ERREUR CRITIQUE Firebase:', error);
   }
-  
-  // 5. Initialiser ReactGA (complémentaire à gtag.js)
-  initializeAnalytics();
-  
-  // 6. Rendre l'app après la configuration (ou même si elle échoue)
+
+  try { setupAnalytics(); } catch (e) { logger.error('[Main] setupAnalytics:', e); }
+
+  try { await setupCapacitor(); } catch (e) { logger.error('[Main] setupCapacitor:', e); }
+
+  try { await syncNativeDelegationPreferencesWithLocalStorage(); } catch (e) { logger.error('[Main] syncPrefs:', e); }
+
+  try { initializeAnalytics(); } catch (e) { logger.error('[Main] initializeAnalytics:', e); }
+
   ReactDOM.createRoot(document.getElementById('root')!).render(AppRoot);
 })();

@@ -23,7 +23,7 @@ import logger from './services/Logger';
 import { useForm } from './contexts/FormContext';
 import { useEditing } from './contexts/EditingContext';
 import { TabType } from './contexts/NavigationContext';
-import { Event } from './components/EventDetails';
+import type { Event } from './components/EventDetails';
 import type { IEditingMatchState, IEditingVenueState } from './contexts/FormContext';
 
 export type { TabType };
@@ -250,7 +250,7 @@ export const AppPanelsProvider = ({ children }: { children: React.ReactNode }) =
  * - useEditing() pour isEditing, setIsEditing
  */
 export const useAppPanels = () => {
-  if (process.env.NODE_ENV !== 'production') {
+  if (!import.meta.env.PROD) {
     logger.warn(
       '⚠️ useAppPanels est déprécié. ' +
       'Utilisez les hooks spécialisés : useNavigation(), useModal(), useForm(), useEditing()'

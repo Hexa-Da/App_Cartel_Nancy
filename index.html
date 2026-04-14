@@ -39,6 +39,18 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Failsafe: force-remove the loader overlay after max time even if React crashes.
+      // Runs independently of React / Vite module graph.
+      (function(){
+        var MAX_MS=6000;
+        var tid=setTimeout(function(){
+          var el=document.querySelector('.loader');
+          if(el&&el.parentNode)el.parentNode.removeChild(el);
+        },MAX_MS);
+        window.__loaderFailsafeClear=function(){clearTimeout(tid)};
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html> 

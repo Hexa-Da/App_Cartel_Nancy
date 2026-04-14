@@ -13,7 +13,7 @@
  */
 
 import React, { createContext, useContext, useState } from 'react';
-import { Event } from '../components/EventDetails';
+import type { Event } from '../components/EventDetails';
 import type { IEditingMatchState, IEditingVenueState } from './formContextTypes';
 
 interface FormContextType {

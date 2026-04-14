@@ -22,7 +22,7 @@ export const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-XX
 export const initializeAnalytics = () => {
   // Configuration avec mode test activé pour la validation
   ReactGA.initialize(GA_MEASUREMENT_ID, {
-    testMode: process.env.NODE_ENV !== 'production',
+    testMode: !import.meta.env.PROD,
     gaOptions: {
       sendPageView: false // Nous enverrons manuellement le pageview
     }
