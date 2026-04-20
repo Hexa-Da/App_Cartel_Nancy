@@ -1,5 +1,13 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
+const getRequiredEnv = (name: string): string => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+};
+
 const config: CapacitorConfig = {
   appId: 'com.cartelnancy.app',
   appName: 'Cartel Nancy',
@@ -22,10 +30,10 @@ const config: CapacitorConfig = {
   plugins: {
     GoogleAuth: {
       scopes: ['profile', 'email'],
-      serverClientId: '402641775282-1dd873jdnaq0j1o48sgfk8f8kelltblt.apps.googleusercontent.com',
-      androidClientId: '402641775282-pdqf0al035j46rcamrldne6o1hdj9ggj.apps.googleusercontent.com',
-      iosClientId: '402641775282-bcu1on4ld4bk3609sl9e9rcmvsb23epp.apps.googleusercontent.com',
-      webClientId: '402641775282-flmj306kcpqct1hmrific149uhthiqcq.apps.googleusercontent.com',
+      serverClientId: getRequiredEnv('GOOGLE_AUTH_SERVER_CLIENT_ID'),
+      androidClientId: getRequiredEnv('GOOGLE_AUTH_ANDROID_CLIENT_ID'),
+      iosClientId: getRequiredEnv('GOOGLE_AUTH_IOS_CLIENT_ID'),
+      webClientId: getRequiredEnv('GOOGLE_AUTH_WEB_CLIENT_ID'),
       forceCodeForRefreshToken: true
     },
     FirebaseMessaging: {

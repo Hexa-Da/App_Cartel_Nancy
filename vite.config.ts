@@ -19,7 +19,6 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        format: 'iife',
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]'
