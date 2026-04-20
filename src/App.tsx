@@ -1505,8 +1505,15 @@ function App() {
         }
         
         // Ajouter le bouton d'édition du résultat pour les admins (soirées Pompoms et DJ Contest)
-        // Utiliser l'ID de la soirée pour ne pas dépendre du texte de description
-        if (isAdmin && isEditing && (party.id === 'parc-expo-pompom' || party.id === 'zenith')) {
+        // Accepter les slugs legacy + nouveaux slugs Firebase pour éviter les régressions.
+        const canEditPartyResult = [
+          'parc-expo-pompom',
+          'parx-expo-pompoms',
+          'parc-expo-pompoms',
+          'zenith',
+          'zenith-dj-contest',
+        ].includes(party.id);
+        if (isAdmin && isEditing && canEditPartyResult) {
           const editResultButton = document.createElement('button');
           editResultButton.className = 'edit-result-button';
           editResultButton.textContent = 'Modifier le résultat';
@@ -1569,7 +1576,14 @@ function App() {
           }
           
           // Réajouter les boutons admin si nécessaire (soirées Pompoms et DJ Contest)
-          if (isAdmin && isEditing && (currentParty.id === '2' || currentParty.id === '4')) {
+          const canEditCurrentPartyResult = [
+            'parc-expo-pompom',
+            'parx-expo-pompoms',
+            'parc-expo-pompoms',
+            'zenith',
+            'zenith-dj-contest',
+          ].includes(currentParty.id);
+          if (isAdmin && isEditing && canEditCurrentPartyResult) {
             const editResultButton = document.createElement('button');
             editResultButton.className = 'edit-result-button';
             editResultButton.textContent = 'Modifier le résultat';

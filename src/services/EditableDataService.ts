@@ -15,7 +15,6 @@ import logger from './Logger';
 /** Firebase keys for partyResults (historical names kept for existing data) */
 const PARTY_RESULT_FIREBASE_KEYS: Record<string, string> = {
   'parc-expo-pompom': 'parc-expo-pompoms',
-  'parc-expo-showcase': 'parc-expo-showcase',
   zenith: 'zenith-dj-contest'
 };
 
@@ -39,6 +38,10 @@ export interface EditableDataCallbacks {
   onAllDataLoaded?: () => void;
 }
 
+interface DescriptionNode {
+  description?: string;
+}
+
 class EditableDataService {
   loadEditableData(callbacks: EditableDataCallbacks): (() => void)[] {
     try {
@@ -56,16 +59,14 @@ class EditableDataService {
           if (pompomRes) {
             callbacks.onPartyResultsUpdate('parc-expo-pompom', pompomRes);
           }
-          if (pr['parc-expo-showcase']?.result) {
-            callbacks.onPartyResultsUpdate('parc-expo-showcase', pr['parc-expo-showcase'].result);
-          }
           if (pr['zenith-dj-contest']?.result) {
             callbacks.onPartyResultsUpdate('zenith', pr['zenith-dj-contest'].result);
           }
         }
 
         if (data.hotelDescriptions && callbacks.onHotelDescriptionUpdate) {
-          Object.entries(data.hotelDescriptions).forEach(([hotelId, hotelData]: [string, { description?: string }]) => {
+          const hotelDescriptions = data.hotelDescriptions as Record<string, DescriptionNode>;
+          Object.entries(hotelDescriptions).forEach(([hotelId, hotelData]) => {
             if (hotelData.description) {
               callbacks.onHotelDescriptionUpdate!(hotelId, hotelData.description);
             }
@@ -73,8 +74,9 @@ class EditableDataService {
         }
 
         if (data.restaurantDescriptions && callbacks.onRestaurantDescriptionUpdate) {
-          Object.entries(data.restaurantDescriptions).forEach(
-            ([restaurantId, restaurantData]: [string, { description?: string }]) => {
+          const restaurantDescriptions = data.restaurantDescriptions as Record<string, DescriptionNode>;
+          Object.entries(restaurantDescriptions).forEach(
+            ([restaurantId, restaurantData]) => {
               if (!restaurantData.description) return;
               if (restaurantId === LEGACY_PARC_EXPO_HALL_RESTAURANT_SLUG) {
                 callbacks.onRestaurantDescriptionUpdate!('parc-expo-jeudi', restaurantData.description);
@@ -88,7 +90,8 @@ class EditableDataService {
         }
 
         if (data.partyDescriptions && callbacks.onPartyDescriptionUpdate) {
-          Object.entries(data.partyDescriptions).forEach(([partyId, partyData]: [string, { description?: string }]) => {
+          const partyDescriptions = data.partyDescriptions as Record<string, DescriptionNode>;
+          Object.entries(partyDescriptions).forEach(([partyId, partyData]) => {
             if (partyData.description) {
               const slug = normalizePartyDescriptionSlug(partyId);
               callbacks.onPartyDescriptionUpdate!(slug, partyData.description);
@@ -197,10 +200,6 @@ class EditableDataService {
             result: pPompom?.result || '',
             updatedAt: new Date().toISOString()
           },
-          'parc-expo-showcase': {
-            result: pShow?.result || '',
-            updatedAt: new Date().toISOString()
-          },
           'zenith-dj-contest': {
             result: pZen?.result || '',
             updatedAt: new Date().toISOString()
@@ -242,9 +241,7 @@ class EditableDataService {
           if (!existingData.partyResults['parc-expo-pompoms']) {
             updates['partyResults/parc-expo-pompoms'] = initialStructure.partyResults['parc-expo-pompoms'];
           }
-          if (!existingData.partyResults['parc-expo-showcase']) {
-            updates['partyResults/parc-expo-showcase'] = initialStructure.partyResults['parc-expo-showcase'];
-          }
+
           if (!existingData.partyResults['zenith-dj-contest']) {
             updates['partyResults/zenith-dj-contest'] = initialStructure.partyResults['zenith-dj-contest'];
           }
