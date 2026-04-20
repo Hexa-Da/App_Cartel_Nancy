@@ -2665,14 +2665,14 @@ function App() {
             >
               {activeTab === 'map' ? (
                 <>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="toggle-button-icon">
                     <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
                   </svg>
                   Événements
                 </>
               ) : (
                 <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="toggle-button-icon">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                   </svg>
                   Fermer
@@ -2694,7 +2694,7 @@ function App() {
                   handleTabChange('calendar');
                 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '4px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="toggle-button-icon">
                   <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
                 </svg>
                 Calendrier

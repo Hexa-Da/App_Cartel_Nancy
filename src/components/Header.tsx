@@ -118,13 +118,6 @@ const Header: React.FC<HeaderProps> = ({
           {(isAdmin || isRespoSport) && onEditModeToggle && (
             <button
               className={`edit-button${isEditing ? ' active' : ''}`}
-              style={{ 
-                backgroundColor: isEditing ? 'var(--danger-color)' : 'var(--warning-color)', 
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
               onClick={onEditModeToggle}
               title={isEditing ? 'Quitter le mode édition' : 'Activer le mode édition'}
             >

@@ -71,6 +71,11 @@
   background-color: var(--bg-color);
 }
 
+.winners-modal-loading {
+  text-align: center;
+  padding: 2rem;
+}
+
 .winner-sport-item {
   margin-bottom: 1rem;
   padding: 0.75rem 0;

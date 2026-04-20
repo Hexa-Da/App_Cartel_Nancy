@@ -42,7 +42,7 @@ export const MapView: React.FC<MapViewProps> = ({
     <MapContainer
       center={center}
       zoom={zoom}
-      style={{ height: '100%', width: '100%' }}
+      className="leaflet-map-fill"
       ref={(map) => { (mapRef as MutableRefObject<L.Map | null>).current = map || null; }}
       zoomControl={false}
     >

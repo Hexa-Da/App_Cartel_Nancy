@@ -69,6 +69,17 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
   }, [currentZoom, loadStops]);
 
   const shouldShowMarkers = currentZoom >= 15 && stopsData !== null;
+  const tramLineColorCss = useMemo(() => {
+    return filteredLines
+      .map((line) => {
+        const lineClass = `line-color-${line.id.toLowerCase()}`;
+        return `
+.${lineClass} { color: ${line.color}; }
+.${lineClass}.schedule-button { background-color: ${line.color} !important; }
+`;
+      })
+      .join('\n');
+  }, [filteredLines]);
 
   // Créer des listes des coordonnées des arrêts pour chaque ligne et chaque direction
   // Structure: lineStopsByDirection[lineId][directionName] = [arrêts dans l'ordre]
@@ -439,6 +450,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
 
   return (
     <>
+      <style>{tramLineColorCss}</style>
       <ZoomController onZoomChange={setCurrentZoom} />
 
       {/* Afficher les tracés des lignes */}
@@ -991,7 +1003,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                 {stop.lines.sort((a, b) => a.id.localeCompare(b.id)).map((line, lineIndex) => (
                   <div key={`${line.id}-${lineIndex}`}>
                     <p className="line-info">
-                      <span className="line-name" style={{ color: line.color }}>
+                      <span className={`line-name line-color-${line.id.toLowerCase()}`}>
                         {line.name}
                       </span>
                     </p>
@@ -1000,8 +1012,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                       // Structure simple avec un seul lien
                       <div className="popup-buttons">
                         <button 
-                          className="schedule-button"
-                          style={{ backgroundColor: line.color }}
+                          className={`schedule-button line-color-${line.id.toLowerCase()}`}
                           onClick={async () => {
                             if (Capacitor.isNativePlatform()) {
                               try {
@@ -1052,8 +1063,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                               return (
                                 <button 
                                   key={linkIndex}
-                                  className="schedule-button"
-                                  style={{ backgroundColor: line.color }}
+                                  className={`schedule-button line-color-${line.id.toLowerCase()}`}
                                   onClick={async () => {
                                     if (Capacitor.isNativePlatform()) {
                                       try {
@@ -1069,14 +1079,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                                 >
                                   <span>Horaires pour {directionName} : </span>
                                   {arrowAngle !== null ? (
-                                    <span 
-                                      className="direction-arrow"
-                                      style={{
-                                        display: 'inline-block',
-                                        transform: `rotate(${arrowAngle}deg)`,
-                                        transition: 'transform 0.3s ease'
-                                      }}
-                                    >
+                                    <span className="direction-arrow">
                                       <svg 
                                         width="20" 
                                         height="20" 
@@ -1086,7 +1089,7 @@ const BusLines: React.FC<BusLinesProps> = ({ visibleLines }) => {
                                         strokeWidth="4" 
                                         strokeLinecap="round" 
                                         strokeLinejoin="round"
-                                        style={{ display: 'block' }}
+                                        transform={`rotate(${arrowAngle} 12 12)`}
                                       >
                                         <line x1="5" y1="12" x2="19" y2="12" />
                                         <polyline points="12 5 19 12 12 19" />

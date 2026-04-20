@@ -72,6 +72,15 @@ body.ios .events-panel-header {
   flex-shrink: 0 !important;
 }
 
+.filter-toggle-icon {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.filter-toggle-icon.is-open {
+  transform: rotate(180deg);
+}
+
 .event-filters {
   background-color: var(--bg-color);
   border-bottom: 1px solid var(--border-color);

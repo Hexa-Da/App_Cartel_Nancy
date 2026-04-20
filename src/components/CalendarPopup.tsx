@@ -521,6 +521,43 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
     return position;
   };
 
+  const toCssSafeToken = (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+  const dynamicCalendarStyles = new Map<string, string>();
+
+  const getCurrentTimeClassName = () => {
+    const top = getCurrentTimePosition();
+    if (!top) {
+      return '';
+    }
+
+    const className = `current-time-indicator-${toCssSafeToken(top)}`;
+    if (!dynamicCalendarStyles.has(className)) {
+      dynamicCalendarStyles.set(className, `.${className} { top: ${top}; }`);
+    }
+    return className;
+  };
+
+  const getCalendarEventClassName = (
+    event: Event,
+    isPassed: boolean,
+    passedBg: string,
+    position: { top: string; height: string; width: string; left: string }
+  ) => {
+    const backgroundColor = isPassed ? passedBg : event.color;
+    const styleKey = `${backgroundColor}-${position.top}-${position.height}-${position.width}-${position.left}`;
+    const className = `calendar-event-style-${toCssSafeToken(styleKey)}`;
+
+    if (!dynamicCalendarStyles.has(className)) {
+      dynamicCalendarStyles.set(
+        className,
+        `.${className} { background-color: ${backgroundColor}; top: ${position.top}; height: ${position.height}; width: ${position.width}; left: ${position.left}; }`
+      );
+    }
+
+    return className;
+  };
+
   const getTodayDate = () => {
     const today = getCurrentDate();
     const year = today.getFullYear();
@@ -752,10 +789,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                style={{ 
-                  transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.3s ease'
-                }}
+                className={`filter-toggle-icon${showFilters ? ' is-open' : ''}`}
               >
                 <path d="M18 4H6l5 6.5v4.5l2 2v-6.5L18 4Z"/>
               </svg>
@@ -866,8 +900,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                       <div className="calendar-events" ref={day.date === days[0].date ? eventsContainerRef : null}>
                         {day.date === getTodayDate() && getCurrentTimePosition() !== '' && (
                           <div 
-                            className="current-time-indicator"
-                            style={{ top: getCurrentTimePosition() }}
+                            className={`current-time-indicator ${getCurrentTimeClassName()}`}
                           />
                         )}
                         {getOverlappingEvents(events).map((group, groupIndex) => {
@@ -877,17 +910,11 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
                                 const position = getEventPosition(event.time, event.endTime, index, group.length, event.type, event.name);
                                 const isPassed = isEventPassed(`${day.date}T${event.time}`, event.endTime ? `${day.date}T${event.endTime}` : undefined, event.type);
                                 const passedBg = event.type === 'party' ? 'var(--party-passed-color)' : 'var(--match-passed-color)';
+                                const eventPositionClass = getCalendarEventClassName(event, isPassed, passedBg, position);
                                 return (
                                   <div 
                                     key={`${event.time}-${index}`}
-                                    className={`calendar-event ${isPassed ? 'passed' : ''}`}
-                                    style={{
-                                      backgroundColor: isPassed ? passedBg : event.color,
-                                      top: position.top,
-                                      height: position.height,
-                                      width: position.width,
-                                      left: position.left
-                                    }}
+                                    className={`calendar-event ${isPassed ? 'passed' : ''} ${eventPositionClass}`}
                                     onClick={() => handleEventClick(event)}
                                   >
                                     <div className="calendar-event-title-container">
@@ -907,6 +934,7 @@ const CalendarPopup: React.FC<CalendarPopupProps> = ({
             </div>
             )}
           </div>
+          <style>{Array.from(dynamicCalendarStyles.values()).join('\n')}</style>
         </div>
         
         {/* BottomNav du Layout */}

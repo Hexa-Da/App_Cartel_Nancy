@@ -206,7 +206,7 @@ const WinnersModal: React.FC<WinnersModalProps> = ({ isOpen, onClose, sports }) 
         </div>
         <div className="winners-modal-body">
           {isLoadingWinners ? (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <div className="winners-modal-loading">
               <div>Chargement des gagnants...</div>
             </div>
           ) : (

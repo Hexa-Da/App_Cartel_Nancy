@@ -684,10 +684,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{ 
-              transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 0.3s ease'
-            }}
+            className={`filter-toggle-icon${showFilters ? ' is-open' : ''}`}
           >
             <path d="M18 4H6l5 6.5v4.5l2 2v-6.5L18 4Z"/>
           </svg>

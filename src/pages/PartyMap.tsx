@@ -376,7 +376,7 @@ const PlanMapView: React.FC<{
         zoom={0}
         minZoom={-2}
         maxZoom={3}
-        style={{ height: '100%', width: '100%' }}
+        className="leaflet-map-fill"
         crs={L.CRS.Simple}
       >
         <LeafletInvalidateSizeAfterLayout />
@@ -567,7 +567,7 @@ const PartyMap: React.FC<PartyMapProps> = ({ parties: partiesFromProps }) => {
       <MapContainer
         center={[48.69, 6.18]}
         zoom={13}
-        style={{ height: '100%', width: '100%' }}
+        className="leaflet-map-fill"
       >
         <MapController mapRef={mapRef} />
         <LeafletInvalidateSizeAfterLayout />
