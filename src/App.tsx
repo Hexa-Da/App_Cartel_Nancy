@@ -50,7 +50,7 @@ import {
 import PartyMap from './pages/PartyMap';
 import ChatPanel from './components/ChatPanel';
 import EventsTab from './components/EventsTab';
-import EventDetails, { Event as EventDetailsEvent } from './components/EventDetails';
+import EventDetails from './components/EventDetails';
 import { venueService } from './services/VenueService';
 import { matchService } from './services/MatchService';
 import { mapService } from './services/MapService';

@@ -173,6 +173,10 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
   const getAllPlayerIds = () => getAllPlayerIdsFromVenues(venues);
   const isChessFilter = eventFilter === 'Echecs';
   const delegationOptions = isChessFilter ? getAllPlayerIds() : getAllDelegations();
+  const isVenueMarker = (venue: Venue) => {
+    const venueAny = venue as Venue & { placeType?: string; indicationType?: string };
+    return venueAny.placeType !== 'indication' && !venueAny.indicationType;
+  };
 
   const getVenueOptions = () => {
     if (eventFilter === 'party') {
@@ -181,7 +185,7 @@ const EventsTab = ({ venues, parties, isAdmin, onEventSelect, triggerMarkerUpdat
         ...parties.map((party) => ({ value: party.id, label: party.name }))
       ];
     }
-    const filteredVenues = venues.filter(venue => venue.sport === eventFilter);
+    const filteredVenues = venues.filter(venue => isVenueMarker(venue) && venue.sport === eventFilter);
     return [
       { value: 'Tous', label: 'Tous les lieux' },
       ...filteredVenues.map(venue => ({ value: venue.id, label: venue.name }))
