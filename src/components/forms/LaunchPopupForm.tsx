@@ -34,6 +34,12 @@ const toDateInput = (date: Date): string => {
   return date.toISOString().slice(0, 16);
 };
 
+const getEndDateTwoHoursLater = (start: Date): Date => {
+  const end = new Date(start);
+  end.setHours(end.getHours() + 2);
+  return end;
+};
+
 const getFileExtension = (fileName: string): string => {
   const ext = fileName.split('.').pop();
   return ext ? ext.toLowerCase() : '';
@@ -169,17 +175,20 @@ const LaunchPopupForm: React.FC<LaunchPopupFormProps> = ({
       if (!id) throw new Error('Firebase push failed');
 
       const start = new Date(startDate);
+      const end = getEndDateTwoHoursLater(start);
       const popup: LaunchPopup = {
         id,
         title: title.trim(),
         image: isImage ? downloadURL : undefined,
         video: isVideo ? downloadURL : undefined,
-        startDate: start.toISOString()
+        startDate: start.toISOString(),
+        endDate: end.toISOString()
       };
 
       const popupData: Record<string, string> = {
         title: popup.title,
-        startDate: popup.startDate
+        startDate: popup.startDate,
+        endDate: popup.endDate ?? end.toISOString()
       };
       if (popup.image) {
         popupData.image = popup.image;

@@ -71,4 +71,5 @@ export interface LaunchPopup {
   image?: string;
   video?: string;
   startDate: string;
+  endDate?: string;
 }

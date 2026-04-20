@@ -17,6 +17,7 @@ import { getAppNow } from '../config/homeMomentDebug';
 
 const LAUNCH_POPUPS_PATH = 'launchPopups';
 const SEEN_POPUP_KEY = 'launchPopupSeen';
+const POPUP_DURATION_MS = 2 * 60 * 60 * 1000;
 
 const getSeenIds = (): string[] => {
   try {
@@ -50,7 +51,10 @@ export const useLaunchPopup = () => {
       const activePopups = allPopups
         .filter((p) => {
           const start = new Date(p.startDate);
-          return now >= start && !seenIds.includes(p.id);
+          const end = p.endDate
+            ? new Date(p.endDate)
+            : new Date(start.getTime() + POPUP_DURATION_MS);
+          return now >= start && now < end && !seenIds.includes(p.id);
         })
         .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 
