@@ -134,6 +134,7 @@ ios/App/App.xcworkspace/xcuserdata/
 ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
 ios/App/App.xcodeproj/project.xcworkspace/
 ios/App/GoogleService-Info.plist
+ios/App/App/GoogleService-Info.plist
 ios/App/App.entitlements.local
 *.pbxuser
 !default.pbxuser
