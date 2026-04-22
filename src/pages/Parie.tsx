@@ -142,6 +142,7 @@ const Parie: React.FC = () => {
   const [timeRemaining, setTimeRemaining] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [bettingClosed, setBettingClosed] = useState(false);
   const [invalidBraceletNotice, setInvalidBraceletNotice] = useState(false);
+  const bypassHseAcceptanceCheck = true;
 
   const clearInvalidBraceletSession = useCallback(() => {
     localStorage.removeItem('userBraceletNumber');
@@ -462,6 +463,8 @@ const Parie: React.FC = () => {
           normalizedChampionship = normalizedChampionship.replace(/[-–—]?\s*séries?\s*\d+(?:\/\d+)?$/i, '');
           normalizedChampionship = normalizedChampionship.replace(/[-–—]?\s*series?\s*\d+(?:\/\d+)?$/i, '');
           normalizedChampionship = normalizedChampionship.replace(/[-–—]?\s*série\s*\d+(?:\/\d+)?$/i, '');
+          // Supprimer les suffixes de phase pour éviter "… - finale" dans l'affichage des paris
+          normalizedChampionship = normalizedChampionship.replace(/[-–—]?\s*finale?$/i, '');
           championship = normalizedChampionship.trim();
         }
 
@@ -595,6 +598,7 @@ const Parie: React.FC = () => {
 
   const sports = getSportsWithDelegations();
   const totalBets = Object.values(bets).filter(b => b !== null).length;
+  const canViewBets = isActivated || bypassHseAcceptanceCheck;
 
   // Afficher un loader pendant l'initialisation
   if (isInitializing) {
@@ -613,7 +617,7 @@ const Parie: React.FC = () => {
     );
   }
 
-  if (isActivated) {
+  if (canViewBets) {
     return (
       <div className="page-content scrollable parie-page">
         <div className="parie-header">
@@ -622,9 +626,15 @@ const Parie: React.FC = () => {
 
         <div className="parie-content">
           <div className="parie-status-bar">
-            <div className="bracelet-badge">
-              <FaCheckCircle /> N° {storedBracelet}
-            </div>
+            {storedBracelet ? (
+              <div className="bracelet-badge">
+                <FaCheckCircle /> N° {storedBracelet}
+              </div>
+            ) : (
+              <div className="bracelet-badge">
+                Mode sans bracelet
+              </div>
+            )}
             <div className="bets-counter">
               {isSavingBet && <FaSpinner className="saving-spinner" />}
               {totalBets} / {sports.length} paris
@@ -645,13 +655,6 @@ const Parie: React.FC = () => {
               <p className="parie-intro">
                 Sélectionnez la délégation que vous pensez gagnante pour chaque compétition.
               </p>
-            )}
-
-            {bettingClosed && (
-              <div className="betting-closed-message">
-                <FaExclamationTriangle />
-                <p>Les paris sont clos. Vous ne pouvez plus modifier vos pronostics.</p>
-              </div>
             )}
 
             {/* Boutons admin */}

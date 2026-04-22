@@ -266,12 +266,11 @@ const PlanningFilesPage: React.FC = () => {
     }
   }, [eventType, isPageLoading]);
 
-  const uploadProgressClass = `upload-progress-${Math.round(uploadProgress)}`;
-
   // Barre de chargement d'upload globale
   const uploadBar = uploading ? (
     <div
-      className={`upload-progress-bar ${uploadProgressClass}`}
+      className="upload-progress-bar"
+      style={{ '--upload-progress': `${Math.round(uploadProgress)}%` } as React.CSSProperties}
     >
       <div className="upload-progress-bar__title">Upload en cours...</div>
       <div className="upload-progress-bar__track">
@@ -299,17 +298,12 @@ const PlanningFilesPage: React.FC = () => {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const pagePaddingTop = isIOS ? `${filtersHeight + 4}px` : `${filtersHeight + 8}px`;
-  const pagePaddingClass = `planning-files-page-padding-${Math.round(filtersHeight)}-${isIOS ? 'ios' : 'default'}`;
-  const dynamicPageStyles = `
-.${pagePaddingClass} { padding-top: ${pagePaddingTop}; }
-.${uploadProgressClass} .upload-progress-bar__fill { width: ${Math.round(uploadProgress)}%; }
-`;
 
   return (
     <div 
-      className={`page-content scrollable planning-files-page ${isPageLoading ? 'loading' : 'loaded'} ${pagePaddingClass}`}
+      className={`page-content scrollable planning-files-page ${isPageLoading ? 'loading' : 'loaded'}`}
+      style={{ paddingTop: pagePaddingTop }}
     >
-      <style>{dynamicPageStyles}</style>
       {uploadBar}
 
       {/* Système de filtres en cascade - Utilise les classes CSS */}
