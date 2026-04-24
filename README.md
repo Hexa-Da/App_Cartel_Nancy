@@ -1,8 +1,16 @@
-# Cartel Nancy - Application mobile
+ <div align="center">
 
-## Description
+  <img src="/public/logo.jpg" alt="Logo de mon application" width="150" />
+  <h1>Cartel Nancy - Application mobile</h1>
 
-Cartel Nancy est une application mobile et web développée pour l'evenement sportif et culturel Cartel 2026 a Nancy. Elle permet de consulter les evenements, localiser les lieux importants et acceder aux informations pratiques de l'organisation.
+  <p>Cartel Nancy est une application mobile et web développée pour l'evenement sportif et culturel Cartel 2026 a Nancy. Elle permet de consulter les evenements, localiser les lieux importants et acceder aux informations pratiques de l'organisation.</p>
+
+  <div>
+    <a href="https://apps.apple.com/fr/app/cartel-nancy/id6753626428"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/fr-fr?size=250x83" alt="" height="50" align="middle" /></a>
+    &nbsp;&nbsp;
+    <a href="https://play.google.com/store/apps/details?id=com.cartelnancy.app"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="" height="50" align="middle" /></a>
+  </div>
+</div> 
 
 ## Vue d'ensemble
 
